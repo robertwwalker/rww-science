@@ -38,4 +38,5 @@ caption = ":smile:"
 
 +++
 
-Slides in [xaringan](https://rww.science/talk/gscc/) :smile:
+Slides in [xaringan](https://rww.science/talk/ggsc/) :smile:
+
