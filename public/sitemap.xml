@@ -58,12 +58,12 @@
   </url>
   
   <url>
-    <loc>/categories/maps/</loc>
+    <loc>/tags/maps/</loc>
     <lastmod>2020-01-31T00:02:25-08:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/maps/</loc>
+    <loc>/categories/maps/</loc>
     <lastmod>2020-01-31T00:02:25-08:00</lastmod>
   </url>
   
@@ -253,12 +253,12 @@
   </url>
   
   <url>
-    <loc>/tags/tidytext/</loc>
+    <loc>/categories/tidytext/</loc>
     <lastmod>2020-01-31T00:02:25-08:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/tidytext/</loc>
+    <loc>/tags/tidytext/</loc>
     <lastmod>2020-01-31T00:02:25-08:00</lastmod>
   </url>
   
@@ -393,12 +393,12 @@
   </url>
   
   <url>
-    <loc>/categories/reticulate/</loc>
+    <loc>/tags/reticulate/</loc>
     <lastmod>2020-01-31T00:02:25-08:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/reticulate/</loc>
+    <loc>/categories/reticulate/</loc>
     <lastmod>2020-01-31T00:02:25-08:00</lastmod>
   </url>
   
