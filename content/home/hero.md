@@ -8,7 +8,7 @@ weight = 10  # Order that this section will appear.
 title = "rww.science"
 
 # Hero image (optional). Enter filename of an image in the `static/img/` folder.
-# hero_media = "headers/bubbles-wide.jpg"
+# hero_media = "headers/wuagsm.jpg"
 
 [design.background]
   # Apply a background color, gradient, or image.
