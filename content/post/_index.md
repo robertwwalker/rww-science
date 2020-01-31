@@ -1,7 +1,7 @@
 ---
 header:
-  caption: ""
-  image: ""
+  caption: "Posts"
+  image: "headers/bubbles-wide.jpg"
 title: Posts
-view: 2
+view: 4
 ---

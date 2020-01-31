@@ -38,13 +38,13 @@
   </url>
   
   <url>
-    <loc>/categories/tidytuesday/</loc>
-    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
+    <loc>/tags/tidytuesday/</loc>
+    <lastmod>2020-01-31T03:07:35-08:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/tidytuesday/</loc>
-    <lastmod>2020-01-31T03:07:35-08:00</lastmod>
+    <loc>/categories/tidytuesday/</loc>
+    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
   </url>
   
   <url>
@@ -150,6 +150,16 @@
   <url>
     <loc>/tags/gsm-data/</loc>
     <lastmod>2020-01-31T03:07:35-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/essex/</loc>
+    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/2019/10/23/tribute-to-griffin-park/</loc>
+    <lastmod>2019-10-23T00:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -383,12 +393,12 @@
   </url>
   
   <url>
-    <loc>/categories/python/</loc>
+    <loc>/tags/python/</loc>
     <lastmod>2020-01-31T00:02:25-08:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/python/</loc>
+    <loc>/categories/python/</loc>
     <lastmod>2020-01-31T00:02:25-08:00</lastmod>
   </url>
   
@@ -424,11 +434,6 @@
   
   <url>
     <loc>/2018/02/25/mapping-with-the-government-finance-database/</loc>
-    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/essex/</loc>
     <lastmod>2020-01-31T00:02:25-08:00</lastmod>
   </url>
   

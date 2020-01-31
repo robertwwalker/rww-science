@@ -1128,31 +1128,13 @@
 
 
 
-
-
-
   
 
 
-<div class="media stream-item">
-  <div class="media-body">
+<div class="card-simple">
 
-    <h3 class="article-title mb-0 mt-0">
-      <a href="/2020/01/18/a-quick-tidytuesday-on-passwords/" >a quick tidyTuesday on Passwords</a>
-    </h3>
-
+  
     
-    <div class="article-style">
-      First, I wanted to acquire the distribution of letters and then play with that. I embedded the result here. The second step is to …
-    </div>
-    
-
-    <div class="stream-meta article-metadata">
-
-      
-
-      
-        
 
 
 <div class="article-metadata">
@@ -1194,16 +1176,25 @@
 
 </div>
 
-      
-    </div>
+  
 
-    
+  
+  
+  
 
+  <h3 class="article-title mb-1 mt-3">
+    <a href="/2020/01/18/a-quick-tidytuesday-on-passwords/">a quick tidyTuesday on Passwords</a>
+  </h3>
+
+  
+  <div class="article-style">
+    <p>First, I wanted to acquire the distribution of letters and then play with that. I embedded the result here. The second step is to import the tidyTuesday data.
+library(tidyverse) Letter.Freq &lt;- data.frame(stringsAsFactors=FALSE, Letter = c(&quot;E&quot;, &quot;T&quot;, &quot;A&quot;, &quot;O&quot;, &quot;I&quot;, &quot;N&quot;, &quot;S&quot;, &quot;R&quot;, &quot;H&quot;, &quot;D&quot;, &quot;L&quot;, &quot;U&quot;, &quot;C&quot;, &quot;M&quot;, &quot;F&quot;, &quot;Y&quot;, &quot;W&quot;, &quot;G&quot;, &quot;P&quot;, &quot;B&quot;, &quot;V&quot;, &quot;K&quot;, &quot;X&quot;, &quot;Q&quot;, &quot;J&quot;, &quot;Z&quot;), Frequency = c(12.02, 9.1, 8.12, 7.68, 7.31, 6.95, 6.28, 6.</p>
   </div>
-  <div class="ml-3">
-    
-    
-  </div>
+  
+
+  
+
 </div>
 
       
@@ -1219,31 +1210,13 @@
 
 
 
-
-
-
   
 
 
-<div class="media stream-item">
-  <div class="media-body">
+<div class="card-simple">
 
-    <h3 class="article-title mb-0 mt-0">
-      <a href="/2019/12/19/simple-point-maps-in-r/" >Simple Point Maps in R</a>
-    </h3>
-
+  
     
-    <div class="article-style">
-      Mapping Points in R My goal is a streamlined and self-contained freeware map maker with points denoting addresses. It is a three step …
-    </div>
-    
-
-    <div class="stream-meta article-metadata">
-
-      
-
-      
-        
 
 
 <div class="article-metadata">
@@ -1285,16 +1258,27 @@
 
 </div>
 
-      
-    </div>
+  
 
-    
+  
+  
+  
 
+  <h3 class="article-title mb-1 mt-3">
+    <a href="/2019/12/19/simple-point-maps-in-r/">Simple Point Maps in R</a>
+  </h3>
+
+  
+  <div class="article-style">
+    <p>Mapping Points in R My goal is a streamlined and self-contained freeware map maker with points denoting addresses. It is a three step process that involves:
+Get a map.
+ Geocode the addresses into latitude and longitude.
+ Combine the the two with a first map layer and a second layer on top that contains the points.  From there, it is pretty easy to get fancy using ggplotly to put relevant text hovers into place.</p>
   </div>
-  <div class="ml-3">
-    
-    
-  </div>
+  
+
+  
+
 </div>
 
       
@@ -1310,31 +1294,13 @@
 
 
 
-
-
-
   
 
 
-<div class="media stream-item">
-  <div class="media-body">
+<div class="card-simple">
 
-    <h3 class="article-title mb-0 mt-0">
-      <a href="/2019/12/17/dog-movements-a-tidytuesday/" >Dog Movements: a tidyTuesday</a>
-    </h3>
-
+  
     
-    <div class="article-style">
-      Adoptable Dogs # devtools::install_github(&quot;thebioengineer/tidytuesdayR&quot;, force=TRUE) tuesdata51 &lt;- …
-    </div>
-    
-
-    <div class="stream-meta article-metadata">
-
-      
-
-      
-        
 
 
 <div class="article-metadata">
@@ -1376,16 +1342,25 @@
 
 </div>
 
-      
-    </div>
+  
 
-    
+  
+  
+  
 
+  <h3 class="article-title mb-1 mt-3">
+    <a href="/2019/12/17/dog-movements-a-tidytuesday/">Dog Movements: a tidyTuesday</a>
+  </h3>
+
+  
+  <div class="article-style">
+    <p>Adoptable Dogs # devtools::install_github(&quot;thebioengineer/tidytuesdayR&quot;, force=TRUE) tuesdata51 &lt;- tidytuesdayR::tt_load(2019, week = 51) dog_moves &lt;- tuesdata51$dog_moves dog_des &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-12-17/dog_descriptions.csv&#39;) library(tidyverse); library(scatterpie) library(rgeos) library(maptools) library(rgdal); library(usmap); library(ggthemes)  The Base Map My.Map &lt;- us_map(regions = &quot;states&quot;) Base.Plot &lt;- ggplot() + geom_polygon(data=My.Map, aes(x=x, y=y, group=group), fill=&quot;white&quot;, color=&quot;black&quot;) + theme_map() Base.Plot A fifty state map to plot this information on.
+New.Dat &lt;- left_join(My.Map, dog_moves, by= c(&quot;full&quot; = &quot;location&quot;)) ggplot() + geom_polygon(data=New.</p>
   </div>
-  <div class="ml-3">
-    
-    
-  </div>
+  
+
+  
+
 </div>
 
       
@@ -1401,31 +1376,13 @@
 
 
 
-
-
-
   
 
 
-<div class="media stream-item">
-  <div class="media-body">
+<div class="card-simple">
 
-    <h3 class="article-title mb-0 mt-0">
-      <a href="/2019/12/16/tidytuesday-measles/" >tidyTuesday Measles</a>
-    </h3>
-
+  
     
-    <div class="article-style">
-      tidyTuesday: December 10, 2019 Replicating plots from simplystatistics. One nice twist is the development of a tidytuesdayR package to …
-    </div>
-    
-
-    <div class="stream-meta article-metadata">
-
-      
-
-      
-        
 
 
 <div class="article-metadata">
@@ -1467,16 +1424,25 @@
 
 </div>
 
-      
-    </div>
+  
 
-    
+  
+  
+  
 
+  <h3 class="article-title mb-1 mt-3">
+    <a href="/2019/12/16/tidytuesday-measles/">tidyTuesday Measles</a>
+  </h3>
+
+  
+  <div class="article-style">
+    <p>tidyTuesday: December 10, 2019 Replicating plots from simplystatistics. One nice twist is the development of a tidytuesdayR package to grab the necessary data in an easy way. You can install the package via github. I will also use fiftystater and ggflags.
+devtools::install_github(&quot;thebioengineer/tidytuesdayR&quot;) devtools::install_github(&quot;ellisp/ggflags&quot;) devtools::install_github(&quot;wmurphyrd/fiftystater&quot;) tuesdata &lt;- tidytuesdayR::tt_load(2019, week = 50) ## --- Downloading #TidyTuesday Information for 2019-12-10 ---- ## --- Identified 4 files available for download ---- ## --- Downloading files --- ## Warning in identify_delim(temp_file): Not able to detect delimiter for the file.</p>
   </div>
-  <div class="ml-3">
-    
-    
-  </div>
+  
+
+  
+
 </div>
 
       
@@ -1492,31 +1458,13 @@
 
 
 
-
-
-
   
 
 
-<div class="media stream-item">
-  <div class="media-body">
+<div class="card-simple">
 
-    <h3 class="article-title mb-0 mt-0">
-      <a href="/2019/12/16/trying-out-leaflet/" >Trying out Leaflet</a>
-    </h3>
-
+  
     
-    <div class="article-style">
-      International Murders Are among the data for analysis in the tidyTuesday for December 10, 2019. These are made for a map. …
-    </div>
-    
-
-    <div class="stream-meta article-metadata">
-
-      
-
-      
-        
 
 
 <div class="article-metadata">
@@ -1558,16 +1506,25 @@
 
 </div>
 
-      
-    </div>
+  
 
-    
+  
+  
+  
 
+  <h3 class="article-title mb-1 mt-3">
+    <a href="/2019/12/16/trying-out-leaflet/">Trying out Leaflet</a>
+  </h3>
+
+  
+  <div class="article-style">
+    <p>International Murders Are among the data for analysis in the tidyTuesday for December 10, 2019. These are made for a map.
+library(tidyverse) library(leaflet) library(stringr) library(sf) library(here) library(widgetframe) library(htmlwidgets) library(htmltools) options(digits = 3) set.seed(1234) theme_set(theme_minimal()) library(tidytuesdayR) tuesdata &lt;- tt_load(2019, week = 50) murders &lt;- tuesdata$gun_murders There isn’t much data so it should make this a bit easier. Now for some data. As it happens, the best way I currently know how to do this is going to involve acquiring a spatial frame.</p>
   </div>
-  <div class="ml-3">
-    
-    
-  </div>
+  
+
+  
+
 </div>
 
       
@@ -2738,7 +2695,7 @@
           
           
           
-          <a href="/tags/essex/" style="font-size:0.7rem">Essex</a>
+          <a href="/tags/essex/" style="font-size:0.9704189769794622rem">Essex</a>
         
           
           
