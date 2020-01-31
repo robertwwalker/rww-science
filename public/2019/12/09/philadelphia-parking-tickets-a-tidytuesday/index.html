@@ -233,9 +233,9 @@ tickets &lt;- readr::read_csv(&quot;https://raw.githubusercontent.com/rfordatasc
   <meta property="twitter:site" content="@PieRatio">
   <meta property="twitter:creator" content="@PieRatio">
   
-  <meta property="og:site_name" content="rww.science">
+  <meta property="og:site_name" content="">
   <meta property="og:url" content="/2019/12/09/philadelphia-parking-tickets-a-tidytuesday/">
-  <meta property="og:title" content="Philadelphia Parking Tickets: a tidyTuesday | rww.science">
+  <meta property="og:title" content="Philadelphia Parking Tickets: a tidyTuesday | ">
   <meta property="og:description" content="Philadelphia Map Use ggmap for the base layer.
 library(ggmap); library(osmdata); library(tidyverse) PHI &lt;- get_map(getbb(&quot;Philadelphia, PA&quot;), maptype = &quot;stamen&quot;, zoom=12)  Get the Tickets Data TidyTuesday covers 1.26 million parking tickets in Philadelphia.
 tickets &lt;- readr::read_csv(&quot;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-12-03/tickets.csv&quot;) ## Parsed with column specification: ## cols( ## violation_desc = col_character(), ## issue_datetime = col_datetime(format = &quot;&quot;), ## fine = col_double(), ## issuing_agency = col_character(), ## lat = col_double(), ## lon = col_double(), ## zip_code = col_double() ## )  Two Lines of Code Left library(lubridate); library(ggthemes) tickets &lt;- tickets %&gt;% mutate(Day = wday(issue_datetime, label=TRUE)) # use lubridate to extract the day of the month."><meta property="og:image" content="/img/portrait.jpg">
@@ -244,7 +244,7 @@ tickets &lt;- readr::read_csv(&quot;https://raw.githubusercontent.com/rfordatasc
     
       <meta property="article:published_time" content="2019-12-09T00:00:00&#43;00:00">
     
-    <meta property="article:modified_time" content="2019-12-09T00:00:00&#43;00:00">
+    <meta property="article:modified_time" content="2020-01-31T00:02:25-08:00">
   
 
   
@@ -275,7 +275,7 @@ tickets &lt;- readr::read_csv(&quot;https://raw.githubusercontent.com/rfordatasc
   "headline": "Philadelphia Parking Tickets: a tidyTuesday",
   
   "datePublished": "2019-12-09T00:00:00Z",
-  "dateModified": "2019-12-09T00:00:00Z",
+  "dateModified": "2020-01-31T00:02:25-08:00",
   
   "author": {
     "@type": "Person",
@@ -338,7 +338,7 @@ tickets &lt;- readr::read_csv(&quot;https://raw.githubusercontent.com/rfordatasc
 
 
 
-  <title>Philadelphia Parking Tickets: a tidyTuesday | rww.science</title>
+  <title>Philadelphia Parking Tickets: a tidyTuesday | </title>
 
 </head>
 
@@ -389,7 +389,7 @@ tickets &lt;- readr::read_csv(&quot;https://raw.githubusercontent.com/rfordatasc
 
     
     <div class="d-none d-lg-inline-flex">
-      <a class="navbar-brand" href="/">rww.science</a>
+      <a class="navbar-brand" href="/"></a>
     </div>
     
 
@@ -402,7 +402,7 @@ tickets &lt;- readr::read_csv(&quot;https://raw.githubusercontent.com/rfordatasc
 
     
     <div class="navbar-brand-mobile-wrapper d-inline-flex d-lg-none">
-      <a class="navbar-brand" href="/">rww.science</a>
+      <a class="navbar-brand" href="/"></a>
     </div>
     
 
@@ -697,8 +697,10 @@ tickets &lt;- readr::read_csv(&quot;https://raw.githubusercontent.com/rfordatasc
     
     
       
+          Last updated on
+      
     
-    Dec 9, 2019
+    Jan 31, 2020
   </span>
   
 
