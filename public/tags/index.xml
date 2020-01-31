@@ -5,7 +5,7 @@
     <link>/tags/</link>
       <atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
     <description>Tags</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© 2018</copyright><lastBuildDate>Sat, 18 Jan 2020 00:00:00 +0000</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© 2018</copyright><lastBuildDate>Fri, 31 Jan 2020 00:00:00 +0000</lastBuildDate>
     <image>
       <url>/img/portrait.jpg</url>
       <title>Tags</title>
@@ -13,34 +13,50 @@
     </image>
     
     <item>
-      <title>R</title>
-      <link>/tags/r/</link>
-      <pubDate>Sat, 18 Jan 2020 00:00:00 +0000</pubDate>
-      <guid>/tags/r/</guid>
+      <title>blogdown</title>
+      <link>/tags/blogdown/</link>
+      <pubDate>Fri, 31 Jan 2020 00:00:00 +0000</pubDate>
+      <guid>/tags/blogdown/</guid>
       <description></description>
     </item>
     
     <item>
-      <title>tidyTuesday</title>
-      <link>/tags/tidytuesday/</link>
-      <pubDate>Sat, 18 Jan 2020 00:00:00 +0000</pubDate>
-      <guid>/tags/tidytuesday/</guid>
+      <title>hugo</title>
+      <link>/tags/hugo/</link>
+      <pubDate>Fri, 31 Jan 2020 00:00:00 +0000</pubDate>
+      <guid>/tags/hugo/</guid>
       <description></description>
     </item>
     
     <item>
       <title>Maps</title>
       <link>/tags/maps/</link>
-      <pubDate>Thu, 19 Dec 2019 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 31 Jan 2020 00:00:00 +0000</pubDate>
       <guid>/tags/maps/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>tidyTuesday</title>
+      <link>/tags/tidytuesday/</link>
+      <pubDate>Fri, 31 Jan 2020 00:00:00 +0000</pubDate>
+      <guid>/tags/tidytuesday/</guid>
       <description></description>
     </item>
     
     <item>
       <title>tidyverse</title>
       <link>/tags/tidyverse/</link>
-      <pubDate>Thu, 19 Dec 2019 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 31 Jan 2020 00:00:00 +0000</pubDate>
       <guid>/tags/tidyverse/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>R</title>
+      <link>/tags/r/</link>
+      <pubDate>Sat, 18 Jan 2020 00:00:00 +0000</pubDate>
+      <guid>/tags/r/</guid>
       <description></description>
     </item>
     

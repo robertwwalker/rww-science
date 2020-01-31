@@ -5,7 +5,7 @@
     <link>/categories/</link>
       <atom:link href="/categories/index.xml" rel="self" type="application/rss+xml" />
     <description>Categories</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© 2018</copyright><lastBuildDate>Sat, 18 Jan 2020 00:00:00 +0000</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© 2018</copyright><lastBuildDate>Fri, 31 Jan 2020 00:00:00 +0000</lastBuildDate>
     <image>
       <url>/img/portrait.jpg</url>
       <title>Categories</title>
@@ -13,9 +13,17 @@
     </image>
     
     <item>
+      <title>blogdown</title>
+      <link>/categories/blogdown/</link>
+      <pubDate>Fri, 31 Jan 2020 00:00:00 +0000</pubDate>
+      <guid>/categories/blogdown/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>tidyTuesday</title>
       <link>/categories/tidytuesday/</link>
-      <pubDate>Sat, 18 Jan 2020 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 31 Jan 2020 00:00:00 +0000</pubDate>
       <guid>/categories/tidytuesday/</guid>
       <description></description>
     </item>
@@ -23,7 +31,7 @@
     <item>
       <title>tidyverse</title>
       <link>/categories/tidyverse/</link>
-      <pubDate>Sat, 18 Jan 2020 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 31 Jan 2020 00:00:00 +0000</pubDate>
       <guid>/categories/tidyverse/</guid>
       <description></description>
     </item>

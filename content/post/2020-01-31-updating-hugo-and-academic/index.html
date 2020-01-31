@@ -1,0 +1,40 @@
+---
+title: Updating Hugo and Academic
+author: Robert W. Walker
+date: '2020-01-31'
+slug: updating-hugo-and-academic
+categories:
+  - blogdown
+tags:
+  - blogdown
+  - hugo
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2020-01-31T04:04:39-08:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+
+
+<div id="updating-hugo-its-changed-alot" class="section level1">
+<h1>Updating Hugo: It’s Changed Alot…</h1>
+<p>Many key features of hugo have been in a state of flux since I began this <em>blogdown</em> a few years ago. It was time to update hugo and the academic theme that I have built around and customized and a number of things broke. <a href="https://alison.rbind.io/post/2019-02-21-hugo-page-bundles/">Page bundles</a> are pretty amazing for keeping things in order and all of the elements of a post together in the same directory. So far, I think it is a definite across the board improvement. But some things seem to simply not work.</p>
+<div id="describing-the-migration" class="section level2">
+<h2>Describing the migration</h2>
+<p>R was key to doing this. Turning every .Rmd file to a page bundle would have been quite hard if I had not had the ability to use R’s internal abilities to create directories and copy and move files to pull the original file name from the .Rmd, create a directory from that, and then copy that file to the needed directory and give it the name index.Rmd. Awesome!</p>
+</div>
+<div id="the-config.toml-and-the-like" class="section level2">
+<h2>The config.toml and the like</h2>
+<p>In my original website, there was only one configuation file. Now it has split into four parts; for blogdown, config.toml stays in root but three new files are created, languages, params, and menus.</p>
+</div>
+<div id="my-current-annoyance" class="section level2">
+<h2>My Current Annoyance</h2>
+<p>I cannot get the logo to work. I checked that my file is the right size, that it is in the right place, that all of the relevant calls are as they need be. I think the new version broke it. There is a bug for the mobile version but I think it is a bigger issue.</p>
+</div>
+</div>

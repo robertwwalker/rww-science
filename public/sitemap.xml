@@ -4,7 +4,67 @@
   
   <url>
     <loc>/</loc>
-    <lastmod>2020-01-31T03:07:35-08:00</lastmod>
+    <lastmod>2020-01-31T04:25:21-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/blogdown/</loc>
+    <lastmod>2020-01-31T04:04:39-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/blogdown/</loc>
+    <lastmod>2020-01-31T04:04:39-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/</loc>
+    <lastmod>2020-01-31T04:25:21-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/hugo/</loc>
+    <lastmod>2020-01-31T04:04:39-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/2020/01/31/mapping-san-francisco-trees/</loc>
+    <lastmod>2020-01-31T04:25:21-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/maps/</loc>
+    <lastmod>2020-01-31T04:25:21-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/</loc>
+    <lastmod>2020-01-31T04:25:21-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/tidytuesday/</loc>
+    <lastmod>2020-01-31T04:25:21-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/tidytuesday/</loc>
+    <lastmod>2020-01-31T04:25:21-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/tidyverse/</loc>
+    <lastmod>2020-01-31T04:25:21-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/tidyverse/</loc>
+    <lastmod>2020-01-31T04:25:21-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/2020/01/31/updating-hugo-and-academic/</loc>
+    <lastmod>2020-01-31T04:04:39-08:00</lastmod>
   </url>
   
   <url>
@@ -23,32 +83,7 @@
   </url>
   
   <url>
-    <loc>/categories/</loc>
-    <lastmod>2020-01-31T03:07:35-08:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/tags/r/</loc>
-    <lastmod>2020-01-31T03:07:35-08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/</loc>
-    <lastmod>2020-01-31T03:07:35-08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/tidytuesday/</loc>
-    <lastmod>2020-01-31T03:07:35-08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/categories/tidytuesday/</loc>
-    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/categories/tidyverse/</loc>
     <lastmod>2020-01-31T03:07:35-08:00</lastmod>
   </url>
   
@@ -63,22 +98,12 @@
   </url>
   
   <url>
-    <loc>/tags/maps/</loc>
-    <lastmod>2020-01-31T03:07:35-08:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/categories/r/</loc>
     <lastmod>2020-01-31T03:07:35-08:00</lastmod>
   </url>
   
   <url>
     <loc>/2019/12/19/simple-point-maps-in-r/</loc>
-    <lastmod>2020-01-31T03:07:35-08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/tidyverse/</loc>
     <lastmod>2020-01-31T03:07:35-08:00</lastmod>
   </url>
   
@@ -154,12 +179,12 @@
   
   <url>
     <loc>/tags/essex/</loc>
-    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
+    <lastmod>2020-01-31T03:32:11-08:00</lastmod>
   </url>
   
   <url>
     <loc>/2019/10/23/tribute-to-griffin-park/</loc>
-    <lastmod>2019-10-23T00:00:00+00:00</lastmod>
+    <lastmod>2020-01-31T03:32:11-08:00</lastmod>
   </url>
   
   <url>
@@ -578,7 +603,7 @@
   
   <url>
     <loc>/post/</loc>
-    <lastmod>2020-01-30T12:44:41-08:00</lastmod>
+    <lastmod>2020-01-31T03:32:11-08:00</lastmod>
   </url>
   
   <url>

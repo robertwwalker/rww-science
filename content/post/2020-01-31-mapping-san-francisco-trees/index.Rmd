@@ -1,0 +1,45 @@
+---
+title: Mapping San Francisco Trees
+author: Robert W. Walker
+date: '2020-01-31'
+slug: mapping-san-francisco-trees
+categories:
+  - tidyTuesday
+  - tidyverse
+tags:
+  - Maps
+  - tidyTuesday
+  - tidyverse
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2020-01-31T04:25:21-08:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+
+# Trees in San Francisco
+
+This week's data cover trees in San Francisco.
+
+```{r, warning=FALSE, message=FALSE}
+sf_trees <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-01-28/sf_trees.csv')
+library(tidyverse); library(ggmap); library(skimr)
+skim(sf_trees)
+```
+
+
+```{r}
+( My.Map <- ggmap(get_map("San Francisco, CA", zoom=12)) + geom_point(data=sf_trees, aes(x=longitude, y=latitude, color=legal_status, text=address), size=0.1, alpha=0.1) )
+```
+
+```{r, warning=FALSE, message=FALSE}
+library(plotly)
+ggplotly(My.Map)
+```
+
