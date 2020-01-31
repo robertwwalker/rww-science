@@ -1,0 +1,209 @@
+---
+title: Trump Tweet Word Clouds
+author: RWW
+date: '2018-12-18'
+slug: trump-tweet-word-clouds
+categories:
+  - tidyverse
+  - tidytext
+tags:
+  - tidyverse
+  - R Markdown
+  - tidytext
+header:
+  caption: ''
+  image: ''
+---
+
+<script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
+<script src="/rmarkdown-libs/pymjs/pym.v1.js"></script>
+<script src="/rmarkdown-libs/widgetframe-binding/widgetframe.js"></script>
+
+
+<div id="mining-twitter-data" class="section level1">
+<h1>Mining Twitter Data</h1>
+<p>Is rather easy. You have to arrange a developer account with Twitter and set up an app. After that, Twitter gives you access to a consumer key and secret and an access token and access secret. My tool of choice for this is <em>rtweet</em> because it automagically processes tweet elements and makes them easy to slice and dice. I also played with <code>twitteR</code> but it was harder to work with for what I wanted. The first section involves setting up a token for `<em>rtweet</em>.</p>
+<pre class="r"><code># Change the next four lines based on your own consumer_key, consume_secret, access_token, and access_secret. 
+token &lt;- create_token(
+  app = &quot;MyAppName&quot;,
+  consumer_key &lt;- &quot;CK&quot;,
+  consumer_secret &lt;- &quot;CS&quot;,
+  access_token &lt;- &quot;AT&quot;,
+  access_secret &lt;- &quot;AS&quot;)</code></pre>
+<p>Now I want to collect some tweets from a particular user’s timeline and look into them. For this example, I will use <code>@realDonaldTrump</code>.</p>
+<div id="who-does-trump-tweet-about" class="section level2">
+<h2>Who does Trump tweet about?</h2>
+<p>A cool post on sentiment analysis can be found <a href="http://dataaspirant.com/2018/03/22/twitter-sentiment-analysis-using-r/">here</a>. The first step is to grab his timeline. <code>rtweet</code> makes this quite easy. I will grab it and then save it in the code below so that I do not spam the API. I will get at the time series characteristics of his tweets and the sentiment stuff in a further analysis. For now, let me just show some wordclouds.</p>
+<pre class="r"><code>tml.djt &lt;- get_timeline(&quot;realDonaldTrump&quot;, n = 3200)
+save(tml.djt, file=&quot;../data/TMLS.RData&quot;)</code></pre>
+<p>I start by loading the tmls object that I created above. What does it look like?</p>
+<pre class="r"><code>library(wordcloud2)
+library(tidyverse)
+library(tidytext)
+library(rtweet)
+load(url(&quot;https://github.com/robertwwalker/academic-mymod/raw/master/data/TMLS.RData&quot;))
+names(tml.djt)</code></pre>
+<pre><code>##  [1] &quot;user_id&quot;                 &quot;status_id&quot;              
+##  [3] &quot;created_at&quot;              &quot;screen_name&quot;            
+##  [5] &quot;text&quot;                    &quot;source&quot;                 
+##  [7] &quot;display_text_width&quot;      &quot;reply_to_status_id&quot;     
+##  [9] &quot;reply_to_user_id&quot;        &quot;reply_to_screen_name&quot;   
+## [11] &quot;is_quote&quot;                &quot;is_retweet&quot;             
+## [13] &quot;favorite_count&quot;          &quot;retweet_count&quot;          
+## [15] &quot;hashtags&quot;                &quot;symbols&quot;                
+## [17] &quot;urls_url&quot;                &quot;urls_t.co&quot;              
+## [19] &quot;urls_expanded_url&quot;       &quot;media_url&quot;              
+## [21] &quot;media_t.co&quot;              &quot;media_expanded_url&quot;     
+## [23] &quot;media_type&quot;              &quot;ext_media_url&quot;          
+## [25] &quot;ext_media_t.co&quot;          &quot;ext_media_expanded_url&quot; 
+## [27] &quot;ext_media_type&quot;          &quot;mentions_user_id&quot;       
+## [29] &quot;mentions_screen_name&quot;    &quot;lang&quot;                   
+## [31] &quot;quoted_status_id&quot;        &quot;quoted_text&quot;            
+## [33] &quot;quoted_created_at&quot;       &quot;quoted_source&quot;          
+## [35] &quot;quoted_favorite_count&quot;   &quot;quoted_retweet_count&quot;   
+## [37] &quot;quoted_user_id&quot;          &quot;quoted_screen_name&quot;     
+## [39] &quot;quoted_name&quot;             &quot;quoted_followers_count&quot; 
+## [41] &quot;quoted_friends_count&quot;    &quot;quoted_statuses_count&quot;  
+## [43] &quot;quoted_location&quot;         &quot;quoted_description&quot;     
+## [45] &quot;quoted_verified&quot;         &quot;retweet_status_id&quot;      
+## [47] &quot;retweet_text&quot;            &quot;retweet_created_at&quot;     
+## [49] &quot;retweet_source&quot;          &quot;retweet_favorite_count&quot; 
+## [51] &quot;retweet_retweet_count&quot;   &quot;retweet_user_id&quot;        
+## [53] &quot;retweet_screen_name&quot;     &quot;retweet_name&quot;           
+## [55] &quot;retweet_followers_count&quot; &quot;retweet_friends_count&quot;  
+## [57] &quot;retweet_statuses_count&quot;  &quot;retweet_location&quot;       
+## [59] &quot;retweet_description&quot;     &quot;retweet_verified&quot;       
+## [61] &quot;place_url&quot;               &quot;place_name&quot;             
+## [63] &quot;place_full_name&quot;         &quot;place_type&quot;             
+## [65] &quot;country&quot;                 &quot;country_code&quot;           
+## [67] &quot;geo_coords&quot;              &quot;coords_coords&quot;          
+## [69] &quot;bbox_coords&quot;             &quot;status_url&quot;             
+## [71] &quot;name&quot;                    &quot;location&quot;               
+## [73] &quot;description&quot;             &quot;url&quot;                    
+## [75] &quot;protected&quot;               &quot;followers_count&quot;        
+## [77] &quot;friends_count&quot;           &quot;listed_count&quot;           
+## [79] &quot;statuses_count&quot;          &quot;favourites_count&quot;       
+## [81] &quot;account_created_at&quot;      &quot;verified&quot;               
+## [83] &quot;profile_url&quot;             &quot;profile_expanded_url&quot;   
+## [85] &quot;account_lang&quot;            &quot;profile_banner_url&quot;     
+## [87] &quot;profile_background_url&quot;  &quot;profile_image_url&quot;</code></pre>
+<p>I want to first get rid of retweets to render President Trump in his own voice.</p>
+<pre class="r"><code>DJTDF &lt;- tml.djt %&gt;% filter(is_retweet==FALSE)</code></pre>
+<p>With just his tweets, a few things can be easily accomplished. Who does he mention?</p>
+<pre class="r"><code>library(wordcloud)</code></pre>
+<pre><code>## Loading required package: RColorBrewer</code></pre>
+<pre class="r"><code>MNTDJT &lt;- DJTDF %&gt;% filter(!is.na(mentions_screen_name)) %&gt;% select(mentions_screen_name)
+Ments &lt;- as.character(unlist(MNTDJT))
+TMents &lt;- data.frame(table(Ments))
+pal &lt;- brewer.pal(8,&quot;Spectral&quot;)
+wordcloud(TMents$Ments,TMents$Freq, colors=pal)</code></pre>
+<p><img src="/post/2018-12-18-trump-tweet-word-clouds/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>That’s interesting. But that is twitter accounts. That is far less interesting that his actual text. I want to look at words and bigrams for this segment.</p>
+</div>
+<div id="what-does-trump-tweet-about" class="section level2">
+<h2>What does Trump tweet about?</h2>
+<p>Some more stuff from <a href="https://stackoverflow.com/questions/31348453/how-do-i-clean-twitter-data-in-r">stack overflow</a>. There is quite a bit of code in here. I simply wrote a function that takes an input character string and cleans it up. Uncomment the various components and pipe them. The sequencing is important and I found this to get everything that I wanted.</p>
+<pre class="r"><code>library(RColorBrewer)
+TDF &lt;- DJTDF %&gt;% select(text)
+# TDF contains the text of tweets.
+library(stringr)
+tweet_cleaner &lt;- function(text) {
+  temp1 &lt;- str_replace_all(text, &quot;&amp;amp&quot;, &quot;&quot;) %&gt;% 
+    str_replace_all(., &quot;https://t+&quot;, &quot;&quot;) %&gt;%
+    str_replace_all(.,&quot;@[a-z,A-Z]*&quot;,&quot;&quot;)
+#    str_replace_all(., &quot;[[:punct:]]&quot;, &quot;&quot;)  
+#    str_replace_all(., &quot;[[:digit:]]&quot;, &quot;&quot;) %&gt;%
+#    str_replace_all(., &quot;[ \t]{2,}&quot;, &quot;&quot;) %&gt;%
+#    str_replace_all(., &quot;^\\s+|\\s+$&quot;, &quot;&quot;)  %&gt;%
+#    str_replace_all(., &quot; &quot;,&quot; &quot;) %&gt;%
+#    str_replace_all(., &quot;http://t.co/[a-z,A-Z,0-9]*{8}&quot;,&quot;&quot;)
+#    str_replace_all(.,&quot;RT @[a-z,A-Z]*: &quot;,&quot;&quot;) %&gt;% 
+#    str_replace_all(.,&quot;#[a-z,A-Z]*&quot;,&quot;&quot;)
+  return(temp1)
+}
+clean_tweets &lt;- data.frame(text=sapply(1:dim(TDF)[[1]], function(x) {tweet_cleaner(TDF[x,&quot;text&quot;])}))
+clean_tweets$text &lt;- as.character(clean_tweets$text)
+Trumps.Words &lt;- clean_tweets %&gt;% unnest_tokens(., word, text) %&gt;% anti_join(stop_words, &quot;word&quot;)
+TTW &lt;- table(Trumps.Words)
+TTW &lt;- TTW[order(TTW, decreasing = T)]
+TTW &lt;- data.frame(TTW)
+names(TTW) &lt;- c(&quot;word&quot;,&quot;freq&quot;)
+wordcloud(TTW$word, TTW$freq)</code></pre>
+<p><img src="/post/2018-12-18-trump-tweet-word-clouds/index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>Well, that is kinda cool. Now, I want to do a bit more with it using more complicated word combinations.</p>
+</div>
+<div id="the-wonders-of-tidytext" class="section level2">
+<h2>The Wonders of tidytext</h2>
+<p>The <em>tidytext</em> <a href="https://www.tidytextmining.com/ngrams.html">section on n-grams</a> is great. I will start with a tweet identifier – something I should have deployed long ago – before parsing these; I will not need this now but it will be encessary when the sentiment stuff comes around.</p>
+<pre class="r"><code>library(tidyr)
+CT &lt;- clean_tweets %&gt;% mutate(tweetno= row_number())
+DJT2G &lt;- clean_tweets %&gt;% unnest_tokens(bigram, text, token = &quot;ngrams&quot;, n=2)
+
+bigrams_separated &lt;- DJT2G %&gt;%
+  separate(bigram, c(&quot;word1&quot;, &quot;word2&quot;), sep = &quot; &quot;)
+
+bigrams_filtered &lt;- bigrams_separated %&gt;%
+  filter(!word1 %in% stop_words$word) %&gt;%
+  filter(!word2 %in% stop_words$word)
+
+# new bigram counts:
+bigram_counts &lt;- bigrams_filtered %&gt;% 
+  count(word1, word2, sort = TRUE)
+
+bigram_counts</code></pre>
+<pre><code>## # A tibble: 10,514 x 3
+##    word1   word2           n
+##    &lt;chr&gt;   &lt;chr&gt;       &lt;int&gt;
+##  1 fake    news          160
+##  2 witch   hunt          128
+##  3 north   korea          84
+##  4 white   house          71
+##  5 news    media          56
+##  6 total   endorsement    49
+##  7 law     enforcement    47
+##  8 crooked hillary        43
+##  9 supreme court          39
+## 10 border  security       38
+## # … with 10,504 more rows</code></pre>
+<pre class="r"><code>bigrams_united &lt;- bigrams_filtered %&gt;%
+  unite(bigram, word1, word2, sep = &quot; &quot;)
+
+my.df &lt;- data.frame(table(bigrams_united))
+my.df &lt;- my.df[order(my.df$Freq, decreasing=TRUE),]
+my.df &lt;- my.df[c(1:500),]
+head(my.df)</code></pre>
+<pre><code>##          bigrams_united Freq
+## 3599          fake news  160
+## 10268        witch hunt  128
+## 6583        north korea   84
+## 10220       white house   71
+## 6517         news media   56
+## 9375  total endorsement   49</code></pre>
+<p>With that, we have the data for the bigram cloud.</p>
+<pre class="r"><code>library(wordcloud2)
+wordcloud2(my.df, color=&quot;random-light&quot;, backgroundColor = &quot;black&quot;)</code></pre>
+<p>After seeing a few competing renditions, I prefer <code>wordcloud2</code>. One thing to be careful about is scaling. In this case, the most frequent bigram is missing because the ratio makes it too large to fit. With size smaller, it can be made to show. It appears that embedding multiple of these in one post does not render. I will stick with the one correct one.</p>
+<pre class="r"><code>library(wordcloud2)
+hhww &lt;- wordcloud2(my.df, color=&quot;random-light&quot;, backgroundColor = &quot;black&quot;, size = 0.5)
+library(widgetframe)</code></pre>
+<pre><code>## Loading required package: htmlwidgets</code></pre>
+<pre class="r"><code>frameWidget(hhww, width=600)</code></pre>
+<div id="htmlwidget-1" style="width:600px;height:480px;" class="widgetframe html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/post/2018-12-18-trump-tweet-word-clouds/index_files/figure-html//widgets/widget_jj.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+<p>Getting this to work with frame widgets is tricky. I started something below but cannot seem to make it work so I am constrained to one wordcloud2 per document because they rely on underlying html rendering.</p>
+<pre class="r"><code>library(htmlwidgets)
+library(webshot)
+library(widgetframe)
+hw1 &lt;- wordcloud2(my.df, color=&quot;random-light&quot;, backgroundColor = &quot;black&quot;, size = 0.5)
+frameWidget(hw1, width=600)</code></pre>
+<p>I think that works quite nicely. The use of jpg for shapes has not worked for me. Nor has letterCloud. I found some code on github that will supposedly solve this but it does not seem to work either. It is supposed to render as an htmlwidget but something about that seems not to work properly.</p>
+<pre class="r"><code>library(htmlwidgets)
+library(webshot)
+library(widgetframe)
+Ments.Tab &lt;- data.frame(table(Ments))
+Ments.Tab &lt;- Ments.Tab[order(Ments.Tab$Freq, decreasing=TRUE),]
+my.df.short &lt;- my.df[c(1:40),]
+hw1 &lt;- letterCloud(Ments.Tab, &quot;@&quot;, size=4, color=&#39;random-light&#39;)
+frameWidget(hw1, width=600)</code></pre>
+</div>
+</div>

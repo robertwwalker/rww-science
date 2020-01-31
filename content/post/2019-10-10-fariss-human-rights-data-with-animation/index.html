@@ -1,0 +1,546 @@
+---
+title: Fariss Human Rights Data with Animation
+author: RWW
+date: '2019-10-10'
+slug: fariss-human-rights-data-with-animation
+categories:
+  - tidyverse
+  - animation
+tags:
+  - gganimate
+  - R
+  - tidyverse
+header:
+  caption: ''
+  image: ''
+  preview: yes
+---
+
+
+
+<div id="fariss-data" class="section level2">
+<h2>Fariss Data</h2>
+<p>Is neat and complete.</p>
+<pre class="r"><code>load(&quot;FarissHRData.RData&quot;)
+skimr::skim(HR.Data)</code></pre>
+<table>
+<caption><span id="tab:cars">Table 1: </span>Data summary</caption>
+<tbody>
+<tr class="odd">
+<td align="left">Name</td>
+<td align="left">HR.Data</td>
+</tr>
+<tr class="even">
+<td align="left">Number of rows</td>
+<td align="left">11717</td>
+</tr>
+<tr class="odd">
+<td align="left">Number of columns</td>
+<td align="left">27</td>
+</tr>
+<tr class="even">
+<td align="left">_______________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Column type frequency:</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">factor</td>
+<td align="left">1</td>
+</tr>
+<tr class="odd">
+<td align="left">numeric</td>
+<td align="left">26</td>
+</tr>
+<tr class="even">
+<td align="left">________________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Group variables</td>
+<td align="left">None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: factor</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="left">ordered</th>
+<th align="right">n_unique</th>
+<th align="left">top_counts</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">COW_YEAR</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="left">FALSE</td>
+<td align="right">11717</td>
+<td align="left">100: 1, 100: 1, 100: 1, 100: 1</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">p0</th>
+<th align="right">p25</th>
+<th align="right">p50</th>
+<th align="right">p75</th>
+<th align="right">p100</th>
+<th align="left">hist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">X</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">5859.72</td>
+<td align="right">3382.90</td>
+<td align="right">1.00</td>
+<td align="right">2930.00</td>
+<td align="right">5860.00</td>
+<td align="right">8789.00</td>
+<td align="right">11718.00</td>
+<td align="left">▇▇▇▇▇</td>
+</tr>
+<tr class="even">
+<td align="left">YEAR</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">1984.78</td>
+<td align="right">20.44</td>
+<td align="right">1946.00</td>
+<td align="right">1968.00</td>
+<td align="right">1987.00</td>
+<td align="right">2002.00</td>
+<td align="right">2017.00</td>
+<td align="left">▅▆▆▇▇</td>
+</tr>
+<tr class="odd">
+<td align="left">CIRI</td>
+<td align="right">6787</td>
+<td align="right">0.42</td>
+<td align="right">390.52</td>
+<td align="right">170.85</td>
+<td align="right">101.00</td>
+<td align="right">242.00</td>
+<td align="right">380.00</td>
+<td align="right">530.00</td>
+<td align="right">698.00</td>
+<td align="left">▇▇▇▇▇</td>
+</tr>
+<tr class="even">
+<td align="left">COW</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">461.21</td>
+<td align="right">254.40</td>
+<td align="right">2.00</td>
+<td align="right">255.00</td>
+<td align="right">461.00</td>
+<td align="right">663.00</td>
+<td align="right">990.00</td>
+<td align="left">▆▆▇▆▃</td>
+</tr>
+<tr class="odd">
+<td align="left">DISAP</td>
+<td align="right">6798</td>
+<td align="right">0.42</td>
+<td align="right">1.68</td>
+<td align="right">0.62</td>
+<td align="right">0.00</td>
+<td align="right">2.00</td>
+<td align="right">2.00</td>
+<td align="right">2.00</td>
+<td align="right">2.00</td>
+<td align="left">▁▁▂▁▇</td>
+</tr>
+<tr class="even">
+<td align="left">KILL</td>
+<td align="right">6800</td>
+<td align="right">0.42</td>
+<td align="right">1.33</td>
+<td align="right">0.76</td>
+<td align="right">0.00</td>
+<td align="right">1.00</td>
+<td align="right">2.00</td>
+<td align="right">2.00</td>
+<td align="right">2.00</td>
+<td align="left">▃▁▅▁▇</td>
+</tr>
+<tr class="odd">
+<td align="left">POLPRIS</td>
+<td align="right">6793</td>
+<td align="right">0.42</td>
+<td align="right">1.13</td>
+<td align="right">0.84</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">1.00</td>
+<td align="right">2.00</td>
+<td align="right">2.00</td>
+<td align="left">▆▁▅▁▇</td>
+</tr>
+<tr class="even">
+<td align="left">TORT</td>
+<td align="right">6794</td>
+<td align="right">0.42</td>
+<td align="right">0.79</td>
+<td align="right">0.75</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">1.00</td>
+<td align="right">1.00</td>
+<td align="right">2.00</td>
+<td align="left">▇▁▇▁▃</td>
+</tr>
+<tr class="odd">
+<td align="left">Amnesty</td>
+<td align="right">6140</td>
+<td align="right">0.48</td>
+<td align="right">2.70</td>
+<td align="right">1.12</td>
+<td align="right">1.00</td>
+<td align="right">2.00</td>
+<td align="right">3.00</td>
+<td align="right">3.00</td>
+<td align="right">5.00</td>
+<td align="left">▃▇▇▅▂</td>
+</tr>
+<tr class="even">
+<td align="left">State</td>
+<td align="right">4802</td>
+<td align="right">0.59</td>
+<td align="right">2.39</td>
+<td align="right">1.16</td>
+<td align="right">1.00</td>
+<td align="right">1.00</td>
+<td align="right">2.00</td>
+<td align="right">3.00</td>
+<td align="right">5.00</td>
+<td align="left">▇▇▇▃▂</td>
+</tr>
+<tr class="odd">
+<td align="left">HRW</td>
+<td align="right">11271</td>
+<td align="right">0.04</td>
+<td align="right">3.03</td>
+<td align="right">1.11</td>
+<td align="right">1.00</td>
+<td align="right">2.00</td>
+<td align="right">3.00</td>
+<td align="right">4.00</td>
+<td align="right">5.00</td>
+<td align="left">▂▅▇▅▂</td>
+</tr>
+<tr class="even">
+<td align="left">hathaway</td>
+<td align="right">9484</td>
+<td align="right">0.19</td>
+<td align="right">2.74</td>
+<td align="right">1.15</td>
+<td align="right">1.00</td>
+<td align="right">2.00</td>
+<td align="right">3.00</td>
+<td align="right">3.00</td>
+<td align="right">5.00</td>
+<td align="left">▃▆▇▅▂</td>
+</tr>
+<tr class="odd">
+<td align="left">ITT</td>
+<td align="right">10258</td>
+<td align="right">0.12</td>
+<td align="right">3.51</td>
+<td align="right">2.03</td>
+<td align="right">1.00</td>
+<td align="right">1.00</td>
+<td align="right">4.00</td>
+<td align="right">6.00</td>
+<td align="right">6.00</td>
+<td align="left">▇▃▃▃▆</td>
+</tr>
+<tr class="even">
+<td align="left">genocide</td>
+<td align="right">1261</td>
+<td align="right">0.89</td>
+<td align="right">0.03</td>
+<td align="right">0.16</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">1.00</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">rummel</td>
+<td align="right">6077</td>
+<td align="right">0.48</td>
+<td align="right">0.20</td>
+<td align="right">0.40</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">1.00</td>
+<td align="left">▇▁▁▁▂</td>
+</tr>
+<tr class="even">
+<td align="left">massive_repression</td>
+<td align="right">5541</td>
+<td align="right">0.53</td>
+<td align="right">0.05</td>
+<td align="right">0.21</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">1.00</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">executions</td>
+<td align="right">7613</td>
+<td align="right">0.35</td>
+<td align="right">0.10</td>
+<td align="right">0.30</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">1.00</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">negative_sanctions</td>
+<td align="right">7613</td>
+<td align="right">0.35</td>
+<td align="right">0.69</td>
+<td align="right">0.46</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">1.00</td>
+<td align="right">1.00</td>
+<td align="right">1.00</td>
+<td align="left">▃▁▁▁▇</td>
+</tr>
+<tr class="odd">
+<td align="left">mass_killing</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">0.13</td>
+<td align="right">0.34</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">1.00</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">killing_low</td>
+<td align="right">6176</td>
+<td align="right">0.47</td>
+<td align="right">45.34</td>
+<td align="right">2306.65</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">171441.00</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">killing_best</td>
+<td align="right">11397</td>
+<td align="right">0.03</td>
+<td align="right">1855.35</td>
+<td align="right">27941.40</td>
+<td align="right">25.00</td>
+<td align="right">42.00</td>
+<td align="right">99.50</td>
+<td align="right">251.25</td>
+<td align="right">500000.00</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">killing_high</td>
+<td align="right">11397</td>
+<td align="right">0.03</td>
+<td align="right">3043.11</td>
+<td align="right">44714.85</td>
+<td align="right">25.00</td>
+<td align="right">62.00</td>
+<td align="right">149.00</td>
+<td align="right">397.75</td>
+<td align="right">800000.00</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">killing_present</td>
+<td align="right">6176</td>
+<td align="right">0.47</td>
+<td align="right">0.06</td>
+<td align="right">0.23</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">1.00</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">id</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">5859.00</td>
+<td align="right">3382.55</td>
+<td align="right">1.00</td>
+<td align="right">2930.00</td>
+<td align="right">5859.00</td>
+<td align="right">8788.00</td>
+<td align="right">11717.00</td>
+<td align="left">▇▇▇▇▇</td>
+</tr>
+<tr class="odd">
+<td align="left">theta_mean</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">0.05</td>
+<td align="right">1.52</td>
+<td align="right">-3.77</td>
+<td align="right">-0.99</td>
+<td align="right">-0.07</td>
+<td align="right">0.96</td>
+<td align="right">5.14</td>
+<td align="left">▂▇▇▂▁</td>
+</tr>
+<tr class="even">
+<td align="left">theta_sd</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">0.36</td>
+<td align="right">0.19</td>
+<td align="right">0.18</td>
+<td align="right">0.23</td>
+<td align="right">0.27</td>
+<td align="right">0.47</td>
+<td align="right">1.31</td>
+<td align="left">▇▂▁▁▁</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code># HR.Data$year &lt;- as.Date(HR.Data$YEAR, format = &quot;%Y&quot;)</code></pre>
+</div>
+<div id="what-do-we-have" class="section level2">
+<h2>What do we have?</h2>
+<p><img src="/post/2019-10-10-fariss-human-rights-data-with-animation/index_files/figure-html/pressure-1.png" width="672" /></p>
+<pre class="r"><code>library(gganimate)
+p1 &lt;- p1 + transition_reveal(YEAR) # this is kind of a hack, the year isn&#39;t right
+animate(p1, nframes = 200)</code></pre>
+<p><img src="/post/2019-10-10-fariss-human-rights-data-with-animation/index_files/figure-html/unnamed-chunk-1-1.gif" /><!-- --></p>
+<pre class="r"><code>COW.Codes &lt;- distinct(COW.Codes) # Duplicates exist in the COW Code master file
+COW.Codes$Continent &lt;- cut(COW.Codes$CCode, breaks = c(0, 100, 200, 400, 600, 700, 900,1000), labels = c(&quot;N. America&quot;, &quot;S. America&quot;, &quot;Europe&quot;, &quot;Africa&quot;, &quot;Med/Mid&quot;, &quot;Asia&quot;, &quot;Oceania&quot;), right = FALSE)
+HR.Data.Named &lt;- left_join(HR.Data, COW.Codes, by = c(&quot;COW&quot; = &quot;CCode&quot;))</code></pre>
+<p>Now I have something to work with that is labeled.</p>
+<pre class="r"><code>( ggplot(HR.Data.Named) + aes(x=YEAR, y=theta_mean, color=as.factor(StateAbb), label = StateAbb) + geom_line(alpha = 0.3)  +  scale_color_viridis_d(guide=FALSE) + labs(x=&quot;Year&quot;, y=&quot;Human Rights Dynamic Factor Score&quot;, title = &quot;The Evolution of Human Rights with Normed Scores&quot;, caption = &quot;See Fariss and Schnakenberg (2014)&quot; ) + theme_economist_white() + facet_wrap(vars(Continent)) -&gt; p2 )</code></pre>
+<p><img src="/post/2019-10-10-fariss-human-rights-data-with-animation/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<pre class="r"><code>p2</code></pre>
+<p><img src="/post/2019-10-10-fariss-human-rights-data-with-animation/index_files/figure-html/unnamed-chunk-3-2.png" width="672" /></p>
+<p>Now let’s look at that.</p>
+<pre class="r"><code>p2 &lt;- p2 + transition_reveal(YEAR)
+animate(p2, nframes = 200)</code></pre>
+<p><img src="/post/2019-10-10-fariss-human-rights-data-with-animation/index_files/figure-html/unnamed-chunk-4-1.gif" /><!-- --></p>
+</div>
+<div id="north-america" class="section level2">
+<h2>North America</h2>
+<pre class="r"><code>HR.Data.Named %&gt;% filter(COW &lt; 100) %&gt;% ggplot(.) + aes(x=YEAR, y=theta_mean, color=as.factor(StateAbb), label = StateAbb) + geom_line(alpha = 0.3) +   scale_color_viridis_d(guide=FALSE) + labs(x=&quot;Year&quot;, y=&quot;Human Rights Dynamic Factor Score&quot;, title = &quot;The Evolution of Human Rights with Normed Scores&quot;, caption = &quot;See Fariss and Schnakenberg (2014)&quot;, subtitle = &quot;North America&quot;) + theme_economist_white()</code></pre>
+<p><img src="/post/2019-10-10-fariss-human-rights-data-with-animation/index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<div id="an-animation-for-north-america" class="section level3">
+<h3>An Animation for North America</h3>
+<pre class="r"><code>HR.Data.Named %&gt;% filter(COW &lt; 100) %&gt;% ggplot(.) + aes(x=YEAR, y=theta_mean, color=as.factor(StateAbb), label = StateNme) + geom_label_repel(x=2010, size=2, direction = &quot;y&quot;, hjust = 1, nudge_x = 20) + geom_line(alpha = 0.3) +   scale_color_viridis_d(guide=FALSE) + labs(x=&quot;Year&quot;, y=&quot;Human Rights Dynamic Factor Score&quot;, title = &quot;The Evolution of Human Rights with Normed Scores&quot;, caption = &quot;See Fariss and Schnakenberg (2014)&quot;, subtitle = &quot;North America&quot;) + theme_economist_white() + transition_reveal(YEAR) -&gt; NA.p
+animate(NA.p, nframes=200)</code></pre>
+<p><img src="/post/2019-10-10-fariss-human-rights-data-with-animation/index_files/figure-html/unnamed-chunk-6-1.gif" /><!-- --></p>
+</div>
+</div>
+<div id="south-america" class="section level2">
+<h2>South America</h2>
+<pre class="r"><code>HR.Data.Named %&gt;% filter(COW &lt; 200 &amp; COW &gt; 100) %&gt;% ggplot(.) + aes(x=YEAR, y=theta_mean, color=as.factor(StateAbb), label = StateNme) + geom_line(alpha = 0.3) +   scale_color_viridis_d(guide=FALSE) + labs(x=&quot;Year&quot;, y=&quot;Human Rights Dynamic Factor Score&quot;, title = &quot;The Evolution of Human Rights with Normed Scores&quot;, caption = &quot;See Fariss and Schnakenberg (2014)&quot;, subtitle = &quot;South America&quot;) + theme_economist()</code></pre>
+<p><img src="/post/2019-10-10-fariss-human-rights-data-with-animation/index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<div id="animation-for-south-america" class="section level3">
+<h3>Animation for South America</h3>
+<pre class="r"><code>HR.Data.Named %&gt;% filter(COW &lt; 200 &amp; COW &gt;= 100) %&gt;% ggplot(.) + aes(x=YEAR, y=theta_mean, color=as.factor(StateAbb), label = StateNme) + geom_label_repel(x=2010, size=2, direction = &quot;y&quot;, hjust = 1, nudge_x = 20) + geom_line(alpha = 0.3) +   scale_color_viridis_d(guide=FALSE) + labs(x=&quot;Year&quot;, y=&quot;Human Rights Dynamic Factor Score&quot;, title = &quot;The Evolution of Human Rights with Normed Scores&quot;, caption = &quot;See Fariss and Schnakenberg (2014)&quot;, subtitle = &quot;South America&quot;) + theme_economist() + transition_reveal(YEAR) -&gt; SA.p
+animate(SA.p, nframes=200)</code></pre>
+<p><img src="/post/2019-10-10-fariss-human-rights-data-with-animation/index_files/figure-html/unnamed-chunk-8-1.gif" /><!-- --></p>
+</div>
+<div id="europe" class="section level3">
+<h3>Europe</h3>
+<pre class="r"><code>HR.Data.Named %&gt;% filter(COW &lt; 400 &amp; COW &gt;= 200) %&gt;% ggplot(.) + aes(x=YEAR, y=theta_mean, color=as.factor(StateAbb), label = StateNme) + geom_line(alpha = 0.3) +   scale_color_viridis_d(guide=FALSE) + labs(x=&quot;Year&quot;, y=&quot;Human Rights Dynamic Factor Score&quot;, title = &quot;The Evolution of Human Rights with Normed Scores&quot;, caption = &quot;See Fariss and Schnakenberg (2014)&quot;, subtitle = &quot;Europe&quot;) + theme_economist()</code></pre>
+<p><img src="/post/2019-10-10-fariss-human-rights-data-with-animation/index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+</div>
+<div id="animate-europe" class="section level3">
+<h3>Animate Europe</h3>
+<pre class="r"><code>HR.Data.Named %&gt;% filter(COW &lt; 400 &amp; COW &gt;= 200) %&gt;% ggplot(.) + aes(x=YEAR, y=theta_mean, color=as.factor(StateAbb), label = StateNme) + geom_label_repel(x=2010, size=2, direction = &quot;y&quot;, hjust = 1, nudge_x = 20) + geom_line(alpha = 0.3) +   scale_color_viridis_d(guide=FALSE) + labs(x=&quot;Year&quot;, y=&quot;Human Rights Dynamic Factor Score&quot;, title = &quot;The Evolution of Human Rights with Normed Scores&quot;, caption = &quot;See Fariss and Schnakenberg (2014)&quot;, subtitle = &quot;Europe&quot;) + theme_economist() + transition_reveal(YEAR) -&gt; EU.p
+animate(EU.p, nframes=200)</code></pre>
+<p><img src="/post/2019-10-10-fariss-human-rights-data-with-animation/index_files/figure-html/unnamed-chunk-10-1.gif" /><!-- --></p>
+</div>
+</div>
+<div id="africa" class="section level2">
+<h2>Africa</h2>
+<pre class="r"><code>HR.Data.Named %&gt;% filter(COW &lt; 600 &amp; COW &gt;= 400) %&gt;% ggplot(.) + aes(x=YEAR, y=theta_mean, color=as.factor(StateAbb), label = StateNme) + geom_line(alpha = 0.3) +   scale_color_viridis_d(guide=FALSE) + labs(x=&quot;Year&quot;, y=&quot;Human Rights Dynamic Factor Score&quot;, title = &quot;The Evolution of Human Rights with Normed Scores&quot;, caption = &quot;See Fariss and Schnakenberg (2014)&quot;, subtitle = &quot;Africa&quot;) + theme_economist()</code></pre>
+<p><img src="/post/2019-10-10-fariss-human-rights-data-with-animation/index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<div id="animate-africa" class="section level3">
+<h3>Animate Africa</h3>
+<pre class="r"><code>HR.Data.Named %&gt;% filter(COW &lt; 600 &amp; COW &gt;= 400) %&gt;% ggplot(.) + aes(x=YEAR, y=theta_mean, color=as.factor(StateAbb), label = StateNme) + geom_label_repel(x=2010, size=2, direction = &quot;y&quot;, hjust = 1, nudge_x = 20) + geom_line(alpha = 0.3) +   scale_color_viridis_d(guide=FALSE) + labs(x=&quot;Year&quot;, y=&quot;Human Rights Dynamic Factor Score&quot;, title = &quot;The Evolution of Human Rights with Normed Scores&quot;, caption = &quot;See Fariss and Schnakenberg (2014)&quot;, subtitle = &quot;Africa&quot;) + theme_economist() + transition_reveal(YEAR) -&gt; AF.p
+animate(EU.p, nframes=200)</code></pre>
+<p><img src="/post/2019-10-10-fariss-human-rights-data-with-animation/index_files/figure-html/unnamed-chunk-12-1.gif" /><!-- --></p>
+</div>
+</div>
+<div id="middle-east-north-africa" class="section level2">
+<h2>Middle East / North Africa</h2>
+<pre class="r"><code>HR.Data.Named %&gt;% filter(COW &lt; 700 &amp; COW &gt;= 600) %&gt;% ggplot(.) + aes(x=YEAR, y=theta_mean, color=as.factor(StateAbb), label = StateNme) + geom_line(alpha = 0.3) +   scale_color_viridis_d(guide=FALSE) + labs(x=&quot;Year&quot;, y=&quot;Human Rights Dynamic Factor Score&quot;, title = &quot;The Evolution of Human Rights with Normed Scores&quot;, caption = &quot;See Fariss and Schnakenberg (2014)&quot;, subtitle = &quot;Middle East and North Africa&quot;) + theme_economist()</code></pre>
+<p><img src="/post/2019-10-10-fariss-human-rights-data-with-animation/index_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<div id="animate-mid-east-north-africa" class="section level3">
+<h3>Animate Mid East / North Africa</h3>
+<pre class="r"><code>HR.Data.Named %&gt;% filter(COW &lt; 700 &amp; COW &gt;= 600) %&gt;% ggplot(.) + aes(x=YEAR, y=theta_mean, color=as.factor(StateAbb), label = StateNme) + geom_label_repel(x=2010, size=2, direction = &quot;y&quot;, hjust = 1, nudge_x = 20) + geom_line(alpha = 0.3) +   scale_color_viridis_d(guide=FALSE) + labs(x=&quot;Year&quot;, y=&quot;Human Rights Dynamic Factor Score&quot;, title = &quot;The Evolution of Human Rights with Normed Scores&quot;, caption = &quot;See Fariss and Schnakenberg (2014)&quot;, subtitle = &quot;Middle East and North Africa&quot;) + theme_economist() + transition_reveal(YEAR) -&gt; MENA.p
+animate(MENA.p, nframes=200)</code></pre>
+<p><img src="/post/2019-10-10-fariss-human-rights-data-with-animation/index_files/figure-html/unnamed-chunk-14-1.gif" /><!-- --></p>
+</div>
+</div>
+<div id="asia" class="section level2">
+<h2>Asia</h2>
+<pre class="r"><code>HR.Data.Named %&gt;% filter(COW &lt; 900 &amp; COW &gt;= 700) %&gt;% ggplot(.) + aes(x=YEAR, y=theta_mean, color=as.factor(StateAbb), label = StateNme) + geom_line(alpha = 0.3) +   scale_color_viridis_d(guide=FALSE) + labs(x=&quot;Year&quot;, y=&quot;Human Rights Dynamic Factor Score&quot;, title = &quot;The Evolution of Human Rights with Normed Scores&quot;, caption = &quot;See Fariss and Schnakenberg (2014)&quot;, subtitle = &quot;Asia&quot;) + theme_economist()</code></pre>
+<p><img src="/post/2019-10-10-fariss-human-rights-data-with-animation/index_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<div id="animate-asia" class="section level3">
+<h3>Animate Asia</h3>
+<pre class="r"><code>HR.Data.Named %&gt;% filter(COW &lt; 900 &amp; COW &gt;= 700) %&gt;% ggplot(.) + aes(x=YEAR, y=theta_mean, color=as.factor(StateAbb), label = StateNme) + geom_label_repel(x=2015, size=2, direction = &quot;y&quot;, hjust = 1, nudge_x = 20) + geom_line(alpha = 0.3) +   scale_color_viridis_d(guide=FALSE) + labs(x=&quot;Year&quot;, y=&quot;Human Rights Dynamic Factor Score&quot;, title = &quot;The Evolution of Human Rights with Normed Scores&quot;, caption = &quot;See Fariss and Schnakenberg (2014)&quot;, subtitle = &quot;Asia&quot;) + theme_economist() + transition_reveal(YEAR) -&gt; Asia.p
+animate(Asia.p, nframes=200)</code></pre>
+<p><img src="/post/2019-10-10-fariss-human-rights-data-with-animation/index_files/figure-html/unnamed-chunk-16-1.gif" /><!-- --></p>
+</div>
+</div>
+<div id="oceania" class="section level2">
+<h2>Oceania</h2>
+<pre class="r"><code>HR.Data.Named %&gt;% filter(COW  &gt;= 900) %&gt;% ggplot(.) + aes(x=YEAR, y=theta_mean, color=as.factor(StateAbb), label = StateNme) + geom_line(alpha = 0.3) +   scale_color_viridis_d(guide=FALSE) + labs(x=&quot;Year&quot;, y=&quot;Human Rights Dynamic Factor Score&quot;, title = &quot;The Evolution of Human Rights with Normed Scores&quot;, caption = &quot;See Fariss and Schnakenberg (2014)&quot;, subtitle = &quot;Oceania&quot;) + theme_economist()</code></pre>
+<p><img src="/post/2019-10-10-fariss-human-rights-data-with-animation/index_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<div id="animate-oceania" class="section level3">
+<h3>Animate Oceania</h3>
+<pre class="r"><code>HR.Data.Named %&gt;% filter(COW &gt;= 900) %&gt;% ggplot(.) + aes(x=YEAR, y=theta_mean, color=as.factor(StateAbb), label = StateNme) + geom_label_repel(x=2010, size=2, direction = &quot;y&quot;, hjust = 1, nudge_x = 20) + geom_line(alpha = 0.3) +   scale_color_viridis_d(guide=FALSE) + labs(x=&quot;Year&quot;, y=&quot;Human Rights Dynamic Factor Score&quot;, title = &quot;The Evolution of Human Rights with Normed Scores&quot;, caption = &quot;See Fariss and Schnakenberg (2014)&quot;, subtitle = &quot;Oceania&quot;) + theme_economist() + transition_reveal(YEAR) -&gt; OC.p
+animate(OC.p, nframes=200)</code></pre>
+<p><img src="/post/2019-10-10-fariss-human-rights-data-with-animation/index_files/figure-html/unnamed-chunk-18-1.gif" /><!-- --></p>
+</div>
+</div>

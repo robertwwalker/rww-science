@@ -1,0 +1,178 @@
+---
+title: tidyTuesday Measles
+author: RWW
+date: '2019-12-16'
+slug: tidytuesday-measles
+categories:
+  - tidyverse
+  - R
+  - animation
+tags:
+  - tidyTuesday
+  - R
+  - gganimate
+header:
+  caption: ''
+  image: ''
+  preview: yes
+---
+
+
+
+<div id="tidytuesday-december-10-2019" class="section level2">
+<h2>tidyTuesday: December 10, 2019</h2>
+<p>Replicating plots from <a href="https://simplystatistics.org/2019/08/28/you-can-replicate-almost-any-plot-with-ggplot2/">simplystatistics</a>. One nice twist is the development of a tidytuesdayR package to grab the necessary data in an easy way. You can install the package via github. I will also use <code>fiftystater</code> and <code>ggflags</code>.</p>
+<pre><code>devtools::install_github(&quot;thebioengineer/tidytuesdayR&quot;)
+devtools::install_github(&quot;ellisp/ggflags&quot;)
+devtools::install_github(&quot;wmurphyrd/fiftystater&quot;)</code></pre>
+<pre class="r"><code>tuesdata &lt;- tidytuesdayR::tt_load(2019, week = 50)</code></pre>
+<pre><code>## --- Downloading #TidyTuesday Information for 2019-12-10 ----</code></pre>
+<pre><code>## --- Identified 4 files available for download ----</code></pre>
+<pre><code>## --- Downloading files ---</code></pre>
+<pre><code>## Warning in identify_delim(temp_file): Not able to detect delimiter for the file.
+## Defaulting to ` `.</code></pre>
+<pre><code>## Warning: 1 parsing failure.
+## row col  expected    actual                                   file
+##   8  -- 1 columns 2 columns &#39;/tmp/Rtmplxherr/file6286376cc749.csv&#39;</code></pre>
+<pre><code>## --- Download complete ---</code></pre>
+<pre class="r"><code>library(here)</code></pre>
+<pre><code>## here() starts at /home/rob/Sandbox/awful</code></pre>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
+<pre><code>## ✓ ggplot2 3.2.1     ✓ purrr   0.3.3
+## ✓ tibble  2.1.3     ✓ dplyr   0.8.3
+## ✓ tidyr   1.0.2     ✓ stringr 1.4.0
+## ✓ readr   1.3.1     ✓ forcats 0.4.0</code></pre>
+<pre><code>## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(ggplot2)
+library(ggflags)
+library(countrycode)
+
+dat &lt;- tibble(country = toupper(c(&quot;US&quot;, &quot;Italy&quot;, &quot;Canada&quot;, &quot;UK&quot;, &quot;Japan&quot;, &quot;Germany&quot;, &quot;France&quot;, &quot;Russia&quot;)),
+              count = c(3.2, 0.71, 0.5, 0.1, 0, 0.2, 0.1, 0),
+              label = c(as.character(c(3.2, 0.71, 0.5, 0.1, 0, 0.2, 0.1)), &quot;No Data&quot;),
+              code = c(&quot;us&quot;, &quot;it&quot;, &quot;ca&quot;, &quot;gb&quot;, &quot;jp&quot;, &quot;de&quot;, &quot;fr&quot;, &quot;ru&quot;))
+
+dat %&gt;% mutate(country = reorder(country, -count)) %&gt;%
+  ggplot(aes(country, count, label = label)) +
+  geom_bar(stat = &quot;identity&quot;, fill = &quot;darkred&quot;) +
+  geom_text(nudge_y = 0.2, color = &quot;darkred&quot;, size = 5) +
+  geom_flag(y = -.5, aes(country = code), size = 12) +
+  scale_y_continuous(breaks = c(0, 1, 2, 3, 4), limits = c(0,4)) +   
+  geom_text(aes(6.25, 3.8, label = &quot;Source UNODC Homicide Statistics&quot;)) + 
+  ggtitle(toupper(&quot;Homicide Per 100,000 in G-8 Countries&quot;)) + 
+  xlab(&quot;&quot;) + 
+  ylab(&quot;# of gun-related homicides\nper 100,000 people&quot;) +
+  ggthemes::theme_economist() +
+  theme(axis.text.x = element_text(size = 8, vjust = -16),
+        axis.ticks.x = element_blank(),
+        axis.line.x = element_blank(),
+        plot.margin = unit(c(1,1,1,1), &quot;cm&quot;)) -&gt; plot2
+library(gganimate)
+plot2 + transition_manual(code, cumulative=TRUE)</code></pre>
+<pre><code>## nframes and fps adjusted to match transition</code></pre>
+<p><img src="/post/2019-12-16-tidytuesday-measles/index_files/figure-html/cars-1.gif" /><!-- --></p>
+<p>Just an animation of the original. The next one took some playing but ended up exactly how I wanted it.</p>
+</div>
+<div id="diseases" class="section level1">
+<h1>Diseases</h1>
+<pre class="r"><code>the_disease &lt;- &quot;Measles&quot;
+dat &lt;- tuesdata$diseases %&gt;%
+  filter(disease == the_disease) %&gt;%
+  mutate(rate = count / population * 10000 * 52 / weeks_reporting) 
+jet.colors &lt;- colorRampPalette(c(&quot;#F0FFFF&quot;, &quot;cyan&quot;, &quot;#007FFF&quot;, &quot;yellow&quot;, &quot;#FFBF00&quot;, &quot;orange&quot;, &quot;red&quot;, &quot;#7F0000&quot;), bias = 2.25)
+my.dat1 &lt;- dat %&gt;% mutate(state = reorder(state, desc(state)))
+my.dat2 &lt;- dat %&gt;% mutate(state = reorder(state, desc(state)), year2 = year)
+  ggplot(my.dat1, aes(x=year, y=state, fill = rate)) +
+  geom_tile(color = &quot;white&quot;, size = 0.35, alpha = 0.2) +
+  scale_x_continuous(expand = c(0,0)) +
+  scale_fill_gradientn(colors = jet.colors(16), na.value = &#39;white&#39;) +
+  theme_minimal() + guides(alpha=FALSE, rate=FALSE) +
+  theme(panel.grid = element_blank()) +
+        coord_cartesian(clip = &#39;off&#39;) +
+        ggtitle(the_disease, subtitle = &quot;{current_frame}&quot;) +
+        ylab(&quot;&quot;) +
+        xlab(&quot;&quot;) +  
+        theme(legend.position = &quot;bottom&quot;, text = element_text(size = 8)) + 
+        annotate(geom = &quot;text&quot;, x = 1963, y = 50.5, label = &quot;Vaccine introduced&quot;, size = 3, hjust = 0) +
+  geom_tile(data = my.dat2, aes(x=year, y=state, fill = rate)) + geom_vline(xintercept = 1963, col = &quot;black&quot;) -&gt; plotD
+library(gganimate)
+plotD &lt;- plotD + transition_manual(year2, cumulative=TRUE)
+# anim_save(here(&quot;static&quot;,&quot;img&quot;,&quot;tidyTuesday.gif&quot;), animation = plotD)
+plotD</code></pre>
+<pre><code>## nframes and fps adjusted to match transition</code></pre>
+<p><img src="/post/2019-12-16-tidytuesday-measles/index_files/figure-html/unnamed-chunk-2-1.gif" /><!-- --></p>
+</div>
+<div id="now-a-map" class="section level1">
+<h1>Now a map</h1>
+<pre class="r"><code>library(fiftystater)
+data(&quot;fifty_states&quot;) # this line is optional due to lazy data loading
+head(fifty_states)</code></pre>
+<pre><code>##        long      lat order  hole piece      id     group
+## 1 -85.07007 31.98070     1 FALSE     1 alabama Alabama.1
+## 2 -85.11515 31.90742     2 FALSE     1 alabama Alabama.1
+## 3 -85.13557 31.85488     3 FALSE     1 alabama Alabama.1
+## 4 -85.13156 31.78381     4 FALSE     1 alabama Alabama.1
+## 5 -85.13017 31.77885     5 FALSE     1 alabama Alabama.1
+## 6 -85.11529 31.73157     6 FALSE     1 alabama Alabama.1</code></pre>
+<pre class="r"><code>my.dat1 &lt;- dat &lt;- tuesdata$diseases %&gt;%
+  filter(disease == the_disease) %&gt;%
+  mutate(rate = count / population * 10000 * 52 / weeks_reporting) %&gt;% mutate(state = tolower(state))
+data(&quot;fifty_states&quot;) # this line is optional due to lazy data loading
+crimes &lt;- data.frame(state = tolower(rownames(USArrests)), USArrests)
+crimes2 &lt;- left_join(crimes, my.dat1)</code></pre>
+<pre><code>## Joining, by = &quot;state&quot;</code></pre>
+<pre><code>## Warning: Column `state` joining factor and character vector, coercing into
+## character vector</code></pre>
+<pre class="r"><code># map_id creates the aesthetic mapping to the state name column in your data
+p &lt;- ggplot(crimes2, aes(map_id = state)) + 
+  # map points to the fifty_states shape data
+  geom_map(aes(fill = rate), map = fifty_states) + 
+  expand_limits(x = fifty_states$long, y = fifty_states$lat) +
+  coord_map() +
+  scale_x_continuous(breaks = NULL) + 
+  scale_y_continuous(breaks = NULL) +
+  scale_fill_gradientn(colors = jet.colors(16), na.value = &#39;white&#39;) +
+  labs(x = &quot;&quot;, y = &quot;&quot;, title = the_disease, subtitle = &quot;{current_frame}&quot;) +
+  theme(legend.position = &quot;bottom&quot;, 
+        panel.background = element_blank())
+p1 &lt;- p + transition_manual(year, cumulative = FALSE)
+# anim_save(here(&quot;static&quot;,&quot;img&quot;,&quot;animMap.gif&quot;), animation = p1)
+p1</code></pre>
+<pre><code>## nframes and fps adjusted to match transition</code></pre>
+<p><img src="/post/2019-12-16-tidytuesday-measles/index_files/figure-html/unnamed-chunk-3-1.gif" /><!-- --></p>
+<p>I found a post on <a href="https://stackoverflow.com/questions/55967894/combining-two-animated-plot-into-one-gif-mp4">stackoverflow</a> to assist in putting them together.</p>
+<pre class="r"><code>appendGIFs &lt;- function(gif1, gif2, gifout=&quot;result.gif&quot;, vertically=FALSE, 
+                       delay=20, convert = &quot;/usr/bin/convert&quot;){
+  currentdir &lt;- getwd()
+  on.exit(setwd(currentdir))
+  tmpdir &lt;- tempdir()
+  invisible(file.remove(list.files(tmpdir, full.names = TRUE, pattern = &quot;*.gif$&quot;)))
+  file.copy(gif1, to = file.path(tmpdir, &quot;gif1.gif&quot;))
+  file.copy(gif2, to = file.path(tmpdir, &quot;gif2.gif&quot;))
+  setwd(tmpdir)
+  command &lt;- sprintf(&quot;%s gif1.gif -coalesce gif1-%%05d.gif&quot;, convert)
+  system(command)
+  command &lt;- sprintf(&quot;%s gif2.gif -coalesce gif2-%%05d.gif&quot;, convert)
+  system(command)
+  nframes &lt;- length(list.files(tmpdir, pattern = &quot;^gif1-.*gif$&quot;))
+  for(i in 1:nframes){
+    command &lt;- sprintf(&quot;%s gif1-%05d.gif gif2-%05d.gif %sappend gif-%05d.gif&quot;, 
+                       convert, i-1, i-1, ifelse(vertically, &quot;-&quot;, &quot;+&quot;), i)
+    system(command)
+  }
+  command &lt;- sprintf(&quot;%s -loop 0 -delay %d gif-*.gif result.gif&quot;, convert, delay)
+  system(command)
+  file.copy(&quot;result.gif&quot;, file.path(currentdir, gifout), overwrite=TRUE)
+}
+# appendGIFs(here(&quot;static&quot;,&quot;img&quot;,&quot;tidyTuesday.gif&quot;),here(&quot;static&quot;,&quot;img&quot;,&quot;mapAnim.gif&quot;), gifout = here(&quot;static&quot;,&quot;img&quot;,&quot;result.gif&quot;))</code></pre>
+<blockquote class="twitter-tweet">
+<p lang="en" dir="ltr">
+Wow, you can side-by-side gganimates with imagemagick. That was fun to put together. <a href="https://twitter.com/hashtag/rstats?src=hash&amp;ref_src=twsrc%5Etfw">#rstats</a> <a href="https://twitter.com/hashtag/tidyTuesday?src=hash&amp;ref_src=twsrc%5Etfw">#tidyTuesday</a> An adaptation of measles and a map… <a href="https://t.co/FPOgAOQS84">pic.twitter.com/FPOgAOQS84</a>
+</p>
+— Robert Walker (<span class="citation">@PieRatio</span>) <a href="https://twitter.com/PieRatio/status/1206508341750456320?ref_src=twsrc%5Etfw">December 16, 2019</a>
+</blockquote>
+<script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>
+</div>

@@ -1,0 +1,121 @@
+---
+title: 'Financial Analysis of SEC Reports in R'
+author: 'Robert W. Walker'
+date: '2019-10-29'
+slug: finreportr-is-awesome
+categories:
+  - R
+tags:
+  - finance
+header:
+  caption: ''
+  image: ''
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+```
+
+## The Package: `finreport`
+
+The key tool to facilitate the financial analysis of companies that file regular SEC reports of certain forms is `finreportr`. To make use of it, we must first have R install it and dependencies. To install it, `install.packages("finreportr", dependencies=TRUE)`.
+
+## The Commands
+
+The first command is `CompanyInfo()`.
+
+```{r LCI}
+library(finreportr)
+CompanyInfo("JPM")
+
+```
+
+`CompanyInfo()` gives the basics on the company from the SEC including addresses, incorporation details, and numeric codes.
+
+The next command is `AnnualReports()`. It returns a list of the reports with the type and the accession number of the actual document.
+
+## JP Morgan [JPM]
+
+```{r}
+AnnualReports("JPM")
+```
+
+The analysis works on three financial reports: (1) `GetIncome()`, (2) `GetCashFlow()`, and (3) `GetBalanceSheet()`. Each takes as argument the ticker and the year. First, a look at the disclaimer.
+
+![Disclaimer](https://github.com/robertwwalker/DADMStuff/raw/master/finreportr.png)
+
+### Income Statements
+
+```{r}
+JPM.IS <- GetIncome("JPM", 2015)
+```
+
+### Balance Sheets
+
+```{r}
+JPM.BS <- GetBalanceSheet("JPM", 2015)
+```
+
+### Statement of Cash Flows
+
+```{r}
+JPM.SCF <- GetCashFlow("JPM", 2015)
+```
+
+## Rendering a Useful Tool for Excel
+
+I want to develop a tool to export the data that we have grabbed. How might we do that? This will involve a reshape that will require the reshape2 package. This can be done relatively systematically. The *reshape* command will take the `Metric` and `Units` as rows and place the `Amount` in columns defined by the `endDate`. The command is `dcast` and it takes an input file and restructures data according to a fixed rule. Here, I will have a `Metric` and `Units` for each of multiple entries defined by `endDate` with distinct `Amount` for each `endDate`. First, I will generate a separate version of each statement.
+
+### Reshape: Rendering the Data in Wide Format
+
+```{r}
+library(reshape2)
+JPM.IS.W <- dcast(JPM.IS, Metric + Units ~ endDate, value.var="Amount")
+JPM.SCF.W <- dcast(JPM.SCF, Metric + Units ~ endDate, value.var="Amount")
+JPM.BS.W <- dcast(JPM.BS, Metric + Units ~ endDate, value.var="Amount")
+```
+
+## Writing a file to Excel
+
+Now I want to write the file to Excel and combine them. I will use `xlsx`.
+
+```{r}
+library(openxlsx) #load the package
+write.xlsx(list(JPM.IS.W,JPM.BS.W,JPM.SCF.W), file = "JPM-2015.xlsx")
+```
+
+## The Coup de Grace for Excel Users
+
+The last set of code can automate this. I will create a little function to do it all, taking as input, the ticker and year.
+
+```{r}
+getSEC <- function(ticker, year) {
+options(scipen=12)
+library(finreportr)
+library(reshape2)
+library(openxlsx)
+SEC.IS <- GetIncome(ticker, 2015)
+SEC.IS$Amount <- as.numeric(SEC.IS$Amount)
+SEC.BS <- GetBalanceSheet(ticker, 2015)
+SEC.BS$Amount <- as.numeric(SEC.BS$Amount)
+SEC.SCF <- GetCashFlow(ticker, 2015)
+SEC.SCF$Amount <- as.numeric(SEC.SCF$Amount)
+SEC.IS.W <- dcast(SEC.IS, Metric + Units ~ endDate, value.var="Amount", fun.aggregate=mean)
+SEC.SCF.W <- dcast(SEC.SCF, Metric + Units ~ endDate, value.var="Amount", fun.aggregate=mean)
+SEC.BS.W <- dcast(SEC.BS, Metric + Units ~ endDate, value.var="Amount", fun.aggregate=mean)
+write.xlsx(list(SEC.IS.W,SEC.BS.W,SEC.SCF.W), file = paste(ticker,"-",year,".xlsx", sep=""))
+return(list(BS=SEC.BS,IS=SEC.IS,SCF=SEC.SCF))
+}
+```
+
+Does it work?
+
+```{r}
+# Try the function on Target
+TGT <- getSEC("TGT", 2015)
+# Try the function on Mondelez
+MDLZ <- getSEC("MDLZ", 2015)
+```
+
+It does not always work. Some statements are incomplete and the file fail.  Then we have to go back and figure it out.

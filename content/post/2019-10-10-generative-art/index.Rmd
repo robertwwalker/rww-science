@@ -1,0 +1,113 @@
+---
+title: Generative aRt
+author: RWW
+date: '2019-10-10'
+slug: generative-art
+categories:
+  - R art
+  - simulation
+tags:
+  - R
+  - plot
+  - art
+header:
+  caption: ''
+  image: ''
+  preview: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message=FALSE)
+```
+
+# `mathart`
+
+A cool package for math generated art that I just discovered.  Here is the install code for it
+
+```
+install.packages(c("devtools", "mapproj", "tidyverse", "ggforce", "Rcpp"))
+devtools::install_github("marcusvolz/mathart")
+devtools::install_github("marcusvolz/ggart")
+devtools::install_github("gsimchoni/kandinsky")
+```
+
+## Load some libraries
+
+```{r}
+library(mathart)
+library(ggart)
+library(ggforce)
+library(Rcpp)
+library(tidyverse)
+```
+
+
+## Generate some Art?
+
+This is quite fun to do.
+
+```{r Art1, eval=FALSE}
+set.seed(12341)
+
+terminals <- data.frame(x = runif(10, 0, 10000), y = runif(10, 0, 10000))
+
+df <- 1:10000 %>%
+  map_df(~weiszfeld(terminals, c(points$x[.], points$y[.])), .id = "id")
+
+p <- ggplot() +
+  geom_point(aes(x, y), points, size = 1, alpha = 0.25, color = "skyblue") +
+  geom_point(aes(x, y), terminals, size = 5, alpha = 1, color="purple") +
+  geom_line(aes(x, y, group = id), df, colour = "blue", size = 0.5, alpha = 0.03) +
+  coord_equal() +
+  xlim(0, 10000) +
+  ylim(0, 10000) +
+  theme_blankcanvas(margin_cm = 0)
+
+ggsave("weiszfeld.png", p, width = 20, height = 20, units = "in")
+```
+
+![Weiszfeld](https://rww.science/img/art/weiszfeld.png)
+
+
+```{r LAttr, eval=FALSE}
+df <- lorenz_attractor(a=18, b=8/3, c=26, n=1000000)
+
+p <- ggplot() +
+  geom_path(aes(x, z), df, alpha = 0.15, size = 0.03, color="purple") +
+  coord_equal() +
+  xlim(-25, 25) + ylim(2.5, 52.5) +
+  theme_blankcanvas(margin_cm = 0)
+
+ggsave("LAttr.png", p, width = 20, height = 20, units = "cm")
+```
+
+![Lorenz](https://rww.science/img/art/LAttr.png)
+
+```{r LAttr2, eval=FALSE}
+df <- lorenz_attractor(a=3, b = 3, x0 = -1, y0 = 1, n=1000000)
+p <- ggplot() +
+  geom_path(aes(x, z), df, alpha = 0.5, size = 0.1, color="pink") +
+  coord_equal() +
+  xlim(-25, 25) + ylim(-40, 45) +
+  theme_blankcanvas(margin_cm = 0)
+ggsave("LAttr2.png", p, width = 20, height = 20, units = "cm")
+```
+
+![Lorenz2](https://rww.science/img/art/LAttr2.png)
+
+## Bob Ross as a Kandinsky
+
+One interesting thing that I found is the ability to build a Kandinsky out of data.  There was a tidyTuesday on Bob Ross paintings/episodes; nothing could be better than to Kandinsky Bob Ross.
+
+```{r}
+library(kandinsky)
+bob_ross <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-08-06/bob-ross.csv")
+kandinsky(bob_ross)
+```
+
+That's kinda lame.  Let's try visits to US National Parks.
+
+```{r}
+park_visits <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-09-17/national_parks.csv")
+kandinsky(park_visits)
+```

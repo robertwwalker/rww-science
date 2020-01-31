@@ -1,0 +1,70 @@
+---
+title: 'Philadelphia Parking Tickets: a tidyTuesday'
+author: RWW
+date: '2019-12-09'
+slug: philadelphia-parking-tickets-a-tidytuesday
+categories:
+  - R
+  - animation
+  - tidyverse
+tags:
+  - tidyTuesday
+  - R
+  - Maps
+header:
+  caption: ''
+  image: ''
+  preview: yes
+---
+
+
+## Philadelphia Map
+
+Use `ggmap` for the base layer.
+
+```{r, message=FALSE, warning=FALSE}
+library(ggmap); library(osmdata); library(tidyverse)
+PHI <- get_map(getbb("Philadelphia, PA"), maptype = "stamen", zoom=12)
+```
+
+## Get the Tickets Data
+
+TidyTuesday covers 1.26 million parking tickets in Philadelphia.
+
+```{r}
+tickets <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-12-03/tickets.csv")
+```
+
+## Two Lines of Code Left
+
+```{r, warning=FALSE, message=FALSE}
+library(lubridate); library(ggthemes)
+tickets <- tickets %>% mutate(Day = wday(issue_datetime, label=TRUE)) # use lubridate to extract the day of the month.
+Philly.Tix <- ggmap(PHI) + stat_density2d(data=tickets, aes(x=lon, y=lat, fill=..level.., alpha=..level..), bins=30, size=0.01, geom="polygon", contour=TRUE) + scale_fill_viridis_c() + guides(alpha=FALSE) + labs(title="Philly Tickets", fill="Ticket Frequency") + theme_map() + theme(legend.position = "right")
+Philly.Tix
+```
+
+## An Animation
+
+
+```{r, eval=FALSE}
+library(gganimate) 
+Philly.Tix <- ggmap(PHI) + stat_density2d(data=tickets, aes(x=lon, y=lat, fill=stat(level), alpha=stat(level)), bins=30, size=0.01, geom="polygon", contour=TRUE) + geom_point(y=39.8942978,x=-75.1945002, col="pink", size=4) + scale_fill_viridis_c() + guides(alpha=FALSE) + labs(title="Philly Tickets", fill="Ticket Frequency") + theme_map() + theme(legend.position = "right") 
+Philly.Tix + labs(subtitle = "{closest_state}") + transition_states(Day, transition_length = 3, state_length = 5, wrap = TRUE)
+```
+
+## Facets
+
+```{r, eval=FALSE}
+Philly.Tix <- ggmap(PHI) + stat_density2d(data=tickets, aes(x=lon, y=lat, fill=stat(nlevel), alpha=stat(nlevel), group=issuing_agency), bins=30, size=0.01, geom="polygon", contour=TRUE) + scale_fill_viridis_c() + geom_point(y=39.8942978,x=-75.1945002, col="pink") + guides(alpha=FALSE) + labs(title="Philly Tickets", fill="Ticket Frequency") + theme_map() + theme(legend.position = "right") + facet_wrap(vars(issuing_agency))
+Philly.Tix + labs(subtitle = "{closest_state}") + transition_states(Day, transition_length = 3, state_length = 5, wrap = TRUE)
+```
+
+
+## A Dot Plot
+
+```{r}
+Philly.Tix.Dots <- ggmap(PHI) + geom_point(data=tickets, aes(x=lon, y=lat, color=issuing_agency, size=fine/100000), alpha=0.02) + scale_fill_viridis_d() + guides(alpha=FALSE) + guides(colour = guide_legend(override.aes = list(alpha = 1))) + labs(title="Philly Tickets", color="Issuer", size="Fine Amount") + theme_map() + theme(legend.position = "right") 
+# + labs(title = "{closest_state}") + transition_states(Day, transition_length = 3, state_length = 1, wrap = TRUE)
+Philly.Tix.Dots + facet_wrap(vars(Day))
+```

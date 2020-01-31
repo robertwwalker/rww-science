@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>GSM Data | rww.science</title>
+    <link>/tags/gsm-data/</link>
+      <atom:link href="/tags/gsm-data/index.xml" rel="self" type="application/rss+xml" />
+    <description>GSM Data</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© 2018</copyright><lastBuildDate>Fri, 25 Oct 2019 00:00:00 +0000</lastBuildDate>
+    <image>
+      <url>/img/portrait.jpg</url>
+      <title>GSM Data</title>
+      <link>/tags/gsm-data/</link>
+    </image>
+    
+    <item>
+      <title>A Quick and Dirty Introduction to R</title>
+      <link>/r/a-quick-and-dirty-introduction-to-r/</link>
+      <pubDate>Fri, 25 Oct 2019 00:00:00 +0000</pubDate>
+      <guid>/r/a-quick-and-dirty-introduction-to-r/</guid>
+      <description>
+
+
+&lt;div id=&#34;some-data&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Some Data&lt;/h1&gt;
+&lt;p&gt;I will start with some inline data.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(tidyverse); library(skimr);
+Support.Times &amp;lt;- structure(list(Screened = c(26.9, 28.4, 23.9, 21.8, 22.4, 25.9, 
+26.5, 20, 23.7, 23.7, 22.6, 19.4, 27.3, 25.3, 27.7, 25.3, 28.4, 
+24.2, 20.4, 29.6, 27, 23.6, 18.3, 28.1, 20.5, 24.1, 27.2, 26.4, 
+24.5, 25.6, 17.9, 23.5, 25.3, 20.2, 26.3, 27.9), Not.Screened = c(24.7, 
+19.1, 21, 17.8, 22.8, 24.4, 17.9, 20.5, 20, 26.2, 14.5, 22.4, 
+21.1, 24.3, 22, 24.3, 23.9, 19.6, 23.8, 29.2, 19.7, 20.9, 25.2, 
+22.5, 23.1, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA)), class = &amp;quot;data.frame&amp;quot;, row.names = c(NA, -36L))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now I will use the tidyverse to stack it. This can also be done with &lt;code&gt;stack(Support.Times)&lt;/code&gt;.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;stack(Support.Times) %&amp;gt;% drop_na()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Using the &lt;code&gt;tidyverse&lt;/code&gt;, the new data &lt;code&gt;SSTimes&lt;/code&gt; will stack the data using pivot longer into two variables that I will name &lt;code&gt;Self.Screen&lt;/code&gt; and &lt;code&gt;Call.Time&lt;/code&gt; to store the stacked data. The final command drops the missing data. Then I will group them and skim them.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;SSTimes &amp;lt;- Support.Times %&amp;gt;% pivot_longer(., c(Screened,Not.Screened), names_to = &amp;quot;Self.Screen&amp;quot;, values_to = &amp;quot;Call.Time&amp;quot;) %&amp;gt;% drop_na()
+SSTimes %&amp;gt;% group_by(Self.Screen) %&amp;gt;% skim()&lt;/code&gt;&lt;/pre&gt;
+&lt;table&gt;
+&lt;caption&gt;&lt;span id=&#34;tab:unnamed-chunk-2&#34;&gt;Table 1: &lt;/span&gt;Data summary&lt;/caption&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Name&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Piped data&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Number of rows&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;61&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Number of columns&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;_______________________&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Column type frequency:&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;numeric&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;________________________&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Group variables&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Self.Screen&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;Variable type: numeric&lt;/strong&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;left&#34;&gt;skim_variable&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;Self.Screen&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;n_missing&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;complete_rate&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;mean&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;sd&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p0&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p25&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p50&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p75&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p100&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;hist&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Call.Time&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Not.Screened&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;22.04&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3.11&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;14.5&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;20.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;22.4&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;24.30&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;29.2&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▁▅▇▇▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Call.Time&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Screened&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;24.44&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3.08&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;17.9&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;22.55&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;24.9&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;26.92&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;29.6&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▃▃▆▇▅&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;So I have 25 observations that are not screened and 36 that are screened. What does it look like?&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggplot(SSTimes, aes(x=Self.Screen, y=Call.Time, fill=Self.Screen)) + geom_violin(alpha = 0.2) + scale_fill_discrete(guide=FALSE) + labs(title = &amp;quot;Self Screen and Non-Self Screen Call Times&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2019-10-25-a-quick-and-dirty-introduction-to-r/index_files/figure-html/unnamed-chunk-3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Here is a picture of the distributions of the two means.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;gplots::plotmeans(Call.Time~Self.Screen, data=SSTimes, n.label=FALSE, ci.label=TRUE, ylim=c(20,27))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2019-10-25-a-quick-and-dirty-introduction-to-r/index_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;What does the t-test look like?&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;t.test(Support.Times$Not.Screened, Support.Times$Screened)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## 
+##  Welch Two Sample t-test
+## 
+## data:  Support.Times$Not.Screened and Support.Times$Screened
+## t = -2.9793, df = 51.512, p-value = 0.004399
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -4.0216630 -0.7841148
+## sample estimates:
+## mean of x mean of y 
+##  22.03600  24.43889&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;t.test(Call.Time~Self.Screen, data=SSTimes)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## 
+##  Welch Two Sample t-test
+## 
+## data:  Call.Time by Self.Screen
+## t = -2.9793, df = 51.512, p-value = 0.004399
+## alternative hypothesis: true difference in means is not equal to 0
+## 95 percent confidence interval:
+##  -4.0216630 -0.7841148
+## sample estimates:
+## mean in group Not.Screened     mean in group Screened 
+##                   22.03600                   24.43889&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;It is worth noting that R stores a bunch of stuff. For example, it stores the standard error of the difference and that is worth looking at in this case; the standard error that describes the difference in the averages is 0.8065242.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Resample.Times &amp;lt;- ResampleProps::ResampleDiffMeans(Support.Times$Screened,Support.Times$Not.Screened)
+sd(Resample.Times)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] 0.8092464&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

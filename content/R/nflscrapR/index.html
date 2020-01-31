@@ -1,0 +1,10715 @@
+---
+title: NFL ScrapR
+author: RWW
+date: '2019-04-19'
+slug: nflscrapR-test
+categories:
+  - tidyverse
+  - R
+tags:
+  - R
+header:
+  caption: ''
+  image: ''
+  preview: yes
+---
+
+<script src="/rmarkdown-libs/kePrint/kePrint.js"></script>
+
+
+<div id="scraping-nfl-data-with-nflscrapr" class="section level1">
+<h1>Scraping NFL data with <code>nflscrapr</code></h1>
+<p>The <code>nflscrapR</code> package is designed to make data on NFL games more easily available. To install the package, we need to grab it from github.</p>
+<pre><code>devtools::install_github(repo = &quot;maksimhorowitz/nflscrapR&quot;)</code></pre>
+<p>The github page for <a href="https://github.com/maksimhorowitz/nflscrapR">nflscrapR</a> is quite informative. It has a lot of useful insight for working with the data; the set itself is quite large.</p>
+<div id="getting-some-data" class="section level2">
+<h2>Getting Some Data</h2>
+<p>Following the guide to the package on GitHub, let me try their example.</p>
+<pre><code>library(nflscrapR)
+all_2018_games &lt;- scrape_game_ids(2018) # Default is regular season</code></pre>
+<p>I saved a local copy of it to work with; this is the 2018 season.</p>
+<pre class="r"><code>library(emo)
+library(tidyverse)
+library(kableExtra)
+library(nflscrapR)
+library(RCurl)
+all_2018_games &lt;- readRDS(url(&quot;https://github.com/robertwwalker/academic-mymod/raw/master/data/NFLGames2018.rds&quot;))
+all_2018_games %&gt;% select(week, game_id, home_team, home_score, away_team, away_score) %&gt;% 
+    kable(format = &quot;html&quot;) %&gt;% kable_styling() %&gt;% scroll_box(width = &quot;600px&quot;, height = &quot;500px&quot;)</code></pre>
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:500px; overflow-x: scroll; width:600px; ">
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+week
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+game_id
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+home_team
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+home_score
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+away_team
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+away_score
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+2018090600
+</td>
+<td style="text-align:left;">
+PHI
+</td>
+<td style="text-align:right;">
+18
+</td>
+<td style="text-align:left;">
+ATL
+</td>
+<td style="text-align:right;">
+12
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+2018090900
+</td>
+<td style="text-align:left;">
+BAL
+</td>
+<td style="text-align:right;">
+47
+</td>
+<td style="text-align:left;">
+BUF
+</td>
+<td style="text-align:right;">
+3
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+2018090907
+</td>
+<td style="text-align:left;">
+NYG
+</td>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:left;">
+JAX
+</td>
+<td style="text-align:right;">
+20
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+2018090906
+</td>
+<td style="text-align:left;">
+NO
+</td>
+<td style="text-align:right;">
+40
+</td>
+<td style="text-align:left;">
+TB
+</td>
+<td style="text-align:right;">
+48
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+2018090905
+</td>
+<td style="text-align:left;">
+NE
+</td>
+<td style="text-align:right;">
+27
+</td>
+<td style="text-align:left;">
+HOU
+</td>
+<td style="text-align:right;">
+20
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+2018090904
+</td>
+<td style="text-align:left;">
+MIN
+</td>
+<td style="text-align:right;">
+24
+</td>
+<td style="text-align:left;">
+SF
+</td>
+<td style="text-align:right;">
+16
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+2018090903
+</td>
+<td style="text-align:left;">
+MIA
+</td>
+<td style="text-align:right;">
+27
+</td>
+<td style="text-align:left;">
+TEN
+</td>
+<td style="text-align:right;">
+20
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+2018090902
+</td>
+<td style="text-align:left;">
+IND
+</td>
+<td style="text-align:right;">
+23
+</td>
+<td style="text-align:left;">
+CIN
+</td>
+<td style="text-align:right;">
+34
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+2018090901
+</td>
+<td style="text-align:left;">
+CLE
+</td>
+<td style="text-align:right;">
+21
+</td>
+<td style="text-align:left;">
+PIT
+</td>
+<td style="text-align:right;">
+21
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+2018090908
+</td>
+<td style="text-align:left;">
+LAC
+</td>
+<td style="text-align:right;">
+28
+</td>
+<td style="text-align:left;">
+KC
+</td>
+<td style="text-align:right;">
+38
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+2018090911
+</td>
+<td style="text-align:left;">
+DEN
+</td>
+<td style="text-align:right;">
+27
+</td>
+<td style="text-align:left;">
+SEA
+</td>
+<td style="text-align:right;">
+24
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+2018090910
+</td>
+<td style="text-align:left;">
+CAR
+</td>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:left;">
+DAL
+</td>
+<td style="text-align:right;">
+8
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+2018090909
+</td>
+<td style="text-align:left;">
+ARI
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;">
+WAS
+</td>
+<td style="text-align:right;">
+24
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+2018090912
+</td>
+<td style="text-align:left;">
+GB
+</td>
+<td style="text-align:right;">
+24
+</td>
+<td style="text-align:left;">
+CHI
+</td>
+<td style="text-align:right;">
+23
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+2018091000
+</td>
+<td style="text-align:left;">
+DET
+</td>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:left;">
+NYJ
+</td>
+<td style="text-align:right;">
+48
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+2018091001
+</td>
+<td style="text-align:left;">
+OAK
+</td>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:left;">
+LA
+</td>
+<td style="text-align:right;">
+33
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+2018091300
+</td>
+<td style="text-align:left;">
+CIN
+</td>
+<td style="text-align:right;">
+34
+</td>
+<td style="text-align:left;">
+BAL
+</td>
+<td style="text-align:right;">
+23
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+2018091600
+</td>
+<td style="text-align:left;">
+ATL
+</td>
+<td style="text-align:right;">
+31
+</td>
+<td style="text-align:left;">
+CAR
+</td>
+<td style="text-align:right;">
+24
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+2018091608
+</td>
+<td style="text-align:left;">
+WAS
+</td>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:left;">
+IND
+</td>
+<td style="text-align:right;">
+21
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+2018091607
+</td>
+<td style="text-align:left;">
+TEN
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:left;">
+HOU
+</td>
+<td style="text-align:right;">
+17
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+2018091606
+</td>
+<td style="text-align:left;">
+TB
+</td>
+<td style="text-align:right;">
+27
+</td>
+<td style="text-align:left;">
+PHI
+</td>
+<td style="text-align:right;">
+21
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+2018091605
+</td>
+<td style="text-align:left;">
+PIT
+</td>
+<td style="text-align:right;">
+37
+</td>
+<td style="text-align:left;">
+KC
+</td>
+<td style="text-align:right;">
+42
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+2018091604
+</td>
+<td style="text-align:left;">
+NYJ
+</td>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:left;">
+MIA
+</td>
+<td style="text-align:right;">
+20
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+2018091601
+</td>
+<td style="text-align:left;">
+BUF
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:left;">
+LAC
+</td>
+<td style="text-align:right;">
+31
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+2018091602
+</td>
+<td style="text-align:left;">
+GB
+</td>
+<td style="text-align:right;">
+29
+</td>
+<td style="text-align:left;">
+MIN
+</td>
+<td style="text-align:right;">
+29
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+2018091603
+</td>
+<td style="text-align:left;">
+NO
+</td>
+<td style="text-align:right;">
+21
+</td>
+<td style="text-align:left;">
+CLE
+</td>
+<td style="text-align:right;">
+18
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+2018091610
+</td>
+<td style="text-align:left;">
+SF
+</td>
+<td style="text-align:right;">
+30
+</td>
+<td style="text-align:left;">
+DET
+</td>
+<td style="text-align:right;">
+27
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+2018091609
+</td>
+<td style="text-align:left;">
+LA
+</td>
+<td style="text-align:right;">
+34
+</td>
+<td style="text-align:left;">
+ARI
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+2018091612
+</td>
+<td style="text-align:left;">
+JAX
+</td>
+<td style="text-align:right;">
+31
+</td>
+<td style="text-align:left;">
+NE
+</td>
+<td style="text-align:right;">
+20
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+2018091611
+</td>
+<td style="text-align:left;">
+DEN
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:left;">
+OAK
+</td>
+<td style="text-align:right;">
+19
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+2018091613
+</td>
+<td style="text-align:left;">
+DAL
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:left;">
+NYG
+</td>
+<td style="text-align:right;">
+13
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+2018091700
+</td>
+<td style="text-align:left;">
+CHI
+</td>
+<td style="text-align:right;">
+24
+</td>
+<td style="text-align:left;">
+SEA
+</td>
+<td style="text-align:right;">
+17
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+2018092000
+</td>
+<td style="text-align:left;">
+CLE
+</td>
+<td style="text-align:right;">
+21
+</td>
+<td style="text-align:left;">
+NYJ
+</td>
+<td style="text-align:right;">
+17
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+2018092300
+</td>
+<td style="text-align:left;">
+ATL
+</td>
+<td style="text-align:right;">
+37
+</td>
+<td style="text-align:left;">
+NO
+</td>
+<td style="text-align:right;">
+43
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+2018092309
+</td>
+<td style="text-align:left;">
+WAS
+</td>
+<td style="text-align:right;">
+31
+</td>
+<td style="text-align:left;">
+GB
+</td>
+<td style="text-align:right;">
+17
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+2018092308
+</td>
+<td style="text-align:left;">
+PHI
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:left;">
+IND
+</td>
+<td style="text-align:right;">
+16
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+2018092307
+</td>
+<td style="text-align:left;">
+MIN
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;">
+BUF
+</td>
+<td style="text-align:right;">
+27
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+2018092306
+</td>
+<td style="text-align:left;">
+MIA
+</td>
+<td style="text-align:right;">
+28
+</td>
+<td style="text-align:left;">
+OAK
+</td>
+<td style="text-align:right;">
+20
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+2018092301
+</td>
+<td style="text-align:left;">
+BAL
+</td>
+<td style="text-align:right;">
+27
+</td>
+<td style="text-align:left;">
+DEN
+</td>
+<td style="text-align:right;">
+14
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+2018092302
+</td>
+<td style="text-align:left;">
+CAR
+</td>
+<td style="text-align:right;">
+31
+</td>
+<td style="text-align:left;">
+CIN
+</td>
+<td style="text-align:right;">
+21
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+2018092303
+</td>
+<td style="text-align:left;">
+HOU
+</td>
+<td style="text-align:right;">
+22
+</td>
+<td style="text-align:left;">
+NYG
+</td>
+<td style="text-align:right;">
+27
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+2018092304
+</td>
+<td style="text-align:left;">
+JAX
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;">
+TEN
+</td>
+<td style="text-align:right;">
+9
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+2018092305
+</td>
+<td style="text-align:left;">
+KC
+</td>
+<td style="text-align:right;">
+38
+</td>
+<td style="text-align:left;">
+SF
+</td>
+<td style="text-align:right;">
+27
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+2018092310
+</td>
+<td style="text-align:left;">
+LA
+</td>
+<td style="text-align:right;">
+35
+</td>
+<td style="text-align:left;">
+LAC
+</td>
+<td style="text-align:right;">
+23
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+2018092312
+</td>
+<td style="text-align:left;">
+SEA
+</td>
+<td style="text-align:right;">
+24
+</td>
+<td style="text-align:left;">
+DAL
+</td>
+<td style="text-align:right;">
+13
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+2018092311
+</td>
+<td style="text-align:left;">
+ARI
+</td>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:left;">
+CHI
+</td>
+<td style="text-align:right;">
+16
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+2018092313
+</td>
+<td style="text-align:left;">
+DET
+</td>
+<td style="text-align:right;">
+26
+</td>
+<td style="text-align:left;">
+NE
+</td>
+<td style="text-align:right;">
+10
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+2018092400
+</td>
+<td style="text-align:left;">
+TB
+</td>
+<td style="text-align:right;">
+27
+</td>
+<td style="text-align:left;">
+PIT
+</td>
+<td style="text-align:right;">
+30
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:left;">
+2018092700
+</td>
+<td style="text-align:left;">
+LA
+</td>
+<td style="text-align:right;">
+38
+</td>
+<td style="text-align:left;">
+MIN
+</td>
+<td style="text-align:right;">
+31
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:left;">
+2018093005
+</td>
+<td style="text-align:left;">
+JAX
+</td>
+<td style="text-align:right;">
+31
+</td>
+<td style="text-align:left;">
+NYJ
+</td>
+<td style="text-align:right;">
+12
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:left;">
+2018093006
+</td>
+<td style="text-align:left;">
+NE
+</td>
+<td style="text-align:right;">
+38
+</td>
+<td style="text-align:left;">
+MIA
+</td>
+<td style="text-align:right;">
+7
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:left;">
+2018093007
+</td>
+<td style="text-align:left;">
+TEN
+</td>
+<td style="text-align:right;">
+26
+</td>
+<td style="text-align:left;">
+PHI
+</td>
+<td style="text-align:right;">
+23
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:left;">
+2018093004
+</td>
+<td style="text-align:left;">
+IND
+</td>
+<td style="text-align:right;">
+34
+</td>
+<td style="text-align:left;">
+HOU
+</td>
+<td style="text-align:right;">
+37
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:left;">
+2018093003
+</td>
+<td style="text-align:left;">
+GB
+</td>
+<td style="text-align:right;">
+22
+</td>
+<td style="text-align:left;">
+BUF
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:left;">
+2018093002
+</td>
+<td style="text-align:left;">
+DAL
+</td>
+<td style="text-align:right;">
+26
+</td>
+<td style="text-align:left;">
+DET
+</td>
+<td style="text-align:right;">
+24
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:left;">
+2018093001
+</td>
+<td style="text-align:left;">
+CHI
+</td>
+<td style="text-align:right;">
+48
+</td>
+<td style="text-align:left;">
+TB
+</td>
+<td style="text-align:right;">
+10
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:left;">
+2018093000
+</td>
+<td style="text-align:left;">
+ATL
+</td>
+<td style="text-align:right;">
+36
+</td>
+<td style="text-align:left;">
+CIN
+</td>
+<td style="text-align:right;">
+37
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:left;">
+2018093008
+</td>
+<td style="text-align:left;">
+ARI
+</td>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:left;">
+SEA
+</td>
+<td style="text-align:right;">
+20
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:left;">
+2018093009
+</td>
+<td style="text-align:left;">
+OAK
+</td>
+<td style="text-align:right;">
+45
+</td>
+<td style="text-align:left;">
+CLE
+</td>
+<td style="text-align:right;">
+42
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:left;">
+2018093011
+</td>
+<td style="text-align:left;">
+NYG
+</td>
+<td style="text-align:right;">
+18
+</td>
+<td style="text-align:left;">
+NO
+</td>
+<td style="text-align:right;">
+33
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:left;">
+2018093010
+</td>
+<td style="text-align:left;">
+LAC
+</td>
+<td style="text-align:right;">
+29
+</td>
+<td style="text-align:left;">
+SF
+</td>
+<td style="text-align:right;">
+27
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:left;">
+2018093012
+</td>
+<td style="text-align:left;">
+PIT
+</td>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:left;">
+BAL
+</td>
+<td style="text-align:right;">
+26
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:left;">
+2018100100
+</td>
+<td style="text-align:left;">
+DEN
+</td>
+<td style="text-align:right;">
+23
+</td>
+<td style="text-align:left;">
+KC
+</td>
+<td style="text-align:right;">
+27
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+2018100400
+</td>
+<td style="text-align:left;">
+NE
+</td>
+<td style="text-align:right;">
+38
+</td>
+<td style="text-align:left;">
+IND
+</td>
+<td style="text-align:right;">
+24
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+2018100700
+</td>
+<td style="text-align:left;">
+BUF
+</td>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:left;">
+TEN
+</td>
+<td style="text-align:right;">
+12
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+2018100707
+</td>
+<td style="text-align:left;">
+PIT
+</td>
+<td style="text-align:right;">
+41
+</td>
+<td style="text-align:left;">
+ATL
+</td>
+<td style="text-align:right;">
+17
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+2018100706
+</td>
+<td style="text-align:left;">
+NYJ
+</td>
+<td style="text-align:right;">
+34
+</td>
+<td style="text-align:left;">
+DEN
+</td>
+<td style="text-align:right;">
+16
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+2018100705
+</td>
+<td style="text-align:left;">
+KC
+</td>
+<td style="text-align:right;">
+30
+</td>
+<td style="text-align:left;">
+JAX
+</td>
+<td style="text-align:right;">
+14
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+2018100704
+</td>
+<td style="text-align:left;">
+DET
+</td>
+<td style="text-align:right;">
+31
+</td>
+<td style="text-align:left;">
+GB
+</td>
+<td style="text-align:right;">
+23
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+2018100703
+</td>
+<td style="text-align:left;">
+CLE
+</td>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:left;">
+BAL
+</td>
+<td style="text-align:right;">
+9
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+2018100701
+</td>
+<td style="text-align:left;">
+CAR
+</td>
+<td style="text-align:right;">
+33
+</td>
+<td style="text-align:left;">
+NYG
+</td>
+<td style="text-align:right;">
+31
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+2018100702
+</td>
+<td style="text-align:left;">
+CIN
+</td>
+<td style="text-align:right;">
+27
+</td>
+<td style="text-align:left;">
+MIA
+</td>
+<td style="text-align:right;">
+17
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+2018100708
+</td>
+<td style="text-align:left;">
+LAC
+</td>
+<td style="text-align:right;">
+26
+</td>
+<td style="text-align:left;">
+OAK
+</td>
+<td style="text-align:right;">
+10
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+2018100710
+</td>
+<td style="text-align:left;">
+SF
+</td>
+<td style="text-align:right;">
+18
+</td>
+<td style="text-align:left;">
+ARI
+</td>
+<td style="text-align:right;">
+28
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+2018100709
+</td>
+<td style="text-align:left;">
+PHI
+</td>
+<td style="text-align:right;">
+21
+</td>
+<td style="text-align:left;">
+MIN
+</td>
+<td style="text-align:right;">
+23
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+2018100711
+</td>
+<td style="text-align:left;">
+SEA
+</td>
+<td style="text-align:right;">
+31
+</td>
+<td style="text-align:left;">
+LA
+</td>
+<td style="text-align:right;">
+33
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+2018100712
+</td>
+<td style="text-align:left;">
+HOU
+</td>
+<td style="text-align:right;">
+19
+</td>
+<td style="text-align:left;">
+DAL
+</td>
+<td style="text-align:right;">
+16
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:left;">
+2018100800
+</td>
+<td style="text-align:left;">
+NO
+</td>
+<td style="text-align:right;">
+43
+</td>
+<td style="text-align:left;">
+WAS
+</td>
+<td style="text-align:right;">
+19
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;">
+2018101100
+</td>
+<td style="text-align:left;">
+NYG
+</td>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:left;">
+PHI
+</td>
+<td style="text-align:right;">
+34
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;">
+2018101400
+</td>
+<td style="text-align:left;">
+ATL
+</td>
+<td style="text-align:right;">
+34
+</td>
+<td style="text-align:left;">
+TB
+</td>
+<td style="text-align:right;">
+29
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;">
+2018101408
+</td>
+<td style="text-align:left;">
+WAS
+</td>
+<td style="text-align:right;">
+23
+</td>
+<td style="text-align:left;">
+CAR
+</td>
+<td style="text-align:right;">
+17
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;">
+2018101407
+</td>
+<td style="text-align:left;">
+OAK
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+SEA
+</td>
+<td style="text-align:right;">
+27
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;">
+2018101406
+</td>
+<td style="text-align:left;">
+NYJ
+</td>
+<td style="text-align:right;">
+42
+</td>
+<td style="text-align:left;">
+IND
+</td>
+<td style="text-align:right;">
+34
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;">
+2018101405
+</td>
+<td style="text-align:left;">
+MIN
+</td>
+<td style="text-align:right;">
+27
+</td>
+<td style="text-align:left;">
+ARI
+</td>
+<td style="text-align:right;">
+17
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;">
+2018101401
+</td>
+<td style="text-align:left;">
+CIN
+</td>
+<td style="text-align:right;">
+21
+</td>
+<td style="text-align:left;">
+PIT
+</td>
+<td style="text-align:right;">
+28
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;">
+2018101402
+</td>
+<td style="text-align:left;">
+CLE
+</td>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:left;">
+LAC
+</td>
+<td style="text-align:right;">
+38
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;">
+2018101403
+</td>
+<td style="text-align:left;">
+HOU
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:left;">
+BUF
+</td>
+<td style="text-align:right;">
+13
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;">
+2018101404
+</td>
+<td style="text-align:left;">
+MIA
+</td>
+<td style="text-align:right;">
+31
+</td>
+<td style="text-align:left;">
+CHI
+</td>
+<td style="text-align:right;">
+28
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;">
+2018101409
+</td>
+<td style="text-align:left;">
+DEN
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:left;">
+LA
+</td>
+<td style="text-align:right;">
+23
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;">
+2018101411
+</td>
+<td style="text-align:left;">
+TEN
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+BAL
+</td>
+<td style="text-align:right;">
+21
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;">
+2018101410
+</td>
+<td style="text-align:left;">
+DAL
+</td>
+<td style="text-align:right;">
+40
+</td>
+<td style="text-align:left;">
+JAX
+</td>
+<td style="text-align:right;">
+7
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;">
+2018101412
+</td>
+<td style="text-align:left;">
+NE
+</td>
+<td style="text-align:right;">
+43
+</td>
+<td style="text-align:left;">
+KC
+</td>
+<td style="text-align:right;">
+40
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;">
+2018101500
+</td>
+<td style="text-align:left;">
+GB
+</td>
+<td style="text-align:right;">
+33
+</td>
+<td style="text-align:left;">
+SF
+</td>
+<td style="text-align:right;">
+30
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:left;">
+2018101800
+</td>
+<td style="text-align:left;">
+ARI
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:left;">
+DEN
+</td>
+<td style="text-align:right;">
+45
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:left;">
+2018102100
+</td>
+<td style="text-align:left;">
+LAC
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:left;">
+TEN
+</td>
+<td style="text-align:right;">
+19
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:left;">
+2018102104
+</td>
+<td style="text-align:left;">
+JAX
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:left;">
+HOU
+</td>
+<td style="text-align:right;">
+20
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:left;">
+2018102108
+</td>
+<td style="text-align:left;">
+PHI
+</td>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:left;">
+CAR
+</td>
+<td style="text-align:right;">
+21
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:left;">
+2018102107
+</td>
+<td style="text-align:left;">
+NYJ
+</td>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:left;">
+MIN
+</td>
+<td style="text-align:right;">
+37
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:left;">
+2018102102
+</td>
+<td style="text-align:left;">
+CHI
+</td>
+<td style="text-align:right;">
+31
+</td>
+<td style="text-align:left;">
+NE
+</td>
+<td style="text-align:right;">
+38
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:left;">
+2018102103
+</td>
+<td style="text-align:left;">
+IND
+</td>
+<td style="text-align:right;">
+37
+</td>
+<td style="text-align:left;">
+BUF
+</td>
+<td style="text-align:right;">
+5
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:left;">
+2018102109
+</td>
+<td style="text-align:left;">
+TB
+</td>
+<td style="text-align:right;">
+26
+</td>
+<td style="text-align:left;">
+CLE
+</td>
+<td style="text-align:right;">
+23
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:left;">
+2018102106
+</td>
+<td style="text-align:left;">
+MIA
+</td>
+<td style="text-align:right;">
+21
+</td>
+<td style="text-align:left;">
+DET
+</td>
+<td style="text-align:right;">
+32
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:left;">
+2018102101
+</td>
+<td style="text-align:left;">
+BAL
+</td>
+<td style="text-align:right;">
+23
+</td>
+<td style="text-align:left;">
+NO
+</td>
+<td style="text-align:right;">
+24
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:left;">
+2018102110
+</td>
+<td style="text-align:left;">
+WAS
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:left;">
+DAL
+</td>
+<td style="text-align:right;">
+17
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:left;">
+2018102111
+</td>
+<td style="text-align:left;">
+SF
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:left;">
+LA
+</td>
+<td style="text-align:right;">
+39
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:left;">
+2018102105
+</td>
+<td style="text-align:left;">
+KC
+</td>
+<td style="text-align:right;">
+45
+</td>
+<td style="text-align:left;">
+CIN
+</td>
+<td style="text-align:right;">
+10
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:left;">
+2018102200
+</td>
+<td style="text-align:left;">
+ATL
+</td>
+<td style="text-align:right;">
+23
+</td>
+<td style="text-align:left;">
+NYG
+</td>
+<td style="text-align:right;">
+20
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:left;">
+2018102500
+</td>
+<td style="text-align:left;">
+HOU
+</td>
+<td style="text-align:right;">
+42
+</td>
+<td style="text-align:left;">
+MIA
+</td>
+<td style="text-align:right;">
+23
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:left;">
+2018102800
+</td>
+<td style="text-align:left;">
+JAX
+</td>
+<td style="text-align:right;">
+18
+</td>
+<td style="text-align:left;">
+PHI
+</td>
+<td style="text-align:right;">
+24
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:left;">
+2018102805
+</td>
+<td style="text-align:left;">
+KC
+</td>
+<td style="text-align:right;">
+30
+</td>
+<td style="text-align:left;">
+DEN
+</td>
+<td style="text-align:right;">
+23
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:left;">
+2018102807
+</td>
+<td style="text-align:left;">
+PIT
+</td>
+<td style="text-align:right;">
+33
+</td>
+<td style="text-align:left;">
+CLE
+</td>
+<td style="text-align:right;">
+18
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:left;">
+2018102806
+</td>
+<td style="text-align:left;">
+NYG
+</td>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:left;">
+WAS
+</td>
+<td style="text-align:right;">
+20
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:left;">
+2018102804
+</td>
+<td style="text-align:left;">
+DET
+</td>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:left;">
+SEA
+</td>
+<td style="text-align:right;">
+28
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:left;">
+2018102803
+</td>
+<td style="text-align:left;">
+CIN
+</td>
+<td style="text-align:right;">
+37
+</td>
+<td style="text-align:left;">
+TB
+</td>
+<td style="text-align:right;">
+34
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:left;">
+2018102802
+</td>
+<td style="text-align:left;">
+CHI
+</td>
+<td style="text-align:right;">
+24
+</td>
+<td style="text-align:left;">
+NYJ
+</td>
+<td style="text-align:right;">
+10
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:left;">
+2018102801
+</td>
+<td style="text-align:left;">
+CAR
+</td>
+<td style="text-align:right;">
+36
+</td>
+<td style="text-align:left;">
+BAL
+</td>
+<td style="text-align:right;">
+21
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:left;">
+2018102808
+</td>
+<td style="text-align:left;">
+OAK
+</td>
+<td style="text-align:right;">
+28
+</td>
+<td style="text-align:left;">
+IND
+</td>
+<td style="text-align:right;">
+42
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:left;">
+2018102809
+</td>
+<td style="text-align:left;">
+ARI
+</td>
+<td style="text-align:right;">
+18
+</td>
+<td style="text-align:left;">
+SF
+</td>
+<td style="text-align:right;">
+15
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:left;">
+2018102810
+</td>
+<td style="text-align:left;">
+LA
+</td>
+<td style="text-align:right;">
+29
+</td>
+<td style="text-align:left;">
+GB
+</td>
+<td style="text-align:right;">
+27
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:left;">
+2018102811
+</td>
+<td style="text-align:left;">
+MIN
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:left;">
+NO
+</td>
+<td style="text-align:right;">
+30
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:left;">
+2018102900
+</td>
+<td style="text-align:left;">
+BUF
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;">
+NE
+</td>
+<td style="text-align:right;">
+25
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:left;">
+2018110100
+</td>
+<td style="text-align:left;">
+SF
+</td>
+<td style="text-align:right;">
+34
+</td>
+<td style="text-align:left;">
+OAK
+</td>
+<td style="text-align:right;">
+3
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:left;">
+2018110401
+</td>
+<td style="text-align:left;">
+BUF
+</td>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:left;">
+CHI
+</td>
+<td style="text-align:right;">
+41
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:left;">
+2018110402
+</td>
+<td style="text-align:left;">
+CAR
+</td>
+<td style="text-align:right;">
+42
+</td>
+<td style="text-align:left;">
+TB
+</td>
+<td style="text-align:right;">
+28
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:left;">
+2018110403
+</td>
+<td style="text-align:left;">
+CLE
+</td>
+<td style="text-align:right;">
+21
+</td>
+<td style="text-align:left;">
+KC
+</td>
+<td style="text-align:right;">
+37
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:left;">
+2018110404
+</td>
+<td style="text-align:left;">
+MIA
+</td>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:left;">
+NYJ
+</td>
+<td style="text-align:right;">
+6
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:left;">
+2018110400
+</td>
+<td style="text-align:left;">
+BAL
+</td>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:left;">
+PIT
+</td>
+<td style="text-align:right;">
+23
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:left;">
+2018110405
+</td>
+<td style="text-align:left;">
+MIN
+</td>
+<td style="text-align:right;">
+24
+</td>
+<td style="text-align:left;">
+DET
+</td>
+<td style="text-align:right;">
+9
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:left;">
+2018110406
+</td>
+<td style="text-align:left;">
+WAS
+</td>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:left;">
+ATL
+</td>
+<td style="text-align:right;">
+38
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:left;">
+2018110407
+</td>
+<td style="text-align:left;">
+DEN
+</td>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:left;">
+HOU
+</td>
+<td style="text-align:right;">
+19
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:left;">
+2018110408
+</td>
+<td style="text-align:left;">
+SEA
+</td>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:left;">
+LAC
+</td>
+<td style="text-align:right;">
+25
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:left;">
+2018110409
+</td>
+<td style="text-align:left;">
+NO
+</td>
+<td style="text-align:right;">
+45
+</td>
+<td style="text-align:left;">
+LA
+</td>
+<td style="text-align:right;">
+35
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:left;">
+2018110410
+</td>
+<td style="text-align:left;">
+NE
+</td>
+<td style="text-align:right;">
+31
+</td>
+<td style="text-align:left;">
+GB
+</td>
+<td style="text-align:right;">
+17
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:left;">
+2018110500
+</td>
+<td style="text-align:left;">
+DAL
+</td>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:left;">
+TEN
+</td>
+<td style="text-align:right;">
+28
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:left;">
+2018110800
+</td>
+<td style="text-align:left;">
+PIT
+</td>
+<td style="text-align:right;">
+52
+</td>
+<td style="text-align:left;">
+CAR
+</td>
+<td style="text-align:right;">
+21
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:left;">
+2018111101
+</td>
+<td style="text-align:left;">
+CIN
+</td>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:left;">
+NO
+</td>
+<td style="text-align:right;">
+51
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:left;">
+2018111102
+</td>
+<td style="text-align:left;">
+CLE
+</td>
+<td style="text-align:right;">
+28
+</td>
+<td style="text-align:left;">
+ATL
+</td>
+<td style="text-align:right;">
+16
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:left;">
+2018111100
+</td>
+<td style="text-align:left;">
+CHI
+</td>
+<td style="text-align:right;">
+34
+</td>
+<td style="text-align:left;">
+DET
+</td>
+<td style="text-align:right;">
+22
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:left;">
+2018111105
+</td>
+<td style="text-align:left;">
+KC
+</td>
+<td style="text-align:right;">
+26
+</td>
+<td style="text-align:left;">
+ARI
+</td>
+<td style="text-align:right;">
+14
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:left;">
+2018111108
+</td>
+<td style="text-align:left;">
+TEN
+</td>
+<td style="text-align:right;">
+34
+</td>
+<td style="text-align:left;">
+NE
+</td>
+<td style="text-align:right;">
+10
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:left;">
+2018111107
+</td>
+<td style="text-align:left;">
+TB
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+WAS
+</td>
+<td style="text-align:right;">
+16
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:left;">
+2018111106
+</td>
+<td style="text-align:left;">
+NYJ
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:left;">
+BUF
+</td>
+<td style="text-align:right;">
+41
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:left;">
+2018111104
+</td>
+<td style="text-align:left;">
+IND
+</td>
+<td style="text-align:right;">
+29
+</td>
+<td style="text-align:left;">
+JAX
+</td>
+<td style="text-align:right;">
+26
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:left;">
+2018111109
+</td>
+<td style="text-align:left;">
+OAK
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;">
+LAC
+</td>
+<td style="text-align:right;">
+20
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:left;">
+2018111110
+</td>
+<td style="text-align:left;">
+LA
+</td>
+<td style="text-align:right;">
+36
+</td>
+<td style="text-align:left;">
+SEA
+</td>
+<td style="text-align:right;">
+31
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:left;">
+2018111103
+</td>
+<td style="text-align:left;">
+GB
+</td>
+<td style="text-align:right;">
+31
+</td>
+<td style="text-align:left;">
+MIA
+</td>
+<td style="text-align:right;">
+12
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:left;">
+2018111111
+</td>
+<td style="text-align:left;">
+PHI
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:left;">
+DAL
+</td>
+<td style="text-align:right;">
+27
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:left;">
+2018111200
+</td>
+<td style="text-align:left;">
+SF
+</td>
+<td style="text-align:right;">
+23
+</td>
+<td style="text-align:left;">
+NYG
+</td>
+<td style="text-align:right;">
+27
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:left;">
+2018111500
+</td>
+<td style="text-align:left;">
+SEA
+</td>
+<td style="text-align:right;">
+27
+</td>
+<td style="text-align:left;">
+GB
+</td>
+<td style="text-align:right;">
+24
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:left;">
+2018111801
+</td>
+<td style="text-align:left;">
+BAL
+</td>
+<td style="text-align:right;">
+24
+</td>
+<td style="text-align:left;">
+CIN
+</td>
+<td style="text-align:right;">
+21
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:left;">
+2018111800
+</td>
+<td style="text-align:left;">
+ATL
+</td>
+<td style="text-align:right;">
+19
+</td>
+<td style="text-align:left;">
+DAL
+</td>
+<td style="text-align:right;">
+22
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:left;">
+2018111805
+</td>
+<td style="text-align:left;">
+NYG
+</td>
+<td style="text-align:right;">
+38
+</td>
+<td style="text-align:left;">
+TB
+</td>
+<td style="text-align:right;">
+35
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:left;">
+2018111810
+</td>
+<td style="text-align:left;">
+JAX
+</td>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:left;">
+PIT
+</td>
+<td style="text-align:right;">
+20
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:left;">
+2018111806
+</td>
+<td style="text-align:left;">
+WAS
+</td>
+<td style="text-align:right;">
+21
+</td>
+<td style="text-align:left;">
+HOU
+</td>
+<td style="text-align:right;">
+23
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:left;">
+2018111804
+</td>
+<td style="text-align:left;">
+IND
+</td>
+<td style="text-align:right;">
+38
+</td>
+<td style="text-align:left;">
+TEN
+</td>
+<td style="text-align:right;">
+10
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:left;">
+2018111803
+</td>
+<td style="text-align:left;">
+DET
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:left;">
+CAR
+</td>
+<td style="text-align:right;">
+19
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:left;">
+2018111808
+</td>
+<td style="text-align:left;">
+LAC
+</td>
+<td style="text-align:right;">
+22
+</td>
+<td style="text-align:left;">
+DEN
+</td>
+<td style="text-align:right;">
+23
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:left;">
+2018111807
+</td>
+<td style="text-align:left;">
+ARI
+</td>
+<td style="text-align:right;">
+21
+</td>
+<td style="text-align:left;">
+OAK
+</td>
+<td style="text-align:right;">
+23
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:left;">
+2018111809
+</td>
+<td style="text-align:left;">
+NO
+</td>
+<td style="text-align:right;">
+48
+</td>
+<td style="text-align:left;">
+PHI
+</td>
+<td style="text-align:right;">
+7
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:left;">
+2018111802
+</td>
+<td style="text-align:left;">
+CHI
+</td>
+<td style="text-align:right;">
+25
+</td>
+<td style="text-align:left;">
+MIN
+</td>
+<td style="text-align:right;">
+20
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:left;">
+2018111900
+</td>
+<td style="text-align:left;">
+LA
+</td>
+<td style="text-align:right;">
+54
+</td>
+<td style="text-align:left;">
+KC
+</td>
+<td style="text-align:right;">
+51
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:left;">
+2018112200
+</td>
+<td style="text-align:left;">
+DET
+</td>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:left;">
+CHI
+</td>
+<td style="text-align:right;">
+23
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:left;">
+2018112201
+</td>
+<td style="text-align:left;">
+DAL
+</td>
+<td style="text-align:right;">
+31
+</td>
+<td style="text-align:left;">
+WAS
+</td>
+<td style="text-align:right;">
+23
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:left;">
+2018112202
+</td>
+<td style="text-align:left;">
+NO
+</td>
+<td style="text-align:right;">
+31
+</td>
+<td style="text-align:left;">
+ATL
+</td>
+<td style="text-align:right;">
+17
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:left;">
+2018112503
+</td>
+<td style="text-align:left;">
+CIN
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:left;">
+CLE
+</td>
+<td style="text-align:right;">
+35
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:left;">
+2018112507
+</td>
+<td style="text-align:left;">
+TB
+</td>
+<td style="text-align:right;">
+27
+</td>
+<td style="text-align:left;">
+SF
+</td>
+<td style="text-align:right;">
+9
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:left;">
+2018112501
+</td>
+<td style="text-align:left;">
+BUF
+</td>
+<td style="text-align:right;">
+24
+</td>
+<td style="text-align:left;">
+JAX
+</td>
+<td style="text-align:right;">
+21
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:left;">
+2018112500
+</td>
+<td style="text-align:left;">
+BAL
+</td>
+<td style="text-align:right;">
+34
+</td>
+<td style="text-align:left;">
+OAK
+</td>
+<td style="text-align:right;">
+17
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:left;">
+2018112502
+</td>
+<td style="text-align:left;">
+CAR
+</td>
+<td style="text-align:right;">
+27
+</td>
+<td style="text-align:left;">
+SEA
+</td>
+<td style="text-align:right;">
+30
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:left;">
+2018112505
+</td>
+<td style="text-align:left;">
+NYJ
+</td>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:left;">
+NE
+</td>
+<td style="text-align:right;">
+27
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:left;">
+2018112506
+</td>
+<td style="text-align:left;">
+PHI
+</td>
+<td style="text-align:right;">
+25
+</td>
+<td style="text-align:left;">
+NYG
+</td>
+<td style="text-align:right;">
+22
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:left;">
+2018112508
+</td>
+<td style="text-align:left;">
+LAC
+</td>
+<td style="text-align:right;">
+45
+</td>
+<td style="text-align:left;">
+ARI
+</td>
+<td style="text-align:right;">
+10
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:left;">
+2018112504
+</td>
+<td style="text-align:left;">
+IND
+</td>
+<td style="text-align:right;">
+27
+</td>
+<td style="text-align:left;">
+MIA
+</td>
+<td style="text-align:right;">
+24
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:left;">
+2018112509
+</td>
+<td style="text-align:left;">
+DEN
+</td>
+<td style="text-align:right;">
+24
+</td>
+<td style="text-align:left;">
+PIT
+</td>
+<td style="text-align:right;">
+17
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:left;">
+2018112510
+</td>
+<td style="text-align:left;">
+MIN
+</td>
+<td style="text-align:right;">
+24
+</td>
+<td style="text-align:left;">
+GB
+</td>
+<td style="text-align:right;">
+17
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+12
+</td>
+<td style="text-align:left;">
+2018112600
+</td>
+<td style="text-align:left;">
+HOU
+</td>
+<td style="text-align:right;">
+34
+</td>
+<td style="text-align:left;">
+TEN
+</td>
+<td style="text-align:right;">
+17
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:left;">
+2018112900
+</td>
+<td style="text-align:left;">
+DAL
+</td>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:left;">
+NO
+</td>
+<td style="text-align:right;">
+10
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:left;">
+2018120200
+</td>
+<td style="text-align:left;">
+ATL
+</td>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:left;">
+BAL
+</td>
+<td style="text-align:right;">
+26
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:left;">
+2018120209
+</td>
+<td style="text-align:left;">
+TB
+</td>
+<td style="text-align:right;">
+24
+</td>
+<td style="text-align:left;">
+CAR
+</td>
+<td style="text-align:right;">
+17
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:left;">
+2018120207
+</td>
+<td style="text-align:left;">
+NYG
+</td>
+<td style="text-align:right;">
+30
+</td>
+<td style="text-align:left;">
+CHI
+</td>
+<td style="text-align:right;">
+27
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:left;">
+2018120206
+</td>
+<td style="text-align:left;">
+MIA
+</td>
+<td style="text-align:right;">
+21
+</td>
+<td style="text-align:left;">
+BUF
+</td>
+<td style="text-align:right;">
+17
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:left;">
+2018120205
+</td>
+<td style="text-align:left;">
+JAX
+</td>
+<td style="text-align:right;">
+6
+</td>
+<td style="text-align:left;">
+IND
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:left;">
+2018120204
+</td>
+<td style="text-align:left;">
+HOU
+</td>
+<td style="text-align:right;">
+29
+</td>
+<td style="text-align:left;">
+CLE
+</td>
+<td style="text-align:right;">
+13
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:left;">
+2018120201
+</td>
+<td style="text-align:left;">
+CIN
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:left;">
+DEN
+</td>
+<td style="text-align:right;">
+24
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:left;">
+2018120202
+</td>
+<td style="text-align:left;">
+DET
+</td>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:left;">
+LA
+</td>
+<td style="text-align:right;">
+30
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:left;">
+2018120203
+</td>
+<td style="text-align:left;">
+GB
+</td>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:left;">
+ARI
+</td>
+<td style="text-align:right;">
+20
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:left;">
+2018120210
+</td>
+<td style="text-align:left;">
+OAK
+</td>
+<td style="text-align:right;">
+33
+</td>
+<td style="text-align:left;">
+KC
+</td>
+<td style="text-align:right;">
+40
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:left;">
+2018120211
+</td>
+<td style="text-align:left;">
+TEN
+</td>
+<td style="text-align:right;">
+26
+</td>
+<td style="text-align:left;">
+NYJ
+</td>
+<td style="text-align:right;">
+22
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:left;">
+2018120213
+</td>
+<td style="text-align:left;">
+SEA
+</td>
+<td style="text-align:right;">
+43
+</td>
+<td style="text-align:left;">
+SF
+</td>
+<td style="text-align:right;">
+16
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:left;">
+2018120212
+</td>
+<td style="text-align:left;">
+NE
+</td>
+<td style="text-align:right;">
+24
+</td>
+<td style="text-align:left;">
+MIN
+</td>
+<td style="text-align:right;">
+10
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:left;">
+2018120208
+</td>
+<td style="text-align:left;">
+PIT
+</td>
+<td style="text-align:right;">
+30
+</td>
+<td style="text-align:left;">
+LAC
+</td>
+<td style="text-align:right;">
+33
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:left;">
+2018120300
+</td>
+<td style="text-align:left;">
+PHI
+</td>
+<td style="text-align:right;">
+28
+</td>
+<td style="text-align:left;">
+WAS
+</td>
+<td style="text-align:right;">
+13
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:left;">
+2018120600
+</td>
+<td style="text-align:left;">
+TEN
+</td>
+<td style="text-align:right;">
+30
+</td>
+<td style="text-align:left;">
+JAX
+</td>
+<td style="text-align:right;">
+9
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:left;">
+2018120900
+</td>
+<td style="text-align:left;">
+BUF
+</td>
+<td style="text-align:right;">
+23
+</td>
+<td style="text-align:left;">
+NYJ
+</td>
+<td style="text-align:right;">
+27
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:left;">
+2018120908
+</td>
+<td style="text-align:left;">
+WAS
+</td>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:left;">
+NYG
+</td>
+<td style="text-align:right;">
+40
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:left;">
+2018120907
+</td>
+<td style="text-align:left;">
+TB
+</td>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:left;">
+NO
+</td>
+<td style="text-align:right;">
+28
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:left;">
+2018120906
+</td>
+<td style="text-align:left;">
+MIA
+</td>
+<td style="text-align:right;">
+34
+</td>
+<td style="text-align:left;">
+NE
+</td>
+<td style="text-align:right;">
+33
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:left;">
+2018120905
+</td>
+<td style="text-align:left;">
+KC
+</td>
+<td style="text-align:right;">
+27
+</td>
+<td style="text-align:left;">
+BAL
+</td>
+<td style="text-align:right;">
+24
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:left;">
+2018120904
+</td>
+<td style="text-align:left;">
+HOU
+</td>
+<td style="text-align:right;">
+21
+</td>
+<td style="text-align:left;">
+IND
+</td>
+<td style="text-align:right;">
+24
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:left;">
+2018120903
+</td>
+<td style="text-align:left;">
+GB
+</td>
+<td style="text-align:right;">
+34
+</td>
+<td style="text-align:left;">
+ATL
+</td>
+<td style="text-align:right;">
+20
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:left;">
+2018120902
+</td>
+<td style="text-align:left;">
+CLE
+</td>
+<td style="text-align:right;">
+26
+</td>
+<td style="text-align:left;">
+CAR
+</td>
+<td style="text-align:right;">
+20
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:left;">
+2018120910
+</td>
+<td style="text-align:left;">
+SF
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:left;">
+DEN
+</td>
+<td style="text-align:right;">
+14
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:left;">
+2018120909
+</td>
+<td style="text-align:left;">
+LAC
+</td>
+<td style="text-align:right;">
+26
+</td>
+<td style="text-align:left;">
+CIN
+</td>
+<td style="text-align:right;">
+21
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:left;">
+2018120911
+</td>
+<td style="text-align:left;">
+ARI
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:left;">
+DET
+</td>
+<td style="text-align:right;">
+17
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:left;">
+2018120913
+</td>
+<td style="text-align:left;">
+OAK
+</td>
+<td style="text-align:right;">
+24
+</td>
+<td style="text-align:left;">
+PIT
+</td>
+<td style="text-align:right;">
+21
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:left;">
+2018120912
+</td>
+<td style="text-align:left;">
+DAL
+</td>
+<td style="text-align:right;">
+29
+</td>
+<td style="text-align:left;">
+PHI
+</td>
+<td style="text-align:right;">
+23
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:left;">
+2018120901
+</td>
+<td style="text-align:left;">
+CHI
+</td>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:left;">
+LA
+</td>
+<td style="text-align:right;">
+6
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:left;">
+2018121000
+</td>
+<td style="text-align:left;">
+SEA
+</td>
+<td style="text-align:right;">
+21
+</td>
+<td style="text-align:left;">
+MIN
+</td>
+<td style="text-align:right;">
+7
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:left;">
+2018121300
+</td>
+<td style="text-align:left;">
+KC
+</td>
+<td style="text-align:right;">
+28
+</td>
+<td style="text-align:left;">
+LAC
+</td>
+<td style="text-align:right;">
+29
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:left;">
+2018121500
+</td>
+<td style="text-align:left;">
+NYJ
+</td>
+<td style="text-align:right;">
+22
+</td>
+<td style="text-align:left;">
+HOU
+</td>
+<td style="text-align:right;">
+29
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:left;">
+2018121501
+</td>
+<td style="text-align:left;">
+DEN
+</td>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:left;">
+CLE
+</td>
+<td style="text-align:right;">
+17
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:left;">
+2018121603
+</td>
+<td style="text-align:left;">
+CHI
+</td>
+<td style="text-align:right;">
+24
+</td>
+<td style="text-align:left;">
+GB
+</td>
+<td style="text-align:right;">
+17
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:left;">
+2018121602
+</td>
+<td style="text-align:left;">
+BUF
+</td>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:left;">
+DET
+</td>
+<td style="text-align:right;">
+13
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:left;">
+2018121601
+</td>
+<td style="text-align:left;">
+BAL
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:left;">
+TB
+</td>
+<td style="text-align:right;">
+12
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:left;">
+2018121600
+</td>
+<td style="text-align:left;">
+ATL
+</td>
+<td style="text-align:right;">
+40
+</td>
+<td style="text-align:left;">
+ARI
+</td>
+<td style="text-align:right;">
+14
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:left;">
+2018121604
+</td>
+<td style="text-align:left;">
+CIN
+</td>
+<td style="text-align:right;">
+30
+</td>
+<td style="text-align:left;">
+OAK
+</td>
+<td style="text-align:right;">
+16
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:left;">
+2018121608
+</td>
+<td style="text-align:left;">
+NYG
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+TEN
+</td>
+<td style="text-align:right;">
+17
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:left;">
+2018121607
+</td>
+<td style="text-align:left;">
+MIN
+</td>
+<td style="text-align:right;">
+41
+</td>
+<td style="text-align:left;">
+MIA
+</td>
+<td style="text-align:right;">
+17
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:left;">
+2018121606
+</td>
+<td style="text-align:left;">
+JAX
+</td>
+<td style="text-align:right;">
+13
+</td>
+<td style="text-align:left;">
+WAS
+</td>
+<td style="text-align:right;">
+16
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:left;">
+2018121605
+</td>
+<td style="text-align:left;">
+IND
+</td>
+<td style="text-align:right;">
+23
+</td>
+<td style="text-align:left;">
+DAL
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:left;">
+2018121609
+</td>
+<td style="text-align:left;">
+SF
+</td>
+<td style="text-align:right;">
+26
+</td>
+<td style="text-align:left;">
+SEA
+</td>
+<td style="text-align:right;">
+23
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:left;">
+2018121610
+</td>
+<td style="text-align:left;">
+PIT
+</td>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:left;">
+NE
+</td>
+<td style="text-align:right;">
+10
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:left;">
+2018121611
+</td>
+<td style="text-align:left;">
+LA
+</td>
+<td style="text-align:right;">
+23
+</td>
+<td style="text-align:left;">
+PHI
+</td>
+<td style="text-align:right;">
+30
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:left;">
+2018121700
+</td>
+<td style="text-align:left;">
+CAR
+</td>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:left;">
+NO
+</td>
+<td style="text-align:right;">
+12
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:left;">
+2018122200
+</td>
+<td style="text-align:left;">
+TEN
+</td>
+<td style="text-align:right;">
+25
+</td>
+<td style="text-align:left;">
+WAS
+</td>
+<td style="text-align:right;">
+16
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:left;">
+2018122201
+</td>
+<td style="text-align:left;">
+LAC
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:left;">
+BAL
+</td>
+<td style="text-align:right;">
+22
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:left;">
+2018122305
+</td>
+<td style="text-align:left;">
+CLE
+</td>
+<td style="text-align:right;">
+26
+</td>
+<td style="text-align:left;">
+CIN
+</td>
+<td style="text-align:right;">
+18
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:left;">
+2018122306
+</td>
+<td style="text-align:left;">
+DAL
+</td>
+<td style="text-align:right;">
+27
+</td>
+<td style="text-align:left;">
+TB
+</td>
+<td style="text-align:right;">
+20
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:left;">
+2018122307
+</td>
+<td style="text-align:left;">
+DET
+</td>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:left;">
+MIN
+</td>
+<td style="text-align:right;">
+27
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:left;">
+2018122308
+</td>
+<td style="text-align:left;">
+NE
+</td>
+<td style="text-align:right;">
+24
+</td>
+<td style="text-align:left;">
+BUF
+</td>
+<td style="text-align:right;">
+12
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:left;">
+2018122309
+</td>
+<td style="text-align:left;">
+NYJ
+</td>
+<td style="text-align:right;">
+38
+</td>
+<td style="text-align:left;">
+GB
+</td>
+<td style="text-align:right;">
+44
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:left;">
+2018122310
+</td>
+<td style="text-align:left;">
+PHI
+</td>
+<td style="text-align:right;">
+32
+</td>
+<td style="text-align:left;">
+HOU
+</td>
+<td style="text-align:right;">
+30
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:left;">
+2018122304
+</td>
+<td style="text-align:left;">
+CAR
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:left;">
+ATL
+</td>
+<td style="text-align:right;">
+24
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:left;">
+2018122300
+</td>
+<td style="text-align:left;">
+IND
+</td>
+<td style="text-align:right;">
+28
+</td>
+<td style="text-align:left;">
+NYG
+</td>
+<td style="text-align:right;">
+27
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:left;">
+2018122302
+</td>
+<td style="text-align:left;">
+MIA
+</td>
+<td style="text-align:right;">
+7
+</td>
+<td style="text-align:left;">
+JAX
+</td>
+<td style="text-align:right;">
+17
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:left;">
+2018122311
+</td>
+<td style="text-align:left;">
+ARI
+</td>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:left;">
+LA
+</td>
+<td style="text-align:right;">
+31
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:left;">
+2018122312
+</td>
+<td style="text-align:left;">
+SF
+</td>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:left;">
+CHI
+</td>
+<td style="text-align:right;">
+14
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:left;">
+2018122313
+</td>
+<td style="text-align:left;">
+NO
+</td>
+<td style="text-align:right;">
+31
+</td>
+<td style="text-align:left;">
+PIT
+</td>
+<td style="text-align:right;">
+28
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:left;">
+2018122314
+</td>
+<td style="text-align:left;">
+SEA
+</td>
+<td style="text-align:right;">
+38
+</td>
+<td style="text-align:left;">
+KC
+</td>
+<td style="text-align:right;">
+31
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:left;">
+2018122400
+</td>
+<td style="text-align:left;">
+OAK
+</td>
+<td style="text-align:right;">
+27
+</td>
+<td style="text-align:left;">
+DEN
+</td>
+<td style="text-align:right;">
+14
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:left;">
+2018123001
+</td>
+<td style="text-align:left;">
+BUF
+</td>
+<td style="text-align:right;">
+42
+</td>
+<td style="text-align:left;">
+MIA
+</td>
+<td style="text-align:right;">
+17
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:left;">
+2018123010
+</td>
+<td style="text-align:left;">
+TB
+</td>
+<td style="text-align:right;">
+32
+</td>
+<td style="text-align:left;">
+ATL
+</td>
+<td style="text-align:right;">
+34
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:left;">
+2018123008
+</td>
+<td style="text-align:left;">
+NYG
+</td>
+<td style="text-align:right;">
+35
+</td>
+<td style="text-align:left;">
+DAL
+</td>
+<td style="text-align:right;">
+36
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:left;">
+2018123007
+</td>
+<td style="text-align:left;">
+NO
+</td>
+<td style="text-align:right;">
+14
+</td>
+<td style="text-align:left;">
+CAR
+</td>
+<td style="text-align:right;">
+33
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:left;">
+2018123006
+</td>
+<td style="text-align:left;">
+NE
+</td>
+<td style="text-align:right;">
+38
+</td>
+<td style="text-align:left;">
+NYJ
+</td>
+<td style="text-align:right;">
+3
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:left;">
+2018123003
+</td>
+<td style="text-align:left;">
+HOU
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:left;">
+JAX
+</td>
+<td style="text-align:right;">
+3
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:left;">
+2018123002
+</td>
+<td style="text-align:left;">
+GB
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+DET
+</td>
+<td style="text-align:right;">
+31
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:left;">
+2018123012
+</td>
+<td style="text-align:left;">
+WAS
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+PHI
+</td>
+<td style="text-align:right;">
+24
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:left;">
+2018123013
+</td>
+<td style="text-align:left;">
+DEN
+</td>
+<td style="text-align:right;">
+9
+</td>
+<td style="text-align:left;">
+LAC
+</td>
+<td style="text-align:right;">
+23
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:left;">
+2018123004
+</td>
+<td style="text-align:left;">
+KC
+</td>
+<td style="text-align:right;">
+35
+</td>
+<td style="text-align:left;">
+OAK
+</td>
+<td style="text-align:right;">
+3
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:left;">
+2018123005
+</td>
+<td style="text-align:left;">
+MIN
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:left;">
+CHI
+</td>
+<td style="text-align:right;">
+24
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:left;">
+2018123000
+</td>
+<td style="text-align:left;">
+BAL
+</td>
+<td style="text-align:right;">
+26
+</td>
+<td style="text-align:left;">
+CLE
+</td>
+<td style="text-align:right;">
+24
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:left;">
+2018123014
+</td>
+<td style="text-align:left;">
+LA
+</td>
+<td style="text-align:right;">
+48
+</td>
+<td style="text-align:left;">
+SF
+</td>
+<td style="text-align:right;">
+32
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:left;">
+2018123009
+</td>
+<td style="text-align:left;">
+PIT
+</td>
+<td style="text-align:right;">
+16
+</td>
+<td style="text-align:left;">
+CIN
+</td>
+<td style="text-align:right;">
+13
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:left;">
+2018123015
+</td>
+<td style="text-align:left;">
+SEA
+</td>
+<td style="text-align:right;">
+27
+</td>
+<td style="text-align:left;">
+ARI
+</td>
+<td style="text-align:right;">
+24
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:left;">
+2018123011
+</td>
+<td style="text-align:left;">
+TEN
+</td>
+<td style="text-align:right;">
+17
+</td>
+<td style="text-align:left;">
+IND
+</td>
+<td style="text-align:right;">
+33
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<p>That’s all the regular season games in the 2018 season. They suggest that it is straightforward to grab an entire season of play by play data and it is. 👏.</p>
+<pre><code>full_season_2018 &lt;- scrape_season_play_by_play(2018, &quot;reg&quot;)
+saveRDS(full_season_2018, file=&quot;../../../data/2018NFLSeason.rds&quot;)</code></pre>
+<p>That gets the data though it took over an hour to acquire it all and it threw two error messages. I do not yet know if they are conseequential. My goal here is to use this package and the ability to plot the win probability charts to try to summarise an entire Dallas Cowboys season – the team I grew up with along with the former Houston Oilers and I was never really okay about them moving. ⤵️</p>
+<pre class="r"><code>full_season_2018 &lt;- readRDS(url(&quot;https://github.com/robertwwalker/academic-mymod/raw/master/data/2018NFLSeason.rds&quot;))  # Downloaded it once.  It sits in rww.science/data</code></pre>
+<p>Let me skim the data for an idea of what it looks like. I will also pull in three packages that I am deploying or will.</p>
+<pre class="r"><code>library(skimr)
+library(teamcolors)
+library(gganimate)
+full_season_2018 %&gt;% head() %&gt;% kableExtra::kable() %&gt;% kable_styling() %&gt;% scroll_box(width = &quot;700px&quot;, 
+    height = &quot;400px&quot;)</code></pre>
+<div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:400px; overflow-x: scroll; width:700px; ">
+<table class="table" style="margin-left: auto; margin-right: auto;">
+<thead>
+<tr>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+play_id
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+game_id
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+home_team
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+away_team
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+posteam
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+posteam_type
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+defteam
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+side_of_field
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+yardline_100
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+game_date
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+quarter_seconds_remaining
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+half_seconds_remaining
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+game_seconds_remaining
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+game_half
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+quarter_end
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+drive
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+sp
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+qtr
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+down
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+goal_to_go
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+time
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+yrdln
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+ydstogo
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+ydsnet
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+desc
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+play_type
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+yards_gained
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+shotgun
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+no_huddle
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+qb_dropback
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+qb_kneel
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+qb_spike
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+qb_scramble
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+pass_length
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+pass_location
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+air_yards
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+yards_after_catch
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+run_location
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+run_gap
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+field_goal_result
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+kick_distance
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+extra_point_result
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+two_point_conv_result
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+home_timeouts_remaining
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+away_timeouts_remaining
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+timeout
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+timeout_team
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+td_team
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+posteam_timeouts_remaining
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+defteam_timeouts_remaining
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+total_home_score
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+total_away_score
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+posteam_score
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+defteam_score
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+score_differential
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+posteam_score_post
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+defteam_score_post
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+score_differential_post
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+no_score_prob
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+opp_fg_prob
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+opp_safety_prob
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+opp_td_prob
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+fg_prob
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+safety_prob
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+td_prob
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+extra_point_prob
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+two_point_conversion_prob
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+ep
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+epa
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+total_home_epa
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+total_away_epa
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+total_home_rush_epa
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+total_away_rush_epa
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+total_home_pass_epa
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+total_away_pass_epa
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+air_epa
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+yac_epa
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+comp_air_epa
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+comp_yac_epa
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+total_home_comp_air_epa
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+total_away_comp_air_epa
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+total_home_comp_yac_epa
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+total_away_comp_yac_epa
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+total_home_raw_air_epa
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+total_away_raw_air_epa
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+total_home_raw_yac_epa
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+total_away_raw_yac_epa
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+wp
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+def_wp
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+home_wp
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+away_wp
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+wpa
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+home_wp_post
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+away_wp_post
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+total_home_rush_wpa
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+total_away_rush_wpa
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+total_home_pass_wpa
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+total_away_pass_wpa
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+air_wpa
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+yac_wpa
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+comp_air_wpa
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+comp_yac_wpa
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+total_home_comp_air_wpa
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+total_away_comp_air_wpa
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+total_home_comp_yac_wpa
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+total_away_comp_yac_wpa
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+total_home_raw_air_wpa
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+total_away_raw_air_wpa
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+total_home_raw_yac_wpa
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+total_away_raw_yac_wpa
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+punt_blocked
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+first_down_rush
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+first_down_pass
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+first_down_penalty
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+third_down_converted
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+third_down_failed
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+fourth_down_converted
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+fourth_down_failed
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+incomplete_pass
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+touchback
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+interception
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+punt_inside_twenty
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+punt_in_endzone
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+punt_out_of_bounds
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+punt_downed
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+punt_fair_catch
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+kickoff_inside_twenty
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+kickoff_in_endzone
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+kickoff_out_of_bounds
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+kickoff_downed
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+kickoff_fair_catch
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+fumble_forced
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+fumble_not_forced
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+fumble_out_of_bounds
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+solo_tackle
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+safety
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+penalty
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+tackled_for_loss
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+fumble_lost
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+own_kickoff_recovery
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+own_kickoff_recovery_td
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+qb_hit
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+rush_attempt
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+pass_attempt
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+sack
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+touchdown
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+pass_touchdown
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+rush_touchdown
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+return_touchdown
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+extra_point_attempt
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+two_point_attempt
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+field_goal_attempt
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+kickoff_attempt
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+punt_attempt
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+fumble
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+complete_pass
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+assist_tackle
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+lateral_reception
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+lateral_rush
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+lateral_return
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+lateral_recovery
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+passer_player_id
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+passer_player_name
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+receiver_player_id
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+receiver_player_name
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+rusher_player_id
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+rusher_player_name
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+lateral_receiver_player_id
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+lateral_receiver_player_name
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+lateral_rusher_player_id
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+lateral_rusher_player_name
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+lateral_sack_player_id
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+lateral_sack_player_name
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+interception_player_id
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+interception_player_name
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+lateral_interception_player_id
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+lateral_interception_player_name
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+punt_returner_player_id
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+punt_returner_player_name
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+lateral_punt_returner_player_id
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+lateral_punt_returner_player_name
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+kickoff_returner_player_name
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+kickoff_returner_player_id
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+lateral_kickoff_returner_player_id
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+lateral_kickoff_returner_player_name
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+punter_player_id
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+punter_player_name
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+kicker_player_name
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+kicker_player_id
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+own_kickoff_recovery_player_id
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+own_kickoff_recovery_player_name
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+blocked_player_id
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+blocked_player_name
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+tackle_for_loss_1_player_id
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+tackle_for_loss_1_player_name
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+tackle_for_loss_2_player_id
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+tackle_for_loss_2_player_name
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+qb_hit_1_player_id
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+qb_hit_1_player_name
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+qb_hit_2_player_id
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+qb_hit_2_player_name
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+forced_fumble_player_1_team
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+forced_fumble_player_1_player_id
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+forced_fumble_player_1_player_name
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+forced_fumble_player_2_team
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+forced_fumble_player_2_player_id
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+forced_fumble_player_2_player_name
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+solo_tackle_1_team
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+solo_tackle_2_team
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+solo_tackle_1_player_id
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+solo_tackle_2_player_id
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+solo_tackle_1_player_name
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+solo_tackle_2_player_name
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+assist_tackle_1_player_id
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+assist_tackle_1_player_name
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+assist_tackle_1_team
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+assist_tackle_2_player_id
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+assist_tackle_2_player_name
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+assist_tackle_2_team
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+assist_tackle_3_player_id
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+assist_tackle_3_player_name
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+assist_tackle_3_team
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+assist_tackle_4_player_id
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+assist_tackle_4_player_name
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+assist_tackle_4_team
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+pass_defense_1_player_id
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+pass_defense_1_player_name
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+pass_defense_2_player_id
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+pass_defense_2_player_name
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+fumbled_1_team
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+fumbled_1_player_id
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+fumbled_1_player_name
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+fumbled_2_player_id
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+fumbled_2_player_name
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+fumbled_2_team
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+fumble_recovery_1_team
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+fumble_recovery_1_yards
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+fumble_recovery_1_player_id
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+fumble_recovery_1_player_name
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+fumble_recovery_2_team
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+fumble_recovery_2_yards
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+fumble_recovery_2_player_id
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+fumble_recovery_2_player_name
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+return_team
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+return_yards
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+penalty_team
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+penalty_player_id
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+penalty_player_name
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+penalty_yards
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+replay_or_challenge
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+replay_or_challenge_result
+</th>
+<th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;">
+penalty_type
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+defensive_two_point_attempt
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+defensive_two_point_conv
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+defensive_extra_point_attempt
+</th>
+<th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;">
+defensive_extra_point_conv
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left;">
+37
+</td>
+<td style="text-align:left;">
+2018090600
+</td>
+<td style="text-align:left;">
+PHI
+</td>
+<td style="text-align:left;">
+ATL
+</td>
+<td style="text-align:left;">
+ATL
+</td>
+<td style="text-align:left;">
+away
+</td>
+<td style="text-align:left;">
+PHI
+</td>
+<td style="text-align:left;">
+PHI
+</td>
+<td style="text-align:right;">
+35
+</td>
+<td style="text-align:left;">
+2018-09-06
+</td>
+<td style="text-align:right;">
+900
+</td>
+<td style="text-align:right;">
+1800
+</td>
+<td style="text-align:right;">
+3600
+</td>
+<td style="text-align:left;">
+Half1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+15:00
+</td>
+<td style="text-align:left;">
+PHI 35
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+73
+</td>
+<td style="text-align:left;">
+J.Elliott kicks 65 yards from PHI 35 to end zone, Touchback.
+</td>
+<td style="text-align:left;">
+kickoff
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.0013737
+</td>
+<td style="text-align:right;">
+0.1626315
+</td>
+<td style="text-align:right;">
+0.0044407
+</td>
+<td style="text-align:right;">
+0.2541786
+</td>
+<td style="text-align:right;">
+0.2330812
+</td>
+<td style="text-align:right;">
+0.0036557
+</td>
+<td style="text-align:right;">
+0.3406386
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.8149985
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.000000
+</td>
+<td style="text-align:right;">
+0.000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+J.Elliott
+</td>
+<td style="text-align:left;">
+00-0033787
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+52
+</td>
+<td style="text-align:left;">
+2018090600
+</td>
+<td style="text-align:left;">
+PHI
+</td>
+<td style="text-align:left;">
+ATL
+</td>
+<td style="text-align:left;">
+ATL
+</td>
+<td style="text-align:left;">
+away
+</td>
+<td style="text-align:left;">
+PHI
+</td>
+<td style="text-align:left;">
+ATL
+</td>
+<td style="text-align:right;">
+75
+</td>
+<td style="text-align:left;">
+2018-09-06
+</td>
+<td style="text-align:right;">
+900
+</td>
+<td style="text-align:right;">
+1800
+</td>
+<td style="text-align:right;">
+3600
+</td>
+<td style="text-align:left;">
+Half1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+15:00
+</td>
+<td style="text-align:left;">
+ATL 25
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+73
+</td>
+<td style="text-align:left;">
+(15:00) PENALTY on ATL-L.Paulsen, False Start, 5 yards, enforced at ATL 25 - No Play.
+</td>
+<td style="text-align:left;">
+no_play
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.0013737
+</td>
+<td style="text-align:right;">
+0.1626315
+</td>
+<td style="text-align:right;">
+0.0044407
+</td>
+<td style="text-align:right;">
+0.2541786
+</td>
+<td style="text-align:right;">
+0.2330812
+</td>
+<td style="text-align:right;">
+0.0036557
+</td>
+<td style="text-align:right;">
+0.3406386
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.8149985
+</td>
+<td style="text-align:right;">
+-0.7217597
+</td>
+<td style="text-align:right;">
+0.7217597
+</td>
+<td style="text-align:right;">
+-0.7217597
+</td>
+<td style="text-align:right;">
+0.000000
+</td>
+<td style="text-align:right;">
+0.000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.5000068
+</td>
+<td style="text-align:right;">
+0.4999932
+</td>
+<td style="text-align:right;">
+0.4999932
+</td>
+<td style="text-align:right;">
+0.5000068
+</td>
+<td style="text-align:right;">
+-0.0210159
+</td>
+<td style="text-align:right;">
+0.5210091
+</td>
+<td style="text-align:right;">
+0.4789909
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+ATL
+</td>
+<td style="text-align:left;">
+00-0027215
+</td>
+<td style="text-align:left;">
+L.Paulsen
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+False Start
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+75
+</td>
+<td style="text-align:left;">
+2018090600
+</td>
+<td style="text-align:left;">
+PHI
+</td>
+<td style="text-align:left;">
+ATL
+</td>
+<td style="text-align:left;">
+ATL
+</td>
+<td style="text-align:left;">
+away
+</td>
+<td style="text-align:left;">
+PHI
+</td>
+<td style="text-align:left;">
+ATL
+</td>
+<td style="text-align:right;">
+80
+</td>
+<td style="text-align:left;">
+2018-09-06
+</td>
+<td style="text-align:right;">
+900
+</td>
+<td style="text-align:right;">
+1800
+</td>
+<td style="text-align:right;">
+3600
+</td>
+<td style="text-align:left;">
+Half1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+15:00
+</td>
+<td style="text-align:left;">
+ATL 20
+</td>
+<td style="text-align:right;">
+15
+</td>
+<td style="text-align:right;">
+73
+</td>
+<td style="text-align:left;">
+(15:00) M.Ryan pass short right to J.Jones pushed ob at ATL 30 for 10 yards (M.Jenkins).
+</td>
+<td style="text-align:left;">
+pass
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+short
+</td>
+<td style="text-align:left;">
+right
+</td>
+<td style="text-align:right;">
+8
+</td>
+<td style="text-align:right;">
+2
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.0014756
+</td>
+<td style="text-align:right;">
+0.1856642
+</td>
+<td style="text-align:right;">
+0.0069365
+</td>
+<td style="text-align:right;">
+0.2902967
+</td>
+<td style="text-align:right;">
+0.2234354
+</td>
+<td style="text-align:right;">
+0.0038931
+</td>
+<td style="text-align:right;">
+0.2882984
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.0932388
+</td>
+<td style="text-align:right;">
+0.8183435
+</td>
+<td style="text-align:right;">
+-0.0965838
+</td>
+<td style="text-align:right;">
+0.0965838
+</td>
+<td style="text-align:right;">
+0.000000
+</td>
+<td style="text-align:right;">
+0.000000
+</td>
+<td style="text-align:right;">
+-0.8183435
+</td>
+<td style="text-align:right;">
+0.8183435
+</td>
+<td style="text-align:right;">
+0.0422408
+</td>
+<td style="text-align:right;">
+0.7761027
+</td>
+<td style="text-align:right;">
+0.0422408
+</td>
+<td style="text-align:right;">
+0.7761027
+</td>
+<td style="text-align:right;">
+-0.0422408
+</td>
+<td style="text-align:right;">
+0.0422408
+</td>
+<td style="text-align:right;">
+-0.7761027
+</td>
+<td style="text-align:right;">
+0.7761027
+</td>
+<td style="text-align:right;">
+-0.0422408
+</td>
+<td style="text-align:right;">
+0.0422408
+</td>
+<td style="text-align:right;">
+-0.7761027
+</td>
+<td style="text-align:right;">
+0.7761027
+</td>
+<td style="text-align:right;">
+0.4789909
+</td>
+<td style="text-align:right;">
+0.5210091
+</td>
+<td style="text-align:right;">
+0.5210091
+</td>
+<td style="text-align:right;">
+0.4789909
+</td>
+<td style="text-align:right;">
+0.0261091
+</td>
+<td style="text-align:right;">
+0.4949000
+</td>
+<td style="text-align:right;">
+0.5051000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+-0.0261091
+</td>
+<td style="text-align:right;">
+0.0261091
+</td>
+<td style="text-align:right;">
+0.0015623
+</td>
+<td style="text-align:right;">
+0.0245468
+</td>
+<td style="text-align:right;">
+0.0015623
+</td>
+<td style="text-align:right;">
+0.0245468
+</td>
+<td style="text-align:right;">
+-0.0015623
+</td>
+<td style="text-align:right;">
+0.0015623
+</td>
+<td style="text-align:right;">
+-0.0245468
+</td>
+<td style="text-align:right;">
+0.0245468
+</td>
+<td style="text-align:right;">
+-0.0015623
+</td>
+<td style="text-align:right;">
+0.0015623
+</td>
+<td style="text-align:right;">
+-0.0245468
+</td>
+<td style="text-align:right;">
+0.0245468
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+00-0026143
+</td>
+<td style="text-align:left;">
+M.Ryan
+</td>
+<td style="text-align:left;">
+00-0027944
+</td>
+<td style="text-align:left;">
+J.Jones
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+PHI
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+00-0026990
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+M.Jenkins
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+104
+</td>
+<td style="text-align:left;">
+2018090600
+</td>
+<td style="text-align:left;">
+PHI
+</td>
+<td style="text-align:left;">
+ATL
+</td>
+<td style="text-align:left;">
+ATL
+</td>
+<td style="text-align:left;">
+away
+</td>
+<td style="text-align:left;">
+PHI
+</td>
+<td style="text-align:left;">
+ATL
+</td>
+<td style="text-align:right;">
+70
+</td>
+<td style="text-align:left;">
+2018-09-06
+</td>
+<td style="text-align:right;">
+862
+</td>
+<td style="text-align:right;">
+1762
+</td>
+<td style="text-align:right;">
+3562
+</td>
+<td style="text-align:left;">
+Half1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+2
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+14:22
+</td>
+<td style="text-align:left;">
+ATL 30
+</td>
+<td style="text-align:right;">
+5
+</td>
+<td style="text-align:right;">
+73
+</td>
+<td style="text-align:left;">
+(14:22) J.Jones left end pushed ob at ATL 41 for 11 yards (D.Barnett).
+</td>
+<td style="text-align:left;">
+run
+</td>
+<td style="text-align:right;">
+11
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:left;">
+left
+</td>
+<td style="text-align:left;">
+end
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.0015177
+</td>
+<td style="text-align:right;">
+0.1613336
+</td>
+<td style="text-align:right;">
+0.0034158
+</td>
+<td style="text-align:right;">
+0.2489321
+</td>
+<td style="text-align:right;">
+0.2321779
+</td>
+<td style="text-align:right;">
+0.0039908
+</td>
+<td style="text-align:right;">
+0.3486320
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.9115823
+</td>
+<td style="text-align:right;">
+1.3625068
+</td>
+<td style="text-align:right;">
+-1.4590906
+</td>
+<td style="text-align:right;">
+1.4590906
+</td>
+<td style="text-align:right;">
+-1.362507
+</td>
+<td style="text-align:right;">
+1.362507
+</td>
+<td style="text-align:right;">
+-0.8183435
+</td>
+<td style="text-align:right;">
+0.8183435
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+-0.0422408
+</td>
+<td style="text-align:right;">
+0.0422408
+</td>
+<td style="text-align:right;">
+-0.7761027
+</td>
+<td style="text-align:right;">
+0.7761027
+</td>
+<td style="text-align:right;">
+-0.0422408
+</td>
+<td style="text-align:right;">
+0.0422408
+</td>
+<td style="text-align:right;">
+-0.7761027
+</td>
+<td style="text-align:right;">
+0.7761027
+</td>
+<td style="text-align:right;">
+0.5051000
+</td>
+<td style="text-align:right;">
+0.4949000
+</td>
+<td style="text-align:right;">
+0.4949000
+</td>
+<td style="text-align:right;">
+0.5051000
+</td>
+<td style="text-align:right;">
+0.0432767
+</td>
+<td style="text-align:right;">
+0.4516233
+</td>
+<td style="text-align:right;">
+0.5483767
+</td>
+<td style="text-align:right;">
+-0.0432767
+</td>
+<td style="text-align:right;">
+0.0432767
+</td>
+<td style="text-align:right;">
+-0.0261091
+</td>
+<td style="text-align:right;">
+0.0261091
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+-0.0015623
+</td>
+<td style="text-align:right;">
+0.0015623
+</td>
+<td style="text-align:right;">
+-0.0245468
+</td>
+<td style="text-align:right;">
+0.0245468
+</td>
+<td style="text-align:right;">
+-0.0015623
+</td>
+<td style="text-align:right;">
+0.0015623
+</td>
+<td style="text-align:right;">
+-0.0245468
+</td>
+<td style="text-align:right;">
+0.0245468
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+00-0027944
+</td>
+<td style="text-align:left;">
+J.Jones
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+PHI
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+00-0033876
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+D.Barnett
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+125
+</td>
+<td style="text-align:left;">
+2018090600
+</td>
+<td style="text-align:left;">
+PHI
+</td>
+<td style="text-align:left;">
+ATL
+</td>
+<td style="text-align:left;">
+ATL
+</td>
+<td style="text-align:left;">
+away
+</td>
+<td style="text-align:left;">
+PHI
+</td>
+<td style="text-align:left;">
+ATL
+</td>
+<td style="text-align:right;">
+59
+</td>
+<td style="text-align:left;">
+2018-09-06
+</td>
+<td style="text-align:right;">
+826
+</td>
+<td style="text-align:right;">
+1726
+</td>
+<td style="text-align:right;">
+3526
+</td>
+<td style="text-align:left;">
+Half1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+13:46
+</td>
+<td style="text-align:left;">
+ATL 41
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+73
+</td>
+<td style="text-align:left;">
+(13:46) D.Freeman right end to PHI 39 for 20 yards (M.Jenkins).
+</td>
+<td style="text-align:left;">
+run
+</td>
+<td style="text-align:right;">
+20
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:left;">
+right
+</td>
+<td style="text-align:left;">
+end
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.0012985
+</td>
+<td style="text-align:right;">
+0.1109844
+</td>
+<td style="text-align:right;">
+0.0011514
+</td>
+<td style="text-align:right;">
+0.1725676
+</td>
+<td style="text-align:right;">
+0.2906260
+</td>
+<td style="text-align:right;">
+0.0036329
+</td>
+<td style="text-align:right;">
+0.4197392
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+2.2740891
+</td>
+<td style="text-align:right;">
+1.3437998
+</td>
+<td style="text-align:right;">
+-2.8028905
+</td>
+<td style="text-align:right;">
+2.8028905
+</td>
+<td style="text-align:right;">
+-2.706307
+</td>
+<td style="text-align:right;">
+2.706307
+</td>
+<td style="text-align:right;">
+-0.8183435
+</td>
+<td style="text-align:right;">
+0.8183435
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+-0.0422408
+</td>
+<td style="text-align:right;">
+0.0422408
+</td>
+<td style="text-align:right;">
+-0.7761027
+</td>
+<td style="text-align:right;">
+0.7761027
+</td>
+<td style="text-align:right;">
+-0.0422408
+</td>
+<td style="text-align:right;">
+0.0422408
+</td>
+<td style="text-align:right;">
+-0.7761027
+</td>
+<td style="text-align:right;">
+0.7761027
+</td>
+<td style="text-align:right;">
+0.5483767
+</td>
+<td style="text-align:right;">
+0.4516233
+</td>
+<td style="text-align:right;">
+0.4516233
+</td>
+<td style="text-align:right;">
+0.5483767
+</td>
+<td style="text-align:right;">
+0.0456144
+</td>
+<td style="text-align:right;">
+0.4060090
+</td>
+<td style="text-align:right;">
+0.5939910
+</td>
+<td style="text-align:right;">
+-0.0888910
+</td>
+<td style="text-align:right;">
+0.0888910
+</td>
+<td style="text-align:right;">
+-0.0261091
+</td>
+<td style="text-align:right;">
+0.0261091
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+-0.0015623
+</td>
+<td style="text-align:right;">
+0.0015623
+</td>
+<td style="text-align:right;">
+-0.0245468
+</td>
+<td style="text-align:right;">
+0.0245468
+</td>
+<td style="text-align:right;">
+-0.0015623
+</td>
+<td style="text-align:right;">
+0.0015623
+</td>
+<td style="text-align:right;">
+-0.0245468
+</td>
+<td style="text-align:right;">
+0.0245468
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+00-0031285
+</td>
+<td style="text-align:left;">
+D.Freeman
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+PHI
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+00-0026990
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+M.Jenkins
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+<tr>
+<td style="text-align:left;">
+146
+</td>
+<td style="text-align:left;">
+2018090600
+</td>
+<td style="text-align:left;">
+PHI
+</td>
+<td style="text-align:left;">
+ATL
+</td>
+<td style="text-align:left;">
+ATL
+</td>
+<td style="text-align:left;">
+away
+</td>
+<td style="text-align:left;">
+PHI
+</td>
+<td style="text-align:left;">
+PHI
+</td>
+<td style="text-align:right;">
+39
+</td>
+<td style="text-align:left;">
+2018-09-06
+</td>
+<td style="text-align:right;">
+790
+</td>
+<td style="text-align:right;">
+1690
+</td>
+<td style="text-align:right;">
+3490
+</td>
+<td style="text-align:left;">
+Half1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:left;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+13:10
+</td>
+<td style="text-align:left;">
+PHI 39
+</td>
+<td style="text-align:right;">
+10
+</td>
+<td style="text-align:right;">
+73
+</td>
+<td style="text-align:left;">
+(13:10) M.Ryan pass incomplete short right to C.Ridley (J.Mills, J.Hicks).
+</td>
+<td style="text-align:left;">
+pass
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+short
+</td>
+<td style="text-align:left;">
+right
+</td>
+<td style="text-align:right;">
+4
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+3
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0.0008716
+</td>
+<td style="text-align:right;">
+0.0623621
+</td>
+<td style="text-align:right;">
+0.0001931
+</td>
+<td style="text-align:right;">
+0.0965497
+</td>
+<td style="text-align:right;">
+0.3456556
+</td>
+<td style="text-align:right;">
+0.0032664
+</td>
+<td style="text-align:right;">
+0.4911014
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+3.6178889
+</td>
+<td style="text-align:right;">
+-0.5220527
+</td>
+<td style="text-align:right;">
+-2.2808378
+</td>
+<td style="text-align:right;">
+2.2808378
+</td>
+<td style="text-align:right;">
+-2.706307
+</td>
+<td style="text-align:right;">
+2.706307
+</td>
+<td style="text-align:right;">
+-0.2962908
+</td>
+<td style="text-align:right;">
+0.2962908
+</td>
+<td style="text-align:right;">
+-0.2967783
+</td>
+<td style="text-align:right;">
+-0.2252744
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+-0.0422408
+</td>
+<td style="text-align:right;">
+0.0422408
+</td>
+<td style="text-align:right;">
+-0.7761027
+</td>
+<td style="text-align:right;">
+0.7761027
+</td>
+<td style="text-align:right;">
+0.2545376
+</td>
+<td style="text-align:right;">
+-0.2545376
+</td>
+<td style="text-align:right;">
+-0.5508284
+</td>
+<td style="text-align:right;">
+0.5508284
+</td>
+<td style="text-align:right;">
+0.5939910
+</td>
+<td style="text-align:right;">
+0.4060090
+</td>
+<td style="text-align:right;">
+0.4060090
+</td>
+<td style="text-align:right;">
+0.5939910
+</td>
+<td style="text-align:right;">
+-0.0171052
+</td>
+<td style="text-align:right;">
+0.4231141
+</td>
+<td style="text-align:right;">
+0.5768859
+</td>
+<td style="text-align:right;">
+-0.0888910
+</td>
+<td style="text-align:right;">
+0.0888910
+</td>
+<td style="text-align:right;">
+-0.0090039
+</td>
+<td style="text-align:right;">
+0.0090039
+</td>
+<td style="text-align:right;">
+-0.0096399
+</td>
+<td style="text-align:right;">
+-0.0074653
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+0.0000000
+</td>
+<td style="text-align:right;">
+-0.0015623
+</td>
+<td style="text-align:right;">
+0.0015623
+</td>
+<td style="text-align:right;">
+-0.0245468
+</td>
+<td style="text-align:right;">
+0.0245468
+</td>
+<td style="text-align:right;">
+0.0080776
+</td>
+<td style="text-align:right;">
+-0.0080776
+</td>
+<td style="text-align:right;">
+-0.0170816
+</td>
+<td style="text-align:right;">
+0.0170816
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+1
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+00-0026143
+</td>
+<td style="text-align:left;">
+M.Ryan
+</td>
+<td style="text-align:left;">
+00-0034837
+</td>
+<td style="text-align:left;">
+C.Ridley
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+00-0032803
+</td>
+<td style="text-align:left;">
+J.Mills
+</td>
+<td style="text-align:left;">
+00-0032129
+</td>
+<td style="text-align:left;">
+J.Hicks
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+NA
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:left;">
+NA
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+<td style="text-align:right;">
+0
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div id="fixing-up-the-color-scheme" class="section level2">
+<h2>Fixing up the color scheme</h2>
+<pre class="r"><code>nfl_teamcolors &lt;- teamcolors %&gt;% filter(league == &quot;nfl&quot;)
+dal_color &lt;- nfl_teamcolors %&gt;% filter(name == &quot;Dallas Cowboys&quot;) %&gt;% pull(primary)
+car_color &lt;- nfl_teamcolors %&gt;% filter(name == &quot;Carolina Panthers&quot;) %&gt;% pull(primary)</code></pre>
+<p><code>dal_color</code> is a value for the primary Cowboys color.</p>
+</div>
+<div id="the-dallas-cowboys-games" class="section level2">
+<h2>The Dallas Cowboys Games</h2>
+<p>Now let me get the Dallas games. The easiest way I can figure out how to do this would be to filter by Dallas being one of the two teams where Dallas is <code>DAL</code>.</p>
+<pre class="r"><code>dal_season &lt;- full_season_2018 %&gt;% filter(home_team == &quot;DAL&quot; | away_team == &quot;DAL&quot;)
+CAR_DAL &lt;- full_season_2018 %&gt;% filter(home_team == &quot;CAR&quot; &amp; away_team == &quot;DAL&quot;)</code></pre>
+<p>Cool. Now let me plot the first game. That is the filter line in the <code>ggplot</code>. Then I will facet out the seasons but it will take some work to get the labels and things to generate.</p>
+<pre class="r"><code># DFS &lt;- dal_season %&gt;% left_join(all_2018_games)
+cardal_wp &lt;- CAR_DAL %&gt;% filter(!is.na(home_wp), !is.na(away_wp)) %&gt;% unite(GIDGSR, 
+    game_seconds_remaining, game_id, sep = &quot;:&quot;)
+cardal_wp &lt;- cardal_wp %&gt;% dplyr::select(GIDGSR, home_wp, away_wp) %&gt;% gather(team, 
+    wpa, -GIDGSR) %&gt;% separate(., GIDGSR, c(&quot;GSR&quot;, &quot;game_id&quot;), sep = &quot;:&quot;) %&gt;% mutate(game_seconds_remaining = as.integer(GSR))
+cardal_wp %&gt;% ggplot(aes(x = game_seconds_remaining, y = wpa, color = team)) + geom_line(size = 2) + 
+    geom_hline(yintercept = 0.5, color = &quot;gray&quot;, linetype = &quot;dashed&quot;) + scale_color_manual(labels = c(&quot;CAR&quot;, 
+    &quot;DAL&quot;), values = c(car_color, dal_color), guide = FALSE) + scale_x_reverse(breaks = seq(0, 
+    3600, 300)) + annotate(&quot;text&quot;, x = 3000, y = 0.75, label = &quot;CAR&quot;, color = car_color, 
+    size = 8) + annotate(&quot;text&quot;, x = 3000, y = 0.25, label = &quot;DAL&quot;, color = dal_color, 
+    size = 8) + geom_vline(xintercept = 900, linetype = &quot;dashed&quot;, black) + geom_vline(xintercept = 1800, 
+    linetype = &quot;dashed&quot;, black) + geom_vline(xintercept = 2700, linetype = &quot;dashed&quot;, 
+    black) + geom_vline(xintercept = 0, linetype = &quot;dashed&quot;, black) + labs(x = &quot;Time Remaining (seconds)&quot;, 
+    y = &quot;Win Probability&quot;, title = &quot;Week 1 Win Probability Chart&quot;, subtitle = &quot;Carolina Panthers vs. Dallas Cowboys&quot;, 
+    caption = &quot;Data from nflscrapR&quot;) + theme_bw()</code></pre>
+<p><img src="/R/nflscrapR/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p>Now I want to try and build a plot of all of Dallas Cowboys games for the season. Here are the steps. First, I am going to make a table that contains all of the names and colors for all of the game IDs. Even though I only need those for Dallas, building a shiny app for this would mean that I could select by teams above and make it extensible. At the end, I will only need those for Dallas so I will separate them off.</p>
+<pre class="r"><code>ntable &lt;- all_2018_games %&gt;% group_by(game_id) %&gt;% summarise(home_team = first(home_team), 
+    away_team = first(away_team)) %&gt;% ungroup()
+ntableH &lt;- ntable
+ntableH &lt;- ntableH %&gt;% left_join(nflteams, by = c(home_team = &quot;abbr&quot;))
+names(ntableH) &lt;- paste0(&quot;Home_&quot;, names(ntableH), sep = &quot;&quot;)
+ntableH &lt;- ntableH %&gt;% rename(., game_id = Home_game_id, home_team = Home_home_team, 
+    away_team = Home_away_team)
+ntableA &lt;- ntable
+ntableA &lt;- ntableA %&gt;% left_join(nflteams, by = c(away_team = &quot;abbr&quot;))
+names(ntableA) &lt;- paste0(&quot;Away_&quot;, names(ntableA), sep = &quot;&quot;)
+ntableA &lt;- ntableA %&gt;% rename(., game_id = Away_game_id, home_team = Away_home_team, 
+    away_team = Away_away_team)
+My.NFL.Table &lt;- ntableH %&gt;% inner_join(ntableA)
+Dallas.Table &lt;- My.NFL.Table %&gt;% filter(home_team == &quot;DAL&quot; | away_team == &quot;DAL&quot;)
+Dallas.Table %&gt;% head()</code></pre>
+<pre><code>## # A tibble: 6 x 15
+##   game_id home_team away_team Home_team Home_primary Home_secondary
+##   &lt;chr&gt;   &lt;chr&gt;     &lt;chr&gt;     &lt;chr&gt;     &lt;chr&gt;        &lt;chr&gt;         
+## 1 201809… CAR       DAL       Carolina… #0085ca      #000000       
+## 2 201809… DAL       NYG       Dallas C… #002244      #b0b7bc       
+## 3 201809… SEA       DAL       Seattle … #002244      #69be28       
+## 4 201809… DAL       DET       Dallas C… #002244      #b0b7bc       
+## 5 201810… HOU       DAL       Houston … #03202f      #a71930       
+## 6 201810… DAL       JAX       Dallas C… #002244      #b0b7bc       
+## # … with 9 more variables: Home_tertiary &lt;chr&gt;, Home_quaternary &lt;chr&gt;,
+## #   Home_division &lt;chr&gt;, Away_team &lt;chr&gt;, Away_primary &lt;chr&gt;,
+## #   Away_secondary &lt;chr&gt;, Away_tertiary &lt;chr&gt;, Away_quaternary &lt;chr&gt;,
+## #   Away_division &lt;chr&gt;</code></pre>
+<p>One nice little bit of data recovery here, the season schedule.</p>
+<pre class="r"><code>Dallas.Table %&gt;% select(game_id, Home_team, Away_team)</code></pre>
+<pre><code>## # A tibble: 16 x 3
+##    game_id    Home_team           Away_team           
+##    &lt;chr&gt;      &lt;chr&gt;               &lt;chr&gt;               
+##  1 2018090910 Carolina Panthers   Dallas Cowboys      
+##  2 2018091613 Dallas Cowboys      New York Giants     
+##  3 2018092312 Seattle Seahawks    Dallas Cowboys      
+##  4 2018093002 Dallas Cowboys      Detroit Lions       
+##  5 2018100712 Houston Texans      Dallas Cowboys      
+##  6 2018101410 Dallas Cowboys      Jacksonville Jaguars
+##  7 2018102110 Washington Redskins Dallas Cowboys      
+##  8 2018110500 Dallas Cowboys      Tennessee Titans    
+##  9 2018111111 Philadelphia Eagles Dallas Cowboys      
+## 10 2018111800 Atlanta Falcons     Dallas Cowboys      
+## 11 2018112201 Dallas Cowboys      Washington Redskins 
+## 12 2018112900 Dallas Cowboys      New Orleans Saints  
+## 13 2018120912 Dallas Cowboys      Philadelphia Eagles 
+## 14 2018121605 Indianapolis Colts  Dallas Cowboys      
+## 15 2018122306 Dallas Cowboys      Tampa Bay Buccaneers
+## 16 2018123008 New York Giants     Dallas Cowboys</code></pre>
+<p>The first thing to notice is that this color scheme thing is going to cause trouble when Dallas plays teams that apparently have the same primary color. For now, I think that I will just make the opponent some constant color.</p>
+<pre class="r"><code>dal_wp &lt;- dal_season %&gt;% 
+  filter(!is.na(home_wp),
+         !is.na(away_wp)) %&gt;% unite(GIDGSR, game_seconds_remaining, game_id, sep=&quot;:&quot;)
+dal_wp &lt;- dal_wp %&gt;% dplyr::select(GIDGSR,
+                home_wp,
+                away_wp)  %&gt;%
+  gather(team, wpa, -GIDGSR) %&gt;% separate(., GIDGSR, c(&quot;GSR&quot;, &quot;game_id&quot;), sep=&quot;:&quot;) %&gt;% 
+  mutate(game_seconds_remaining = as.integer(GSR))
+dal_plt &lt;- dal_wp %&gt;% left_join(My.NFL.Table)
+dal_plt$colors1 &lt;- NA
+dal_plt[dal_plt$team==&quot;home_wp&quot;,&quot;colors1&quot;] &lt;- dal_plt[dal_plt$team==&quot;home_wp&quot;,&quot;Home_primary&quot;]
+dal_plt[dal_plt$team==&quot;away_wp&quot;,&quot;colors1&quot;] &lt;- dal_plt[dal_plt$team==&quot;away_wp&quot;,&quot;Away_primary&quot;]
+dal_plt[dal_plt$team==&quot;home_wp&quot;,&quot;team&quot;] &lt;- dal_plt[dal_plt$team==&quot;home_wp&quot;,&quot;home_team&quot;]
+dal_plt[dal_plt$team==&quot;away_wp&quot;,&quot;team&quot;] &lt;- dal_plt[dal_plt$team==&quot;away_wp&quot;,&quot;away_team&quot;]
+dal_plt$dateG &lt;- substring(dal_plt$game_id, 1, 8)
+dal_plt$titleS &lt;- with(dal_plt, paste0(dateG,&quot;: &quot;,Home_team,&quot; v. &quot;,Away_team))
+p &lt;- dal_plt %&gt;% ggplot() + aes(x = game_seconds_remaining, y = wpa, color = team) +
+  geom_line(size = 2) +
+  geom_hline(yintercept = 0.5, color = &quot;gray&quot;, linetype = &quot;dashed&quot;) +
+  scale_color_viridis_d(guide=FALSE) +
+  scale_x_reverse(breaks = seq(0, 3600, 300)) + 
+  annotate(&quot;text&quot;, x = 3000, y = .75, label = &quot;Home&quot;, size = 8) + 
+  annotate(&quot;text&quot;, x = 3000, y = .25, label = &quot;Away&quot;, size = 8) +
+  geom_vline(xintercept = 900, linetype = &quot;dashed&quot;, black) + 
+  geom_vline(xintercept = 1800, linetype = &quot;dashed&quot;, black) + 
+  geom_vline(xintercept = 2700, linetype = &quot;dashed&quot;, black) + 
+  geom_vline(xintercept = 0, linetype = &quot;dashed&quot;, black) + 
+  labs(
+    x = &quot;Time Remaining (seconds)&quot;,
+    y = &quot;Win Probability&quot;,
+    title = &quot;{closest_state}&quot;,
+#    subtitle = &quot;Carolina Panthers vs. Dallas Cowboys&quot;,
+    caption = &quot;Data from nflscrapR&quot;
+  ) + theme_bw() + transition_states(titleS, transition_length=6, state_length = 10)
+animate(p, nframes=400)</code></pre>
+<p><img src="/R/nflscrapR/index_files/figure-html/unnamed-chunk-9-1.gif" /><!-- --></p>
+<p>I will stop with that. In a blog post, I did a bit more with this and also <a href="https://rwalkerwu.shinyapps.io/NFL-Scrapr/">built a shiny app for doing it for all of the teams</a> that is linked there.</p>
+</div>
+</div>

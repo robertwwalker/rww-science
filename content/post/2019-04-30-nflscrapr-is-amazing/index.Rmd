@@ -1,0 +1,229 @@
+---
+title: nflscrapR is amazing
+author: RWW
+date: '2019-04-30'
+slug: nflscrapr-is-amazing
+categories:
+  - R
+  - tidyverse
+  - animation
+tags:
+  - plot
+  - R
+  - R Markdown
+  - tidyverse
+header:
+  caption: ''
+  image: ''
+  preview: yes
+---
+
+# Scraping NFL data
+
+*Note: An original version of this post had issues induced by overtime games.  There is a better way to handle all of this that I learned from a brief analysis of a tie game between Cleveland and Pittsburgh in Week One.*
+
+The `nflscrapR` package is designed to make data on NFL games more easily available.  To install the package, we need to grab it from github.
+
+```{r cars, eval=FALSE, echo=TRUE}
+devtools::install_github(repo = "maksimhorowitz/nflscrapR")
+```
+
+The github page for [nflscrapR](https://github.com/maksimhorowitz/nflscrapR) is quite informative.
+
+## Getting Some Data
+
+Following the guide to the package on GitHub, let me try their example.  It works, but I will save off the data to github to avoid spamming the host.
+
+```{r NFLdata, eval=FALSE, message=FALSE, warning=FALSE}
+library(nflscrapR)
+all_2018_games <- scrape_game_ids(2018) # Default is regular season
+```
+
+Gives me a list of all games.  I saved them to an .rds file and stored them on Gitub.  To make it browsable, I will use `kable` and the like.
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(nflscrapR)
+library(RCurl)
+library(kableExtra)
+library(gganimate)
+library(ggrepel)
+library(ggthemes)
+library(RColorBrewer)
+library(janitor)
+all_2018_games <-readRDS(url("https://github.com/robertwwalker/academic-mymod/raw/master/data/NFLGames2018.rds"))
+all_2018_games %>%  kable()  %>%
+  kable_styling() %>%
+  scroll_box(width = "100%", height = "300px")
+```
+
+That's all the regular season games in the 2018 season.  They suggest that it is straightforward to grab an entire season of play by play data.
+
+```{r, echo=TRUE, eval=FALSE}
+full_season_2018 <- scrape_season_play_by_play(2018, "reg")
+saveRDS(full_season_2018, file="../../../data/2018NFLSeason.rds")
+```
+
+That gets the data though it took over an hour to acquire it all and it threw two error messages.  I do not yet know if they are conseequential.  My goal here is to use this package and the ability to plot the win probability charts to try to summarise an entire cowboys season.
+
+```{r}
+full_season_2018 <- readRDS(url("https://github.com/robertwwalker/academic-mymod/raw/master/data/2018NFLSeason.rds")) 
+```
+
+## What can I do with it?
+
+When I paid attention the NFL, I followed the Dallas Cowboys.  Let's isolate their data.
+
+```{r}
+dal_season <- full_season_2018 %>% filter(home_team=="DAL" | away_team=="DAL")
+dal_season %>%  head()
+#  kable()  %>%
+#  kable_styling() %>%
+#  scroll_box(width = "100%", height = "200px")
+```
+
+## Dallas Season
+
+Now I want to try and build a plot of all of Dallas Cowboys games for the season.  Here are the steps.  First, I am going to make a table that contains all of the names and colors for all of the game IDs.  Even though I only need those for Dallas, building a shiny app for this would mean that I could select by teams above and make it extensible.  At the end, I will only need those for Dallas so I will separate them off.
+
+```{r}
+all_2018_games %>%  select(home_team, home_score,  away_team, away_score) %>% head()
+```
+
+Cool.
+
+```{r}
+ntable <- all_2018_games %>% select(game_id, home_team, away_team)
+ntableH <- ntable
+ntableH <- ntableH %>% left_join(nflteams, by = c("home_team" = "abbr"))
+names(ntableH) <- paste0("Home_",names(ntableH), sep="")
+ntableH <- ntableH %>% rename(., game_id = Home_game_id, home_team = Home_home_team, away_team = Home_away_team)
+ntableA <- ntable
+ntableA <- ntableA %>% left_join(nflteams, by = c("away_team" = "abbr"))
+names(ntableA) <- paste0("Away_",names(ntableA), sep="")
+ntableA <- ntableA %>% rename(., game_id = Away_game_id, home_team = Away_home_team, away_team = Away_away_team)
+My.NFL.Table <- ntableH %>% inner_join(ntableA)
+My.NFL.Table <- My.NFL.Table %>% left_join(all_2018_games)
+Dallas.Table <- My.NFL.Table %>% filter(home_team=="DAL" | away_team=="DAL")
+Dallas.Table %>% head()
+```
+
+One nice little bit of data recovery here, the season schedule and Dallas's result can be seen below.
+
+```{r}
+Dallas.Table %>% select(game_id,Home_team,home_score, Away_team, away_score)
+```
+
+### Season Won-Loss Records
+
+To derive a season won-loss record for each team, I need to first declare the outcome of each game using the scores and then summarise them over teams.  I will also have to pass them on because they do not have this in the `nflteams` data in `nflscrapR`.
+
+```{r}
+WLTabs <- all_2018_games %>% mutate(home_win = (home_score > away_score), away_win = (away_score > home_score)) %>% select(game_id, home_team, away_team, home_win, away_win) %>% gather("home_team", "away_team", key="HA", value="abbr")
+WLTabs$Wins <- WLTabs$home_win
+WLTabs[WLTabs$HA=="away_team","Wins"] <- WLTabs[WLTabs$HA=="away_team","away_win"]
+WinsTab <- WLTabs %>% group_by(abbr) %>% summarise(Wins = sum(Wins==TRUE))
+```
+
+
+Now I want to put together a plot of a season.  The way to make it modular is to choose a team and program the rest as a function with that as input.  The hack that I undertook is recalibrating the time remaining to take account of the mess of overtime games.
+
+```{r, warning=FALSE, message=FALSE}
+season_animator <- function(teamName, data1=full_season_2018, data2=all_2018_games, nflteams = nflscrapR::nflteams) {
+  # This creates the team color vector
+  NFL.colors <- nflteams %>% select(primary)
+  NFL.colors <- as.vector(NFL.colors$primary)
+  names(NFL.colors) <- nflteams$abbr
+  NFL.colorsS <- nflteams %>% select(secondary)
+  NFL.colorsS <- as.vector(NFL.colorsS$secondary)
+  names(NFL.colorsS) <- nflteams$abbr
+  # Now create the title and wins
+  WLTabs <- all_2018_games %>% mutate(home_win = (home_score > away_score), away_win = (away_score > home_score)) %>% select(game_id, home_team, away_team, home_win, away_win) %>% gather("home_team", "away_team", key="HA", value="abbr")
+  WLTabs$Wins <- WLTabs$home_win
+  WLTabs[WLTabs$HA=="away_team","Wins"] <- WLTabs[WLTabs$HA=="away_team","away_win"]
+  WinsTab <- WLTabs %>% group_by(abbr) %>% summarise(Wins = sum(Wins==TRUE))
+  My.Wins <- WinsTab %>% filter(abbr==teamName) %>% select(Wins) %>% as.integer()
+  title.ST <- nflteams %>% filter(abbr==teamName) %>% select(team) %>% as.character()
+  title.My <- paste0("2018 ",title.ST,": ",My.Wins," Wins")
+  ntable <- all_2018_games %>% select(game_id, home_team, away_team)
+  ntableH <- ntable
+  ntableH <- ntableH %>% left_join(nflteams, by = c("home_team" = "abbr"))
+  names(ntableH) <- paste0("Home_",names(ntableH), sep="")
+  ntableH <- ntableH %>% rename(., game_id = Home_game_id, home_team = Home_home_team, away_team = Home_away_team)
+  ntableA <- ntable
+  ntableA <- ntableA %>% left_join(nflteams, by = c("away_team" = "abbr"))
+  names(ntableA) <- paste0("Away_",names(ntableA), sep="")
+  ntableA <- ntableA %>% rename(., game_id = Away_game_id, home_team = Away_home_team, away_team = Away_away_team)
+  My.NFL.Table <- ntableH %>% inner_join(ntableA)
+  My.NFL.Table <- My.NFL.Table %>% left_join(all_2018_games)
+  # Select off the team dataset
+  team_season <- full_season_2018 %>% filter(home_team==teamName | away_team==teamName)
+  # Fix GSR
+  team_season[team_season$game_half=="Overtime","game_seconds_remaining"] <- -1*(600 - team_season[team_season$game_half=="Overtime","game_seconds_remaining"])
+  team_wp <- team_season %>% 
+    filter(!is.na(home_wp),!is.na(away_wp)) %>% 
+    unite(GIDGSR, game_seconds_remaining, game_id, sep=":")
+  team_wp <- team_wp %>% 
+    dplyr::select(GIDGSR,
+                  home_wp,
+                  away_wp)  %>%
+    gather(team, wpa, -GIDGSR) %>% 
+    separate(., GIDGSR, c("GSR", "game_id"), sep=":") %>% 
+    mutate(game_seconds_remaining = as.integer(GSR))
+  team_plt <- team_wp %>% left_join(My.NFL.Table)
+  team_plt <- team_plt %>% left_join(data2)
+  team_plt[team_plt$team=="home_wp","team"] <- team_plt[team_plt$team=="home_wp","home_team"]
+  team_plt[team_plt$team=="away_wp","team"] <- team_plt[team_plt$team=="away_wp","away_team"]
+  team_plt$dateG <- substring(team_plt$game_id, 5, 8)
+  team_plt$titleS <- with(team_plt, paste0(dateG,": ",Home_team," (",home_score,") v. ", Away_team ," (",away_score,")"))
+  Mini.GSR <- team_plt %>% group_by(game_id, team) %>% slice( n() ) %>% ungroup() %>% mutate(labs1 = team) %>%  select(game_id, team, game_seconds_remaining, labs1)
+  team_plt <- team_plt %>% left_join(Mini.GSR)
+  team_plt <- team_plt %>% mutate(team2 = team)
+  p <- team_plt %>% ggplot() + aes(x = game_seconds_remaining, y = wpa, color = team, fill = team2, label = labs1) +
+    geom_line(size = 1.5, na.rm = TRUE) +
+    geom_label(size=5, nudge_x = 50, hjust=1.5, fill="white", na.rm=TRUE) +
+    geom_point(shape = 21, size = 1.25, stroke = 0, na.rm=TRUE) +
+    scale_color_manual(values = NFL.colors, guide=FALSE) +
+    scale_fill_manual(values = NFL.colorsS, guide=FALSE) +
+    geom_hline(yintercept = 0.5, color = "gray", linetype = "dashed") +
+    #  scale_color_viridis_d(guide=FALSE) +
+    scale_x_reverse(breaks = seq(-600, 3600, 300)) + 
+    geom_vline(xintercept = 900, linetype = "dotted", black) + 
+    geom_vline(xintercept = 1800, linetype = "dashed", black) + 
+    geom_vline(xintercept = 2700, linetype = "dotted", black) + 
+    geom_vline(xintercept = 0, linetype = "dashed", black) + 
+    geom_vline(xintercept = -600, linetype = "solid", black) + 
+    labs(
+      x = "Time Remaining (seconds)",
+      y = "Win Probability",
+      title=title.My,
+      subtitle = "{closest_state}",
+      caption = "Data from nflscrapR"
+    ) + theme_bw() + theme(text=element_text(size=9, family = "serif"), panel.background = element_rect(fill = "#d1e0e0")) + transition_states(titleS, transition_length=8, state_length = 15)
+  animate(p, nframes=450)
+}
+season_animator("DAL")
+```
+
+
+I decided it was time to experiment with shiny apps again and so I built one out of this.  [Check it out!](https://rwalkerwu.shinyapps.io/NFL-Scrapr/).  Overtime games make things a bit messy.  I finally managed to fix that, both above and in the Shiny by taking game time remaining and turning the overtime seconds into negatives; that made sense given the flipped scale.
+
+## Run and Pass?
+
+What does Dallas do with the ball?
+
+```{r}
+p <- dal_season %>%  filter(posteam=="DAL") %>% ggplot(aes(x=play_type, fill=play_type)) + geom_bar() + scale_fill_viridis_d(guide=FALSE) + transition_states(game_id) + labs(title = "{closest_state}", x="Type of Play") + theme_economist_white()
+animate(p)
+```
+
+That's kinda cool.  Now I want to clean that up.  I do not really want to look at most of the types of possession plays; no play, pass, and run seem interesting, though.  Let's try that out.  I also want to change up the display a little bit.  Instead of looking at it as a series of graphics, I want the bars to represent the percents from the previous type table and then to show the whole season as it arrives.
+
+```{r}
+dal_RP <- dal_season  %>% filter(posteam=="DAL" & play_type %in% c("no_play","run","pass")) %>% tabyl(game_date, play_type)
+dal_RP <-  dal_RP %>% gather("play_type", "count", pass,run,no_play)
+p <- dal_RP %>% ggplot(aes(x=game_date, y=count, color=play_type)) + geom_line() + scale_color_viridis_d() +  labs(title = "{frame_along}", y="Number of Plays", color="Play Type", x="Game Date") + theme_economist_white() + geom_point(aes(group=seq_along(game_date), size=1.5, alpha=0.5)) + guides(size=FALSE, alpha=FALSE) + transition_reveal(game_date) 
+animate(p)
+```
+
+I think that more or less gets what I want.  This might also be a cool case for a simple plotly line plot with a hover for the game and details.

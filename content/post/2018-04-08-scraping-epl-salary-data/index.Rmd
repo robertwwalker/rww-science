@@ -1,0 +1,168 @@
+---
+title: Scraping EPL Salary Data
+author: RWW
+date: '2018-04-08'
+slug: scraping-epl-salary-data
+categories:
+  - R
+  - web scraping
+tags:
+  - R Markdown
+  - R
+  - tidytext
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+library(reticulate)
+use_python("/usr/lib/python3")
+options(scipen=8)
+```
+
+# EPL Scraping
+
+In a previous [post](https://www.data.viajes/post/scraping-the-nfl-salary-cap-data-with-python-and-r/), I scraped some NFL data and learned the structure of Sportrac.  Now, I want to scrape the available data on the EPL.  The EPL data is organized in a few distinct but potentially linked tables.  The basic structure is organized around team folders.  Let me begin by isolating those URLs.
+
+```{r ScrapEPL}
+library(rvest)
+library(tidyverse)
+base_url <- "http://www.spotrac.com/epl/"
+read.base <- read_html(base_url)
+team.URL <- read.base %>% html_nodes(".team-name") %>% html_attr('href')
+team.URL
+# Clean up the URLs to get the team names by themselves.
+team.names <- gsub(base_url, "", team.URL)
+team.names <- gsub("-f.c", " FC", team.names)
+team.names <- gsub("afc", "AFC", team.names)
+team.names <- gsub("a.f.c", "AFC", team.names)
+# Dashes and slashes need to  removed.
+team.names <- gsub("-", " ", team.names)
+team.names <- gsub("/", "", team.names)
+# Fix FC and AFC for Bournemouth
+simpleCap <- function(x) {
+  s <- strsplit(x, " ")[[1]]
+  paste(toupper(substring(s, 1,1)), substring(s, 2), sep="", collapse=" ")
+  }
+# Capitalise and trim white space
+team.names <- sapply(team.names, simpleCap)
+#team.names <- sapply(team.names, trimws)
+names(team.names) <- NULL
+# Now I have a vector of 20 names.
+short.names <- gsub(" FC","", team.names)
+short.names <- gsub(" AFC","", short.names)
+EPL.names <- data.frame(team.names,short.names,team.URL)
+EPL.names
+```
+
+With clean names, I can take each of the scraping tasks in order.
+
+
+## Payroll Data
+
+The teams have payroll information that is broken down into active players, reserves, and loanees.  The workflow is first to create the relevant URLs to scrape the payroll data. 
+
+```{r PayrollURL}
+team_links <- paste0(team.URL,"payroll/",sep="")
+```
+
+With URLs, I am going to set forth on the task.  First, the *SelectorGadget* and a glimpse of the documents suggests an easy solution.  I want to isolate the table nodes and keep the tables.  First, a function for the URLs.
+
+```{r PayrollF}
+data.creator <- function(link) {
+read_html(link) %>% html_nodes("table") %>% html_table(header=TRUE, fill=TRUE)
+}
+```
+
+Now I want to apply data scraping function to the URLs.  Then, I want to name the list items, assess the size of the active roster, and then clean up the relevant data.
+
+```{r PayrollS}
+EPL.salary <- sapply(team_links, function(x) {data.creator(x)})
+names(EPL.salary) <- EPL.names$short.names
+team.len <- sapply(seq(1,20), function(x) { dim(EPL.salary[[x]][[1]])[[1]]})
+Team <- rep(EPL.names$short.names, team.len)
+Players <- sapply(seq(1,20), function(x) { str_split(EPL.salary[[x]][[1]][,1], "\t", simplify=TRUE)[,31]})
+Position <- sapply(seq(1,20), function(x) { EPL.salary[[x]][[1]][,2]})
+Base.Salary <- sapply(seq(1,20), function(x) { Res <- gsub("£", "", EPL.salary[[x]][[1]][,3]); gsub(",","",Res)})
+EPL.Result <- data.frame(Players=unlist(Players), Team=Team, Position=unlist(Position), Base.Salary=unlist(Base.Salary))
+EPL.Result$Base.Salary <- str_replace(EPL.Result$Base.Salary, "-", NA_character_)
+EPL.Result$Base.Num <- as.numeric(EPL.Result$Base.Salary)
+EPL.Result %>% group_by(Position) %>% summarise(Mean.Base.Salary=mean(Base.Num, na.rm=TRUE),sdBS=sd(Base.Num, na.rm = TRUE))
+EPL.Result %>% group_by(Position,Team) %>% summarise(Mean.Base.Salary=mean(Base.Num, na.rm=TRUE),sdBS=sd(Base.Num, na.rm = TRUE))
+```
+
+Finally, a little picture to describe spending on the active roster.
+
+```{r Picture}
+fplot <- ggplot(EPL.Result, aes(Base.Num,Team))
+gpl <- fplot + geom_jitter(height=0.25, width=0) + facet_wrap(~Position) + labs(x="Base Salary")
+gpl
+```
+
+## Contracts
+
+The contracts are stored in a different URL structure that is accessible via *contracts* in the html tree by tean.  Firstm I want to paste the names together with links to explore.
+
+```{r ContractURL}
+team_links <- paste0(team.URL,"contracts/",sep="")
+```
+
+Now I have all the links that I need and can turn to processing the data.  This is something of a mess.  Let me first grab some data to showcase the problem.  In what follows, first I will grab the HTML files.
+
+```{r HTMLEPL}
+Base.Contracts <- lapply(team_links, read_html)
+```
+
+Processing them is a bit more difficult.  What does the basic table look like?
+
+```{r TabEXP}
+Base.Contracts[[1]] %>% html_nodes("table") %>% html_table(header=TRUE, fill=TRUE)
+```
+
+The names and the contract year and terms are going to require parsing.  I have chosen the first html that corresponds to Bournemouth; other teams are worse because loan players are in a second table.  That impacts the wage bill, perhaps, depending on the arrangement in the loan, but the contract details from the player do not have that team as signatory.  This has to be fixed.  That is easy enough to fix, there are two embedded tables and I can select the first one.  When it comes to the names, there is no easy separation for the first column; I will grab them from nodes in the html.
+
+
+```{r EPLContD}
+data.creator <- function(data) { 
+  data %>% html_nodes("table") %>% html_table(header=TRUE, fill=TRUE) -> ret.tab
+  nrowsm <- dim(ret.tab[[1]])[[1]]
+  split.me <- ret.tab[[1]][,4]
+  tempdf <- data.frame(matrix(data=gsub("\t|-","",unlist(strsplit(split.me, "\\n"))), nrow=nrowsm, byrow=TRUE))
+  names(tempdf) <- c("value","years","value.pds")
+  data %>% html_nodes(".player") %>% html_nodes("a") %>% html_text() -> Player.Names
+  Player.Names <- Player.Names[c(1:nrowsm)]
+  data %>% html_nodes(".player") %>% html_nodes("a") %>% html_attr("href") -> Player.Links
+  Player.links <- Player.Links[c(1:nrowsm)]
+  data %>% html_nodes(".player") %>% html_nodes("span") %>% html_text() -> Last.Name
+  Last.Name <- Last.Name[c(1:nrowsm)]
+  names(ret.tab[1][[1]])[c(1:2)] <- c("Player","Position")
+#  data.frame(ret.tab[,c(5,6,7)]) 
+  return(data.frame(ret.tab[1][[1]],tempdf,Player.Names,Player.links,Last.Name))
+}
+EPL.Contracts <- lapply(Base.Contracts, data.creator)
+names(EPL.Contracts) <- EPL.names$short.names
+EPL.Contracts[[1]]
+```
+
+The data now have some junk alongside workable versions of the variables of interest.  It is worth noting that the header of the contracts data allows us to verify the size of the table as we picked it up [though I do rename them to allow the rbind to work].  This also suggests a strategy for picking up the rownames that is different than the above method that uses the dimension of the html table.  Perhaps I should just gsub the header to recover the integer number of players.  To tidy the data, they need to be stacked.  A simple do.call and row bind will probably work.
+
+```{r EPLT}
+Team.Base <- sapply(EPL.Contracts, dim)[1,]
+Team <- rep(as.character(names(Team.Base)),Team.Base)
+EPL.Contracts.df <- do.call("rbind",EPL.Contracts)
+rownames(EPL.Contracts.df) <- NULL
+EPL.Contracts.df$Team <- Team
+EPL.Contracts.df$value <- as.numeric(as.character(EPL.Contracts.df$value))
+EPL.Contracts.df %>% group_by(Team) %>% summarise(Team.Mean=mean(value, na.rm=TRUE)/1e3, Team.SD=sd(value, na.rm=TRUE)) -> Team.mean
+pp <- Team.mean %>% arrange(Team.Mean)
+pp$Team <- factor(pp$Team, levels = pp$Team)
+pp %>% ggplot(aes(Team.Mean,Team, size=Team.SD)) + geom_point() + labs(x="Avg. Contract (1000s)") -> cplot
+cplot
+```
+
+```{r EPLT2}
+EPL.Contracts.df %>% group_by(Team) %>% summarise(Age.Mean=mean(Age, na.rm=TRUE), Age.SD=sd(Age, na.rm=TRUE)) -> Team.mean
+Team.mean %>% ungroup() %>% arrange(., Age.Mean) -> pp
+pp$Team <- factor(pp$Team, levels = pp$Team)
+pp %>% ggplot(aes(Age.Mean,Team,size=Age.SD)) + geom_point() + labs(x="Age") -> cplot
+cplot
+```

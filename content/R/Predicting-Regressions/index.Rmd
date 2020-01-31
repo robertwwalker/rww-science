@@ -1,0 +1,167 @@
+---
+title: 'Breaking Predict for lm() with dollar.sign'
+author: 'Robert W. Walker'
+date: '2020-01-21'
+header:
+  caption: ''
+  image: ''
+  preview: yes
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+library(tidyverse)
+```
+
+As is often the case with $R$, there are many ways to do things that are equivalent or nearly equivalent.  It is the nearly equivalent part that is frustrating; one of the first encounters with this can come with attempts to predict a regression.  The ultimate source of troubles is scoping and environments; the use of the `$` syntax sometimes has unintended side effects.
+
+## lm() Syntax is Important
+
+I will refer to an example from a recent homework on regression.  The data cover total costs per period and `Fertilizer` [sugar and wheat] production in a factory in Tennessee.  I will embed the data in the first code chunk.
+
+```{r Fert}
+Fertilizer <- structure(list(TotalCost = c(656173, 619058, 668676, 622302, 
+632286, 672717, 602916, 643074, 552836, 613314, 700822, 552576, 
+579878, 668761, 735812, 665795, 670082, 550066, 593947, 613121, 
+609388, 735423, 536458, 638920, 755232, 613023, 543013, 620659, 
+538868, 588713, 601981, 558313, 640537, 637230, 567228, 532145, 
+672828, 649695, 663317, 586153, 611113, 612919, 654498, 651475, 
+507135, 625520, 617906, 573349, 657173, 629154), Wheat = c(6061, 
+3478, 6192, 7245, 4641, 7469, 5778, 6282, 1833, 1200, 7863, 1764, 
+1200, 6132, 9107, 7281, 4616, 1330, 5262, 3506, 6064, 8893, 2542, 
+5212, 9081, 6062, 1633, 5222, 1200, 2495, 1431, 1200, 6272, 5729, 
+1406, 2122, 6344, 7511, 6459, 1563, 4418, 1200, 4351, 6388, 1721, 
+6339, 1200, 1520, 6625, 5042), Sugar = c(2875, 5636, 3535, 1817, 
+4820, 1400, 2397, 2806, 6791, 8854, 1747, 6686, 8393, 3183, 1400, 
+1746, 5393, 7396, 3402, 6023, 2446, 1400, 5877, 4790, 1400, 2654, 
+7619, 3967, 7762, 6592, 8217, 7783, 2534, 3250, 7433, 5828, 3124, 
+1400, 2478, 8046, 4056, 8648, 5191, 2818, 6292, 2169, 8473, 7378, 
+2472, 4344), Total.Production = c(8936, 9114, 9727, 9062, 9461, 
+8869, 8175, 9088, 8624, 10054, 9610, 8450, 9593, 9315, 10507, 
+9027, 10009, 8726, 8664, 9529, 8510, 10293, 8419, 10002, 10481, 
+8716, 9252, 9189, 8962, 9087, 9648, 8983, 8806, 8979, 8839, 7950, 
+9468, 8911, 8937, 9609, 8474, 9848, 9542, 9206, 8013, 8508, 9673, 
+8898, 9097, 9386)), row.names = c(NA, 50L), class = "data.frame")
+summary(Fertilizer)
+```
+
+## A Linear Regression: lm()
+
+There are a few ways to deploy lm to estimate linear models.  We will require the formula syntax to make full use of R's capabilities.  I will work with the threeT ways that deploy `$` syntax, the formula syntax, and new variables.  In all three cases, I want TotalCost as a function of Total.Production.
+
+```{r}
+Model.Form <- lm(TotalCost~Total.Production, data=Fertilizer)
+```
+
+First, the above `formula` syntax is really the only correct way to do it to assure full functionality to R's lm().  We could also refer to each variable in their location$name form as I do next.
+
+```{r}
+Dollar.Form <- lm(Fertilizer$TotalCost~Fertilizer$Total.Production)
+```
+
+Finally, I could create new variables and put them together in a regression.
+
+```{r}
+Costs <- Fertilizer$TotalCost
+Total.Production <- Fertilizer$Total.Production
+Nothing.Form <- lm(Costs~Total.Production)
+```
+
+Now the model summaries, they are identical.
+
+```{r}
+summary(Model.Form)
+summary(Dollar.Form)
+summary(Nothing.Form)
+```
+
+
+So are the confidence intervals for the slope(s) and intercept and anova will generally work as expected.
+
+```{r}
+confint(Model.Form)
+confint(Dollar.Form)
+confint(Nothing.Form)
+```
+
+All three behave exactly as desired.
+
+## Predicting require Formulae
+
+Using `formula` everything behaves as expected.  Let me predict the confidence interval of average total costs.  I do this in two steps.  First, I create a new data.frame that contains only one variable: Total.Production.  It only takes the value of 9000.  That is the average costs given units produced that I wish to predict.
+
+```{r}
+Hypothetical.Data <- data.frame(Total.Production=9000)
+predict(Model.Form, newdata = Hypothetical.Data, interval="confidence")
+  ```
+
+That works.  With 95% confidence, producing 9000 units should lead to average total costs between \$598809 and \$623463.  Unfortunately, this is the only one that will work. Now let me try to do the same thing with the other two identical `lm()` examples.
+
+```{r}
+predict(Dollar.Form, newdata = Hypothetical.Data, interval="confidence")
+```
+
+That gives me back the confidence interval of the average total costs for each actual value of production in the data [those are stored in the lm() object as `fitted.values` -- the points on the line/plane.  That is an effect of the syntax; the `newdata` bit cannot really replace `Fertilizer$Total.Production` with the single value 9000 without rewriting the data itself.  Nor is there a variable called `Fertilizer$Total.Production` inside `Hypothetical.Data`; there cannot be because that violates the conventions of naming and the syntactical use of `$`.
+
+What about my other strategy?  Peel off production and costs and then use `lm()`.
+
+## New variables?
+
+```{r}
+predict(Nothing.Form, newdata = Hypothetical.Data, interval="confidence")
+```
+
+That has the same problem as before.  The underlying problem is that prediction operates at the level of a set of data and those are data.frame in R.  Only this syntax will make it possible to deploy the predict function of linear models because the predict function basically just substitutes the name of the data.frame into the calculation and it has to match precisely, in both structure and name.
+
+## Effects Plots
+
+Last time, we looked at some basic regression plots.  In this case,
+
+```{r}
+ggplot(Fertilizer, aes(x=Total.Production, y=TotalCost)) + geom_point() + geom_smooth(method="lm")
+```
+
+It is important to note that this is an x-y scatterplot.  What happens if we try that for the two input example?  First, let me show a simple plot that should capture what is going on.
+
+```{r}
+ggplot2::ggplot(Fertilizer, aes(x=Sugar, y=Wheat, color=TotalCost, size=TotalCost)) + geom_point() + scale_size_continuous(guide=FALSE) + labs(title="Total Cost for Wheat/Sugar Pairs")
+```
+
+Now, estimate the regression.
+
+```{r}
+Mod.SW <- lm(TotalCost ~ Sugar+Wheat, data=Fertilizer)
+```
+
+### The plots?
+
+```{r}
+ggplot2::ggplot(Fertilizer, aes(x=Wheat, y=TotalCost)) + geom_point() + geom_smooth(method="lm")
+```
+
+```{r}
+ggplot2::ggplot(Fertilizer, aes(x=Sugar, y=TotalCost)) + geom_point() + geom_smooth(method="lm")
+```
+
+Uh oh.  How to fix that?  We need to show it holding wheat units constant.  That's a partial plot, or in R an `effects` plot.
+
+```{r}
+library(effects)
+plot(allEffects(Mod.SW, partial.residuals=TRUE))
+```
+
+Notice the difference in the y-axes, it obscures the relevant difference in the slopes.  Fix the limits across plots?
+
+```{r}
+library(effects)
+plot(allEffects(Mod.SW, partial.residuals=TRUE), ylim=c(300000,1000000))
+```
+
+## Other Plots
+
+```{r}
+par(mfrow=c(2,2))
+plot(Mod.SW)
+```
+

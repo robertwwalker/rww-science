@@ -1,0 +1,224 @@
+---
+title: "Pew Data on Bond Ratings and Rainy Day Funds"
+author: "RWW"
+date: '2018-03-07'
+slug: pew-data-on-bond-ratings-and-rainy-day-funds
+tags:
+- R
+- panel data
+categories:
+- R
+- Public Finance
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
+```
+
+# Pew on Rainy Day Funds and Credit Quality
+
+The Pew Charitable Trusts released a report last May (2017) that portrays rainy day funds that are well designed and deployed as a form of insurance against ratings downgrades.  One the one hand, this is perfectly sensible because the alternatives do not sound like very good ideas.  A poorly designed rainy day fund, for example, is going to have to fall short on either the rainy day or the fund.  A poorly deployed savings device for cash flow management over the not-so-short term also seems unlikely to bolster market confidence in the repayment abilities of an issuer.  If this very simple perspective that seems plausible is true, then a simple replication should be easy.  And it is.  Pew gladly shared the data and code.  If one has access to Stata, the study is easy to replicate.
+
+Taken from the website above:
+
+![Pew Recommendations](../../img/PewCTRecs.png)
+
+## On the other hand
+
+The variation in the data may leave a good bit to be desired.  Let's have a look at some basic features of the data.
+
+```{r RBRData}
+library(haven)
+library(dplyr)
+library(here)
+Pew.Data <- read_dta(url("https://github.com/robertwwalker/academic-mymod/raw/master/data/Pew/modeledforprediction.dta"))
+glimpse(Pew.Data)
+table(Pew.Data$state)
+```
+
+The panel is balanced; in the original, New Mexico, New York, South Carolina, and Vermont are duplicated but the Stata code writes out a transformed dataset for analysis that is recorded.  The technical report accompanying the study and the stata code give us some insights.  In all cases, there are two or more RDF's and they require combining.
+
+# Combining Ratings
+
+In previous work, Skip Krueger and I have treated bond ratings as a multiple rater problem and have deployed cumulative IRT models to measure latent credit quality.  One of the methodologically desireable approaches to the Pew study was a model deploying state-level fixed effects but the ordinal data precludes doing this reliably because states that have always experienced the highest rating will have unbounded fixed effects.  The continuous latent scale post measurement allows us to sidestep that problem.  First, let me scale the data
+
+### Scaling the Ratings
+
+```{r BRScale, echo=TRUE, eval=FALSE}
+library(MCMCpack)
+Scaled.BR <- MCMCordfactanal(~spnum+fitchnum+moodynum, data=Pew.Data, factors=1, burnin = 1e6, mcmc=1e6, thin=100, store.scores=TRUE, tune=0.7, lambda.constraints=list(fitchnum=list(2,"+")), verbose=50000)
+```
+
+```{r DATAL, echo=TRUE, eval=TRUE, message=FALSE, warning=FALSE}
+library(tidyverse)
+load(url("https://github.com/robertwwalker/academic-mymod/raw/master/data/Pew/Scaled-BR-Pew.RData"))
+state.ratings <- data.frame(state=Pew.Data$state, statefips=Pew.Data$statefips, year=Pew.Data$fyear, BR.Data)
+state.ratings.long <- tidyr::gather(state.ratings, sampleno, value, -statefips, -year, -state)
+state.SE <- state.ratings.long %>% group_by(state,year) %>% summarise(Credit.Quality=mean(value), t1=quantile(value, probs=0.025), t2=quantile(value, probs=0.975))
+```
+
+## What does the scaling look like?
+
+
+```{r Plot2, echo=FALSE, eval=FALSE}
+state.SE %>% filter(state%in%c(names(table(state.SE$state))[c(1:10)])) %>%
+  ggplot(., aes(x=year, y=Credit.Quality, group=state)) +
+    geom_pointrange(aes(ymin=t1, ymax=t2, colour=state, fill=state), alpha=0.1) + 
+    guides(fill="none") +
+    geom_line(aes(colour=state)) +
+#    geom_jitter(width=0.2) +
+#    geom_point(shape=21, size=3, fill="white") +
+    ylim(-4,4)state.SE %>% filter(state%in%c(names(table(state.SE$state))[c(11:20)])) %>%
+  ggplot(., aes(x=year, y=Credit.Quality, group=state)) +
+    geom_pointrange(aes(ymin=t1, ymax=t2, colour=state, fill=state), alpha=0.1) + 
+    guides(fill="none") +
+    geom_line(aes(colour=state)) +
+#    geom_jitter(width=0.2) +
+#    geom_point(shape=21, size=3, fill="white") +
+    ylim(-4,4)
+state.SE %>% filter(state%in%c(names(table(state.SE$state))[c(21:30)])) %>%
+  ggplot(., aes(x=year, y=Credit.Quality, group=state)) +
+    geom_pointrange(aes(ymin=t1, ymax=t2, colour=state, fill=state), alpha=0.1) + 
+    guides(fill="none") +
+    geom_line(aes(colour=state)) +
+#    geom_jitter(width=0.2) +
+#    geom_point(shape=21, size=3, fill="white") +
+    ylim(-4,4)
+state.SE  %>% filter(state%in%c(names(table(state.SE$state))[c(31:40)])) %>%
+  ggplot(., aes(x=year, y=Credit.Quality, group=state)) +
+    geom_pointrange(aes(ymin=t1, ymax=t2, colour=state, fill=state), alpha=0.1) + 
+    guides(fill="none") +
+    geom_line(aes(colour=state)) +
+#    geom_jitter(width=0.2) +
+#    geom_point(shape=21, size=3, fill="white") +
+    ylim(-4,4)
+```
+
+### The First Group
+
+```{r Plot5}
+stored <- list()
+stored <- state.SE %>% group_by(state) %>% filter(state%in%c(names(table(state.SE$state))[c(1:16)])) %>%
+  ggplot(., aes(x=year, y=Credit.Quality)) + theme_minimal() + theme(axis.text.x  = element_text(angle=60)) +
+    geom_ribbon(aes(ymin=t1, ymax=t2, colour=state, fill=state), alpha=0.4) + guides(fill="none", alpha="none") +
+    geom_line() + guides(colour="none") +
+#    geom_jitter(width=0.2) +
+#    geom_point(shape=21, size=3, fill="white") +
+    ylim(-4,4) + facet_wrap(~state)
+stored
+```
+
+### The Second Group
+
+```{r Plot5b}
+stored <- list()
+stored <- state.SE %>% group_by(state) %>% filter(state%in%c(names(table(state.SE$state))[c(17:32)])) %>%
+  ggplot(., aes(x=year, y=Credit.Quality)) + theme_minimal() + theme(axis.text.x  = element_text(angle=60)) +
+    geom_ribbon(aes(ymin=t1, ymax=t2, colour=state, fill=state), alpha=0.4) + guides(fill="none", alpha="none") +
+    geom_line() + guides(colour="none") +
+#    geom_jitter(width=0.2) +
+#    geom_point(shape=21, size=3, fill="white") +
+    ylim(-4,4) + facet_wrap(~state)
+stored
+```
+
+### The Third Group
+
+```{r Plot5c}
+stored <- list()
+stored <- state.SE %>% group_by(state) %>% filter(state%in%c(names(table(state.SE$state))[c(33:46)])) %>%
+  ggplot(., aes(x=year, y=Credit.Quality)) + theme_minimal() + theme(axis.text.x  = element_text(angle=60)) +
+    geom_ribbon(aes(ymin=t1, ymax=t2, colour=state, fill=state), alpha=0.4) + guides(fill="none", alpha="none") +
+    geom_line() + guides(colour="none") +
+#    geom_jitter(width=0.2) +
+#    geom_point(shape=21, size=3, fill="white") +
+    ylim(-4,4) + facet_wrap(~state)
+stored
+```
+
+## The Panel Data Properties
+
+Panel data estmators for linear problems benefit from a very useful decomposition from ANOVA.  The total variation in a variable can be decomposed into two components: a within-unit or short-run component and a between-unit averages component (that is constant for any given unit).  It is always important, as emphasised in the modelling in Mundlak (1977), to consider the variance components because they conttribute insights into the nature of inferences by telling us how much information and of what sort is contained in each indicator.  The number of controls in the study is manageable so in depth analysis is possible.
+
+```{r AnX, eval=FALSE, echo=FALSE}
+XTSUM <- function(data, varname, units) {
+  myf <- paste(varname, " ~ as.factor()", sep="")
+  lm.res <-  data %>% lm( as.formula(myf), data=.)
+  anova.res <-anova(lm.res)
+  lm.resF <-  data %>% filter(fund==1) %>% lm( as.formula(myf), data=.)
+  anova.resF <-anova(lm.res)
+  return(list(varname=varname,
+            Groups=anova.res$`Df`[[1]],
+            Obs=anova.res$`Df`[[1]],
+            r.sq.Between=summary(lm.res)$r.squared, 
+            Between.SumSq=anova.res$`Sum Sq`[[1]], 
+            Between.MeanSq=anova.res$`Mean Sq`[[1]], 
+            Between.SD=sqrt(anova.res$`Mean Sq`[[1]]),
+            Within.SumSq=anova.res$`Sum Sq`[[2]],
+            Within.MeanSq=anova.res$`Mean Sq`[[2]], 
+            Within.SD=sqrt(anova.res$`Mean Sq`[[2]]),
+            F.Groups=anova.resF$`Df`[[1]],
+            F.r.sq.Between=summary(lm.resF)$r.squared, 
+            F.Between.SumSq=anova.resF$`Sum Sq`[[1]], 
+            F.Between.MeanSq=anova.resF$`Mean Sq`[[1]], 
+            F.Between.SD=sqrt(anova.resF$`Mean Sq`[[1]]),
+            F.Within.SumSq=anova.resF$`Sum Sq`[[2]],
+            F.Within.MeanSq=anova.resF$`Mean Sq`[[2]], 
+            F.Within.SD=sqrt(anova.resF$`Mean Sq`[[2]])))
+}
+sum.vars <- list("rdfbal","valenceusagegfe","gfebal","longdebt","shortdebt","population","pop65")
+sapply(sum.vars, function(x) XTSUM(Pew.Data, varname=x))
+```
+
+
+## Analysing the Scaled Data
+
+With continuous measures on the response imputed over 10,000 samples, we can turn to an analysis of these samples to reexamine the dynamics of rainy day fund expenditures on bond ratings.
+
+
+```{r xtsum1}
+library(haven)
+nlswork <- read_stata("http://www.stata-press.com/data/r13/nlswork.dta")
+library(dplyr)
+XTSUM <- function(data, varname, unit) {
+  varname <- enquo(varname)
+  unit <- enquo(unit)
+  ores <- nlswork %>% summarise(ovr.mean=mean(!! varname, na.rm=TRUE), ovr.sd=sd(!! varname, na.rm=TRUE), ovr.min = min(!! varname, na.rm=TRUE), ovr.max=max(!! varname, na.rm=TRUE), N.overall=sum(as.numeric(!is.na(!! varname))))
+  bmeans <- nlswork %>% group_by(!!unit) %>% summarise(meanx=mean(!! varname, na.rm=T), t.count=sum(as.numeric(!is.na(!! varname))))
+  bres <- bmeans %>% summarise(between.sd = sd(meanx, na.rm=TRUE), between.min = min(meanx, na.rm=TRUE), between.max=max(meanx, na.rm=TRUE), t.bar=mean(t.count, na.rm=TRUE), Groups=n())
+  wdat <- nlswork %>% group_by(!!unit) %>% mutate(W.x = scale(!! varname, scale=FALSE))
+  wres <- wdat %>% ungroup() %>% summarise(within.sd=sd(W.x, na.rm=TRUE), within.min=min(W.x, na.rm=TRUE), within.max=max(W.x, na.rm=TRUE))
+  return(list(ores=ores,bres=bres,wres=wres))
+}
+XTSUM(nlswork, varname=hours, unit=idcode)
+```
+
+
+
+```{r XTSUMOLD, eval=FALSE, echo=FALSE}
+myf <- paste(varname, " ~ as.factor(",unit,")", sep="")
+   lm.res <-  data %>% lm( as.formula(myf), data=., x=TRUE, y=TRUE, na.action=na.omit)
+   anova.res <-anova(lm.res)
+   OVM <- mean(lm.res$y, na.rm=TRUE)
+   OSD <- sd(lm.res$y, na.rm=TRUE)
+   return(list(Variable=varname,
+             Groups=paste(unit),
+             n=anova.res$`Df`[[1]]+1,
+             Obs=length(lm.res$y),
+             Overall.mean=OVM,
+             Overall.sd=OSD,
+             Overall.min=min(lm.res$y, na.rm=TRUE),
+             Overall.max=max(lm.res$y, na.rm=TRUE),
+             r.sq.Between=summary(lm.res)$r.squared, 
+             Between.SumSq=anova.res$`Sum Sq`[[1]], 
+             Between.MeanSq=anova.res$`Mean Sq`[[1]], 
+             Between.SD=sqrt(anova.res$`Mean Sq`[[1]]*(anova.res$`Df`[[1]]/(anova.res$`Df`[[1]]+1))),
+             Within.SumSq=anova.res$`Sum Sq`[[2]],
+             Within.MeanSq=anova.res$`Mean Sq`[[2]], 
+             Within.SD=sqrt(anova.res$`Mean Sq`[[2]]*(anova.res$`Df`[[2]]/sum(anova.res$`Df`))),
+             Min.Within=min(lm.res$residuals, na.rm=TRUE)+OVM,
+             Max.Within=max(lm.res$residuals, na.rm=TRUE)+OVM)
+          )
+}
+```
+

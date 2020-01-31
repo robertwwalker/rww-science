@@ -1,0 +1,159 @@
+---
+title: tidyTuesday Measles
+author: RWW
+date: '2019-12-16'
+slug: tidytuesday-measles
+categories:
+  - tidyverse
+  - R
+  - animation
+tags:
+  - tidyTuesday
+  - R
+  - gganimate
+header:
+  caption: ''
+  image: ''
+  preview: yes
+---
+
+
+## tidyTuesday: December 10, 2019
+
+Replicating plots from [simplystatistics](https://simplystatistics.org/2019/08/28/you-can-replicate-almost-any-plot-with-ggplot2/).  One nice twist is the development of a tidytuesdayR package to grab the necessary data in an easy way.  You can install the package via github.  I will also use `fiftystater` and `ggflags`.
+
+```
+devtools::install_github("thebioengineer/tidytuesdayR")
+devtools::install_github("ellisp/ggflags")
+devtools::install_github("wmurphyrd/fiftystater")
+```
+
+
+```{r}
+tuesdata <- tidytuesdayR::tt_load(2019, week = 50)
+```
+
+
+```{r cars}
+library(here)
+library(tidyverse)
+library(ggplot2)
+library(ggflags)
+library(countrycode)
+
+dat <- tibble(country = toupper(c("US", "Italy", "Canada", "UK", "Japan", "Germany", "France", "Russia")),
+              count = c(3.2, 0.71, 0.5, 0.1, 0, 0.2, 0.1, 0),
+              label = c(as.character(c(3.2, 0.71, 0.5, 0.1, 0, 0.2, 0.1)), "No Data"),
+              code = c("us", "it", "ca", "gb", "jp", "de", "fr", "ru"))
+
+dat %>% mutate(country = reorder(country, -count)) %>%
+  ggplot(aes(country, count, label = label)) +
+  geom_bar(stat = "identity", fill = "darkred") +
+  geom_text(nudge_y = 0.2, color = "darkred", size = 5) +
+  geom_flag(y = -.5, aes(country = code), size = 12) +
+  scale_y_continuous(breaks = c(0, 1, 2, 3, 4), limits = c(0,4)) +   
+  geom_text(aes(6.25, 3.8, label = "Source UNODC Homicide Statistics")) + 
+  ggtitle(toupper("Homicide Per 100,000 in G-8 Countries")) + 
+  xlab("") + 
+  ylab("# of gun-related homicides\nper 100,000 people") +
+  ggthemes::theme_economist() +
+  theme(axis.text.x = element_text(size = 8, vjust = -16),
+        axis.ticks.x = element_blank(),
+        axis.line.x = element_blank(),
+        plot.margin = unit(c(1,1,1,1), "cm")) -> plot2
+library(gganimate)
+plot2 + transition_manual(code, cumulative=TRUE)
+```
+
+Just an animation of the original.  The next one took some playing but ended up exactly how I wanted it.
+
+# Diseases
+
+```{r}
+the_disease <- "Measles"
+dat <- tuesdata$diseases %>%
+  filter(disease == the_disease) %>%
+  mutate(rate = count / population * 10000 * 52 / weeks_reporting) 
+jet.colors <- colorRampPalette(c("#F0FFFF", "cyan", "#007FFF", "yellow", "#FFBF00", "orange", "red", "#7F0000"), bias = 2.25)
+my.dat1 <- dat %>% mutate(state = reorder(state, desc(state)))
+my.dat2 <- dat %>% mutate(state = reorder(state, desc(state)), year2 = year)
+  ggplot(my.dat1, aes(x=year, y=state, fill = rate)) +
+  geom_tile(color = "white", size = 0.35, alpha = 0.2) +
+  scale_x_continuous(expand = c(0,0)) +
+  scale_fill_gradientn(colors = jet.colors(16), na.value = 'white') +
+  theme_minimal() + guides(alpha=FALSE, rate=FALSE) +
+  theme(panel.grid = element_blank()) +
+        coord_cartesian(clip = 'off') +
+        ggtitle(the_disease, subtitle = "{current_frame}") +
+        ylab("") +
+        xlab("") +  
+        theme(legend.position = "bottom", text = element_text(size = 8)) + 
+        annotate(geom = "text", x = 1963, y = 50.5, label = "Vaccine introduced", size = 3, hjust = 0) +
+  geom_tile(data = my.dat2, aes(x=year, y=state, fill = rate)) + geom_vline(xintercept = 1963, col = "black") -> plotD
+library(gganimate)
+plotD <- plotD + transition_manual(year2, cumulative=TRUE)
+# anim_save(here("static","img","tidyTuesday.gif"), animation = plotD)
+plotD
+```
+
+# Now a map
+
+```{r}
+library(fiftystater)
+data("fifty_states") # this line is optional due to lazy data loading
+head(fifty_states)
+my.dat1 <- dat <- tuesdata$diseases %>%
+  filter(disease == the_disease) %>%
+  mutate(rate = count / population * 10000 * 52 / weeks_reporting) %>% mutate(state = tolower(state))
+data("fifty_states") # this line is optional due to lazy data loading
+crimes <- data.frame(state = tolower(rownames(USArrests)), USArrests)
+crimes2 <- left_join(crimes, my.dat1)
+# map_id creates the aesthetic mapping to the state name column in your data
+p <- ggplot(crimes2, aes(map_id = state)) + 
+  # map points to the fifty_states shape data
+  geom_map(aes(fill = rate), map = fifty_states) + 
+  expand_limits(x = fifty_states$long, y = fifty_states$lat) +
+  coord_map() +
+  scale_x_continuous(breaks = NULL) + 
+  scale_y_continuous(breaks = NULL) +
+  scale_fill_gradientn(colors = jet.colors(16), na.value = 'white') +
+  labs(x = "", y = "", title = the_disease, subtitle = "{current_frame}") +
+  theme(legend.position = "bottom", 
+        panel.background = element_blank())
+p1 <- p + transition_manual(year, cumulative = FALSE)
+# anim_save(here("static","img","animMap.gif"), animation = p1)
+p1
+```
+
+I found a post on [stackoverflow](https://stackoverflow.com/questions/55967894/combining-two-animated-plot-into-one-gif-mp4) to assist in putting them together.
+
+```{r, eval=FALSE}
+appendGIFs <- function(gif1, gif2, gifout="result.gif", vertically=FALSE, 
+                       delay=20, convert = "/usr/bin/convert"){
+  currentdir <- getwd()
+  on.exit(setwd(currentdir))
+  tmpdir <- tempdir()
+  invisible(file.remove(list.files(tmpdir, full.names = TRUE, pattern = "*.gif$")))
+  file.copy(gif1, to = file.path(tmpdir, "gif1.gif"))
+  file.copy(gif2, to = file.path(tmpdir, "gif2.gif"))
+  setwd(tmpdir)
+  command <- sprintf("%s gif1.gif -coalesce gif1-%%05d.gif", convert)
+  system(command)
+  command <- sprintf("%s gif2.gif -coalesce gif2-%%05d.gif", convert)
+  system(command)
+  nframes <- length(list.files(tmpdir, pattern = "^gif1-.*gif$"))
+  for(i in 1:nframes){
+    command <- sprintf("%s gif1-%05d.gif gif2-%05d.gif %sappend gif-%05d.gif", 
+                       convert, i-1, i-1, ifelse(vertically, "-", "+"), i)
+    system(command)
+  }
+  command <- sprintf("%s -loop 0 -delay %d gif-*.gif result.gif", convert, delay)
+  system(command)
+  file.copy("result.gif", file.path(currentdir, gifout), overwrite=TRUE)
+}
+# appendGIFs(here("static","img","tidyTuesday.gif"),here("static","img","mapAnim.gif"), gifout = here("static","img","result.gif"))
+```
+
+
+
+<blockquote class="twitter-tweet"><p lang="en" dir="ltr">Wow, you can side-by-side gganimates with imagemagick. That was fun to put together. <a href="https://twitter.com/hashtag/rstats?src=hash&amp;ref_src=twsrc%5Etfw">#rstats</a> <a href="https://twitter.com/hashtag/tidyTuesday?src=hash&amp;ref_src=twsrc%5Etfw">#tidyTuesday</a> An adaptation of measles and a map... <a href="https://t.co/FPOgAOQS84">pic.twitter.com/FPOgAOQS84</a></p>&mdash; Robert Walker (@PieRatio) <a href="https://twitter.com/PieRatio/status/1206508341750456320?ref_src=twsrc%5Etfw">December 16, 2019</a></blockquote> <script async src="https://platform.twitter.com/widgets.js" charset="utf-8"></script>

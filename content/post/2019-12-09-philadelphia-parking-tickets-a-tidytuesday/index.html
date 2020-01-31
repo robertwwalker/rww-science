@@ -1,0 +1,69 @@
+---
+title: 'Philadelphia Parking Tickets: a tidyTuesday'
+author: RWW
+date: '2019-12-09'
+slug: philadelphia-parking-tickets-a-tidytuesday
+categories:
+  - R
+  - animation
+  - tidyverse
+tags:
+  - tidyTuesday
+  - R
+  - Maps
+header:
+  caption: ''
+  image: ''
+  preview: yes
+---
+
+
+
+<div id="philadelphia-map" class="section level2">
+<h2>Philadelphia Map</h2>
+<p>Use <code>ggmap</code> for the base layer.</p>
+<pre class="r"><code>library(ggmap); library(osmdata); library(tidyverse)
+PHI &lt;- get_map(getbb(&quot;Philadelphia, PA&quot;), maptype = &quot;stamen&quot;, zoom=12)</code></pre>
+</div>
+<div id="get-the-tickets-data" class="section level2">
+<h2>Get the Tickets Data</h2>
+<p>TidyTuesday covers 1.26 million parking tickets in Philadelphia.</p>
+<pre class="r"><code>tickets &lt;- readr::read_csv(&quot;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-12-03/tickets.csv&quot;)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   violation_desc = col_character(),
+##   issue_datetime = col_datetime(format = &quot;&quot;),
+##   fine = col_double(),
+##   issuing_agency = col_character(),
+##   lat = col_double(),
+##   lon = col_double(),
+##   zip_code = col_double()
+## )</code></pre>
+</div>
+<div id="two-lines-of-code-left" class="section level2">
+<h2>Two Lines of Code Left</h2>
+<pre class="r"><code>library(lubridate); library(ggthemes)
+tickets &lt;- tickets %&gt;% mutate(Day = wday(issue_datetime, label=TRUE)) # use lubridate to extract the day of the month.
+Philly.Tix &lt;- ggmap(PHI) + stat_density2d(data=tickets, aes(x=lon, y=lat, fill=..level.., alpha=..level..), bins=30, size=0.01, geom=&quot;polygon&quot;, contour=TRUE) + scale_fill_viridis_c() + guides(alpha=FALSE) + labs(title=&quot;Philly Tickets&quot;, fill=&quot;Ticket Frequency&quot;) + theme_map() + theme(legend.position = &quot;right&quot;)
+Philly.Tix</code></pre>
+<p><img src="/post/2019-12-09-philadelphia-parking-tickets-a-tidytuesday/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+</div>
+<div id="an-animation" class="section level2">
+<h2>An Animation</h2>
+<pre class="r"><code>library(gganimate) 
+Philly.Tix &lt;- ggmap(PHI) + stat_density2d(data=tickets, aes(x=lon, y=lat, fill=stat(level), alpha=stat(level)), bins=30, size=0.01, geom=&quot;polygon&quot;, contour=TRUE) + geom_point(y=39.8942978,x=-75.1945002, col=&quot;pink&quot;, size=4) + scale_fill_viridis_c() + guides(alpha=FALSE) + labs(title=&quot;Philly Tickets&quot;, fill=&quot;Ticket Frequency&quot;) + theme_map() + theme(legend.position = &quot;right&quot;) 
+Philly.Tix + labs(subtitle = &quot;{closest_state}&quot;) + transition_states(Day, transition_length = 3, state_length = 5, wrap = TRUE)</code></pre>
+</div>
+<div id="facets" class="section level2">
+<h2>Facets</h2>
+<pre class="r"><code>Philly.Tix &lt;- ggmap(PHI) + stat_density2d(data=tickets, aes(x=lon, y=lat, fill=stat(nlevel), alpha=stat(nlevel), group=issuing_agency), bins=30, size=0.01, geom=&quot;polygon&quot;, contour=TRUE) + scale_fill_viridis_c() + geom_point(y=39.8942978,x=-75.1945002, col=&quot;pink&quot;) + guides(alpha=FALSE) + labs(title=&quot;Philly Tickets&quot;, fill=&quot;Ticket Frequency&quot;) + theme_map() + theme(legend.position = &quot;right&quot;) + facet_wrap(vars(issuing_agency))
+Philly.Tix + labs(subtitle = &quot;{closest_state}&quot;) + transition_states(Day, transition_length = 3, state_length = 5, wrap = TRUE)</code></pre>
+</div>
+<div id="a-dot-plot" class="section level2">
+<h2>A Dot Plot</h2>
+<pre class="r"><code>Philly.Tix.Dots &lt;- ggmap(PHI) + geom_point(data=tickets, aes(x=lon, y=lat, color=issuing_agency, size=fine/100000), alpha=0.02) + scale_fill_viridis_d() + guides(alpha=FALSE) + guides(colour = guide_legend(override.aes = list(alpha = 1))) + labs(title=&quot;Philly Tickets&quot;, color=&quot;Issuer&quot;, size=&quot;Fine Amount&quot;) + theme_map() + theme(legend.position = &quot;right&quot;) 
+# + labs(title = &quot;{closest_state}&quot;) + transition_states(Day, transition_length = 3, state_length = 1, wrap = TRUE)
+Philly.Tix.Dots + facet_wrap(vars(Day))</code></pre>
+<pre><code>## Warning: Removed 1161 rows containing missing values (geom_point).</code></pre>
+<p><img src="/post/2019-12-09-philadelphia-parking-tickets-a-tidytuesday/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+</div>

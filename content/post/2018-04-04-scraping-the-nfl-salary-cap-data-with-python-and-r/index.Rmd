@@ -1,0 +1,299 @@
+---
+title: Scraping the NFL Salary Cap Data with Python and R
+author: RWW
+date: '2018-04-04'
+slug: scraping-the-nfl-salary-cap-data-with-python-and-r
+categories:
+  - R
+  - tidyverse
+  - python
+  - reticulate
+tags:
+  - tidyverse
+  - R
+  - python
+  - reticulate
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+library(reticulate)
+use_python("/usr/bin/python")
+options(scipen=8)
+```
+
+# The NFL Data
+
+[SporTrac](http://www.sportrac.com] has a wonderful array of financial data on sports.  A student going to work for the Seattle Seahawks wanted the NFL salary cap data and I also found data on the English Premier League there.  Now I have a source to scrape the data from.
+
+With a source in hand, the key tool is the *SelectorGadget*.  *SelectorGadget* is a browser add-in for Chrome that allows us to select text and identify the css or xpath selector to scrape the data. With that, it becomes easy to identify what we need.  I navgiated to the website in base_url and found the team names had links to the cap data.  I will use those links first.  Let's build that.
+
+```{r RTeams}
+library(rvest)
+base_url <- "http://www.spotrac.com/nfl/"
+read.base <- read_html(base_url)
+team.URL <- read.base %>% html_nodes(".team-name") %>% html_attr('href')
+team.URL
+# Clean up the URLs to get the team names by themselves.
+team.names <- gsub("/cap/","", gsub(base_url, "", team.URL))
+```
+
+With 32 team links to scrape, I can now scrape them.  
+
+## Grabbing Team Tables
+
+Now I need to explore those links.  When I started this, I wanted to learn some Python along the way.  I found the following [Python code](https://wcontractor.github.io/nfl-salary-part2.html) that worked for the task.  For completeness, I leave it here.
+
+```{python BSoupNFL3, eval=FALSE}
+import pandas as pd
+import bs4
+import re
+import urllib2
+#import requests
+
+from urllib import urlopen
+from bs4 import BeautifulSoup
+base_url = "http://www.spotrac.com/nfl/"
+
+def get_page(url):
+    page = urlopen(base_url)
+    soup = BeautifulSoup(page, 'lxml')
+    file = open("spotrac_urls.txt", 'w')
+    file.write(str(soup))
+    file.close()
+
+def get_team_table(url):
+    page = urlopen(url)
+    soup = BeautifulSoup(page, 'lxml')
+
+get_page(base_url)
+
+with open("spotrac_urls.txt", 'r') as file:
+    for line in file:
+        line = line.strip()
+
+from bs4 import BeautifulSoup
+page = open("spotrac_urls.txt", 'r')
+soup = BeautifulSoup(page, "lxml")
+div = soup.find("div","subnav-posts")
+
+links = div.find_all('a')
+for link in links:
+    print(link.get('href'))
+
+len(links)
+
+def get_team_table(url):
+    page = urlopen(url)
+    soup = BeautifulSoup(page, 'lxml')
+    data_rows = [row for row in soup.find("table", "datatable").find_all("tr")]
+    return data_rows
+
+# create an empty list
+team_data = []
+
+for link in links:
+    team_data.append(get_team_table(link.get('href')))
+
+len(team_data)
+
+#data_rows = [row for row in soup.find("td", "center").find_all("tr")]
+table_data = []
+
+#soup = BeautifulSoup(team_data[0], 'lxml')
+
+#This needs to be a nested for loop because inner items of the list are BeautifulSoup Elements
+for row in team_data:
+    for element in row:
+        #print(type(element))
+        if soup.find_all("td", attrs={"class":" right xs-hide "}) is not None:
+            table_data.append(element.get_text())
+
+player_data = []
+for row in table_data:
+    player_data.append(row.split("\n"))
+    #print(player_data)
+
+len(player_data)
+
+import pandas as pd
+df = pd.DataFrame(player_data)
+df = df.drop(14, 1)
+df = df.drop(0, 1)
+df = df.drop(1, 1)
+
+
+df = df.drop(df.index[[0]])
+df.set_index(1, inplace=True)
+print(df.shape)
+df.head()
+
+players = []
+for row in team_data[0]:
+    if row.get_text("tr") is not None:
+        players.append(row) 
+
+column_headers = [col.get_text() for col in players[0].find_all("th") if col.get_text()]
+len(column_headers)
+
+df.columns = column_headers
+df.head()
+
+#The header repeated itself in the data.  This didn't reveal itself until the data type conversion step below
+#but this fixes all occurrences of it.
+rows_to_be_dropped = df.loc[df['Cap Hit'] == 'Cap %'].index
+rows_to_be_kept = df.loc[df['Cap Hit'] != 'Cap %'].index
+totlen = len(df)
+df2a = df.drop(rows_to_be_kept)
+df = df.drop(rows_to_be_dropped)
+df2 = pd.Series(data=rows_to_be_dropped)
+
+#Apply a regex to convert the 'Cap Hit' column from a string to a float.  
+# df['Cap Hit'] =(df['Cap Hit'].replace('[\$,)]', "", regex=True).replace( '[(]','-',   regex=True ).astype(float))
+
+# My fix
+df['Cap.Hit'] = (df['Cap Hit'].replace('[\$,)]', "", regex=True).replace('[-,)]', "", regex=True).replace('\s\s.*', "", regex=True).astype(float))
+df['Base.Salary'] = (df['Base Salary'].replace('[\$,)]', "", regex=True).replace('[-,)]', "", regex=True).astype(float))
+df['Signing.Bonus'] = (df['Signing Bonus'].replace('[\$,)]', "", regex=True).replace('[-,)]', "", regex=True).astype(float))
+df['Roster.Bonus'] = (df['Roster Bonus'].replace('[\$,)]', "", regex=True).replace('[-,)]', "", regex=True).astype(float))
+df['Option.Bonus'] = (df['Option Bonus'].replace('[\$,)]', "", regex=True).replace('[-,)]', "", regex=True).astype(float))
+df['Workout.Bonus'] = (df['Workout Bonus'].replace('[\$,)]', "", regex=True).replace('[-,)]', "", regex=True).astype(float))
+df['Restruc.Bonus'] = (df['Restruc. Bonus'].replace('[\$,)]', "", regex=True).replace('[-,)]', "", regex=True).astype(float))
+df['Misc'] = (df['Misc.'].replace('[\$,)]', "", regex=True).replace('[-,)]', "", regex=True).astype(float))
+df['Dead.Cap'] = (df['Dead Cap'].replace('\(',"",regex=True).replace('\)',"",regex=True).replace('[\$,)]', "", regex=True).replace('[-,)]', "", regex=True).astype(float))
+
+#Sanity check to make sure it worked.
+df['Cap Hit'].sum()
+```
+
+There are a few wonderful things about Beautiful Soup.  But it is still faster and easier for me to do things in R.  Here is some R code for the same task.  The R table is a messy data structure but is easier to get.
+
+```{r GDF, eval=FALSE}
+library(stringr)
+data.creator <- function(link) {
+read_html(link) %>% html_nodes("table") %>% html_table(header=TRUE, fill=TRUE) -> res
+names(res) <- c("Active","Draft","Inactive","Team1","Team2")
+return(res)
+  }
+team.names <- gsub("-", " ", team.names)
+simpleCap <- function(x) {
+  s <- strsplit(x, " ")[[1]]
+  paste(toupper(substring(s, 1,1)), substring(s, 2),
+      sep="", collapse=" ")
+}
+team.names <- sapply(team.names, simpleCap)
+NFL.scrape <- sapply(team.URL, function(x) {data.creator(x)})
+names(NFL.scrape) <- team.names 
+# This is a hack but it works
+Actives <- lapply(NFL.scrape, function(x){x$Active})
+rep.res <- sapply(seq(1,32), function(x) {dim(Actives[[x]])[[1]]})
+clean.me.2 <- function(data) {
+data %>% str_remove_all("[\\t]") %>% str_split("\\n\\n\\n") %>% unlist() %>% matrix(data=., ncol=2, byrow=TRUE) -> dat
+return(dat)
+}
+clean.me <- function(data) {
+str_remove_all(data, "[\\t]")
+}
+clean.me.num <- function(data) {
+str_remove_all(data, "[\\$,()\\-]")
+  }
+Players <- lapply(Actives, function(x){ clean.me.2(x[,1])})
+Last.Name <- unlist(lapply(Players, function(x) {x[,1]}))
+Player.Name <- unlist(lapply(Players, function(x) {x[,2]}))
+Team <- rep(names(Actives),rep.res)
+Position <- unlist(lapply(Actives, function(x){ clean.me(x[,2])}))
+Base.Salary <- unlist(lapply(Actives, function(x){ clean.me.num(x[,'Base Salary'])}))
+Base.Salary <- as.numeric(Base.Salary)
+Signing.Bonus <- unlist(lapply(Actives, function(x){ clean.me.num(x[,'Signing Bonus'])}))
+Signing.Bonus <- as.numeric(Signing.Bonus)
+Roster.Bonus <- unlist(lapply(Actives, function(x){ clean.me.num(x[,'Roster Bonus'])}))
+Roster.Bonus <- as.numeric(Roster.Bonus)
+Option.Bonus <- unlist(lapply(Actives, function(x){ clean.me.num(x[,'Option Bonus'])}))
+Option.Bonus <- as.numeric(Option.Bonus)
+Workout.Bonus <- unlist(lapply(Actives, function(x){ clean.me.num(x[,'Workout Bonus'])}))
+Workout.Bonus <- as.numeric(Workout.Bonus)
+Cap.Pct <- unlist(lapply(Actives, function(x){ x[,'Cap %']}))
+Restruc.Bonus <- unlist(lapply(Actives, function(x){ clean.me.num(x[,'Restruc. Bonus'])}))
+Restruc.Bonus <- as.numeric(Restruc.Bonus)
+Dead.Cap <- unlist(lapply(Actives, function(x){ clean.me.num(x[,'Dead Cap'])}))
+Dead.Cap <- as.numeric(Dead.Cap)
+Misc.Cap <- unlist(lapply(Actives, function(x){ clean.me.num(x[,'Misc.'])}))
+Misc.Cap <- as.numeric(Misc.Cap)
+Cap.Hit <- unlist(lapply(Actives, function(x){ clean.me.num(x[,'Cap Hit'])}))
+Cap.Hit <- str_replace_all(Cap.Hit, pattern="\\s\\s*", "")
+NFL.Salary.Data <- data.frame(Player=Player.Name, 
+                       Last.Name = Last.Name,
+                       Team=Team, 
+                       Position=Position, 
+                       Base.Salary=Base.Salary,
+                       Signing.Bonus=Signing.Bonus,
+                       Roster.Bonus=Roster.Bonus,
+                       Option.Bonus=Option.Bonus,
+                       Workout.Bonus=Workout.Bonus,
+                       Cap.Hit=Cap.Hit,
+                       Restruc.Bonus=Restruc.Bonus,
+                       Dead.Cap=Dead.Cap,
+                       Misc.Cap=Misc.Cap,
+                       Cap.Pct=Cap.Pct)
+save.image("~/NFL-Data.RData")
+```
+
+Load up a local copy of the data for now.
+
+```{r DataL, eval=TRUE}
+load(url("https://github.com/robertwwalker/academic-mymod/raw/master/data/NFL-Data.RData"))
+```
+
+## Summaries
+
+```{r An1}
+library(tidyverse)
+library(skimr)
+skim(NFL.Salary.Data)
+NFL.Salary.Data %>% group_by(Team) %>% summarise(Total.Base.Salary=sum(Base.Salary))
+NFL.Salary.Data %>% group_by(Position) %>% skim(Base.Salary)
+```
+
+Now I have my salary data.
+
+```{r Plot}
+gplots::plotmeans(Base.Salary~Position, data=NFL.Salary.Data, n.label=FALSE, cex=0.6)
+```
+
+```{r Plot2}
+boxplot(Base.Salary~Position, data=NFL.Salary.Data)
+```
+
+## Combining and Categorizing Data
+
+```{r}
+NFL.Salary.Data$Pos.Char <- NFL.Salary.Data$SideOfBall <- NFL.SubTeam <- as.character(NFL.Salary.Data$Position)
+O.Line <- c("LT","RT","C","G","T")
+D.Line <- c("DT","DE")
+LineBackers <- c("LB","ILB","OLB")
+Safeties <- c("S","SS","FS")
+CBs <- c("CB")
+Special.Teams <- c("K","P","LS")
+RBs <- c("RB","FB")
+TEs <- c("TE")
+WRs <- c("WR")
+QBs <- c("QB")
+Offense <- c(QBs,RBs,WRs,TEs,O.Line)
+Defense <- c(D.Line,LineBackers,Safeties,CBs)
+NFL.Salary.Data$SideOfBall[NFL.Salary.Data$Pos.Char %in% Offense] <- "Offense"
+NFL.Salary.Data$SideOfBall[NFL.Salary.Data$Pos.Char %in% Special.Teams] <- "Special Teams"
+NFL.Salary.Data$SideOfBall[NFL.Salary.Data$Pos.Char %in% Defense] <- "Defense"
+NFL.Salary.Data$SubTeam[NFL.Salary.Data$Pos.Char %in% Special.Teams] <- "Special Teams"
+NFL.Salary.Data$SubTeam[NFL.Salary.Data$Pos.Char %in% QBs] <- "Quarterbacks"
+NFL.Salary.Data$SubTeam[NFL.Salary.Data$Pos.Char %in% RBs] <- "Running Backs"
+NFL.Salary.Data$SubTeam[NFL.Salary.Data$Pos.Char %in% TEs] <- "Tight Ends"
+NFL.Salary.Data$SubTeam[NFL.Salary.Data$Pos.Char %in% WRs] <- "Wide Receivers"
+NFL.Salary.Data$SubTeam[NFL.Salary.Data$Pos.Char %in% O.Line] <- "Offensive Line"
+NFL.Salary.Data$SubTeam[NFL.Salary.Data$Pos.Char %in% LineBackers] <- "Linebackers"
+NFL.Salary.Data$SubTeam[NFL.Salary.Data$Pos.Char %in% CBs] <- "Cornerbacks"
+NFL.Salary.Data$SubTeam[NFL.Salary.Data$Pos.Char %in% D.Line] <- "Defensive Line"
+NFL.Salary.Data$SubTeam[NFL.Salary.Data$Pos.Char %in% Safeties] <- "Safeties"
+```
+
+That gives some positional details to the data also.

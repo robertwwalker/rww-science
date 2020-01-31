@@ -1,0 +1,741 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>GSMPR 622 | rww.science</title>
+    <link>/courses/gsmpr622/</link>
+      <atom:link href="/courses/gsmpr622/index.xml" rel="self" type="application/rss+xml" />
+    <description>GSMPR 622</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© 2018</copyright><lastBuildDate>Tue, 01 Oct 2019 00:00:00 -0700</lastBuildDate>
+    <image>
+      <url>/img/headers/bubbles-wide.jpg</url>
+      <title>GSMPR 622</title>
+      <link>/courses/gsmpr622/</link>
+    </image>
+    
+    <item>
+      <title>A Fast Food Solution</title>
+      <link>/courses/gsmpr622/fastfood-solution/</link>
+      <pubDate>Tue, 21 Jan 2020 00:00:00 +0000</pubDate>
+      <guid>/courses/gsmpr622/fastfood-solution/</guid>
+      <description>
+&lt;script src=&#34;/rmarkdown-libs/htmlwidgets/htmlwidgets.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;/rmarkdown-libs/plotly-binding/plotly.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;/rmarkdown-libs/typedarray/typedarray.min.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;/rmarkdown-libs/jquery/jquery.min.js&#34;&gt;&lt;/script&gt;
+&lt;link href=&#34;/rmarkdown-libs/crosstalk/css/crosstalk.css&#34; rel=&#34;stylesheet&#34; /&gt;
+&lt;script src=&#34;/rmarkdown-libs/crosstalk/js/crosstalk.min.js&#34;&gt;&lt;/script&gt;
+&lt;link href=&#34;/rmarkdown-libs/plotly-htmlwidgets-css/plotly-htmlwidgets.css&#34; rel=&#34;stylesheet&#34; /&gt;
+&lt;script src=&#34;/rmarkdown-libs/plotly-main/plotly-latest.min.js&#34;&gt;&lt;/script&gt;
+
+
+&lt;div id=&#34;fast-food-data&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Fast Food Data&lt;/h1&gt;
+&lt;p&gt;These data came care of a Tidy Tuesday a while ago. The data consist of Fast Food menu items for a selection of fast food chains. The units are menu items. We have the chain [restaurant], item [the item name], and a series of variables (columns) representing sodium, cholesterol, fat, calories, and other information. Some is missing. The data can be imported from the &lt;code&gt;tidytuesday&lt;/code&gt; website on github as .csv.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;FFood &amp;lt;- read.csv(&amp;quot;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2018/2018-09-04/fastfood_calories.csv&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;basic-summary&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Basic Summary&lt;/h2&gt;
+&lt;p&gt;A basic summary of the data.&lt;/p&gt;
+&lt;table&gt;
+&lt;caption&gt;&lt;span id=&#34;tab:pressure&#34;&gt;Table 1: &lt;/span&gt;Data summary&lt;/caption&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Name&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;FFood&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Number of rows&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;515&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Number of columns&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;18&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;_______________________&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Column type frequency:&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;factor&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;3&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;numeric&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;15&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;________________________&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Group variables&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;None&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;Variable type: factor&lt;/strong&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;left&#34;&gt;skim_variable&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;n_missing&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;complete_rate&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;ordered&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;n_unique&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;top_counts&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;restaurant&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;FALSE&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;8&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Tac: 115, Sub: 96, Bur: 70, Mcd: 57&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;item&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;FALSE&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;505&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Cri: 3, Gri: 3, Che: 2, Chi: 2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;salad&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;FALSE&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Oth: 515&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;Variable type: numeric&lt;/strong&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;left&#34;&gt;skim_variable&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;n_missing&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;complete_rate&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;mean&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;sd&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p0&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p25&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p50&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p75&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p100&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;hist&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;X&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;258.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;148.81&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;129.5&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;258.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;386.5&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;515&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▇▇▇▇&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;calories&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;530.91&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;282.44&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;20&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;330.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;490.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;690.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2430&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▆▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;cal_fat&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;238.81&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;166.41&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;120.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;210.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;310.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1270&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▃▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;total_fat&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;26.59&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;18.41&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;14.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;23.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;35.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;141&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▃▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;sat_fat&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;8.15&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6.42&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;7.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;11.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;47&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▃▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;trans_fat&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.47&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.84&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;8&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▁▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;cholesterol&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;72.46&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;63.16&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;35.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;60.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;95.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;805&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▁▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;sodium&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1246.74&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;689.95&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;15&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;800.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1110.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1550.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6080&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▆▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;total_carb&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;45.66&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;24.88&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;28.5&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;44.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;57.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;156&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▅▇▂▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;fiber&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;12&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.98&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4.14&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3.04&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;5.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;17&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▅▂▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;sugar&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;7.26&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6.76&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;9.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;87&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▁▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;protein&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;27.89&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;17.68&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;16.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;24.5&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;36.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;186&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▂▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;vit_a&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;214&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.58&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;18.86&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;31.38&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;10.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;20.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;180&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▁▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;vit_c&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;210&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.59&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;20.17&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;30.59&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;10.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;30.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;400&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▁▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;calcium&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;210&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.59&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;24.85&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;25.52&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;8.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;20.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;30.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;290&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▁▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div id=&#34;a-cautionary-note&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;A Cautionary Note&lt;/h2&gt;
+&lt;p&gt;The NA….&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;for-next-time&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;For Next Time&lt;/h2&gt;
+&lt;ol style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;In Excel, construct a pivot table of the data by fast food en
+terprise that displays five key quantities: the count of the number of menu i
+tems, the mean and sample standard deviation of calories, and the mean and sample standard deviation of sodium.&lt;/li&gt;
+&lt;li&gt;Which chain has the highest average calories? &lt;strong&gt;Mcdonalds&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;Which chain has the lower average calories? &lt;strong&gt;Chick Fil-A&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;Which chain has the highest average sodium content? &lt;strong&gt;Arbys&lt;/strong&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;** The pivot table is the first sheet in the Excel file.**&lt;/p&gt;
+&lt;p&gt;To answer them in R:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;FFood %&amp;gt;% group_by(restaurant) %&amp;gt;% skim(calories,sodium)&lt;/code&gt;&lt;/pre&gt;
+&lt;table&gt;
+&lt;caption&gt;&lt;span id=&#34;tab:unnamed-chunk-1&#34;&gt;Table 2: &lt;/span&gt;Data summary&lt;/caption&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Name&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Piped data&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Number of rows&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;515&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Number of columns&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;18&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;_______________________&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Column type frequency:&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;numeric&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;________________________&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Group variables&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;restaurant&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;Variable type: numeric&lt;/strong&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;left&#34;&gt;skim_variable&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;restaurant&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;n_missing&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;complete_rate&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;mean&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;sd&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p0&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p25&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p50&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p75&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p100&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;hist&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;calories&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Arbys&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;532.73&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;210.34&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;70&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;360.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;550&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;690.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1030&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▃▆▇▇▂&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;calories&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Burger King&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;608.57&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;290.42&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;190&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;365.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;555&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;760.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1550&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▇▃▂▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;calories&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Chick Fil-A&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;384.44&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;220.49&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;70&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;220.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;390&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;480.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;970&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▇▇▁▂&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;calories&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Dairy Queen&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;520.24&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;259.34&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;20&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;350.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;485&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;630.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1260&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▂▇▆▂▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;calories&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Mcdonalds&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;640.35&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;410.70&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;140&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;380.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;540&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;740.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2430&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▅▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;calories&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Sonic&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;631.70&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;300.88&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;100&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;410.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;570&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;740.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1350&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▃▇▆▂▃&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;calories&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Subway&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;503.02&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;282.22&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;50&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;287.5&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;460&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;740.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1160&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▅▇▃▃▂&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;calories&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Taco Bell&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;443.65&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;184.34&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;140&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;320.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;420&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;575.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;880&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▆▇▇▃▂&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;sodium&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Arbys&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1515.27&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;663.67&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;100&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;960.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1480&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2020.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3350&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▂▇▇▃▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;sodium&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Burger King&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1223.57&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;499.88&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;310&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;850.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1150&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1635.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2310&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▅▇▅▆▂&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;sodium&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Chick Fil-A&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1151.48&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;726.92&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;220&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;700.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1405.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3660&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▇▂▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;sodium&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Dairy Queen&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1181.79&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;609.94&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;15&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;847.5&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1030&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1362.5&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3500&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▂▇▂▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;sodium&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Mcdonalds&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1437.89&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1036.17&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;20&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;870.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1120&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1780.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6080&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▅▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;sodium&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Sonic&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1350.75&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;665.13&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;470&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;900.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1250&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1550.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4520&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▆▂▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;sodium&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Subway&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1272.97&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;743.63&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;65&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;697.5&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1130&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1605.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3540&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▅▇▃▁▂&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;sodium&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Taco Bell&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1013.91&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;474.05&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;290&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;615.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;960&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1300.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2260&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▇▆▂▂&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;ol start=&#34;5&#34; style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;In R, construct the same pivot table equivalent using the tidyverse,the piping operator, and the skim function from the skim library&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;FFood %&amp;gt;% group_by(restaurant) %&amp;gt;% summarise(Median.Calories = median(calories)) %&amp;gt;% arrange(Median.Calories)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## # A tibble: 8 x 2
+##   restaurant  Median.Calories
+##   &amp;lt;fct&amp;gt;                 &amp;lt;dbl&amp;gt;
+## 1 Chick Fil-A             390
+## 2 Taco Bell               420
+## 3 Subway                  460
+## 4 Dairy Queen             485
+## 5 Mcdonalds               540
+## 6 Arbys                   550
+## 7 Burger King             555
+## 8 Sonic                   570&lt;/code&gt;&lt;/pre&gt;
+&lt;ol start=&#34;6&#34; style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;Which chain has the highest median calories? &lt;strong&gt;Sonic&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;Which chain has the lowest median calories? &lt;strong&gt;Chick Fil-A&lt;/strong&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;FFood %&amp;gt;% group_by(restaurant) %&amp;gt;% summarise(Median.Sodium = median(sodium))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## # A tibble: 8 x 2
+##   restaurant  Median.Sodium
+##   &amp;lt;fct&amp;gt;               &amp;lt;dbl&amp;gt;
+## 1 Arbys                1480
+## 2 Burger King          1150
+## 3 Chick Fil-A          1000
+## 4 Dairy Queen          1030
+## 5 Mcdonalds            1120
+## 6 Sonic                1250
+## 7 Subway               1130
+## 8 Taco Bell             960&lt;/code&gt;&lt;/pre&gt;
+&lt;ol start=&#34;8&#34; style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;Which chain has the highest median sodium? &lt;strong&gt;Arbys&lt;/strong&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;FFood %&amp;gt;% group_by(restaurant) %&amp;gt;% summarise(Q3.Calories = quantile(calories, 0.75))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## # A tibble: 8 x 2
+##   restaurant  Q3.Calories
+##   &amp;lt;fct&amp;gt;             &amp;lt;dbl&amp;gt;
+## 1 Arbys               690
+## 2 Burger King         760
+## 3 Chick Fil-A         480
+## 4 Dairy Queen         630
+## 5 Mcdonalds           740
+## 6 Sonic               740
+## 7 Subway              740
+## 8 Taco Bell           575&lt;/code&gt;&lt;/pre&gt;
+&lt;ol start=&#34;9&#34; style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;Which chain has the lowest 3rd quartile of calories? &lt;strong&gt;Chick Fil-A&lt;/strong&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;FFood %&amp;gt;% group_by(restaurant) %&amp;gt;% summarise(Q3.Protein = quantile(protein, 0.75, na.rm = TRUE))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## # A tibble: 8 x 2
+##   restaurant  Q3.Protein
+##   &amp;lt;fct&amp;gt;            &amp;lt;dbl&amp;gt;
+## 1 Arbys               38
+## 2 Burger King         36
+## 3 Chick Fil-A         37
+## 4 Dairy Queen         34
+## 5 Mcdonalds           46
+## 6 Sonic               35
+## 7 Subway              40
+## 8 Taco Bell           22&lt;/code&gt;&lt;/pre&gt;
+&lt;ol start=&#34;10&#34; style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;Which chain has the highest 3rd quartile of protein? &lt;strong&gt;Taco Bell&lt;/strong&gt;&lt;/li&gt;
+&lt;li&gt;In R, provide two graphics – a boxplot and something resembling a density plot or histogram – that shows the distributions of sodium and cholesterol.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;boxplot(FFood$sodium)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/courses/GSMPR622/FastFood-Solution/index_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;hist(FFood$sodium)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/courses/GSMPR622/FastFood-Solution/index_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;boxplot(FFood$cholesterol)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/courses/GSMPR622/FastFood-Solution/index_files/figure-html/unnamed-chunk-8-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;hist(FFood$cholesterol)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/courses/GSMPR622/FastFood-Solution/index_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;ol start=&#34;12&#34; style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;In R, provide two graphics – a boxplot and something resembling a density plot – that compares the distributions of total fat and cholesterol by chain. ** I will use an R package called &lt;code&gt;patchwork&lt;/code&gt; to create multipane graphics with add (+).&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre&gt;&lt;code&gt;install.packages(&amp;quot;patchwork&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The structure of each graphic is identical with only the &lt;code&gt;y&lt;/code&gt; changing or the &lt;code&gt;geom&lt;/code&gt; changing amogst violin and boxplot.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;ggplot(FFood) + aes(x=restaurant, y=total_fat, fill=restaurant) + geom_boxplot() + coord_flip() + guides(fill=FALSE)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(patchwork)
+ggplot(FFood) + aes(x=restaurant, y=total_fat, fill=restaurant) + geom_boxplot() + coord_flip() + guides(fill=FALSE) + 
+ggplot(FFood) + aes(x=restaurant, y=total_fat, fill=restaurant) + geom_violin() + coord_flip() + guides(fill=FALSE) + 
+ggplot(FFood) + aes(x=restaurant, y=cholesterol, fill=restaurant) + geom_boxplot() + coord_flip() + guides(fill=FALSE) + 
+ggplot(FFood) + aes(x=restaurant, y=cholesterol, fill=restaurant) + geom_violin() + coord_flip() + guides(fill=FALSE)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/courses/GSMPR622/FastFood-Solution/index_files/figure-html/unnamed-chunk-10-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;ol start=&#34;13&#34; style=&#34;list-style-type: decimal&#34;&gt;
+&lt;li&gt;In R, let’s construct some summary visualizations. We will use the piping operator, group_by() and summarise, to plot by chain: (a) average calories and (b) average sodium.&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(tidyverse)
+( My.Plot &amp;lt;- FFood %&amp;gt;% group_by(restaurant) %&amp;gt;% summarise(calories = mean(calories, na.rm=TRUE)) %&amp;gt;% ggplot(.) + aes(x=reorder(x=restaurant, calories), y=calories) + geom_bar(stat=&amp;quot;identity&amp;quot;, fill=&amp;quot;magenta&amp;quot;) + labs(title=&amp;quot;Average Calories for Fast Food Chains&amp;quot;, x=&amp;quot;Chain&amp;quot;, y=&amp;quot;Average Calories&amp;quot;) + theme_light() + coord_flip() )&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/courses/GSMPR622/FastFood-Solution/index_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Ok. Now, something quite fancy.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(plotly)
+ggplotly(My.Plot)&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;htmlwidget-1&#34; style=&#34;width:672px;height:480px;&#34; class=&#34;plotly html-widget&#34;&gt;&lt;/div&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-1&#34;&gt;{&#34;x&#34;:{&#34;data&#34;:[{&#34;orientation&#34;:&#34;h&#34;,&#34;width&#34;:[0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.899999999999999],&#34;base&#34;:[0,0,0,0,0,0,0,0],&#34;x&#34;:[384.444444444444,443.652173913043,503.020833333333,520.238095238095,532.727272727273,608.571428571429,631.698113207547,640.350877192982],&#34;y&#34;:[1,2,3,4,5,6,7,8],&#34;text&#34;:[&#34;reorder(x = restaurant, calories): Chick Fil-A&lt;br /&gt;calories: 384.4444&#34;,&#34;reorder(x = restaurant, calories): Taco Bell&lt;br /&gt;calories: 443.6522&#34;,&#34;reorder(x = restaurant, calories): Subway&lt;br /&gt;calories: 503.0208&#34;,&#34;reorder(x = restaurant, calories): Dairy Queen&lt;br /&gt;calories: 520.2381&#34;,&#34;reorder(x = restaurant, calories): Arbys&lt;br /&gt;calories: 532.7273&#34;,&#34;reorder(x = restaurant, calories): Burger King&lt;br /&gt;calories: 608.5714&#34;,&#34;reorder(x = restaurant, calories): Sonic&lt;br /&gt;calories: 631.6981&#34;,&#34;reorder(x = restaurant, calories): Mcdonalds&lt;br /&gt;calories: 640.3509&#34;],&#34;type&#34;:&#34;bar&#34;,&#34;marker&#34;:{&#34;autocolorscale&#34;:false,&#34;color&#34;:&#34;rgba(255,0,255,1)&#34;,&#34;line&#34;:{&#34;width&#34;:1.88976377952756,&#34;color&#34;:&#34;transparent&#34;}},&#34;showlegend&#34;:false,&#34;xaxis&#34;:&#34;x&#34;,&#34;yaxis&#34;:&#34;y&#34;,&#34;hoverinfo&#34;:&#34;text&#34;,&#34;frame&#34;:null}],&#34;layout&#34;:{&#34;margin&#34;:{&#34;t&#34;:43.7625570776256,&#34;r&#34;:7.30593607305936,&#34;b&#34;:40.1826484018265,&#34;l&#34;:89.8630136986302},&#34;plot_bgcolor&#34;:&#34;rgba(255,255,255,1)&#34;,&#34;paper_bgcolor&#34;:&#34;rgba(255,255,255,1)&#34;,&#34;font&#34;:{&#34;color&#34;:&#34;rgba(0,0,0,1)&#34;,&#34;family&#34;:&#34;&#34;,&#34;size&#34;:14.6118721461187},&#34;title&#34;:{&#34;text&#34;:&#34;Average Calories for Fast Food Chains&#34;,&#34;font&#34;:{&#34;color&#34;:&#34;rgba(0,0,0,1)&#34;,&#34;family&#34;:&#34;&#34;,&#34;size&#34;:17.5342465753425},&#34;x&#34;:0,&#34;xref&#34;:&#34;paper&#34;},&#34;xaxis&#34;:{&#34;domain&#34;:[0,1],&#34;automargin&#34;:true,&#34;type&#34;:&#34;linear&#34;,&#34;autorange&#34;:false,&#34;range&#34;:[-32.0175438596491,672.368421052632],&#34;tickmode&#34;:&#34;array&#34;,&#34;ticktext&#34;:[&#34;0&#34;,&#34;200&#34;,&#34;400&#34;,&#34;600&#34;],&#34;tickvals&#34;:[0,200,400,600],&#34;categoryorder&#34;:&#34;array&#34;,&#34;categoryarray&#34;:[&#34;0&#34;,&#34;200&#34;,&#34;400&#34;,&#34;600&#34;],&#34;nticks&#34;:null,&#34;ticks&#34;:&#34;outside&#34;,&#34;tickcolor&#34;:&#34;rgba(179,179,179,1)&#34;,&#34;ticklen&#34;:3.65296803652968,&#34;tickwidth&#34;:0.33208800332088,&#34;showticklabels&#34;:true,&#34;tickfont&#34;:{&#34;color&#34;:&#34;rgba(77,77,77,1)&#34;,&#34;family&#34;:&#34;&#34;,&#34;size&#34;:11.689497716895},&#34;tickangle&#34;:-0,&#34;showline&#34;:false,&#34;linecolor&#34;:null,&#34;linewidth&#34;:0,&#34;showgrid&#34;:true,&#34;gridcolor&#34;:&#34;rgba(222,222,222,1)&#34;,&#34;gridwidth&#34;:0.33208800332088,&#34;zeroline&#34;:false,&#34;anchor&#34;:&#34;y&#34;,&#34;title&#34;:{&#34;text&#34;:&#34;Average Calories&#34;,&#34;font&#34;:{&#34;color&#34;:&#34;rgba(0,0,0,1)&#34;,&#34;family&#34;:&#34;&#34;,&#34;size&#34;:14.6118721461187}},&#34;hoverformat&#34;:&#34;.2f&#34;},&#34;yaxis&#34;:{&#34;domain&#34;:[0,1],&#34;automargin&#34;:true,&#34;type&#34;:&#34;linear&#34;,&#34;autorange&#34;:false,&#34;range&#34;:[0.4,8.6],&#34;tickmode&#34;:&#34;array&#34;,&#34;ticktext&#34;:[&#34;Chick Fil-A&#34;,&#34;Taco Bell&#34;,&#34;Subway&#34;,&#34;Dairy Queen&#34;,&#34;Arbys&#34;,&#34;Burger King&#34;,&#34;Sonic&#34;,&#34;Mcdonalds&#34;],&#34;tickvals&#34;:[1,2,3,4,5,6,7,8],&#34;categoryorder&#34;:&#34;array&#34;,&#34;categoryarray&#34;:[&#34;Chick Fil-A&#34;,&#34;Taco Bell&#34;,&#34;Subway&#34;,&#34;Dairy Queen&#34;,&#34;Arbys&#34;,&#34;Burger King&#34;,&#34;Sonic&#34;,&#34;Mcdonalds&#34;],&#34;nticks&#34;:null,&#34;ticks&#34;:&#34;outside&#34;,&#34;tickcolor&#34;:&#34;rgba(179,179,179,1)&#34;,&#34;ticklen&#34;:3.65296803652968,&#34;tickwidth&#34;:0.33208800332088,&#34;showticklabels&#34;:true,&#34;tickfont&#34;:{&#34;color&#34;:&#34;rgba(77,77,77,1)&#34;,&#34;family&#34;:&#34;&#34;,&#34;size&#34;:11.689497716895},&#34;tickangle&#34;:-0,&#34;showline&#34;:false,&#34;linecolor&#34;:null,&#34;linewidth&#34;:0,&#34;showgrid&#34;:true,&#34;gridcolor&#34;:&#34;rgba(222,222,222,1)&#34;,&#34;gridwidth&#34;:0.33208800332088,&#34;zeroline&#34;:false,&#34;anchor&#34;:&#34;x&#34;,&#34;title&#34;:{&#34;text&#34;:&#34;Chain&#34;,&#34;font&#34;:{&#34;color&#34;:&#34;rgba(0,0,0,1)&#34;,&#34;family&#34;:&#34;&#34;,&#34;size&#34;:14.6118721461187}},&#34;hoverformat&#34;:&#34;.2f&#34;},&#34;shapes&#34;:[{&#34;type&#34;:&#34;rect&#34;,&#34;fillcolor&#34;:&#34;transparent&#34;,&#34;line&#34;:{&#34;color&#34;:&#34;rgba(179,179,179,1)&#34;,&#34;width&#34;:0.66417600664176,&#34;linetype&#34;:&#34;solid&#34;},&#34;yref&#34;:&#34;paper&#34;,&#34;xref&#34;:&#34;paper&#34;,&#34;x0&#34;:0,&#34;x1&#34;:1,&#34;y0&#34;:0,&#34;y1&#34;:1}],&#34;showlegend&#34;:false,&#34;legend&#34;:{&#34;bgcolor&#34;:&#34;rgba(255,255,255,1)&#34;,&#34;bordercolor&#34;:&#34;transparent&#34;,&#34;borderwidth&#34;:1.88976377952756,&#34;font&#34;:{&#34;color&#34;:&#34;rgba(0,0,0,1)&#34;,&#34;family&#34;:&#34;&#34;,&#34;size&#34;:11.689497716895}},&#34;hovermode&#34;:&#34;closest&#34;,&#34;barmode&#34;:&#34;relative&#34;},&#34;config&#34;:{&#34;doubleClick&#34;:&#34;reset&#34;,&#34;showSendToCloud&#34;:false},&#34;source&#34;:&#34;A&#34;,&#34;attrs&#34;:{&#34;435734c89289&#34;:{&#34;x&#34;:{},&#34;y&#34;:{},&#34;type&#34;:&#34;bar&#34;}},&#34;cur_data&#34;:&#34;435734c89289&#34;,&#34;visdat&#34;:{&#34;435734c89289&#34;:[&#34;function (y) &#34;,&#34;x&#34;]},&#34;highlight&#34;:{&#34;on&#34;:&#34;plotly_click&#34;,&#34;persistent&#34;:false,&#34;dynamic&#34;:false,&#34;selectize&#34;:false,&#34;opacityDim&#34;:0.2,&#34;selected&#34;:{&#34;opacity&#34;:1},&#34;debounce&#34;:0},&#34;shinyEvents&#34;:[&#34;plotly_hover&#34;,&#34;plotly_click&#34;,&#34;plotly_selected&#34;,&#34;plotly_relayout&#34;,&#34;plotly_brushed&#34;,&#34;plotly_brushing&#34;,&#34;plotly_clickannotation&#34;,&#34;plotly_doubleclick&#34;,&#34;plotly_deselect&#34;,&#34;plotly_afterplot&#34;,&#34;plotly_sunburstclick&#34;],&#34;base_url&#34;:&#34;https://plot.ly&#34;},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;a-great-feature-filter-grepl&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;A Great Feature, filter grepl&lt;/h1&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Let&amp;#39;s Fix the Chicken Variable
+FFood &amp;lt;- FFood %&amp;gt;% mutate(Chicken = grepl(&amp;#39;Chicken|Chick-n&amp;#39;,item))
+FFood$Chicken[FFood$restaurant==&amp;quot;Chick Fil-A&amp;quot;] &amp;lt;- TRUE&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

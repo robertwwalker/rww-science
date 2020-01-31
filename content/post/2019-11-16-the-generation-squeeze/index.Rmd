@@ -1,0 +1,51 @@
+---
+title: The Generation Squeeze
+author: RWW
+date: '2019-11-16'
+slug: the-generation-squeeze
+categories:
+  - R
+tags:
+  - tidyverse
+header:
+  caption: ''
+  image: ''
+  preview: yes
+---
+
+# Hashtag OKBoomer
+
+The generational banter that has followed the use of `#OKBoomer` reminded me of an interesting feature of US population data.  I believe it to be true that Generation X has never and will never be the largest generation of Americans.  There are tons of Millenials and Baby Boomers alike, though the rate of decline in the latter means that the former are about to surpass them.  Or perhaps they have.  I wanted to look at this.  The data was easy enough to find from the [US Census](https://www.census.gov/data/tables/time-series/demo/popest/2010s-national-detail.html).  There are monthly estimates so let me select out the constituent age groups (there is also a total as 999 Age) and take the data for November.
+
+```{r, message=FALSE, warning=FALSE}
+options(scipen=6)
+library(here); library(tidyverse)
+load("censusbyAge.RData")
+Recent.Regular.Ages <- censusbyAgeEST %>% filter(AGE != 999 & MONTH == 11)
+```
+
+I have estimates that range from 0 to 100 in Age.  Truncated above, I presume.  Let's show that data.
+
+```{r}
+library(ggthemes)
+ggplot(Recent.Regular.Ages, aes(x=AGE, y=TOT_POP)) + geom_area(fill="purple") + labs(x="Years of Age [Truncated at 100]", y="November 2019 Population Estimate", title = "US Census by Age") + theme_economist_white()
+```
+
+Let's split it up by generations.  From 2019, `Greatest Generation` is going to encompass the whole group 74 and over.  Boomers are 73 to 55.  Generation X is 54 to 43.  Millenials are 42 to 24.  Gen Z are 23 and under.
+
+```{r}
+Recent.Regular.Ages$Generation <- NA
+Recent.Regular.Ages$Generation[Recent.Regular.Ages$AGE > 23 & Recent.Regular.Ages$AGE < 43] <- "Millenial"
+Recent.Regular.Ages$Generation[Recent.Regular.Ages$AGE < 24] <- "Gen Z"
+Recent.Regular.Ages$Generation[Recent.Regular.Ages$AGE > 42 & Recent.Regular.Ages$AGE < 55] <- "Gen X"
+Recent.Regular.Ages$Generation[Recent.Regular.Ages$AGE > 54 & Recent.Regular.Ages$AGE < 74] <- "Boomer"
+Recent.Regular.Ages$Generation[Recent.Regular.Ages$AGE > 73] <- "Greatest Gen"
+ggplot(Recent.Regular.Ages, aes(x=AGE, y=TOT_POP, fill=Generation)) + geom_area() + labs(x="Years of Age [Truncated at 100]", y="November 2019 Population Estimate", title = "US Census by Age") + scale_fill_viridis_d()
+```
+
+Gen X is the little thing in the middle.
+
+```{r}
+Recent.Regular.Ages %>% group_by(Generation) %>% summarise(Total.Population = sum(TOT_POP)) %>% ungroup()
+```
+

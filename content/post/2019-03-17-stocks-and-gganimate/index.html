@@ -1,0 +1,322 @@
+---
+title: Stocks and gganimate
+author: RWW
+date: '2019-03-17'
+slug: stocks-and-gganimate
+categories:
+  - R
+  - tidyverse
+tags:
+  - plot
+header:
+  caption: ''
+  image: ''
+  preview: yes
+---
+
+
+
+<div id="tidyquant" class="section level2">
+<h2>tidyquant</h2>
+<p>Automates a lot of equity research and calculation using <em>tidy</em> concepts. Here, I will first use it to get the components of the S and P 500 and pick out those with weights over 1.25 percent. In the next step, I download the data and finally calculate daily returns and a cumulative wealth index.</p>
+<pre class="r"><code>library(tidyquant)
+library(tidyverse)
+tq_index(&quot;SP500&quot;) %&gt;% filter(weight &gt; 0.0125) %&gt;% select(symbol,company) -&gt; Tickers
+Tickers &lt;- Tickers %&gt;% filter(symbol!=&quot;BRK.B&quot;) %&gt;% filter(symbol!=&quot;GOOGL&quot;)
+Eq.P &lt;- Tickers %&gt;%  tq_get(., from=&quot;2018/01/01&quot;, to=&quot;2019/03/14&quot;) 
+Returns &lt;- Eq.P %&gt;% group_by(symbol) %&gt;% tq_transmute(., adjusted, periodReturn, period=&quot;daily&quot;)
+C.Returns &lt;- Eq.P %&gt;% 
+  group_by(symbol) %&gt;% 
+  tq_transmute(., adjusted, periodReturn, period=&quot;daily&quot;, type = &quot;log&quot;, col_rename = &quot;returns&quot;) %&gt;% 
+  mutate(wealth.index = 100 * cumprod(1 + returns))
+library(skimr)
+Returns %&gt;% skim()</code></pre>
+<table>
+<caption><span id="tab:cars">Table 1: </span>Data summary</caption>
+<tbody>
+<tr class="odd">
+<td align="left">Name</td>
+<td align="left">Piped data</td>
+</tr>
+<tr class="even">
+<td align="left">Number of rows</td>
+<td align="left">2400</td>
+</tr>
+<tr class="odd">
+<td align="left">Number of columns</td>
+<td align="left">3</td>
+</tr>
+<tr class="even">
+<td align="left">_______________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Column type frequency:</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">Date</td>
+<td align="left">1</td>
+</tr>
+<tr class="odd">
+<td align="left">numeric</td>
+<td align="left">1</td>
+</tr>
+<tr class="even">
+<td align="left">________________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Group variables</td>
+<td align="left">symbol</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: Date</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="left">symbol</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="left">min</th>
+<th align="left">max</th>
+<th align="left">median</th>
+<th align="right">n_unique</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">date</td>
+<td align="left">AAPL</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="left">2018-01-02</td>
+<td align="left">2019-03-13</td>
+<td align="left">2018-08-06</td>
+<td align="right">300</td>
+</tr>
+<tr class="even">
+<td align="left">date</td>
+<td align="left">AMZN</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="left">2018-01-02</td>
+<td align="left">2019-03-13</td>
+<td align="left">2018-08-06</td>
+<td align="right">300</td>
+</tr>
+<tr class="odd">
+<td align="left">date</td>
+<td align="left">FB</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="left">2018-01-02</td>
+<td align="left">2019-03-13</td>
+<td align="left">2018-08-06</td>
+<td align="right">300</td>
+</tr>
+<tr class="even">
+<td align="left">date</td>
+<td align="left">GOOG</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="left">2018-01-02</td>
+<td align="left">2019-03-13</td>
+<td align="left">2018-08-06</td>
+<td align="right">300</td>
+</tr>
+<tr class="odd">
+<td align="left">date</td>
+<td align="left">JNJ</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="left">2018-01-02</td>
+<td align="left">2019-03-13</td>
+<td align="left">2018-08-06</td>
+<td align="right">300</td>
+</tr>
+<tr class="even">
+<td align="left">date</td>
+<td align="left">JPM</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="left">2018-01-02</td>
+<td align="left">2019-03-13</td>
+<td align="left">2018-08-06</td>
+<td align="right">300</td>
+</tr>
+<tr class="odd">
+<td align="left">date</td>
+<td align="left">MSFT</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="left">2018-01-02</td>
+<td align="left">2019-03-13</td>
+<td align="left">2018-08-06</td>
+<td align="right">300</td>
+</tr>
+<tr class="even">
+<td align="left">date</td>
+<td align="left">V</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="left">2018-01-02</td>
+<td align="left">2019-03-13</td>
+<td align="left">2018-08-06</td>
+<td align="right">300</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="left">symbol</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">p0</th>
+<th align="right">p25</th>
+<th align="right">p50</th>
+<th align="right">p75</th>
+<th align="right">p100</th>
+<th align="left">hist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">daily.returns</td>
+<td align="left">AAPL</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0.02</td>
+<td align="right">-0.10</td>
+<td align="right">-0.01</td>
+<td align="right">0</td>
+<td align="right">0.01</td>
+<td align="right">0.07</td>
+<td align="left">▁▁▇▇▁</td>
+</tr>
+<tr class="even">
+<td align="left">daily.returns</td>
+<td align="left">AMZN</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0.02</td>
+<td align="right">-0.08</td>
+<td align="right">-0.01</td>
+<td align="right">0</td>
+<td align="right">0.01</td>
+<td align="right">0.09</td>
+<td align="left">▁▂▇▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">daily.returns</td>
+<td align="left">FB</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0.02</td>
+<td align="right">-0.19</td>
+<td align="right">-0.01</td>
+<td align="right">0</td>
+<td align="right">0.01</td>
+<td align="right">0.11</td>
+<td align="left">▁▁▂▇▁</td>
+</tr>
+<tr class="even">
+<td align="left">daily.returns</td>
+<td align="left">GOOG</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0.02</td>
+<td align="right">-0.05</td>
+<td align="right">-0.01</td>
+<td align="right">0</td>
+<td align="right">0.01</td>
+<td align="right">0.06</td>
+<td align="left">▁▃▇▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">daily.returns</td>
+<td align="left">JNJ</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0.01</td>
+<td align="right">-0.10</td>
+<td align="right">-0.01</td>
+<td align="right">0</td>
+<td align="right">0.01</td>
+<td align="right">0.04</td>
+<td align="left">▁▁▁▇▂</td>
+</tr>
+<tr class="even">
+<td align="left">daily.returns</td>
+<td align="left">JPM</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0.01</td>
+<td align="right">-0.05</td>
+<td align="right">-0.01</td>
+<td align="right">0</td>
+<td align="right">0.01</td>
+<td align="right">0.04</td>
+<td align="left">▁▂▇▃▁</td>
+</tr>
+<tr class="odd">
+<td align="left">daily.returns</td>
+<td align="left">MSFT</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0.02</td>
+<td align="right">-0.05</td>
+<td align="right">-0.01</td>
+<td align="right">0</td>
+<td align="right">0.01</td>
+<td align="right">0.08</td>
+<td align="left">▁▅▇▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">daily.returns</td>
+<td align="left">V</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0</td>
+<td align="right">0.02</td>
+<td align="right">-0.05</td>
+<td align="right">-0.01</td>
+<td align="right">0</td>
+<td align="right">0.01</td>
+<td align="right">0.07</td>
+<td align="left">▁▅▇▁▁</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="animating-a-plot" class="section level2">
+<h2>Animating a plot</h2>
+<p>The goal of this was to play with <code>gganimate</code>. I will take the big components and go through and plot them. It is a big animation because it involves over a year of data. The basic idea for the graphic was borrowed from a gganimate <a href="https://github.com/thomasp85/gganimate/wiki/Temperature-time-series">sample</a>.</p>
+<pre class="r"><code>library(gganimate)
+library(ggrepel)
+p &lt;- ggplot(C.Returns, aes(date, wealth.index, group = symbol, colour=symbol)) + 
+  geom_point(size = 2) + 
+  geom_line() + 
+  geom_segment(aes(xend = as.Date(&quot;2019-03-15&quot;), yend = wealth.index), linetype = 2) + 
+    geom_text_repel(aes(y = wealth.index, x = as.Date(&quot;2019-03-15&quot;), label = symbol), hjust = 1, nudge_x = 8) +
+  transition_reveal(date) + 
+  coord_cartesian(clip = &#39;off&#39;) + 
+  labs(title = &#39;Cumulative Wealth Index for S&amp;P Top 10&#39;, subtitle=&quot;Begins January 1, 2018: Base 100&quot;, y = &#39;Cumulative Change&#39;, x = &#39;Date&#39;) +
+  theme_minimal() + theme(legend.position = &quot;none&quot;)
+animate(p, nframes=300)</code></pre>
+<p><img src="/post/2019-03-17-stocks-and-gganimate/index_files/figure-html/AnimPlot-1.gif" /><!-- --></p>
+</div>

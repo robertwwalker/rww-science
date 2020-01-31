@@ -1,0 +1,560 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>tables | rww.science</title>
+    <link>/categories/tables/</link>
+      <atom:link href="/categories/tables/index.xml" rel="self" type="application/rss+xml" />
+    <description>tables</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© 2018</copyright><lastBuildDate>Wed, 09 Oct 2019 00:00:00 +0000</lastBuildDate>
+    <image>
+      <url>/img/portrait.jpg</url>
+      <title>tables</title>
+      <link>/categories/tables/</link>
+    </image>
+    
+    <item>
+      <title>Tables, Pivots, Bars, and Mosaics</title>
+      <link>/r/tables-pivots-bars-and-mosaics/</link>
+      <pubDate>Wed, 09 Oct 2019 00:00:00 +0000</pubDate>
+      <guid>/r/tables-pivots-bars-and-mosaics/</guid>
+      <description>
+
+
+&lt;div id=&#34;r-markdown&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;R Markdown&lt;/h1&gt;
+&lt;p&gt;There is detailed help for all that Markdown can do under Help in the RStudio. The key to it is knitting documents with the &lt;em&gt;Knit&lt;/em&gt; button in the RStudio. If we use helpers like the R Commander, Radiant, or
+&lt;em&gt;esquisse&lt;/em&gt;, we will need the R code implanted in the Markdown document in particular ways. I will use Markdown for &lt;em&gt;everything&lt;/em&gt;. I even use a close relation of Markdown in my scholarly pursuits.&lt;/p&gt;
+&lt;div id=&#34;the-packages-tidyverse-and-esquisse&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;The Packages: &lt;em&gt;tidyverse&lt;/em&gt; and &lt;em&gt;esquisse&lt;/em&gt;&lt;/h2&gt;
+&lt;p&gt;We will rely on five. The &lt;em&gt;tidyverse&lt;/em&gt; is Hadley Wickham’s collection of packages. It represents a different philosophy for the construction of exploratory data analysis with literate programming – code that you can read. We will rely on the &lt;code&gt;%&amp;gt;%&lt;/code&gt; piping operators of the &lt;em&gt;magrittr&lt;/em&gt; package that pipes something to a subsequent command as a core function of the tidyverse.&lt;/p&gt;
+&lt;p&gt;For everything that we want in a summary, there is the &lt;em&gt;skimr&lt;/em&gt; function &lt;em&gt;skim&lt;/em&gt;. For cross-tabulation the easy way, there is &lt;em&gt;janitor&lt;/em&gt;. The other two are developmental pieces of software that have yet to deploy into the regular package system of R. &lt;em&gt;esquisse&lt;/em&gt; and parts of &lt;em&gt;that’s so random&lt;/em&gt; blog’s package for implementing ggmosaic.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;pkgTest &amp;lt;- function(x)
+  {
+    if (!require(x,character.only = TRUE))
+    {
+      install.packages(x,dep=TRUE, type=&amp;quot;binary&amp;quot;)
+        if(!require(x,character.only = TRUE)) stop(&amp;quot;Package not found&amp;quot;)
+    }
+}
+pkgTest(&amp;quot;tidyverse&amp;quot;)
+pkgTest(&amp;quot;magrittr&amp;quot;)
+pkgTest(&amp;quot;skimr&amp;quot;)
+pkgTest(&amp;quot;janitor&amp;quot;)
+pkgTest(&amp;quot;devtools&amp;quot;)
+devtools::install_github(&amp;quot;EdwinTH/thatssorandom&amp;quot;)
+pkgTest(&amp;quot;dreamRs/esquisse&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;a-first-go&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;A first go&lt;/h2&gt;
+&lt;p&gt;We have an embedded data object; if you look at the beginning of the document, I have used an &lt;em&gt;R&lt;/em&gt; command called &lt;em&gt;dput&lt;/em&gt; to embed the data in the document. Above, there is encoded text of &lt;em&gt;Bond.Funds&lt;/em&gt; to use as an example. To get a sense of the data, I will load the &lt;em&gt;skim&lt;/em&gt; function and put it to work. In &lt;em&gt;R&lt;/em&gt;, we will use the &lt;code&gt;library&lt;/code&gt; command to load &lt;em&gt;functions&lt;/em&gt; into the &lt;em&gt;namespace&lt;/em&gt; – the set of recognizable commands. &lt;em&gt;R&lt;/em&gt; needs to know how a function is defined to use it. The function &lt;em&gt;skim&lt;/em&gt; appears in the &lt;em&gt;skimr&lt;/em&gt; library.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(skimr)
+skim(Bond.Funds)&lt;/code&gt;&lt;/pre&gt;
+&lt;table&gt;
+&lt;caption&gt;&lt;span id=&#34;tab:SkBF&#34;&gt;Table 1: &lt;/span&gt;Data summary&lt;/caption&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Name&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Bond.Funds&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Number of rows&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;184&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Number of columns&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;9&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;_______________________&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Column type frequency:&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;character&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;4&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;numeric&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;5&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;________________________&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Group variables&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;None&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;Variable type: character&lt;/strong&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;left&#34;&gt;skim_variable&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;n_missing&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;complete_rate&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;min&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;max&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;empty&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;n_unique&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;whitespace&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Fund Number&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;184&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Type&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;20&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;23&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Fees&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Risk&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;7&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;13&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;Variable type: numeric&lt;/strong&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;left&#34;&gt;skim_variable&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;n_missing&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;complete_rate&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;mean&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;sd&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p0&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p25&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p50&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p75&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p100&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;hist&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Assets&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;910.65&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2253.27&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;12.40&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;113.72&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;268.4&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;621.95&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;18603.50&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▁▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Expense Ratio&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.71&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.26&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.12&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.53&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.7&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.90&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.94&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▂▇▅▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Return 2009&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;7.16&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6.09&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-8.80&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3.48&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6.4&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;10.72&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;32.00&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▁▇▅▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;3-Year Return&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4.66&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2.52&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-13.80&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4.05&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;5.1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6.10&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;9.40&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▁▁▁▅▇&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;5-Year Return&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3.99&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.49&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-7.30&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3.60&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4.3&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4.90&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6.80&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▁▁▁▅▇&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# skimr::skim(Bond.Funds)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;tidy&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;tidy?&lt;/h1&gt;
+&lt;p&gt;The beauty of &lt;em&gt;tidy&lt;/em&gt; is rendering code readable with an organizational focus on data objects. Let me take the Bond Funds example and use a simple literate example to mirror a pivot table. Let’s pivot two basic statistics, the mean and standard deviation, then the median and interquartile range grouped by Risk. I should point out that the variable names containing spaces are difficult and have to be enclosed in quotes. Better naming at the outset would help. With simple names, we can ignore the quoting.&lt;/p&gt;
+&lt;div id=&#34;numerical-summary&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Numerical Summary&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(tidyverse)
+Bond.Funds %&amp;gt;% group_by(Risk) %&amp;gt;% 
+  summarise(Avg.Return = mean(`Return 2009`), SD.Return=sd(`Return 2009`), median.Return=median(`Return 2009`), IQR.Return=IQR(`Return 2009`))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## # A tibble: 3 x 5
+##   Risk          Avg.Return SD.Return median.Return IQR.Return
+##   &amp;lt;chr&amp;gt;              &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;         &amp;lt;dbl&amp;gt;      &amp;lt;dbl&amp;gt;
+## 1 Above average       8.31      9.24           7.9      13.0 
+## 2 Average             6.87      4.39           6         7.3 
+## 3 Below average       6.31      2.71           6.1       3.18&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;I can also use &lt;em&gt;skim&lt;/em&gt;.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bond.Funds %&amp;gt;% group_by(Risk,Fees) %&amp;gt;% skim(`Return 2009`)&lt;/code&gt;&lt;/pre&gt;
+&lt;table&gt;
+&lt;caption&gt;&lt;span id=&#34;tab:SKBF1&#34;&gt;Table 2: &lt;/span&gt;Data summary&lt;/caption&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Name&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Piped data&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Number of rows&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;184&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Number of columns&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;9&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;_______________________&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Column type frequency:&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;numeric&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;________________________&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Group variables&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Risk, Fees&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;Variable type: numeric&lt;/strong&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;left&#34;&gt;skim_variable&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;Risk&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;Fees&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;n_missing&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;complete_rate&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;mean&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;sd&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p0&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p25&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p50&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p75&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p100&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;hist&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Return 2009&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Above average&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;No&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;8.25&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;8.92&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-8.8&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.70&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;9.90&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;13.50&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;32.0&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▃▃▇▂▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Return 2009&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Above average&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Yes&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;8.42&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;9.96&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-4.8&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.98&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6.85&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;14.93&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;29.7&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▆▃▃▂&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Return 2009&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Average&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;No&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;7.37&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4.51&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-1.1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4.30&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6.50&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;11.20&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;16.4&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▆▆▇▇▃&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Return 2009&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Average&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Yes&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;5.66&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3.93&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-0.6&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3.35&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4.80&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;8.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;12.9&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▃▇▅▂▅&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Return 2009&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Below average&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;No&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6.33&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2.80&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4.85&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6.20&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;7.58&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;13.0&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▂▅▇▃▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Return 2009&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Below average&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Yes&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6.26&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2.46&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.5&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;5.02&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6.05&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;8.22&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;10.1&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▂▃▇▆▃&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;I want to recreate a categorical pivot table also.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;categorical-descriptions-requires-tables-or-graphics&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Categorical Descriptions Requires Tables [or Graphics]&lt;/h2&gt;
+&lt;p&gt;There are numerous ways to build tables in R. Base R has a &lt;em&gt;table&lt;/em&gt; function that works but it does not naturally work inside data environments; we have to provide them using &lt;code&gt;$&lt;/code&gt; or &lt;code&gt;with&lt;/code&gt; environments [or &lt;code&gt;%$%&lt;/code&gt; in &lt;em&gt;magrittr&lt;/em&gt;]. This brief description of environments is part of a broader idea of &lt;em&gt;scoping&lt;/em&gt; in R.&lt;/p&gt;
+&lt;div id=&#34;easiest-janitor&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Easiest: janitor&lt;/h3&gt;
+&lt;p&gt;The package &lt;em&gt;janitor&lt;/em&gt; contains a &lt;em&gt;tabyl&lt;/em&gt; with the ability to add totals and calculate percentages of relevance. Here are two examples.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(janitor)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## 
+## Attaching package: &amp;#39;janitor&amp;#39;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## The following objects are masked from &amp;#39;package:stats&amp;#39;:
+## 
+##     chisq.test, fisher.test&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bond.Funds %&amp;gt;% tabyl(Fees,Risk) %&amp;gt;% adorn_totals(c(&amp;quot;row&amp;quot;,&amp;quot;col&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##   Fees Above average Average Below average Total
+##     No            37      49            44   130
+##    Yes            22      20            12    54
+##  Total            59      69            56   184&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bond.Funds %&amp;gt;% tabyl(Fees,Risk) %&amp;gt;% adorn_percentages(&amp;quot;row&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##  Fees Above average   Average Below average
+##    No     0.2846154 0.3769231     0.3384615
+##   Yes     0.4074074 0.3703704     0.2222222&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;easier-with-xtabs-and-formulae&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Easier with xtabs and formulae&lt;/h3&gt;
+&lt;p&gt;This is actually made much easier with a slightly new form of syntax: formulae. Base R, as you have already learned (or will learn) with &lt;em&gt;swirl&lt;/em&gt;, uses different and less readable syntax than the tidyverse. But this is a problem that is quite easy for R in the base commands &lt;em&gt;table&lt;/em&gt; and &lt;em&gt;xtabs&lt;/em&gt; [crosstabs]. In the first instance, we merely create a table counting values. In the second, the data is a named argument for the function &lt;em&gt;xtabs&lt;/em&gt; that requires a statement of &lt;em&gt;margins&lt;/em&gt; for the table as a series of names with “+”. The order will determine the rows [first] and the columns [second].&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;table(Bond.Funds$Fees,Bond.Funds$Risk)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##      
+##       Above average Average Below average
+##   No             37      49            44
+##   Yes            22      20            12&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;xtabs(~Fees+Risk, data=Bond.Funds)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##      Risk
+## Fees  Above average Average Below average
+##   No             37      49            44
+##   Yes            22      20            12&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;These can also be assigned as objects using the “&amp;lt;-”; this saves a local version of the table as something that we can work on. I will call mine FR.Tab for the F(ees)R(isk).Tab(le).&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;FR.Tab &amp;lt;- xtabs(~Fees+Risk, data=Bond.Funds)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;worst-table&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Worst: Table&lt;/h3&gt;
+&lt;p&gt;Base R table is great but it requires that we specify an environment. To grab a variable from inside a data.frame requires &lt;code&gt;$&lt;/code&gt;, as in&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;table(Bond.Funds$Fees,Bond.Funds$Risk)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##      
+##       Above average Average Below average
+##   No             37      49            44
+##   Yes            22      20            12&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;BRTab1 &amp;lt;- table(Bond.Funds$Fees,Bond.Funds$Risk)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;We can accomplish the same with &lt;em&gt;with&lt;/em&gt;, telling R to evaluate something inside whatever data object is in &lt;em&gt;with&lt;/em&gt;, for example,&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;with(Bond.Funds, table(Fees,Risk))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##      Risk
+## Fees  Above average Average Below average
+##   No             37      49            44
+##   Yes            22      20            12&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;WBF1 &amp;lt;- with(Bond.Funds, table(Fees,Risk))&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;conditional-frequency&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Conditional Frequency&lt;/h2&gt;
+&lt;p&gt;If we think about conditional probability as measured in proportions of the table, we can ask R to calculate them. The command is &lt;em&gt;prop.table&lt;/em&gt; and the inputs are a table and a &lt;em&gt;margin&lt;/em&gt; here 1 is rows [conditioning on the first name you entered] and 2 is columns [the second name you entered]. Nothing specified is joint or total.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;prop.table(FR.Tab)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##      Risk
+## Fees  Above average    Average Below average
+##   No     0.20108696 0.26630435    0.23913043
+##   Yes    0.11956522 0.10869565    0.06521739&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;prop.table(FR.Tab, 1)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##      Risk
+## Fees  Above average   Average Below average
+##   No      0.2846154 0.3769231     0.3384615
+##   Yes     0.4074074 0.3703704     0.2222222&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;prop.table(FR.Tab, 2)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##      Risk
+## Fees  Above average   Average Below average
+##   No      0.6271186 0.7101449     0.7857143
+##   Yes     0.3728814 0.2898551     0.2142857&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;prop.table(WBF1)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##      Risk
+## Fees  Above average    Average Below average
+##   No     0.20108696 0.26630435    0.23913043
+##   Yes    0.11956522 0.10869565    0.06521739&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;prop.table(WBF1, 1)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##      Risk
+## Fees  Above average   Average Below average
+##   No      0.2846154 0.3769231     0.3384615
+##   Yes     0.4074074 0.3703704     0.2222222&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;prop.table(WBF1, 2)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##      Risk
+## Fees  Above average   Average Below average
+##   No      0.6271186 0.7101449     0.7857143
+##   Yes     0.3728814 0.2898551     0.2142857&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;pivot-plots-mosaic&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Pivot Plots [Mosaic]&lt;/h2&gt;
+&lt;p&gt;Base R Graphics contain a mosaic with the same formula as the cross-tabulation above.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;mosaicplot(~Risk+Fees, data=Bond.Funds)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2019-10-09-tables-pivots-bars-and-mosaics/index_files/figure-html/MP1-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;I recently came across a nice plotter for tabular data on &lt;em&gt;github&lt;/em&gt;. You can search for it as &lt;em&gt;thatssorandom&lt;/em&gt;. We installed it above.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2019-10-09-tables-pivots-bars-and-mosaics/index_files/figure-html/pMos-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Notice it handles an implicit plotting of the set of conditional probabilities along the relevant margin. It is plotting &lt;span class=&#34;math inline&#34;&gt;\(Pr(Fees|Risk)\)&lt;/span&gt; as breaks along the &lt;em&gt;y-axis&lt;/em&gt; defined by frequency/empirical probability. This would be the equivalent of taking the &lt;em&gt;column marginal&lt;/em&gt; of the table of Fees and Risk that we saw before. Now it has a graphical representation.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;prop.table(FR.Tab, 2)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##      Risk
+## Fees  Above average   Average Below average
+##   No      0.6271186 0.7101449     0.7857143
+##   Yes     0.3728814 0.2898551     0.2142857&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;for-berkeley-admissions&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;For Berkeley Admissions:&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;data(&amp;quot;UCBAdmissions&amp;quot;)
+UCB &amp;lt;- DescTools::Untable(UCBAdmissions)
+UCB$Gender &amp;lt;- as.character(UCB$Gender)
+UCB$Gender[UCB$Gender==&amp;quot;Male&amp;quot;] &amp;lt;- &amp;quot;M&amp;quot;
+UCB$Gender[UCB$Gender==&amp;quot;Female&amp;quot;] &amp;lt;- &amp;quot;F&amp;quot;
+UCB$DeptMF &amp;lt;- paste(UCB$Dept,UCB$Gender, sep=&amp;quot;:&amp;quot;)
+UCB &amp;lt;- UCB %&amp;gt;% select(Admit,DeptMF)
+p1 &amp;lt;- ggmm(UCB, x=DeptMF, y=Admit, add_text = &amp;quot;n&amp;quot;)
+p1 + labs(x=&amp;quot;Dept:M/F&amp;quot;, y=&amp;quot;Admitted&amp;quot;) + theme(axis.text=element_text(size=10))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2019-10-09-tables-pivots-bars-and-mosaics/index_files/figure-html/unnamed-chunk-1-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;barplots&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Barplots&lt;/h2&gt;
+&lt;p&gt;Basic things like barplots can be accomplished in many ways. Using the &lt;em&gt;R4DS&lt;/em&gt; approach, we have&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggplot(data = Bond.Funds) + 
+  stat_count(mapping = aes(x = Risk))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2019-10-09-tables-pivots-bars-and-mosaics/index_files/figure-html/GGBar-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Placed into densities. This is really only helpful with another dimension because the X is categorical so all bars will be height 1.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggplot(data = Bond.Funds, aes(x = Risk, fill=Fees)) + geom_bar(position=&amp;quot;fill&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2019-10-09-tables-pivots-bars-and-mosaics/index_files/figure-html/GGBar2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Or in Base R&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;par(mfrow=c(1,2))
+barplot(table(Bond.Funds$Risk))
+barplot(table(Bond.Funds$Fees,Bond.Funds$Risk))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2019-10-09-tables-pivots-bars-and-mosaics/index_files/figure-html/BRBar-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;A legend would help.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;par(mfrow=c(1,2))
+barplot(table(Bond.Funds$Fees,Bond.Funds$Risk), legend=TRUE)
+barplot(table(Bond.Funds$Fees,Bond.Funds$Risk), legend=TRUE, args.legend=list(bty=&amp;quot;n&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2019-10-09-tables-pivots-bars-and-mosaics/index_files/figure-html/BRBar2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;simple-visualization-esquisse&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Simple Visualization: &lt;em&gt;esquisse()&lt;/em&gt;&lt;/h2&gt;
+&lt;p&gt;There is a wonderful tool for quickly succeeding with one of the most elegant and frustrating parts of R – &lt;em&gt;ggplot2&lt;/em&gt;. Hadley Wickham’s &lt;em&gt;Grammar of Graphics&lt;/em&gt; is brilliant when understood but is hard to comprehend initially and the programming structure of the package &lt;em&gt;makes&lt;/em&gt; it hard for learners. Fortunately, a package called &lt;em&gt;esquisse&lt;/em&gt; is available to make &lt;em&gt;ggplot2&lt;/em&gt; drag and drop to harness much of the power in an easy fashion. With code in the output, it also facilitates learning how to manipulate the code of &lt;em&gt;ggplot2&lt;/em&gt;.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;esquisse&lt;/em&gt; is quite powerful; we can explore this at length. Here is a simple graphic that I created with x and fills.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(ggplot2)
+plt1 &amp;lt;- ggplot(data = Bond.Funds) +
+  aes(x = Type, fill = Fees) +
+  geom_bar() +
+  theme_minimal()
+plt1&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2019-10-09-tables-pivots-bars-and-mosaics/index_files/figure-html/GGP1-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;If you notice, &lt;em&gt;esquisse&lt;/em&gt; directly outputs graphics to powerpoint. This feature is quite useful.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

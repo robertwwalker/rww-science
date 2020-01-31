@@ -1,0 +1,127 @@
+---
+title: Building a Blogdown
+author: RWW
+date: '2019-11-15'
+slug: building-a-blogdown
+categories: []
+tags: []
+header:
+  caption: ''
+  image: ''
+  preview: yes
+---
+
+
+
+<div id="pre-talk" class="section level2">
+<h2>Pre-Talk</h2>
+<p><a href="https://rww.science/presentations/BlogdownPresentation.html">Slides</a></p>
+<p>Set the RStudio to install blogdown.</p>
+<pre><code>install.packages(&quot;blogdown&quot;)</code></pre>
+<p>and to get a working local version of Hugo, the static site generator at the heart of this,</p>
+<pre><code>blogdown::install_hugo()</code></pre>
+</div>
+<div id="motivation" class="section level1">
+<h1>Motivation</h1>
+<p>Credit where credit is due; Alison Hill motivated all of this with her wealth of resources. Indeed, I redesigned the flow for today because of her brilliant R-Ladies Canberra seminar [I found the resource links on Twitter and the idea is</p>
+<p><img src="https://media.giphy.com/media/vyaVOTmCl7o1MAlnwK/giphy.gif" /></p>
+</div>
+<div id="all-credit-to-alison-hill-and-yihui-xie" class="section level1">
+<h1>All Credit to Alison Hill and Yihui Xie</h1>
+<p>Alison Hill’s magnificent resources on this.</p>
+<p><a href="https://bookdown.org/yihui/blogdown/">The Blogdown Book</a></p>
+<p><a href="https://summer-of-blogdown.netlify.com/">Summer of Blogdown</a></p>
+<p>I wish I had them when I had to figure this all out for myself.</p>
+<div id="why-blogdown" class="section level2">
+<h2>Why Blogdown</h2>
+<p><img src="/post/2019-11-15-building-a-blogdown_files/HadleyThread.png" /></p>
+</div>
+<div id="workflow" class="section level2">
+<h2>Workflow</h2>
+<p>Navigate to the <a href="https://github.com/WUCDS1920/blankslate">github base for this</a>.</p>
+<div class="figure">
+<img src="https://media.giphy.com/media/69D4FSNqihhKpFcc1a/giphy.gif" alt="Go!" />
+<p class="caption">Go!</p>
+</div>
+</div>
+<div id="create-a-github-site" class="section level2">
+<h2>Create a github site</h2>
+<p>If you do not already have one, you will need to create a github site. I created one for today called wucds1920 – Willamette University Certificate in Data Science 19/20. <em>I would associate it with a professional durable email account.</em></p>
+<div class="figure">
+<img src="https://media.giphy.com/media/69D4FSNqihhKpFcc1a/giphy.gif" alt="Go!" />
+<p class="caption">Go!</p>
+</div>
+</div>
+<div id="fork-blankslate" class="section level2">
+<h2>Fork blankslate</h2>
+<p><img src="/post/2019-11-15-building-a-blogdown_files/ForkMe.png" /></p>
+</div>
+<div id="migrate-to-your-fork" class="section level2">
+<h2>Migrate to your fork</h2>
+<div class="figure">
+<img src="https://media.giphy.com/media/69D4FSNqihhKpFcc1a/giphy.gif" alt="Go!" />
+<p class="caption">Go!</p>
+</div>
+<div id="the-action" class="section level3">
+<h3>The Action</h3>
+<p>We will need to edit <code>config.toml</code> in the root directory to reflect our chosen URL on netlify. The remaining action is:</p>
+<p><img src="/post/2019-11-15-building-a-blogdown_files/TheAction.png" /></p>
+</div>
+</div>
+<div id="the-magic-of-github" class="section level2">
+<h2>The Magic of GitHub</h2>
+<p>My objectives are more limited. We want to Start a New Project…</p>
+<p>From our github</p>
+<p>We may need:</p>
+<p><img src="/post/2019-11-15-building-a-blogdown_files/GitandRStudio.png" /></p>
+<p>Hadley Wickham has a great writeup on this:
+<a href="http://r-pkgs.had.co.nz/git.html"></a></p>
+</div>
+<div id="lets-edit." class="section level2">
+<h2>Let’s Edit….</h2>
+<blockquote class="imgur-embed-pub" lang="en" data-id="7J1bEaJ">
+<a href="//imgur.com/7J1bEaJ">just typing R code - Hadley Wickham</a>
+</blockquote>
+<script async src="//s.imgur.com/min/embed.js" charset="utf-8"></script>
+</div>
+<div id="change-the-name" class="section level2">
+<h2>Change the name</h2>
+<p>And some associated content. Only a bit at a time.</p>
+</div>
+<div id="for-fun-a-first-post" class="section level2">
+<h2>For Fun: A First Post?</h2>
+<p>Addins : New Post</p>
+<p>Something pretty simple.</p>
+<pre class="r"><code>data(&quot;UCBAdmissions&quot;)
+# install.packages(&quot;ggalluvial&quot;)
+library(tidyverse); library(ggalluvial)
+ggplot(as.data.frame(UCBAdmissions), # Flatten the table
+       aes(y = Freq, axis1 = Gender, axis2 = Dept)) +
+  geom_alluvium(aes(fill = Admit), width = 1/12) +
+  geom_stratum(width = 1/12, fill = &quot;black&quot;, color = &quot;grey&quot;) +
+  geom_label(stat = &quot;stratum&quot;, label.strata = TRUE) +
+  scale_x_discrete(limits = c(&quot;Gender&quot;, &quot;Dept&quot;), expand = c(.05, .05)) +
+  scale_fill_brewer(type = &quot;qual&quot;, palette = &quot;Set1&quot;) +
+  ggtitle(&quot;Admissions by sex and department: UCB&quot;) + labs(caption = &quot;A ggalluvial example&quot;)</code></pre>
+<p><img src="/post/2019-11-15-building-a-blogdown/index_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<p>Now we are going to undertake our first interaction with GitHub from RStudio.</p>
+</div>
+</div>
+<div id="first-a-commit." class="section level1">
+<h1>First a commit.</h1>
+<p>Stage all the changes and produce an informative commit message. My first post and the initial edits to blankslate or something like that.</p>
+</div>
+<div id="to-netlify" class="section level1">
+<h1>To Netlify</h1>
+<p>And check out the deployment. In the meantime, we can, and probably should, copy off the deployment part from Netlify so we can check the status without logging in. We should also edit README.md to make the deploy button unique to our fork.</p>
+<div id="a-portfolio" class="section level2">
+<h2>A Portfolio</h2>
+<iframe src="https://rwalkerwu.shinyapps.io/NFL-Scrapr/" width="1000" height="700" style="border: none;">
+</iframe>
+</div>
+<div id="note" class="section level2">
+<h2>Note</h2>
+<p>Blogdown can also allow you to link up your groovy shiny apps. I made one to run through an NFL season and show the win probabilities.</p>
+<pre><code>&lt;iframe src=&quot;https://rwalkerwu.shinyapps.io/NFL-Scrapr/&quot; width=&quot;1000&quot; height=&quot;700&quot; style=&quot;border: none;&quot;&gt;&lt;/iframe&gt;</code></pre>
+</div>
+</div>

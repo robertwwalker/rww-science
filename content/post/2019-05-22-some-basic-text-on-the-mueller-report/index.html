@@ -1,0 +1,150 @@
+---
+title: Some Basic Text on the Mueller Report
+author: RWW
+date: '2019-05-22'
+slug: some-basic-text-on-the-mueller-report
+categories:
+  - tidyverse
+  - tidytext
+tags:
+  - tidytext
+  - R
+header:
+  caption: ''
+  image: ''
+  preview: yes
+---
+
+<script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
+<script src="/rmarkdown-libs/pymjs/pym.v1.js"></script>
+<script src="/rmarkdown-libs/widgetframe-binding/widgetframe.js"></script>
+
+
+<div id="so-this-robert-mueller-guy-wrote-a-report" class="section level1">
+<h1>So this Robert Mueller guy wrote a report</h1>
+<p>I may as well analyse it a bit.</p>
+<p>First, let me see if I can get a hold of the data. I grabbed the report directly from the Department of Justice website. You can follow this <a href="https://www.justice.gov/storage/report.pdf">link</a>.</p>
+<pre class="r"><code>library(tidyverse)
+library(pdftools)
+# Download report from link above
+mueller_report_txt &lt;- pdf_text(&quot;../data/report.pdf&quot;)
+# Create a tibble of the text with line numbers and pages
+mueller_report &lt;- tibble(
+  page = 1:length(mueller_report_txt),
+  text = mueller_report_txt) %&gt;% 
+  separate_rows(text, sep = &quot;\n&quot;) %&gt;% 
+  group_by(page) %&gt;% 
+  mutate(line = row_number()) %&gt;% 
+  ungroup() %&gt;% 
+  select(page, line, text)
+write_csv(mueller_report, &quot;data/mueller_report.csv&quot;)</code></pre>
+<p>Now I can use a .csv of the data; reading the .pdf and hacking it up takes time.</p>
+<pre class="r"><code>library(pdftools)
+library(here)
+library(tidyverse)
+load(&quot;MuellerReport.RData&quot;)
+head(mueller_report)</code></pre>
+<pre><code>##   page line
+## 1    1    1
+## 2    1    2
+## 3    1    3
+## 4    1    4
+## 5    1    5
+## 6    1    6
+##                                                                                                text
+## 1                                                                        U.S. Department of Justice
+## 2 AttarAe:,c \\\\&#39;erlc Predtiet // Mtt; CeA1:ttiA Ma1:ertal Prn1:eeted UAder Fed. R. Crhtt. P. 6(e)
+## 3                                                                  Report On The Investigation Into
+## 4                                                                       Russian Interference In The
+## 5                                                                        2016 Presidential Election
+## 6                                                                                    Volume I of II</code></pre>
+<p>The text is generally pretty good though there is some garbage. The second line contains redactions and those are the underlying cause. In fact, every page contains this same line though they convert to text in a non-uniform fashion.</p>
+<pre class="r"><code>mueller_ml2 &lt;- mueller_report %&gt;% dplyr::filter(line != 2) </code></pre>
+<p>I want to make use of <a href="https://github.com/statsmaths/cleanNLP">cleanNLP</a> to turn this into something that I can analyze. The first step is to get rid of the tidyness, of sorts.</p>
+<pre><code>Once upon a time, this worked with the linux tools and others.  The spacy and corenlp functionality is not native R and the python interface is currently broken, at least on this server.</code></pre>
+<pre class="r"><code>library(tidyverse)
+library(RCurl)
+library(tokenizers)
+library(cleanNLP)
+# cnlp_download_spacy(&quot;en&quot;)
+MRep &lt;- paste(as.character(mueller_ml2$text), &quot; &quot;)
+# cnlp_init_stringi()
+# starttime &lt;- Sys.time()
+# stringi_annotate &lt;- MRep %&gt;% as.character() %&gt;% cnlp_annotate(., verbose=FALSE) 
+# endtime &lt;- Sys.time()</code></pre>
+<p>I wanted to find the bigrams while removing stop words. Apparently, the easiest way to do this is <code>quanteda</code>. I got this from <a href="https://stackoverflow.com/questions/34282370/form-bigrams-without-stopwords-in-r">stack overflow</a></p>
+<pre class="r"><code>library(widgetframe)</code></pre>
+<pre><code>## Loading required package: htmlwidgets</code></pre>
+<pre class="r"><code>library(quanteda)</code></pre>
+<pre><code>## Package version: 1.5.2</code></pre>
+<pre><code>## Parallel computing: 2 of 16 threads used.</code></pre>
+<pre><code>## See https://quanteda.io for tutorials and examples.</code></pre>
+<pre><code>## 
+## Attaching package: &#39;quanteda&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:utils&#39;:
+## 
+##     View</code></pre>
+<pre class="r"><code>library(wordcloud)</code></pre>
+<pre><code>## Loading required package: RColorBrewer</code></pre>
+<pre class="r"><code>myDfm &lt;- tokens(MRep) %&gt;%
+    tokens_remove(&quot;\\p{P}&quot;, valuetype = &quot;regex&quot;, padding = TRUE) %&gt;%
+    tokens_remove(stopwords(&quot;english&quot;), padding  = TRUE) %&gt;%
+    tokens_ngrams(n = 2) %&gt;%
+    dfm()
+wc2 &lt;- topfeatures(myDfm, n=150, scheme=&quot;count&quot;)
+wc2.df &lt;- data.frame(word = names(wc2), freq=as.numeric(wc2))
+wc2.df$word &lt;- as.character(wc2.df$word)
+wc2.df &lt;- wc2.df %&gt;% filter(freq &lt; 300)
+# wordcloud(wc2.df, size=0.4)
+library(highcharter)</code></pre>
+<pre><code>## Registered S3 method overwritten by &#39;quantmod&#39;:
+##   method            from
+##   as.zoo.data.frame zoo</code></pre>
+<pre><code>## Highcharts (www.highcharts.com) is a Highsoft software product which is</code></pre>
+<pre><code>## not free for commercial and Governmental use</code></pre>
+<pre class="r"><code>frameWidget(hchart(wc2.df, &quot;wordcloud&quot;, hcaes(name=word, weight=freq/30)))</code></pre>
+<pre><code>## Warning: `parse_quosure()` is deprecated as of rlang 0.2.0.
+## Please use `parse_quo()` instead.
+## This warning is displayed once per session.</code></pre>
+<div id="htmlwidget-1" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/post/2019-05-22-some-basic-text-on-the-mueller-report/index_files/figure-html//widgets/widget_wc1.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+<div id="pdfpages-a-little-plot" class="section level2">
+<h2>pdfpages: A little plot</h2>
+<p>I found some instructions on constructing the entire document on a grid and pulled the report apart to visualise it in that way.</p>
+<pre class="r"><code>library(pdftools)
+library(png)
+pdf_convert(&quot;data/report.pdf&quot;)
+ 
+# Dimensions of 1 page.
+imgwidth &lt;- 612
+imgheight &lt;- 792
+ 
+# Grid dimensions.
+gridwidth &lt;- 30
+gridheight &lt;- 15
+ 
+# Total plot width and height.
+spacing &lt;- 1
+totalwidth &lt;- (imgwidth+spacing) * (gridwidth)
+totalheight &lt;- (imgheight+spacing) * gridheight
+ 
+# Plot all the pages and save as PNG.
+png(&quot;RSMReport.png&quot;, round((imgwidth+spacing)*gridwidth/7), round((imgheight+spacing)*gridheight/7))
+par(mar=c(0,0,0,0))
+plot(0, 0, type=&#39;n&#39;, xlim=c(0, totalwidth), ylim=c(0, totalheight), asp=1, bty=&quot;n&quot;, axes=FALSE)
+for (i in 1:448) {
+    fname &lt;- paste(&quot;report_&quot;, i, &quot;.png&quot;, sep=&quot;&quot;)
+    img &lt;- readPNG(fname)
+     
+    x &lt;- (i %% gridwidth) * (imgwidth+spacing)
+    y &lt;- totalheight - (floor(i / gridwidth)) * (imgheight+spacing)
+     
+    rasterImage(img, xleft=x, ybottom = y-imgheight, xright = x+imgwidth, ytop=y)
+}
+dev.off()</code></pre>
+<div class="figure">
+<img src="https://rww.science/img/RSMReport.png" alt="A Graphic" />
+<p class="caption">A Graphic</p>
+</div>
+</div>
+</div>

@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>GSM622 | rww.science</title>
+    <link>/categories/gsm622/</link>
+      <atom:link href="/categories/gsm622/index.xml" rel="self" type="application/rss+xml" />
+    <description>GSM622</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© 2018</copyright><lastBuildDate>Thu, 22 Feb 2018 00:00:00 +0000</lastBuildDate>
+    <image>
+      <url>/img/portrait.jpg</url>
+      <title>GSM622</title>
+      <link>/categories/gsm622/</link>
+    </image>
+    
+    <item>
+      <title>Black Boxes: A Gender Gap Example</title>
+      <link>/2018/02/22/black-boxes-a-gender-gap-example/</link>
+      <pubDate>Thu, 22 Feb 2018 00:00:00 +0000</pubDate>
+      <guid>/2018/02/22/black-boxes-a-gender-gap-example/</guid>
+      <description>
+
+
+&lt;div id=&#34;variance-in-the-outcome-the-black-box&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Variance in the Outcome: The Black Box&lt;/h2&gt;
+&lt;p&gt;Regression models engage an exercise in variance accounting. How much of the outcome is explained by the inputs, individually (slope divided by standard error is t) and collectively (Average explained/Average unexplained with averaging over degrees of freedom is F). This, of course, assumes normal errors. This document provides a function for making use of the black box. Just as in common parlance, a black box is the unexplained. Let’s take an example.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;options(scipen=10)
+OregonSalaries &amp;lt;- structure(list(Obs = 1:32, Salary = c(41514.38701, 40964.06985, 
+39170.19178, 37936.57206, 33981.77752, 36077.27107, 39174.05733, 
+39037.372, 29131.74865, 36200.44592, 38561.3987, 33247.92306, 
+33609.4874, 33669.22275, 37805.83017, 35846.13454, 47342.65909, 
+46382.3851, 45812.91029, 46409.65664, 43796.05285, 43124.02135, 
+49443.81792, 44805.79217, 44440.32001, 46679.59218, 47337.09786, 
+47298.72531, 41461.0474, 43598.293, 43431.18499, 49266.41189), 
+    Gender = structure(c(1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 
+    1L, 1L, 1L, 1L, 1L, 1L, 1L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 
+    2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L), .Label = c(&amp;quot;Female&amp;quot;, &amp;quot;Male&amp;quot;
+    ), class = &amp;quot;factor&amp;quot;)), .Names = c(&amp;quot;Obs&amp;quot;, &amp;quot;Salary&amp;quot;, &amp;quot;Gender&amp;quot;
+), class = &amp;quot;data.frame&amp;quot;, row.names = c(NA, -32L))
+black.box.maker &amp;lt;- function(mod1) {
+            d1 &amp;lt;- dim(mod1$model)[[1]]
+            sumsq1 &amp;lt;- var(mod1$model[,1], na.rm=TRUE)*(d1-1)
+            rt1 &amp;lt;- sqrt(sumsq1)
+            sumsq2 &amp;lt;- var(mod1$fitted.values, na.rm=TRUE)*(d1-1)
+            rsquare &amp;lt;- round(sumsq2/sumsq1, digits=4)
+            rt2 &amp;lt;- sqrt(sumsq2)
+            plot(x=NA, y=NA, xlim=c(0,rt1), ylim=c(0,rt1), main=paste(&amp;quot;R-squared:&amp;quot;,rsquare), xlab=&amp;quot;&amp;quot;, ylab=&amp;quot;&amp;quot;, bty=&amp;quot;n&amp;quot;, cex=0.5)
+            polygon(x=c(0,0,rt1,rt1), y=c(0,rt1,rt1,0), col=&amp;quot;black&amp;quot;)
+            polygon(x=c(0,0,rt2,rt2), y=c(0,rt2,rt2,0), col=&amp;quot;green&amp;quot;)
+            }&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;OregonSalaries contains 32 observations: 16 males and 16 females. The mean of all salaries is 41142.433; let me put that in a plot in blue. Represented in equation form, we have:&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ Salary_{i} = \alpha + \epsilon_{i}  \]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;I will use &lt;span class=&#34;math inline&#34;&gt;\(\alpha\)&lt;/span&gt; in lieu of &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; because this is the most common method for demarcating an intercept, a recurring concept for regression models, but the above says that the &lt;span class=&#34;math inline&#34;&gt;\(i^{th}\)&lt;/span&gt; person’s salary is some average salary &lt;span class=&#34;math inline&#34;&gt;\(\alpha\)&lt;/span&gt; [or perhaps &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; to maintain conceptual continuity] plus some idiosyncratic remainder or residual salary for individual &lt;span class=&#34;math inline&#34;&gt;\(i\)&lt;/span&gt; denoted by &lt;span class=&#34;math inline&#34;&gt;\(\epsilon_{i}\)&lt;/span&gt;.&lt;/p&gt;
+&lt;p&gt;The total sum of squares can be represented as the sum of all the squared distances to the blue line; each vertical distance is demarcated with an arrow below in blue. By definition, the vertical distances would/will sum to zero. The distance from the point to the line is also shown in blue; that is the residual salary. It shows how far that individual’s salary is from the overall average. The total sum of squares: the total area of the &lt;code&gt;black box&lt;/code&gt; in the original metric (squared dollars) is: 892955385. The length of each side is the square root of that area, e.g. 892955384.31 in dollars.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ORSalScale &amp;lt;- scale(OregonSalaries$Salary, scale=FALSE)
+plot(y=OregonSalaries$Salary, x=c(1:32), ylab=&amp;quot;Salary&amp;quot;, col=as.factor(OregonSalaries$Gender), xlab=&amp;quot;&amp;quot;, pch=c(rep(&amp;quot;F&amp;quot;,16),rep(&amp;quot;M&amp;quot;,16)))
+abline(h=mean(OregonSalaries$Salary), col=&amp;quot;blue&amp;quot;)
+arrows(x0=c(1:32), x1=c(1:32), y1=OregonSalaries$Salary,y0=mean(OregonSalaries$Salary), col=&amp;quot;blue&amp;quot;, code=3, length=0.05)
+text(x=seq(1,16), y=rep(c(47000,48000,49000,50000),4), labels = paste(ceiling(ORSalScale[c(1:16)])), cex=0.7, col=&amp;quot;blue&amp;quot;)
+text(x=c(17:32), y=rep(c(30000,31000,32000,33000),4), labels = paste(ceiling(ORSalScale[c(17:32)])), cex=0.7, col=&amp;quot;blue&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-02-22-black-boxes-a-gender-gap-example/index_files/figure-html/PlotG-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;invoking-the-function&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Invoking the Function&lt;/h2&gt;
+&lt;p&gt;To represent the black box,let me draw it. The length of each side will be the square root of the black box; our total sum of squares is just under 900 million squared dollars so each side will be approximately 30000 dollars. The box appears below.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;mod1 &amp;lt;- lm(Salary~1, data=OregonSalaries)
+black.box.maker(mod1)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-02-22-black-boxes-a-gender-gap-example/index_files/figure-html/BBBase-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;a-regression-model&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;A Regression Model&lt;/h2&gt;
+&lt;p&gt;I want to compare the constant mean for both groups that we labeled to be &lt;span class=&#34;math inline&#34;&gt;\(\alpha\)&lt;/span&gt; with an alternative that includes some non-zero [probably positive given ubiquitous evidence of gender gaps in compensation] difference between the two averages – a difference in averages. First, a regression model. I will estimate the following regression:&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ Salary_{i} = \alpha + \beta_{1}*Gender_{i} + \epsilon_{i} \]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;What does the regression imply? That salary for each individual &lt;span class=&#34;math inline&#34;&gt;\(i\)&lt;/span&gt; is a function of a constant and gender. Given the way that R works, &lt;span class=&#34;math inline&#34;&gt;\(\alpha\)&lt;/span&gt; will represent the average for females and &lt;span class=&#34;math inline&#34;&gt;\(\beta\)&lt;/span&gt; will represent the difference between male and female average salaries. The &lt;span class=&#34;math inline&#34;&gt;\(\epsilon\)&lt;/span&gt; will capture the difference between the individual’s salary and the average of their group (the mean of males or females).&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;a-new-residual-sum-of-squares&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;A New Residual Sum of Squares&lt;/h2&gt;
+&lt;p&gt;The picture will now have a red line and a black line and the residual/leftover/unexplained salary is now the difference between the point and the respective vertical line (red arrows or black arrows). What is the relationship between the datum and the group mean? The answer is shown in black/red.&lt;/p&gt;
+&lt;p&gt;The sum of the remaining squared vertical distances is 238621277 is obtained by squaring the each black/red number. The amount explained by gender is the difference between each blue and the respective black/red number. It is important to notice that the highest paid females and the lowest paid males may have more residual salary given two averages but the different averages, overall, lead to far less residual salary than a single average for all salaries.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;resids &amp;lt;- residuals(lm(Salary~Gender, data=OregonSalaries))
+plot(y=OregonSalaries$Salary, x=c(1:32), ylab=&amp;quot;Salary&amp;quot;, col=as.factor(OregonSalaries$Gender), xlab=&amp;quot;&amp;quot;, pch=c(rep(&amp;quot;F&amp;quot;,16),rep(&amp;quot;M&amp;quot;,16)))
+abline(h=mean(OregonSalaries$Salary), col=&amp;quot;blue&amp;quot;)
+abline(h=mean(subset(OregonSalaries, Gender==&amp;quot;Female&amp;quot;)$Salary, na.rm=T), col=&amp;quot;black&amp;quot;)
+abline(h=mean(subset(OregonSalaries, Gender==&amp;quot;Male&amp;quot;)$Salary, na.rm=T), col=&amp;quot;red&amp;quot;)
+arrows(x0=c(1:32), x1=c(1:32), y1=OregonSalaries$Salary,y0=mean(OregonSalaries$Salary), col=&amp;quot;blue&amp;quot;, code=3, length=0.05)
+arrows(x0=c(1:16), x1=c(1:16), y1=OregonSalaries$Salary[c(1:16)],y0=mean(subset(OregonSalaries, Gender==&amp;quot;Female&amp;quot;)$Salary, na.rm=T), col=&amp;quot;black&amp;quot;, code=3, length=0.05)
+arrows(x0=c(17:32), x1=c(17:32), y1=OregonSalaries$Salary[c(17:32)],y0=mean(subset(OregonSalaries, Gender==&amp;quot;Male&amp;quot;)$Salary, na.rm=T), col=&amp;quot;red&amp;quot;, code=3, length=0.05)
+text(x=seq(1,16), y=rep(c(47000,48000,49000,50000),4), labels = paste(ceiling(ORSalScale[c(1:16)])), cex=0.7, col=&amp;quot;blue&amp;quot;)
+text(x=c(17:32), y=rep(c(30000,31000,32000,33000),4), labels = paste(ceiling(ORSalScale[c(17:32)])), cex=0.7, col=&amp;quot;blue&amp;quot;)
+text(x=seq(1,16), y=rep(c(42000,43000,44000,45000),4), labels = paste(ceiling(resids[c(1:16)])), cex=0.7, col=&amp;quot;black&amp;quot;)
+text(x=c(17:32), y=rep(c(36000,37000,38000,39000),4), labels = paste(ceiling(resids[c(17:32)])), cex=0.7, col=&amp;quot;red&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-02-22-black-boxes-a-gender-gap-example/index_files/figure-html/BasePlot-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;The details of the regression estimates and the analysis of variance – the sums of squares – completes the rendering.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;mod2 &amp;lt;- lm(Salary~Gender, data=OregonSalaries)
+black.box.maker(mod2)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-02-22-black-boxes-a-gender-gap-example/index_files/figure-html/BBReg-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;summary(mod1)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## 
+## Call:
+## lm(formula = Salary ~ 1, data = OregonSalaries)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -12010.7  -3737.9    345.3   4812.8   8301.4 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&amp;gt;|t|)    
+## (Intercept)  41142.4      948.8   43.36   &amp;lt;2e-16 ***
+## ---
+## Signif. codes:  0 &amp;#39;***&amp;#39; 0.001 &amp;#39;**&amp;#39; 0.01 &amp;#39;*&amp;#39; 0.05 &amp;#39;.&amp;#39; 0.1 &amp;#39; &amp;#39; 1
+## 
+## Residual standard error: 5367 on 31 degrees of freedom&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;confint(mod2)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##                 2.5 %   97.5 %
+## (Intercept) 35180.542 38060.44
+## GenderMale   7007.482 11080.28&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;anova(mod1,mod2)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Analysis of Variance Table
+## 
+## Model 1: Salary ~ 1
+## Model 2: Salary ~ Gender
+##   Res.Df       RSS Df Sum of Sq      F          Pr(&amp;gt;F)    
+## 1     31 892955384                                        
+## 2     30 238621277  1 654334108 82.264 0.0000000004223 ***
+## ---
+## Signif. codes:  0 &amp;#39;***&amp;#39; 0.001 &amp;#39;**&amp;#39; 0.01 &amp;#39;*&amp;#39; 0.05 &amp;#39;.&amp;#39; 0.1 &amp;#39; &amp;#39; 1&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Correlation Function</title>
+      <link>/2018/02/22/correlation-function/</link>
+      <pubDate>Thu, 22 Feb 2018 00:00:00 +0000</pubDate>
+      <guid>/2018/02/22/correlation-function/</guid>
+      <description>
+
+
+&lt;div id=&#34;correlations-and-the-impact-on-sums-and-differences&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Correlations and the Impact on Sums and Differences&lt;/h1&gt;
+&lt;p&gt;I will use a simple R function to illustrate the effect of correlation on sums and differences of random variables. In general, the variance [and standard deviation] of a sum of random variables is the variance of the individual variables plus twice the covariance; the variance [and standard deviation] of a difference in random variables is the variance of the individual variables minus twice the (signed) covariance.&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ Var (\sum_{i=1}^{n} X_{i}) = \sum_{i=1}^{n} Var(X_{i}) + 2 \sum_{1 \leq i \leq j \leq n} Cov(X_{i},X_{j}) \]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Now for the function and two examples.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;correlation-is-0.8&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Correlation is 0.8&lt;/h1&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(MASS)
+plot.cor &amp;lt;- function(cor) {
+  if(-1 &amp;lt; cor &amp;amp; cor &amp;lt; 1) {
+mean.vec &amp;lt;- c(0,0)
+sig.mat &amp;lt;- matrix(c(1,cor,cor,1), nrow=2)
+df &amp;lt;- data.frame(mvrnorm(n=1000, mean.vec, sig.mat))
+df$sum &amp;lt;- rowSums(df)
+df$diff &amp;lt;- with(df, X1-X2)
+plot(x=df$X1, y=df$X2, xlab=&amp;quot;x1&amp;quot;, ylab=&amp;quot;x2&amp;quot;, main=paste(&amp;quot;Correlation:&amp;quot;,cor), sub=paste(&amp;quot;Std. Dev: Sum&amp;quot;,round(sd(df$sum), digits=3),&amp;quot; Difference:&amp;quot;,round(sd(df$diff), digits=3)))
+  }
+  else { cat(&amp;quot;Correlation must be between -1 and 1&amp;quot;) }
+}
+plot.cor(cor=0.8)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-02-22-correlation-function/index_files/figure-html/CorF-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;The correlation above is 0.8&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;correlation-is--0.8&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Correlation is -0.8&lt;/h1&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot.cor(cor=-0.8)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-02-22-correlation-function/index_files/figure-html/CorF2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

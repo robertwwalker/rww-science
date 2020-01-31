@@ -1,0 +1,93 @@
+---
+title: Trying out Leaflet
+author: RWW
+date: '2019-12-16'
+slug: trying-out-leaflet
+categories:
+  - R
+tags:
+  - R
+  - R Markdown
+  - tidyTuesday
+header:
+  caption: ''
+  image: ''
+  preview: yes
+---
+
+# International Murders
+
+```{r setup, include=FALSE, warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(message=FALSE, warning=FALSE)
+```
+
+
+Are among the data for analysis in the tidyTuesday for December 10, 2019.  These are made for a map.
+
+```{r}
+library(tidyverse)
+library(leaflet)
+library(stringr)
+library(sf)
+library(here)
+library(widgetframe)
+library(htmlwidgets)
+library(htmltools)
+options(digits = 3)
+set.seed(1234)
+theme_set(theme_minimal())
+library(tidytuesdayR)
+tuesdata <- tt_load(2019, week = 50)
+murders <- tuesdata$gun_murders
+```
+
+There isn't much data so it should make this a bit easier.  Now for some data.  As it happens, the best way I currently know how to do this is going to involve acquiring a spatial frame.  There is one in the package `tmap`.  First, to load it.  My names are upper case.
+
+```{r}
+library(tmap)
+data("World")
+World <- World %>% mutate(name = toupper(name))
+murders[murders$country=="CZECH REPUBLIC","country"] <- "CZECH REP."
+murders[murders$country=="HUNGRY","country"] <- "HUNGARY"
+murders[murders$country=="REPUBLIC OF KOREA","country"] <- "KOREA"
+World.M <- World %>% left_join(., murders, by = c( "name" = "country"))
+World.M <- World.M %>% mutate(Murders = count)
+tmap_style("white")
+tmap_mode("view")
+my.map <- tm_shape(World.M) +
+    tm_polygons("Murders", title="", palette = "viridis") + tm_layout(panel.labels = "Gun Murders")
+lf <- tmap_leaflet(my.map)
+frameWidget(lf, height='600')
+```
+
+That's convenient because I think I can also modify this for something else.
+
+
+```{r}
+World.M.SF <- sf::as_Spatial(World.M)
+l <- leaflet(World.M.SF) %>% setView(0,0,2) %>% addPolygons(weight = 1, smoothFactor = 0.5,
+    opacity = 1.0, fillOpacity = 0.5,
+    fillColor = ~colorQuantile("YlOrRd", Murders)(Murders),
+    highlightOptions = highlightOptions(color = "white", weight = 2,
+      bringToFront = TRUE))
+esri <- grep("^Esri", providers, value = TRUE)
+for (provider in esri) {
+    l <- l %>% addProviderTiles(provider, group = provider)
+}
+l <- l %>%
+    addLayersControl(baseGroups = names(esri),
+                     options = layersControlOptions(collapsed = FALSE)) %>%
+    addMiniMap(tiles = esri[[1]], toggleDisplay = TRUE,
+               position = "bottomleft") %>%
+    htmlwidgets::onRender("
+    function(el, x) {
+      var myMap = this;
+      myMap.on('baselayerchange',
+        function (e) {
+          myMap.minimap.changeLayer(L.tileLayer.provider(e.name));
+        })
+    }")
+# sf:::as_Spatial()
+frameWidget(l, height = '600')
+```
+

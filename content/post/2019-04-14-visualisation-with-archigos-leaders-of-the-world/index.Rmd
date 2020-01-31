@@ -1,0 +1,293 @@
+---
+title: 'Visualisation with Archigos: Leaders of the World'
+author: RWW
+date: '2019-04-14'
+slug: visualisation-with-archigos-leaders-of-the-world
+categories:
+  - tidyverse
+  - R
+  - animation
+tags:
+  - gganimate
+  - R
+  - R Markdown
+  - tidyverse
+header:
+  caption: ''
+  image: ''
+  preview: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Archigos
+
+Is an amazing collaboration that produced a comprehensive dataset of world leaders going pretty far back; see Archigos [on the web](http://www.ksgleditsch.com/archigos.html).  For thinking about leadership, it is quite natural.  In this post, I want to do some reshaping into country year and leader year datasets and explore the basic confines of *Archigos*.  I also want to use `gganimate` for a few things.  So what do we know?
+
+```{r ArcLibs, message=FALSE, warning=FALSE}
+library(lubridate)
+library(tidyverse)
+library(ggthemes)
+library(stringr)
+library(gganimate)
+library(emoGG)
+library(emojifont)
+library(haven)
+Archigos <- read_dta(url("http://www.rochester.edu/college/faculty/hgoemans/Archigos_4.1_stata14.dta"))
+head(Archigos)
+```
+
+That's a pretty impressive span of leaders.  Let me obtain a list of the countries.  This is a link from the Archigos website to the work of Gleditsch and Ward.  The dates that they store are colon rather than dash separated so that needs to be fixed, then I convert the dates to valid date format.  There is also a problem with the text encoding [at least on this Linux workstation] for the Ivory Coast.  I suspect it is an accent mark.
+
+## History of Countries: Gleditsch and Ward
+
+```{r}
+iisystem <- read.delim(url("http://www.ksgleditsch.com/data/iisystem.dat"), col.names=c("ccode","idacr","CountryName","startD","endD"), stringsAsFactors = FALSE)
+iisystem <- iisystem %>% mutate(startD = str_replace_all(startD, ":", "-"))
+iisystem <- iisystem %>% mutate(endD = str_replace_all(endD, ":", "-"))
+iisystem$CountryName[[108]] <- "Ivory Coast"
+iisystem$startD <- as_date(dmy(iisystem$startD))
+iisystem$endD <- as_date(dmy(iisystem$endD))
+iisystem <- iisystem %>% mutate(IISstartYear = year(startD), IISendYear = year(endD))
+```
+
+## Some Data Management
+
+There are two datasets that I will want to create to use to analyse this.  I am likely to want a dataset of country years and a dataset of leader years.  After putting these together, I note that there is actually only one leader that leads two distinct country codes.  I am putting this code at the top because others may find it useful.
+
+### Country Years
+
+I want to create all valid years for each of the countries identified by the Gleditsch and Ward set of countries.  This is a bit of a hack using apply and dimensions but it works.  Basically, here is the idea.  Use `lapply` over a list that is just a sequence of row length and apply a function.  A row number is the input to the function, create a temporary named vector to operate on in tempd and create a `data.frame` to pass back with the appropriate sequence of years between the start and end years along with some useful identifiers.  The result is a list.  To collapse the list, `do.call` and `rbind` -- binding the rows -- do the trick.  One can left join them (the result and iisystem) back together as a sanity check.
+
+```{r IISManipulation}
+# Build a grid of countries and years
+DI <- as.integer(dim(iisystem)[[1]])
+tseq <-function(x) {
+tempd <- iisystem[x,]
+data.frame(ccode = tempd$ccode, CountryName = as.character(tempd$CountryName), idacr=as.character(tempd$idacr), year=seq(tempd$IISstartYear, tempd$IISendYear, by=1), IISstartYear = tempd$IISstartYear, IISendYear = tempd$IISendYear, startD = tempd$startD, endD = tempd$endD) 
+}
+CSTS <- lapply(seq(1,DI), function(x) { tseq(x) } )
+CSTS.Data <- data.frame(do.call(rbind, CSTS))
+CSTS.Data$CountryName <- as.character(CSTS.Data$CountryName)
+CSTS.Data$idacr <- as.character(CSTS.Data$idacr)
+# That gets it.  Down to nt=17565.
+```
+
+CSTS.Data is my result.  It has been saved in a subdirectory `Archigos-etc` of my data on GitHub.  You can load it with:
+
+```
+CSTS.Data <- readRDS(url("https://github.com/robertwwalker/academic-mymod/raw/master/data/Archigos-etc/GWCSTS.rds"))
+CSTS.Data <- read.csv("https://github.com/robertwwalker/academic-mymod/raw/master/data/Archigos-etc/GWCSTS.csv", stringsAsFactors=FALSE)
+```
+
+Now I want to accomplish the same thing with a dataset of leaders.  The unit here is the leader year.  Each leader in Archigos will appear at least once.  The method is identical.
+
+```{r ArchigosManip}
+Archigos <- Archigos %>% group_by(obsid) %>% mutate(startYear = year(startdate), endYear = year(enddate)) %>% ungroup()
+Archigos$obsid <- as.character(Archigos$obsid)
+DI <- dim(Archigos)[[1]]
+tseq <-function(x) {
+  tempd <- Archigos[x,]
+  data.frame(obsid = tempd$obsid, leader = as.character(tempd$leader), leadid = as.character(tempd$leadid), idacr=as.character(tempd$idacr), year=seq(tempd$startYear, tempd$endYear, by=1), LSY=tempd$startYear, LEY = tempd$endYear)
+}
+LTS <- lapply(seq(1,DI), function(x) { tseq(x) } )
+LTS.Data <- data.frame(do.call(rbind, LTS))
+LTS.Data$idacr <- as.character(LTS.Data$idacr)
+LTS.Data$obsid <- as.character(LTS.Data$obsid)
+Archigos$obsid <- as.character(Archigos$obsid)
+Full.LTS <- LTS.Data %>% left_join(Archigos, by=c("obsid" = "obsid"))
+# One curiosity; does any leader lead two distinct countries?  Having the ccodes allows me to calculate the standard deviation by leader.
+Full.LTS %>% group_by(leadid.x) %>% summarise(CC.sd = sd(ccode)) %>% arrange(desc(CC.sd)) %>% filter(CC.sd > 0)
+# If countries are a proper nesting operator, then things can be made much easier.  They 
+Full.LTS %>% filter(leadid.x == "81de4823-1e42-11e4-b4cd-db5882bf8def") # This one seems to be an error with implications
+Full.LTS %>% filter(leadid.x == "821be4de-1e42-11e4-b4cd-db5882bf8def") # Cool, someone led two countries.
+```
+
+There are two leaders that led multiple countries.  The rest are nested.  One of them makes sense, the other seems to be a bad hash.
+
+```{r, eval=FALSE}
+# Not run
+Full.LTS <- Full.LTS %>% mutate(TenureY = endYear - startYear)
+Sanity.Check <- Full.LTS %>% group_by(obsid) %>% summarise(TenureY = mean(TenureY), CountYm1 = n() - 1)
+Sanity.Check <- Sanity.Check %>% mutate(ShouldBeZero = TenureY - CountYm1)
+table(Sanity.Check$ShouldBeZero)
+#    0 
+# 3409 
+```
+
+
+Full.LTS is my result.  It has been saved in a subdirectory `Archigos-etc` of my data on GitHub.  It contains some merged back sanity checks also.  You can load it with: 
+
+```
+Full.LTS <- readRDS(url("https://github.com/robertwwalker/academic-mymod/raw/master/data/Archigos-etc/Archigos-LTS.rds"))
+Full.LTS <- read.csv("https://github.com/robertwwalker/academic-mymod/raw/master/data/Archigos-etc/Archigos-LTS.csv", stringsAsFactors=FALSE)
+```
+
+
+## On Leaders
+
+The tidyverse will make this workable.  The first step is to visualise some features.  Using the `R` equivalent of a pivot table, let's summarise the frequency of leaders.  Because the leader is the basic unit of analysis, we want to group the data by country and then count the number of leaders for each country.  The resulting dataset should be collapsed to the number of countries.
+
+```{r, message=FALSE}
+Shorty <- Archigos %>% group_by(idacr) %>% summarise(count=n())
+skimr::skim(Shorty)
+```
+Hmm, there are countries that only had one leader.  I wonder who they are.
+
+```{r}
+Shorty %>% filter(count==1)
+```
+
+
+The names are not extremely informative but two are post-Soviet republics, Eritrea is very young, and that some are countries that ceased to exist shortly after the start point of the data. What are the other extremum?  What countries have had more than 50 leaders?
+
+```{r}
+Shorty %>% filter(count > 50) %>%   ggplot(aes(x=idacr, y=count, label=idacr, fill=cut_interval(count, 5))) + geom_label(color="white") + scale_fill_colorblind(guide=FALSE) + theme_minimal() + ggtitle("Countries with More than 50 Leaders") + labs(x="", y="Number of Leaders") + theme(axis.text.x = element_blank())
+```
+
+France, Greece, Japan, and Switzerland have had a large number of leaders during this period.  All of the top 50 are in Europe or Latin America, save Japan.  What does the overall data look like?
+
+```{r}
+ggplot(data = Shorty) +
+    aes(x = count) +
+    geom_histogram(bins = 100, fill = '#9c179e') +
+    labs(title = 'How Many Leaders since 1875?',
+         x = 'Number of Leaders',
+         y = 'Number of Countries',
+         caption = 'data from Archigos') +
+    theme_economist_white()
+```
+
+
+## On Duration
+
+```{r}
+Archigos %>% mutate(Duration = difftime(enddate, startdate, units="weeks")/52) %>% ggplot(aes(Duration)) + geom_histogram(bins=50, fill = '#9c179e') + theme_economist_white() + labs(y="Frequency", x="Tenure of Leader in Weeks [divided by 52]")
+```
+
+
+## Who leads longest?
+
+```{r}
+Archigos %>% mutate(Duration = difftime(enddate, startdate, units="weeks")) %>% select(leader,Duration) %>% arrange(desc(Duration)) %>% mutate(DurationInYears = Duration / 52)
+```
+
+## What happens to leaders?
+
+The data includes the post tenure fate of all leaders.  For now, I will take the data and build a bar graph of their fates as they are recorded.
+
+```{r}
+Archigos %>% ggplot(., aes(posttenurefate)) + geom_bar(fill="purple") + coord_flip() + labs(y="Frequency", x="") + theme(axis.text.y = element_text(color = "purple", size = 8))
+```
+
+
+## Discrete Annual Data
+
+Now I want to analyse this as discrete data in annual form.  I will use the lovely lubridate to extract the components of the date and then create a pivot table of sorts.  It is important to note that there are a few problems here.  There are some -999 values in the birth year.
+
+```{r}
+Archigos <- Archigos %>% mutate(YearBorn = na_if(yrborn, -999))
+Archigos <- Archigos %>% mutate(ExitAge = endYear - YearBorn)
+```
+
+### How Old are Leaders When They Exit?
+
+The smooth of these values is messy, but I will plot a simple static graph. 
+
+```{r}
+Archigos %>% filter(ExitAge > 12) %>% group_by(ExitAge) %>% summarise(countS=n()) %>% ggplot(., aes(x=ExitAge, y=countS))+ geom_point() + geom_smooth(method = "loess", span=0.25) + labs(title="Age at End of Tenure", x="Age in Years", y="Count") 
+```
+
+Or as a barplot.
+
+```{r}
+Archigos %>% filter(ExitAge > 12) %>% ggplot(., aes(x=ExitAge, fill=cut_number(ExitAge, n=5))) + geom_bar() + scale_fill_viridis_d(guide=FALSE) + labs(title="Age at End of Tenure", x="Age in Years", y="Count") 
+```
+
+
+### Yearly Turnovers
+
+Now I can visualise turnovers on a yearly basis.  NB: THis needs reworking.
+
+```{r}
+YearlyD <- Archigos %>% group_by(endYear) %>% summarise(Endeds = n()) %>% filter(endYear < 2015)
+YearlyD$label <- emoji("pencil2")
+p <- YearlyD %>% ggplot(., aes(x=endYear, y=Endeds, label=label, colour="steelblue")) + geom_text(family="EmojiOne", size=10, position=position_nudge(x = 5, y = 5), color="steelblue") + geom_line(colour="steelblue") + theme_minimal() + labs(x="Year", y="Number of Leader-Tenures Ending")
+panim <- p +  transition_reveal(endYear)
+animate(panim, nframes=200)
+```
+
+`gganimate` is a very neat tool.  Now on to looking at what is happening at the country year and year level.  In some ways, the previous is deceiving because the number of countries is widely varying over time.  I build the country year and leader year data in the beginning.  I will just recreate the Archigos version with the new variables that we have created in the interim.
+
+```{r}
+Archigos <- Archigos %>% mutate(startYear = year(startdate), endYear = year(enddate))
+DI <- dim(Archigos)[[1]]
+tseq <-function(x) {
+  tempd <- Archigos[x,]
+  data.frame(obsid = tempd$obsid, leaderL = as.character(tempd$leader), leadidL = as.character(tempd$leadid), year=seq(tempd$startYear, tempd$endYear, by=1), LSY=tempd$startYear, LEY = tempd$endYear)
+}
+LTS <- lapply(seq(1,DI), function(x) { tseq(x) } )
+LTS.Data <- data.frame(do.call(rbind, LTS))
+LTS.Data$obsid <- as.character(LTS.Data$obsid)
+Archigos$obsid <- as.character(Archigos$obsid)
+Full.LTS <- LTS.Data %>% left_join(Archigos, by=c("obsid" = "obsid"))
+# One curiosity; does any leader lead two distinct countries?  Having the ccodes allows me to calculate the standard deviation by leader.
+```
+
+So that gives me the basic country year dataset that defines the various existence years from countries.  Neat.  Now I need to create the leader year version of Archigos and merge it into my country year template for existence.
+
+```{r}
+Full.LTS$Event <- (Full.LTS$year==Full.LTS$endYear)
+Keepers <- Full.LTS %>% filter(year>1874 & year < 2015) 
+Shorty2 <- Keepers %>% group_by(year) %>% summarise(FailRate = mean(Event))
+Shorty2$label <- emoji("pencil2")
+p <- Shorty2 %>% ggplot(., aes(x=year, y=FailRate, label=label, colour='steelblue')) + geom_text(family="EmojiOne", size=10, position=position_nudge(x = 5, y = 0.03), color='steelblue') + geom_line(color='steelblue') + theme_minimal() + labs(x="Year", y="Proportion of Leaders Ending") + ylim(c(0,0.5))
+panim <- p +  transition_reveal(year)
+animate(panim, nframes=200)
+```
+
+## Averaging Turnover?
+
+What if we decided to group the countries in the aforementioned data of `Keepers` and, instead, think about the cross-section nature of turnover?
+
+```{r}
+library(ggrepel)
+PlotSet <- Keepers %>% filter(year>1874 & year < 2015) %>% group_by(idacr) %>% summarise(Turnover.Pct = mean(Event)) %>% arrange(desc(Turnover.Pct)) %>% mutate(id=row_number(), facetID = cut_number(Turnover.Pct, n=4)) 
+NameAbb <- iisystem %>% select(idacr, CountryName)
+PlotSet <- PlotSet %>% left_join(NameAbb, by=c("idacr"="idacr"))
+knitr::kable(PlotSet)
+```
+
+Now a picture.
+
+```{r}
+PlotSet %>% ggplot(., aes(x=Turnover.Pct)) + geom_histogram(fill="purple", binwidth=0.05) + ggtitle("Turnover by Country")
+```
+
+Switzerland turnover is 1.
+
+## The Fun Stuff: Durations
+
+Richard Tucker did some work on binary time series cross section data for their paper 20! years ago [his with Neal Beck, Jonathan Katz]. David Armstrong's `btscs` takes a binary time series and turns it into a set of discrete time durations.  Grouped duration data is their name for it.  There's a rather neat stats feature to the fact that these grouped duration data are exactly the same as a discrete time Cox proportional hazards model.  In a related paper, two of the most clever people that I know -- David Carter and Curt Signorino -- showed that a Taylor-series approximation to the cubic polynomial in that duration approximates just about anything reasonable because it can embed two inflection points for the baseline hazard.  Of course, there are assumptions to the model but let's explore.  First, a static picture.  
+
+## Even easier
+
+It turns out that the leader-year data have duration data embedded in them.  Two conditions create the data that we need.  First, the actual duration is created by taking calendar year minus startYear.  Second, the events are one if calendar year is equal to endYear.  Plus, leader-spells are properly nested in countries so we can measure this easily.
+
+
+```{r, message=FALSE}
+Full.LTS$spell <- Full.LTS$year - Full.LTS$startYear
+p <- Full.LTS %>% filter(!is.na(posttenurefate)) %>% mutate(howEndedF = factor(posttenurefate)) %>% ggplot(aes(x=spell)) + geom_density(aes(color=howEndedF)) + scale_color_viridis_d(guide=FALSE)+ theme_minimal() + labs(title="How Long Do Leaders Last Given Fates?", x="Leader Duration in Years") 
+p
+```
+
+Animate it.
+
+```{r}
+panim <- Full.LTS %>% filter(!is.na(posttenurefate)) %>% mutate(howEndedF = factor(posttenurefate)) %>% ggplot(aes(x=spell)) + geom_density(aes(color=howEndedF, fill=howEndedF)) + scale_color_viridis_d(guide=FALSE) + scale_fill_viridis_d(guide=FALSE) + theme_minimal() + labs(title="How Long Do Leaders Last Given Fates?", subtitle = "Ended in: {closest_state}", x="Leader Duration in Years") + transition_states(howEndedF, transition_length = 10, state_length = 40) + enter_fade() + exit_fade()
+animate(panim, nframes=400)
+```
+
+

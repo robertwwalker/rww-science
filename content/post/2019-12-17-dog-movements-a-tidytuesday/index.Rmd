@@ -1,0 +1,100 @@
+---
+title: 'Dog Movements: a tidyTuesday'
+author: RWW
+date: '2019-12-17'
+slug: dog-movements-a-tidytuesday
+categories:
+  - tidyverse
+  - tidyTuesday
+tags:
+  - R
+  - R Markdown
+  - tidyTuesday
+  - tidyverse
+  - Maps
+header:
+  caption: ''
+  image: ''
+  preview: yes
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Adoptable Dogs
+
+```{r, warning=FALSE, message=FALSE}
+# devtools::install_github("thebioengineer/tidytuesdayR", force=TRUE)
+tuesdata51 <- tidytuesdayR::tt_load(2019, week = 51)
+dog_moves <- tuesdata51$dog_moves
+dog_des <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-12-17/dog_descriptions.csv')
+library(tidyverse); library(scatterpie)
+library(rgeos)
+library(maptools)
+library(rgdal); library(usmap); library(ggthemes)
+```
+
+
+# The Base Map
+
+```{r}
+My.Map <- us_map(regions = "states")
+Base.Plot <- ggplot() + geom_polygon(data=My.Map, aes(x=x, y=y, group=group), fill="white", color="black") + theme_map()
+Base.Plot
+```
+
+A fifty state map to plot this information on.
+
+```{r}
+New.Dat <- left_join(My.Map, dog_moves, by= c("full" = "location"))
+ggplot() + geom_polygon(data=New.Dat, aes(x=x, y=y, group=group, fill=total), color="black") + scale_fill_viridis_c() + labs(title = "Dogs Available for Adoption")
+```
+
+That's a start.  Now for the scatterpie.  After a bit of work, I needed to translate the coordinates from most common maps.  So I started with a ggmap for easier to work with coordinates.
+
+```{r F2, warning=FALSE, message=FALSE}
+library(sf); library(ggmap)
+states <- maps::map("state", plot = FALSE, fill=TRUE)
+states <- st_as_sf(states)
+statesC <- cbind(states, st_coordinates(st_centroid(states)))
+dog_moves <-dog_moves %>% mutate(ID = tolower(location))
+statesC <- left_join(statesC, dog_moves)
+statesC %>% filter(!is.na(imported) & !is.na(exported) & !is.na(total)) %>% select(X, Y, exported, imported, total) %>% data.frame() -> ShortCD
+My.SM <- get_map(c(-124.6813, 25.12993, -67.00742, 49.00508), source="osm")
+ggmap(My.SM) + geom_scatterpie(data=ShortCD, aes(x=X, y=Y, r=total/3000), cols=c("exported","imported")) + labs(fill="Dog Movements") + theme_map()
+```
+
+## Dogs
+
+```{r}
+library(readr)
+USZCLL <- read_delim(url("https://github.com/robertwwalker/academic-mymod/raw/master/data/us-zip-code-latitude-and-longitude.csv"), ";", escape_double = FALSE, trim_ws = TRUE)
+dog_des %>% group_by(contact_zip) %>% summarise(Total = n()) %>% mutate(zip = contact_zip) -> Dog.zips
+Dog.zips <- Dog.zips %>% mutate(Zip = contact_zip)
+Plot.Zips <- left_join(Dog.zips, USZCLL)
+ggmap(My.SM) + geom_point(data=Plot.Zips, aes(x=Longitude, y=Latitude, color=Total), alpha = 0.5)
+```
+That's not right.  Let's try something else.
+
+```{r}
+library(leaflet)
+
+mybins <- seq(0, 600, by=100)
+mypalette <- colorBin( palette="viridis", domain=Plot.Zips$Total, na.color="transparent", bins=mybins)
+
+# Prepare the text for the tooltip:
+mytext <- paste(
+   "Total: ", Plot.Zips$Total, "<br/>", 
+   "Zip: ", Plot.Zips$Zip, "<br/>", sep="") %>%
+  lapply(htmltools::HTML)
+
+Plot.Zips <- Plot.Zips %>% filter(!is.na(Latitude))
+# Final Map
+map.l <- leaflet(Plot.Zips) %>% 
+  addTiles() %>% 
+  addCircleMarkers(lng=~Longitude, lat=~Latitude, fillColor = ~mypalette(Total), fillOpacity = 0.7, color="white", radius=~Total/100, stroke=FALSE, label = mytext, labelOptions = labelOptions( style = list("font-weight" = "normal", padding = "3px 8px"), textsize = "13px", direction = "auto")) %>% addLegend( pal=mypalette, values=~Total, opacity=0.9, title = "Pets Listed", position = "bottomright" )
+map.l
+```
+

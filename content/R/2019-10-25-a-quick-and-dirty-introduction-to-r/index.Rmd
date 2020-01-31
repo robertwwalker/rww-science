@@ -1,0 +1,71 @@
+---
+title: A Quick and Dirty Introduction to R
+author: RWW
+date: '2019-10-25'
+slug: a-quick-and-dirty-introduction-to-r
+categories:
+  - R
+  - tidyverse
+tags:
+  - GSM Data
+header:
+  caption: ''
+  image: ''
+---
+
+# Some Data
+
+I will start with some inline data.  
+
+```{r, message=FALSE, warning=FALSE}
+library(tidyverse); library(skimr);
+Support.Times <- structure(list(Screened = c(26.9, 28.4, 23.9, 21.8, 22.4, 25.9, 
+26.5, 20, 23.7, 23.7, 22.6, 19.4, 27.3, 25.3, 27.7, 25.3, 28.4, 
+24.2, 20.4, 29.6, 27, 23.6, 18.3, 28.1, 20.5, 24.1, 27.2, 26.4, 
+24.5, 25.6, 17.9, 23.5, 25.3, 20.2, 26.3, 27.9), Not.Screened = c(24.7, 
+19.1, 21, 17.8, 22.8, 24.4, 17.9, 20.5, 20, 26.2, 14.5, 22.4, 
+21.1, 24.3, 22, 24.3, 23.9, 19.6, 23.8, 29.2, 19.7, 20.9, 25.2, 
+22.5, 23.1, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA)), class = "data.frame", row.names = c(NA, -36L))
+```
+
+Now I will use the tidyverse to stack it.  This can also be done with `stack(Support.Times)`.
+
+```
+stack(Support.Times) %>% drop_na()
+```
+
+Using the `tidyverse`, the new data `SSTimes` will stack the data using pivot longer into two variables that I will name `Self.Screen` and `Call.Time` to store the stacked data.  The final command drops the missing data.  Then I will group them and skim them.
+
+```{r}
+SSTimes <- Support.Times %>% pivot_longer(., c(Screened,Not.Screened), names_to = "Self.Screen", values_to = "Call.Time") %>% drop_na()
+SSTimes %>% group_by(Self.Screen) %>% skim()
+```
+
+So I have 25 observations that are not screened and 36 that are screened.  What does it look like?
+
+```{r}
+ggplot(SSTimes, aes(x=Self.Screen, y=Call.Time, fill=Self.Screen)) + geom_violin(alpha = 0.2) + scale_fill_discrete(guide=FALSE) + labs(title = "Self Screen and Non-Self Screen Call Times")
+```
+
+
+Here is a picture of the distributions of the two means.
+
+```{r}
+gplots::plotmeans(Call.Time~Self.Screen, data=SSTimes, n.label=FALSE, ci.label=TRUE, ylim=c(20,27))
+```
+
+
+What does the t-test look like?
+
+```{r}
+t.test(Support.Times$Not.Screened, Support.Times$Screened)
+t.test(Call.Time~Self.Screen, data=SSTimes)
+```
+
+It is worth noting that R stores a bunch of stuff.  For example, it stores the standard error of the difference and that is worth looking at in this case; the standard error that describes the difference in the averages is `r t.test(Call.Time~Self.Screen, data=SSTimes)$stderr`.
+
+```{r}
+Resample.Times <- ResampleProps::ResampleDiffMeans(Support.Times$Screened,Support.Times$Not.Screened)
+sd(Resample.Times)
+```
+

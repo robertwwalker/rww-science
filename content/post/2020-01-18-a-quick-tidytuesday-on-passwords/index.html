@@ -1,0 +1,100 @@
+---
+title: a quick tidyTuesday on Passwords
+author: RWW
+date: '2020-01-18'
+slug: a-quick-tidytuesday-on-passwords
+categories:
+  - tidyTuesday
+  - tidyverse
+  - web scraping
+tags:
+  - R
+  - tidyTuesday
+header:
+  caption: ''
+  image: ''
+  preview: yes
+---
+
+
+
+<p>First, I wanted to acquire the distribution of letters and then play with that. I embedded the result here. The second step is to import the tidyTuesday data.</p>
+<pre class="r"><code>library(tidyverse)
+Letter.Freq &lt;- data.frame(stringsAsFactors=FALSE,
+                     Letter = c(&quot;E&quot;, &quot;T&quot;, &quot;A&quot;, &quot;O&quot;, &quot;I&quot;, &quot;N&quot;, &quot;S&quot;, &quot;R&quot;, &quot;H&quot;, &quot;D&quot;, &quot;L&quot;, &quot;U&quot;,
+                                &quot;C&quot;, &quot;M&quot;, &quot;F&quot;, &quot;Y&quot;, &quot;W&quot;, &quot;G&quot;, &quot;P&quot;, &quot;B&quot;, &quot;V&quot;,
+                                &quot;K&quot;, &quot;X&quot;, &quot;Q&quot;, &quot;J&quot;, &quot;Z&quot;),
+                  Frequency = c(12.02, 9.1, 8.12, 7.68, 7.31, 6.95, 6.28, 6.02, 5.92, 4.32,
+                                3.98, 2.88, 2.71, 2.61, 2.3, 2.11, 2.09, 2.03,
+                                1.82, 1.49, 1.11, 0.69, 0.17, 0.11, 0.1, 0.07)
+               )
+Letter.Freq &lt;- Letter.Freq %&gt;% mutate(Frequency = Frequency / 100, Letter = tolower(Letter))
+passwords &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-01-14/passwords.csv&#39;)</code></pre>
+<p>Let me visualize the distribution of letters.</p>
+<pre class="r"><code>library(ggthemes)
+ggplot(Letter.Freq) + aes(x=reorder(Letter, desc(Letter)), y=Frequency) + geom_col() + coord_flip() + theme_economist() + labs(x=&quot;&quot;)</code></pre>
+<p><img src="/post/2020-01-18-a-quick-tidytuesday-on-passwords/index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p>I want to use the <code>tm</code> library for topic models to extract out the numbers and only work with letters. There is something probably worthwhile to do with Zipf’s law or the like on that.</p>
+<pre class="r"><code>library(tm)</code></pre>
+<pre><code>## Loading required package: NLP</code></pre>
+<pre><code>## 
+## Attaching package: &#39;NLP&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:ggplot2&#39;:
+## 
+##     annotate</code></pre>
+<pre class="r"><code># Remove numbers
+passwords &lt;- passwords %&gt;% mutate(PasswordNN = removeNumbers(password))
+# Split each string into the letters; here I am repurposing a word count function
+freq &lt;- function(x,y) {
+     word &lt;- tolower(unlist(strsplit(x,&quot;&quot;)))
+     word_table &lt;- table(word)
+     ans &lt;- word_table[names(word_table)==y]
+     return(ans)
+}
+# Use sapply to apply the function.  This is not tidy but I have never sat down with map
+Letter.FreqPW &lt;- sapply(letters,function(x) { freq(passwords$PasswordNN, x) } )
+# Rename the resulting vector with proper labels
+names(Letter.FreqPW) &lt;- letters
+# Clean up the names and metrics
+LFPW &lt;- data.frame(Letter.FreqPW)
+LFPW$Letter &lt;- row.names(LFPW)
+LFPW &lt;- LFPW %&gt;% mutate(Freq = Letter.FreqPW)
+# Join a result
+Res &lt;- left_join(Letter.Freq, LFPW)</code></pre>
+<pre><code>## Joining, by = &quot;Letter&quot;</code></pre>
+<pre class="r"><code>Res</code></pre>
+<pre><code>##    Letter Frequency Letter.FreqPW Freq
+## 1       e    0.1202           327  327
+## 2       t    0.0910           144  144
+## 3       a    0.0812           271  271
+## 4       o    0.0768           191  191
+## 5       i    0.0731           178  178
+## 6       n    0.0695           197  197
+## 7       s    0.0628           176  176
+## 8       r    0.0602           233  233
+## 9       h    0.0592            82   82
+## 10      d    0.0432            96   96
+## 11      l    0.0398           144  144
+## 12      u    0.0288            59   59
+## 13      c    0.0271           115  115
+## 14      m    0.0261            86   86
+## 15      f    0.0230            38   38
+## 16      y    0.0211            64   64
+## 17      w    0.0209            42   42
+## 18      g    0.0203            75   75
+## 19      p    0.0182            71   71
+## 20      b    0.0149            77   77
+## 21      v    0.0111            37   37
+## 22      k    0.0069            50   50
+## 23      x    0.0017            36   36
+## 24      q    0.0011             5    5
+## 25      j    0.0010            26   26
+## 26      z    0.0007            12   12</code></pre>
+<p>Turn it to a proportion.</p>
+<pre class="r"><code># Create a proportion
+Res &lt;- Res %&gt;% mutate(LF = Freq / sum(Freq))</code></pre>
+<p>Let me plot the result.</p>
+<pre class="r"><code>library(ggrepel)
+gg1 &lt;- ggplot(Res) + aes(x=Frequency, y=LF, label=Letter) + geom_label_repel(fill=&quot;white&quot;) + labs(x=&quot;Language Frequency&quot;, y=&quot;Frequency in Password&quot;, title=&quot;Password Letters vs. English Letter Frequency&quot;) + coord_equal() + geom_abline(slope=1, intercept=0) + ggthemes::theme_economist() 
+gg1</code></pre>
+<p><img src="/post/2020-01-18-a-quick-tidytuesday-on-passwords/index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>

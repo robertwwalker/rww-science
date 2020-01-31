@@ -1,0 +1,552 @@
+---
+title: Tables, Pivots, Bars, and Mosaics
+author: RWW
+date: '2019-10-09'
+slug: tables-pivots-bars-and-mosaics
+categories:
+  - R
+  - tidyverse
+  - tables
+tags:
+  - tidyverse
+  - R Markdown
+header:
+  caption: ''
+  image: ''
+---
+
+
+
+<div id="r-markdown" class="section level1">
+<h1>R Markdown</h1>
+<p>There is detailed help for all that Markdown can do under Help in the RStudio. The key to it is knitting documents with the <em>Knit</em> button in the RStudio. If we use helpers like the R Commander, Radiant, or
+<em>esquisse</em>, we will need the R code implanted in the Markdown document in particular ways. I will use Markdown for <em>everything</em>. I even use a close relation of Markdown in my scholarly pursuits.</p>
+<div id="the-packages-tidyverse-and-esquisse" class="section level2">
+<h2>The Packages: <em>tidyverse</em> and <em>esquisse</em></h2>
+<p>We will rely on five. The <em>tidyverse</em> is Hadley Wickham’s collection of packages. It represents a different philosophy for the construction of exploratory data analysis with literate programming – code that you can read. We will rely on the <code>%&gt;%</code> piping operators of the <em>magrittr</em> package that pipes something to a subsequent command as a core function of the tidyverse.</p>
+<p>For everything that we want in a summary, there is the <em>skimr</em> function <em>skim</em>. For cross-tabulation the easy way, there is <em>janitor</em>. The other two are developmental pieces of software that have yet to deploy into the regular package system of R. <em>esquisse</em> and parts of <em>that’s so random</em> blog’s package for implementing ggmosaic.</p>
+<pre><code>pkgTest &lt;- function(x)
+  {
+    if (!require(x,character.only = TRUE))
+    {
+      install.packages(x,dep=TRUE, type=&quot;binary&quot;)
+        if(!require(x,character.only = TRUE)) stop(&quot;Package not found&quot;)
+    }
+}
+pkgTest(&quot;tidyverse&quot;)
+pkgTest(&quot;magrittr&quot;)
+pkgTest(&quot;skimr&quot;)
+pkgTest(&quot;janitor&quot;)
+pkgTest(&quot;devtools&quot;)
+devtools::install_github(&quot;EdwinTH/thatssorandom&quot;)
+pkgTest(&quot;dreamRs/esquisse&quot;)</code></pre>
+</div>
+<div id="a-first-go" class="section level2">
+<h2>A first go</h2>
+<p>We have an embedded data object; if you look at the beginning of the document, I have used an <em>R</em> command called <em>dput</em> to embed the data in the document. Above, there is encoded text of <em>Bond.Funds</em> to use as an example. To get a sense of the data, I will load the <em>skim</em> function and put it to work. In <em>R</em>, we will use the <code>library</code> command to load <em>functions</em> into the <em>namespace</em> – the set of recognizable commands. <em>R</em> needs to know how a function is defined to use it. The function <em>skim</em> appears in the <em>skimr</em> library.</p>
+<pre class="r"><code>library(skimr)
+skim(Bond.Funds)</code></pre>
+<table>
+<caption><span id="tab:SkBF">Table 1: </span>Data summary</caption>
+<tbody>
+<tr class="odd">
+<td align="left">Name</td>
+<td align="left">Bond.Funds</td>
+</tr>
+<tr class="even">
+<td align="left">Number of rows</td>
+<td align="left">184</td>
+</tr>
+<tr class="odd">
+<td align="left">Number of columns</td>
+<td align="left">9</td>
+</tr>
+<tr class="even">
+<td align="left">_______________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Column type frequency:</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">character</td>
+<td align="left">4</td>
+</tr>
+<tr class="odd">
+<td align="left">numeric</td>
+<td align="left">5</td>
+</tr>
+<tr class="even">
+<td align="left">________________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Group variables</td>
+<td align="left">None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: character</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">min</th>
+<th align="right">max</th>
+<th align="right">empty</th>
+<th align="right">n_unique</th>
+<th align="right">whitespace</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Fund Number</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">6</td>
+<td align="right">0</td>
+<td align="right">184</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">Type</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">20</td>
+<td align="right">23</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">Fees</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">Risk</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">7</td>
+<td align="right">13</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">p0</th>
+<th align="right">p25</th>
+<th align="right">p50</th>
+<th align="right">p75</th>
+<th align="right">p100</th>
+<th align="left">hist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Assets</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">910.65</td>
+<td align="right">2253.27</td>
+<td align="right">12.40</td>
+<td align="right">113.72</td>
+<td align="right">268.4</td>
+<td align="right">621.95</td>
+<td align="right">18603.50</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">Expense Ratio</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0.71</td>
+<td align="right">0.26</td>
+<td align="right">0.12</td>
+<td align="right">0.53</td>
+<td align="right">0.7</td>
+<td align="right">0.90</td>
+<td align="right">1.94</td>
+<td align="left">▂▇▅▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">Return 2009</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">7.16</td>
+<td align="right">6.09</td>
+<td align="right">-8.80</td>
+<td align="right">3.48</td>
+<td align="right">6.4</td>
+<td align="right">10.72</td>
+<td align="right">32.00</td>
+<td align="left">▁▇▅▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">3-Year Return</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">4.66</td>
+<td align="right">2.52</td>
+<td align="right">-13.80</td>
+<td align="right">4.05</td>
+<td align="right">5.1</td>
+<td align="right">6.10</td>
+<td align="right">9.40</td>
+<td align="left">▁▁▁▅▇</td>
+</tr>
+<tr class="odd">
+<td align="left">5-Year Return</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">3.99</td>
+<td align="right">1.49</td>
+<td align="right">-7.30</td>
+<td align="right">3.60</td>
+<td align="right">4.3</td>
+<td align="right">4.90</td>
+<td align="right">6.80</td>
+<td align="left">▁▁▁▅▇</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code># skimr::skim(Bond.Funds)</code></pre>
+</div>
+</div>
+<div id="tidy" class="section level1">
+<h1>tidy?</h1>
+<p>The beauty of <em>tidy</em> is rendering code readable with an organizational focus on data objects. Let me take the Bond Funds example and use a simple literate example to mirror a pivot table. Let’s pivot two basic statistics, the mean and standard deviation, then the median and interquartile range grouped by Risk. I should point out that the variable names containing spaces are difficult and have to be enclosed in quotes. Better naming at the outset would help. With simple names, we can ignore the quoting.</p>
+<div id="numerical-summary" class="section level2">
+<h2>Numerical Summary</h2>
+<pre class="r"><code>library(tidyverse)
+Bond.Funds %&gt;% group_by(Risk) %&gt;% 
+  summarise(Avg.Return = mean(`Return 2009`), SD.Return=sd(`Return 2009`), median.Return=median(`Return 2009`), IQR.Return=IQR(`Return 2009`))</code></pre>
+<pre><code>## # A tibble: 3 x 5
+##   Risk          Avg.Return SD.Return median.Return IQR.Return
+##   &lt;chr&gt;              &lt;dbl&gt;     &lt;dbl&gt;         &lt;dbl&gt;      &lt;dbl&gt;
+## 1 Above average       8.31      9.24           7.9      13.0 
+## 2 Average             6.87      4.39           6         7.3 
+## 3 Below average       6.31      2.71           6.1       3.18</code></pre>
+<p>I can also use <em>skim</em>.</p>
+<pre class="r"><code>Bond.Funds %&gt;% group_by(Risk,Fees) %&gt;% skim(`Return 2009`)</code></pre>
+<table>
+<caption><span id="tab:SKBF1">Table 2: </span>Data summary</caption>
+<tbody>
+<tr class="odd">
+<td align="left">Name</td>
+<td align="left">Piped data</td>
+</tr>
+<tr class="even">
+<td align="left">Number of rows</td>
+<td align="left">184</td>
+</tr>
+<tr class="odd">
+<td align="left">Number of columns</td>
+<td align="left">9</td>
+</tr>
+<tr class="even">
+<td align="left">_______________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Column type frequency:</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">numeric</td>
+<td align="left">1</td>
+</tr>
+<tr class="odd">
+<td align="left">________________________</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">Group variables</td>
+<td align="left">Risk, Fees</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="left">Risk</th>
+<th align="left">Fees</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">p0</th>
+<th align="right">p25</th>
+<th align="right">p50</th>
+<th align="right">p75</th>
+<th align="right">p100</th>
+<th align="left">hist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Return 2009</td>
+<td align="left">Above average</td>
+<td align="left">No</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">8.25</td>
+<td align="right">8.92</td>
+<td align="right">-8.8</td>
+<td align="right">0.70</td>
+<td align="right">9.90</td>
+<td align="right">13.50</td>
+<td align="right">32.0</td>
+<td align="left">▃▃▇▂▁</td>
+</tr>
+<tr class="even">
+<td align="left">Return 2009</td>
+<td align="left">Above average</td>
+<td align="left">Yes</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">8.42</td>
+<td align="right">9.96</td>
+<td align="right">-4.8</td>
+<td align="right">0.98</td>
+<td align="right">6.85</td>
+<td align="right">14.93</td>
+<td align="right">29.7</td>
+<td align="left">▇▆▃▃▂</td>
+</tr>
+<tr class="odd">
+<td align="left">Return 2009</td>
+<td align="left">Average</td>
+<td align="left">No</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">7.37</td>
+<td align="right">4.51</td>
+<td align="right">-1.1</td>
+<td align="right">4.30</td>
+<td align="right">6.50</td>
+<td align="right">11.20</td>
+<td align="right">16.4</td>
+<td align="left">▆▆▇▇▃</td>
+</tr>
+<tr class="even">
+<td align="left">Return 2009</td>
+<td align="left">Average</td>
+<td align="left">Yes</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">5.66</td>
+<td align="right">3.93</td>
+<td align="right">-0.6</td>
+<td align="right">3.35</td>
+<td align="right">4.80</td>
+<td align="right">8.00</td>
+<td align="right">12.9</td>
+<td align="left">▃▇▅▂▅</td>
+</tr>
+<tr class="odd">
+<td align="left">Return 2009</td>
+<td align="left">Below average</td>
+<td align="left">No</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">6.33</td>
+<td align="right">2.80</td>
+<td align="right">0.2</td>
+<td align="right">4.85</td>
+<td align="right">6.20</td>
+<td align="right">7.58</td>
+<td align="right">13.0</td>
+<td align="left">▂▅▇▃▁</td>
+</tr>
+<tr class="even">
+<td align="left">Return 2009</td>
+<td align="left">Below average</td>
+<td align="left">Yes</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">6.26</td>
+<td align="right">2.46</td>
+<td align="right">1.5</td>
+<td align="right">5.02</td>
+<td align="right">6.05</td>
+<td align="right">8.22</td>
+<td align="right">10.1</td>
+<td align="left">▂▃▇▆▃</td>
+</tr>
+</tbody>
+</table>
+<p>I want to recreate a categorical pivot table also.</p>
+</div>
+<div id="categorical-descriptions-requires-tables-or-graphics" class="section level2">
+<h2>Categorical Descriptions Requires Tables [or Graphics]</h2>
+<p>There are numerous ways to build tables in R. Base R has a <em>table</em> function that works but it does not naturally work inside data environments; we have to provide them using <code>$</code> or <code>with</code> environments [or <code>%$%</code> in <em>magrittr</em>]. This brief description of environments is part of a broader idea of <em>scoping</em> in R.</p>
+<div id="easiest-janitor" class="section level3">
+<h3>Easiest: janitor</h3>
+<p>The package <em>janitor</em> contains a <em>tabyl</em> with the ability to add totals and calculate percentages of relevance. Here are two examples.</p>
+<pre class="r"><code>library(janitor)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;janitor&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     chisq.test, fisher.test</code></pre>
+<pre class="r"><code>Bond.Funds %&gt;% tabyl(Fees,Risk) %&gt;% adorn_totals(c(&quot;row&quot;,&quot;col&quot;))</code></pre>
+<pre><code>##   Fees Above average Average Below average Total
+##     No            37      49            44   130
+##    Yes            22      20            12    54
+##  Total            59      69            56   184</code></pre>
+<pre class="r"><code>Bond.Funds %&gt;% tabyl(Fees,Risk) %&gt;% adorn_percentages(&quot;row&quot;)</code></pre>
+<pre><code>##  Fees Above average   Average Below average
+##    No     0.2846154 0.3769231     0.3384615
+##   Yes     0.4074074 0.3703704     0.2222222</code></pre>
+</div>
+<div id="easier-with-xtabs-and-formulae" class="section level3">
+<h3>Easier with xtabs and formulae</h3>
+<p>This is actually made much easier with a slightly new form of syntax: formulae. Base R, as you have already learned (or will learn) with <em>swirl</em>, uses different and less readable syntax than the tidyverse. But this is a problem that is quite easy for R in the base commands <em>table</em> and <em>xtabs</em> [crosstabs]. In the first instance, we merely create a table counting values. In the second, the data is a named argument for the function <em>xtabs</em> that requires a statement of <em>margins</em> for the table as a series of names with “+”. The order will determine the rows [first] and the columns [second].</p>
+<pre class="r"><code>table(Bond.Funds$Fees,Bond.Funds$Risk)</code></pre>
+<pre><code>##      
+##       Above average Average Below average
+##   No             37      49            44
+##   Yes            22      20            12</code></pre>
+<pre class="r"><code>xtabs(~Fees+Risk, data=Bond.Funds)</code></pre>
+<pre><code>##      Risk
+## Fees  Above average Average Below average
+##   No             37      49            44
+##   Yes            22      20            12</code></pre>
+<p>These can also be assigned as objects using the “&lt;-”; this saves a local version of the table as something that we can work on. I will call mine FR.Tab for the F(ees)R(isk).Tab(le).</p>
+<pre class="r"><code>FR.Tab &lt;- xtabs(~Fees+Risk, data=Bond.Funds)</code></pre>
+</div>
+<div id="worst-table" class="section level3">
+<h3>Worst: Table</h3>
+<p>Base R table is great but it requires that we specify an environment. To grab a variable from inside a data.frame requires <code>$</code>, as in</p>
+<pre class="r"><code>table(Bond.Funds$Fees,Bond.Funds$Risk)</code></pre>
+<pre><code>##      
+##       Above average Average Below average
+##   No             37      49            44
+##   Yes            22      20            12</code></pre>
+<pre class="r"><code>BRTab1 &lt;- table(Bond.Funds$Fees,Bond.Funds$Risk)</code></pre>
+<p>We can accomplish the same with <em>with</em>, telling R to evaluate something inside whatever data object is in <em>with</em>, for example,</p>
+<pre class="r"><code>with(Bond.Funds, table(Fees,Risk))</code></pre>
+<pre><code>##      Risk
+## Fees  Above average Average Below average
+##   No             37      49            44
+##   Yes            22      20            12</code></pre>
+<pre class="r"><code>WBF1 &lt;- with(Bond.Funds, table(Fees,Risk))</code></pre>
+</div>
+</div>
+<div id="conditional-frequency" class="section level2">
+<h2>Conditional Frequency</h2>
+<p>If we think about conditional probability as measured in proportions of the table, we can ask R to calculate them. The command is <em>prop.table</em> and the inputs are a table and a <em>margin</em> here 1 is rows [conditioning on the first name you entered] and 2 is columns [the second name you entered]. Nothing specified is joint or total.</p>
+<pre class="r"><code>prop.table(FR.Tab)</code></pre>
+<pre><code>##      Risk
+## Fees  Above average    Average Below average
+##   No     0.20108696 0.26630435    0.23913043
+##   Yes    0.11956522 0.10869565    0.06521739</code></pre>
+<pre class="r"><code>prop.table(FR.Tab, 1)</code></pre>
+<pre><code>##      Risk
+## Fees  Above average   Average Below average
+##   No      0.2846154 0.3769231     0.3384615
+##   Yes     0.4074074 0.3703704     0.2222222</code></pre>
+<pre class="r"><code>prop.table(FR.Tab, 2)</code></pre>
+<pre><code>##      Risk
+## Fees  Above average   Average Below average
+##   No      0.6271186 0.7101449     0.7857143
+##   Yes     0.3728814 0.2898551     0.2142857</code></pre>
+<pre class="r"><code>prop.table(WBF1)</code></pre>
+<pre><code>##      Risk
+## Fees  Above average    Average Below average
+##   No     0.20108696 0.26630435    0.23913043
+##   Yes    0.11956522 0.10869565    0.06521739</code></pre>
+<pre class="r"><code>prop.table(WBF1, 1)</code></pre>
+<pre><code>##      Risk
+## Fees  Above average   Average Below average
+##   No      0.2846154 0.3769231     0.3384615
+##   Yes     0.4074074 0.3703704     0.2222222</code></pre>
+<pre class="r"><code>prop.table(WBF1, 2)</code></pre>
+<pre><code>##      Risk
+## Fees  Above average   Average Below average
+##   No      0.6271186 0.7101449     0.7857143
+##   Yes     0.3728814 0.2898551     0.2142857</code></pre>
+</div>
+<div id="pivot-plots-mosaic" class="section level2">
+<h2>Pivot Plots [Mosaic]</h2>
+<p>Base R Graphics contain a mosaic with the same formula as the cross-tabulation above.</p>
+<pre class="r"><code>mosaicplot(~Risk+Fees, data=Bond.Funds)</code></pre>
+<p><img src="/R/2019-10-09-tables-pivots-bars-and-mosaics/index_files/figure-html/MP1-1.png" width="672" /></p>
+<p>I recently came across a nice plotter for tabular data on <em>github</em>. You can search for it as <em>thatssorandom</em>. We installed it above.</p>
+<p><img src="/R/2019-10-09-tables-pivots-bars-and-mosaics/index_files/figure-html/pMos-1.png" width="672" /></p>
+<p>Notice it handles an implicit plotting of the set of conditional probabilities along the relevant margin. It is plotting <span class="math inline">\(Pr(Fees|Risk)\)</span> as breaks along the <em>y-axis</em> defined by frequency/empirical probability. This would be the equivalent of taking the <em>column marginal</em> of the table of Fees and Risk that we saw before. Now it has a graphical representation.</p>
+<pre class="r"><code>prop.table(FR.Tab, 2)</code></pre>
+<pre><code>##      Risk
+## Fees  Above average   Average Below average
+##   No      0.6271186 0.7101449     0.7857143
+##   Yes     0.3728814 0.2898551     0.2142857</code></pre>
+</div>
+<div id="for-berkeley-admissions" class="section level2">
+<h2>For Berkeley Admissions:</h2>
+<pre class="r"><code>data(&quot;UCBAdmissions&quot;)
+UCB &lt;- DescTools::Untable(UCBAdmissions)
+UCB$Gender &lt;- as.character(UCB$Gender)
+UCB$Gender[UCB$Gender==&quot;Male&quot;] &lt;- &quot;M&quot;
+UCB$Gender[UCB$Gender==&quot;Female&quot;] &lt;- &quot;F&quot;
+UCB$DeptMF &lt;- paste(UCB$Dept,UCB$Gender, sep=&quot;:&quot;)
+UCB &lt;- UCB %&gt;% select(Admit,DeptMF)
+p1 &lt;- ggmm(UCB, x=DeptMF, y=Admit, add_text = &quot;n&quot;)
+p1 + labs(x=&quot;Dept:M/F&quot;, y=&quot;Admitted&quot;) + theme(axis.text=element_text(size=10))</code></pre>
+<p><img src="/R/2019-10-09-tables-pivots-bars-and-mosaics/index_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+</div>
+<div id="barplots" class="section level2">
+<h2>Barplots</h2>
+<p>Basic things like barplots can be accomplished in many ways. Using the <em>R4DS</em> approach, we have</p>
+<pre class="r"><code>ggplot(data = Bond.Funds) + 
+  stat_count(mapping = aes(x = Risk))</code></pre>
+<p><img src="/R/2019-10-09-tables-pivots-bars-and-mosaics/index_files/figure-html/GGBar-1.png" width="672" /></p>
+<p>Placed into densities. This is really only helpful with another dimension because the X is categorical so all bars will be height 1.</p>
+<pre class="r"><code>ggplot(data = Bond.Funds, aes(x = Risk, fill=Fees)) + geom_bar(position=&quot;fill&quot;)</code></pre>
+<p><img src="/R/2019-10-09-tables-pivots-bars-and-mosaics/index_files/figure-html/GGBar2-1.png" width="672" /></p>
+<p>Or in Base R</p>
+<pre class="r"><code>par(mfrow=c(1,2))
+barplot(table(Bond.Funds$Risk))
+barplot(table(Bond.Funds$Fees,Bond.Funds$Risk))</code></pre>
+<p><img src="/R/2019-10-09-tables-pivots-bars-and-mosaics/index_files/figure-html/BRBar-1.png" width="672" /></p>
+<p>A legend would help.</p>
+<pre class="r"><code>par(mfrow=c(1,2))
+barplot(table(Bond.Funds$Fees,Bond.Funds$Risk), legend=TRUE)
+barplot(table(Bond.Funds$Fees,Bond.Funds$Risk), legend=TRUE, args.legend=list(bty=&quot;n&quot;))</code></pre>
+<p><img src="/R/2019-10-09-tables-pivots-bars-and-mosaics/index_files/figure-html/BRBar2-1.png" width="672" /></p>
+</div>
+<div id="simple-visualization-esquisse" class="section level2">
+<h2>Simple Visualization: <em>esquisse()</em></h2>
+<p>There is a wonderful tool for quickly succeeding with one of the most elegant and frustrating parts of R – <em>ggplot2</em>. Hadley Wickham’s <em>Grammar of Graphics</em> is brilliant when understood but is hard to comprehend initially and the programming structure of the package <em>makes</em> it hard for learners. Fortunately, a package called <em>esquisse</em> is available to make <em>ggplot2</em> drag and drop to harness much of the power in an easy fashion. With code in the output, it also facilitates learning how to manipulate the code of <em>ggplot2</em>.</p>
+<p><em>esquisse</em> is quite powerful; we can explore this at length. Here is a simple graphic that I created with x and fills.</p>
+<pre class="r"><code>library(ggplot2)
+plt1 &lt;- ggplot(data = Bond.Funds) +
+  aes(x = Type, fill = Fees) +
+  geom_bar() +
+  theme_minimal()
+plt1</code></pre>
+<p><img src="/R/2019-10-09-tables-pivots-bars-and-mosaics/index_files/figure-html/GGP1-1.png" width="672" /></p>
+<p>If you notice, <em>esquisse</em> directly outputs graphics to powerpoint. This feature is quite useful.</p>
+</div>
+</div>

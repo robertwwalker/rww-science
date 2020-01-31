@@ -1,0 +1,181 @@
+---
+title: Trump Tweet Word Clouds
+author: RWW
+date: '2018-12-18'
+slug: trump-tweet-word-clouds
+categories:
+  - tidyverse
+  - tidytext
+tags:
+  - tidyverse
+  - R Markdown
+  - tidytext
+header:
+  caption: ''
+  image: ''
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Mining Twitter Data
+
+Is rather easy.  You have to arrange a developer account with Twitter and set up an app.  After that, Twitter gives you access to a consumer key and secret and an access token and access secret.  My tool of choice for this is *rtweet* because it automagically processes tweet elements and makes them easy to slice and dice.  I also played with `twitteR` but it was harder to work with for what I wanted.  The first section involves setting up a token for `*rtweet*.
+
+```{r userFAKE, echo=TRUE, eval=FALSE}
+# Change the next four lines based on your own consumer_key, consume_secret, access_token, and access_secret. 
+token <- create_token(
+  app = "MyAppName",
+  consumer_key <- "CK",
+  consumer_secret <- "CS",
+  access_token <- "AT",
+  access_secret <- "AS")
+```
+
+Now I want to collect some tweets from a particular user's timeline and look into them.  For this example, I will use `@realDonaldTrump`.
+
+## Who does Trump tweet about?
+
+A cool post on sentiment analysis can be found [here](http://dataaspirant.com/2018/03/22/twitter-sentiment-analysis-using-r/).  The first step is to grab his timeline.  `rtweet` makes this quite easy.  I will grab it and then save it in the code below so that I do not spam the API.  I will get at the time series characteristics of his tweets and the sentiment stuff in a further analysis.  For now, let me just show some wordclouds.
+
+```{r, eval=FALSE}
+tml.djt <- get_timeline("realDonaldTrump", n = 3200)
+save(tml.djt, file="../data/TMLS.RData")
+```
+
+I start by loading the tmls object that I created above.  What does it look like?
+
+```{r, message=FALSE}
+library(wordcloud2)
+library(tidyverse)
+library(tidytext)
+library(rtweet)
+load(url("https://github.com/robertwwalker/academic-mymod/raw/master/data/TMLS.RData"))
+names(tml.djt)
+```
+
+I want to first get rid of retweets to render President Trump in his own voice.
+
+```{r}
+DJTDF <- tml.djt %>% filter(is_retweet==FALSE)
+```
+
+With just his tweets, a few things can be easily accomplished.  Who does he mention?
+
+```{r, warning=FALSE}
+library(wordcloud)
+MNTDJT <- DJTDF %>% filter(!is.na(mentions_screen_name)) %>% select(mentions_screen_name)
+Ments <- as.character(unlist(MNTDJT))
+TMents <- data.frame(table(Ments))
+pal <- brewer.pal(8,"Spectral")
+wordcloud(TMents$Ments,TMents$Freq, colors=pal)
+```
+
+That's interesting.  But that is twitter accounts.  That is far less interesting that his actual text.  I want to look at words and bigrams for this segment.
+
+## What does Trump tweet about?
+
+Some more stuff from [stack overflow](https://stackoverflow.com/questions/31348453/how-do-i-clean-twitter-data-in-r).  There is quite a bit of code in here.  I simply wrote a function that takes an input character string and cleans it up.  Uncomment the various components and pipe them.  The sequencing is important and I found this to get everything that I wanted.
+
+```{r, warning=FALSE}
+library(RColorBrewer)
+TDF <- DJTDF %>% select(text)
+# TDF contains the text of tweets.
+library(stringr)
+tweet_cleaner <- function(text) {
+  temp1 <- str_replace_all(text, "&amp", "") %>% 
+    str_replace_all(., "https://t+", "") %>%
+    str_replace_all(.,"@[a-z,A-Z]*","")
+#    str_replace_all(., "[[:punct:]]", "")  
+#    str_replace_all(., "[[:digit:]]", "") %>%
+#    str_replace_all(., "[ \t]{2,}", "") %>%
+#    str_replace_all(., "^\\s+|\\s+$", "")  %>%
+#    str_replace_all(., " "," ") %>%
+#    str_replace_all(., "http://t.co/[a-z,A-Z,0-9]*{8}","")
+#    str_replace_all(.,"RT @[a-z,A-Z]*: ","") %>% 
+#    str_replace_all(.,"#[a-z,A-Z]*","")
+  return(temp1)
+}
+clean_tweets <- data.frame(text=sapply(1:dim(TDF)[[1]], function(x) {tweet_cleaner(TDF[x,"text"])}))
+clean_tweets$text <- as.character(clean_tweets$text)
+Trumps.Words <- clean_tweets %>% unnest_tokens(., word, text) %>% anti_join(stop_words, "word")
+TTW <- table(Trumps.Words)
+TTW <- TTW[order(TTW, decreasing = T)]
+TTW <- data.frame(TTW)
+names(TTW) <- c("word","freq")
+wordcloud(TTW$word, TTW$freq)
+```
+
+Well, that is kinda cool.  Now, I want to do a bit more with it using more complicated word combinations.
+
+## The Wonders of tidytext
+
+The *tidytext* [section on n-grams](https://www.tidytextmining.com/ngrams.html) is great.  I will start with a tweet identifier -- something I should have deployed long ago -- before parsing these; I will not need this now but it will be encessary when the sentiment stuff comes around.
+
+```{r}
+library(tidyr)
+CT <- clean_tweets %>% mutate(tweetno= row_number())
+DJT2G <- clean_tweets %>% unnest_tokens(bigram, text, token = "ngrams", n=2)
+
+bigrams_separated <- DJT2G %>%
+  separate(bigram, c("word1", "word2"), sep = " ")
+
+bigrams_filtered <- bigrams_separated %>%
+  filter(!word1 %in% stop_words$word) %>%
+  filter(!word2 %in% stop_words$word)
+
+# new bigram counts:
+bigram_counts <- bigrams_filtered %>% 
+  count(word1, word2, sort = TRUE)
+
+bigram_counts
+
+bigrams_united <- bigrams_filtered %>%
+  unite(bigram, word1, word2, sep = " ")
+
+my.df <- data.frame(table(bigrams_united))
+my.df <- my.df[order(my.df$Freq, decreasing=TRUE),]
+my.df <- my.df[c(1:500),]
+head(my.df)
+```
+
+With that, we have the data for the bigram cloud.
+
+```{r, eval=FALSE}
+library(wordcloud2)
+wordcloud2(my.df, color="random-light", backgroundColor = "black")
+```
+
+After seeing a few competing renditions, I prefer `wordcloud2`.  One thing to be careful about is scaling.  In this case, the most frequent bigram is missing because the ratio makes it too large to fit.  With size smaller, it can be made to show.  It appears that embedding multiple of these in one post does not render.  I will stick with the one correct one.
+
+```{r jj}
+library(wordcloud2)
+hhww <- wordcloud2(my.df, color="random-light", backgroundColor = "black", size = 0.5)
+library(widgetframe)
+frameWidget(hhww, width=600)
+```  
+
+Getting this to work with frame widgets is tricky.  I started something below but cannot seem to make it work so I am constrained to one wordcloud2 per document because they rely on underlying html rendering.
+
+
+```{r, eval=FALSE}
+library(htmlwidgets)
+library(webshot)
+library(widgetframe)
+hw1 <- wordcloud2(my.df, color="random-light", backgroundColor = "black", size = 0.5)
+frameWidget(hw1, width=600)
+```
+
+I think that works quite nicely.  The use of jpg for shapes has not worked for me.  Nor has letterCloud.  I found some code on github that will supposedly solve this but it does not seem to work either.  It is supposed to render as an htmlwidget but something about that seems not to work properly.
+
+```{r, eval=FALSE, echo=TRUE}
+library(htmlwidgets)
+library(webshot)
+library(widgetframe)
+Ments.Tab <- data.frame(table(Ments))
+Ments.Tab <- Ments.Tab[order(Ments.Tab$Freq, decreasing=TRUE),]
+my.df.short <- my.df[c(1:40),]
+hw1 <- letterCloud(Ments.Tab, "@", size=4, color='random-light')
+frameWidget(hw1, width=600)
+```

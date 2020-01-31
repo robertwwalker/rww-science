@@ -1,0 +1,1624 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Source Themes Academic 4.7.0">
+
+  
+
+  
+  
+  
+  
+  
+    
+    
+    
+  
+  
+
+  <meta name="author" content="Robert W. Walker">
+
+  
+  
+  
+    
+  
+  <meta name="description" content="EPL Scraping In a previous post, I scraped some NFL data and learned the structure of Sportrac. Now, I want to scrape the available data on the EPL. The EPL data is organized in a few distinct but potentially linked tables. The basic structure is organized around team folders. Let me begin by isolating those URLs.
+library(rvest) library(tidyverse) base_url &lt;- &quot;http://www.spotrac.com/epl/&quot; read.base &lt;- read_html(base_url) team.URL &lt;- read.base %&gt;% html_nodes(&quot;.team-name&quot;) %&gt;% html_attr(&#39;href&#39;) team.">
+
+  
+  <link rel="alternate" hreflang="en-us" href="/2018/04/08/scraping-epl-salary-data/">
+
+  
+
+
+  
+  
+  
+  <meta name="theme-color" content="#EAF04E">
+  
+
+  
+  
+  
+  <script src="/js/mathjax-config.js"></script>
+  
+
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-1/css/all.min.css" integrity="sha256-4w9DunooKSr3MFXHXWyFER38WmPdm361bQS/2KUWZbU=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+    
+    
+    
+      
+    
+    
+      
+      
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css" crossorigin="anonymous" title="hl-light">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css" crossorigin="anonymous" title="hl-dark" disabled>
+      
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.css" integrity="sha256-SHMGCYmST46SoyGgo4YR/9AlK1vf3ff84Aq9yK4hdqM=" crossorigin="anonymous">
+    
+
+    
+
+    
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.1.2/lazysizes.min.js" integrity="sha256-Md1qLToewPeKjfAHU1zyPwOutccPAm5tahnaw7Osw0A=" crossorigin="anonymous" async></script>
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" integrity="" crossorigin="anonymous" async></script>
+      
+    
+      
+
+      
+      
+
+      
+    
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cutive+Mono%7CLora:400,700%7CRoboto:400,700%7CJosefin+Slab&display=swap">
+  
+
+  
+  
+  
+  
+  <link rel="stylesheet" href="/css/academic.css">
+
+  
+
+
+
+
+  
+
+
+  
+
+  <link rel="manifest" href="/index.webmanifest">
+  <link rel="icon" type="image/png" href="/images/icon_hu441e8133bcb5f26868e76fcbf737199b_6526_32x32_fill_lanczos_center_2.png">
+  <link rel="apple-touch-icon" type="image/png" href="/images/icon_hu441e8133bcb5f26868e76fcbf737199b_6526_192x192_fill_lanczos_center_2.png">
+
+  <link rel="canonical" href="/2018/04/08/scraping-epl-salary-data/">
+
+  
+  
+  
+  
+  
+    
+  
+  
+  <meta property="twitter:card" content="summary_large_image">
+  
+  <meta property="twitter:site" content="@PieRatio">
+  <meta property="twitter:creator" content="@PieRatio">
+  
+  <meta property="og:site_name" content="rww.science">
+  <meta property="og:url" content="/2018/04/08/scraping-epl-salary-data/">
+  <meta property="og:title" content="Scraping EPL Salary Data | rww.science">
+  <meta property="og:description" content="EPL Scraping In a previous post, I scraped some NFL data and learned the structure of Sportrac. Now, I want to scrape the available data on the EPL. The EPL data is organized in a few distinct but potentially linked tables. The basic structure is organized around team folders. Let me begin by isolating those URLs.
+library(rvest) library(tidyverse) base_url &lt;- &quot;http://www.spotrac.com/epl/&quot; read.base &lt;- read_html(base_url) team.URL &lt;- read.base %&gt;% html_nodes(&quot;.team-name&quot;) %&gt;% html_attr(&#39;href&#39;) team."><meta property="og:image" content="/img/portrait.jpg">
+  <meta property="twitter:image" content="/img/portrait.jpg"><meta property="og:locale" content="en-us">
+  
+    
+      <meta property="article:published_time" content="2018-04-08T00:00:00&#43;00:00">
+    
+    <meta property="article:modified_time" content="2018-04-08T00:00:00&#43;00:00">
+  
+
+  
+
+
+    
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/2018/04/08/scraping-epl-salary-data/"
+  },
+  "headline": "Scraping EPL Salary Data",
+  
+  "datePublished": "2018-04-08T00:00:00Z",
+  "dateModified": "2018-04-08T00:00:00Z",
+  
+  "author": {
+    "@type": "Person",
+    "name": "Robert W. Walker"
+  },
+  
+  "publisher": {
+    "@type": "Organization",
+    "name": [{"name":"Atkinson Graduate School of Management","url":"http://agsm.willamette.edu"},{"name":"Willamette University","url":"http:www.willamette.edu/"}],
+    "logo": {
+      "@type": "ImageObject",
+      "url": "img//"
+    }
+  },
+  "description": "EPL Scraping In a previous post, I scraped some NFL data and learned the structure of Sportrac. Now, I want to scrape the available data on the EPL. The EPL data is organized in a few distinct but potentially linked tables. The basic structure is organized around team folders. Let me begin by isolating those URLs.\nlibrary(rvest) library(tidyverse) base_url \u0026lt;- \u0026quot;http://www.spotrac.com/epl/\u0026quot; read.base \u0026lt;- read_html(base_url) team.URL \u0026lt;- read.base %\u0026gt;% html_nodes(\u0026quot;.team-name\u0026quot;) %\u0026gt;% html_attr(\u0026#39;href\u0026#39;) team."
+}
+</script>
+
+  
+
+  
+
+
+  
+  
+  
+  
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.1/cookieconsent.min.js" integrity="sha256-5VhCqFam2Cn+yjw61zbBNrbHVJ6SRydPeKopYlngbiQ=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.1/cookieconsent.min.css" integrity="sha256-zQ0LblD/Af8vOppw18+2anxsuaz3pWYyVWi+bTvTH8Q=" crossorigin="anonymous">
+  
+  <script>
+  window.addEventListener("load", function(){
+    window.cookieconsent.initialise({
+      "palette": {
+        "popup": {
+          "background": "#EAF04E",
+          "text": "#fff"
+        },
+        "button": {
+          "background": "#fff",
+          "text": "#EAF04E"
+        }
+      },
+      "theme": "classic",
+      "content": {
+        "message": "This website uses cookies to ensure you get the best experience on our website.",
+        "dismiss": "Got it!",
+        "link": "Learn more",
+        "href": "/privacy/"
+      }
+    })});
+  </script>
+
+
+
+  
+
+
+
+
+
+  <title>Scraping EPL Salary Data | rww.science</title>
+
+</head>
+
+<body id="top" data-spy="scroll" data-offset="70" data-target="#TableOfContents" class="dark">
+
+  <aside class="search-results" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" spellcheck="false" type="search">
+        
+      </div>
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+  
+
+
+
+
+
+
+
+<nav class="navbar navbar-expand-lg navbar-light compensate-for-scrollbar" id="navbar-main">
+  <div class="container">
+
+    
+    <div class="d-none d-lg-inline-flex">
+      <a class="navbar-brand" href="/">rww.science</a>
+    </div>
+    
+
+    
+    <button type="button" class="navbar-toggler" data-toggle="collapse"
+            data-target="#navbar-content" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+    <span><i class="fas fa-bars"></i></span>
+    </button>
+    
+
+    
+    <div class="navbar-brand-mobile-wrapper d-inline-flex d-lg-none">
+      <a class="navbar-brand" href="/">rww.science</a>
+    </div>
+    
+
+    
+    
+    <div class="navbar-collapse main-menu-item collapse justify-content-end" id="navbar-content">
+
+      
+      <ul class="navbar-nav d-md-inline-flex">
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#about"><span>Home</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/publication/"><span>Publications</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#posts"><span>Posts</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/project/"><span>Projects</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/r/"><span>R</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/talk/"><span>Talks/Slides</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/courses/"><span>Teaching</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#contact"><span>Contact</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/img/vita.pdf"><span>Curriculum Vitae</span></a>
+        </li>
+
+        
+        
+
+      
+
+        
+      </ul>
+    </div>
+
+    <ul class="nav-icons navbar-nav flex-row ml-auto d-flex pl-md-2">
+      
+      <li class="nav-item">
+        <a class="nav-link js-search" href="#"><i class="fas fa-search" aria-hidden="true"></i></a>
+      </li>
+      
+
+      
+      <li class="nav-item">
+        <a class="nav-link js-dark-toggle" href="#"><i class="fas fa-moon" aria-hidden="true"></i></a>
+      </li>
+      
+
+      
+
+    </ul>
+
+  </div>
+</nav>
+
+
+  <article class="article">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+  
+  
+<div class="article-container pt-3">
+  <h1>Scraping EPL Salary Data</h1>
+
+  
+
+  
+    
+
+
+<div class="article-metadata">
+
+  
+  
+
+  
+  <span class="article-date">
+    
+    
+      
+    
+    Apr 8, 2018
+  </span>
+  
+
+  
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    13 min read
+  </span>
+  
+
+  
+  
+  
+
+  
+  
+  <span class="middot-divider"></span>
+  <span class="article-categories">
+    <i class="fas fa-folder mr-1"></i><a href="/categories/r/">R</a>, <a href="/categories/web-scraping/">web scraping</a></span>
+  
+
+</div>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+</div>
+
+
+
+  <div class="article-container">
+
+    <div class="article-style">
+      
+
+
+<div id="epl-scraping" class="section level1">
+<h1>EPL Scraping</h1>
+<p>In a previous <a href="https://www.data.viajes/post/scraping-the-nfl-salary-cap-data-with-python-and-r/">post</a>, I scraped some NFL data and learned the structure of Sportrac. Now, I want to scrape the available data on the EPL. The EPL data is organized in a few distinct but potentially linked tables. The basic structure is organized around team folders. Let me begin by isolating those URLs.</p>
+<pre class="r"><code>library(rvest)
+library(tidyverse)
+base_url &lt;- &quot;http://www.spotrac.com/epl/&quot;
+read.base &lt;- read_html(base_url)
+team.URL &lt;- read.base %&gt;% html_nodes(&quot;.team-name&quot;) %&gt;% html_attr(&#39;href&#39;)
+team.URL</code></pre>
+<pre><code>##  [1] &quot;https://www.spotrac.com/epl/afc-bournemouth/&quot;            
+##  [2] &quot;https://www.spotrac.com/epl/arsenal-f.c/&quot;                
+##  [3] &quot;https://www.spotrac.com/epl/aston-villa-f.c/&quot;            
+##  [4] &quot;https://www.spotrac.com/epl/brighton-hove-albion/&quot;       
+##  [5] &quot;https://www.spotrac.com/epl/burnley-f.c/&quot;                
+##  [6] &quot;https://www.spotrac.com/epl/chelsea-f.c/&quot;                
+##  [7] &quot;https://www.spotrac.com/epl/crystal-palace/&quot;             
+##  [8] &quot;https://www.spotrac.com/epl/everton-f.c/&quot;                
+##  [9] &quot;https://www.spotrac.com/epl/leicester-city/&quot;             
+## [10] &quot;https://www.spotrac.com/epl/liverpool-f.c/&quot;              
+## [11] &quot;https://www.spotrac.com/epl/manchester-city-f.c/&quot;        
+## [12] &quot;https://www.spotrac.com/epl/manchester-united-f.c/&quot;      
+## [13] &quot;https://www.spotrac.com/epl/newcastle-united-f.c/&quot;       
+## [14] &quot;https://www.spotrac.com/epl/norwich-city-f.c/&quot;           
+## [15] &quot;https://www.spotrac.com/epl/sheffield-united-f.c/&quot;       
+## [16] &quot;https://www.spotrac.com/epl/southampton-f.c/&quot;            
+## [17] &quot;https://www.spotrac.com/epl/tottenham-hotspur-f.c/&quot;      
+## [18] &quot;https://www.spotrac.com/epl/watford/&quot;                    
+## [19] &quot;https://www.spotrac.com/epl/west-ham-united-f.c/&quot;        
+## [20] &quot;https://www.spotrac.com/epl/wolverhampton-wanderers-f.c/&quot;</code></pre>
+<pre class="r"><code># Clean up the URLs to get the team names by themselves.
+team.names &lt;- gsub(base_url, &quot;&quot;, team.URL)
+team.names &lt;- gsub(&quot;-f.c&quot;, &quot; FC&quot;, team.names)
+team.names &lt;- gsub(&quot;afc&quot;, &quot;AFC&quot;, team.names)
+team.names &lt;- gsub(&quot;a.f.c&quot;, &quot;AFC&quot;, team.names)
+# Dashes and slashes need to  removed.
+team.names &lt;- gsub(&quot;-&quot;, &quot; &quot;, team.names)
+team.names &lt;- gsub(&quot;/&quot;, &quot;&quot;, team.names)
+# Fix FC and AFC for Bournemouth
+simpleCap &lt;- function(x) {
+  s &lt;- strsplit(x, &quot; &quot;)[[1]]
+  paste(toupper(substring(s, 1,1)), substring(s, 2), sep=&quot;&quot;, collapse=&quot; &quot;)
+  }
+# Capitalise and trim white space
+team.names &lt;- sapply(team.names, simpleCap)
+#team.names &lt;- sapply(team.names, trimws)
+names(team.names) &lt;- NULL
+# Now I have a vector of 20 names.
+short.names &lt;- gsub(&quot; FC&quot;,&quot;&quot;, team.names)
+short.names &lt;- gsub(&quot; AFC&quot;,&quot;&quot;, short.names)
+EPL.names &lt;- data.frame(team.names,short.names,team.URL)
+EPL.names</code></pre>
+<pre><code>##                                            team.names
+## 1             Https:www.spotrac.comeplAFC Bournemouth
+## 2                  Https:www.spotrac.comeplarsenal FC
+## 3              Https:www.spotrac.comeplaston Villa FC
+## 4        Https:www.spotrac.comeplbrighton Hove Albion
+## 5                  Https:www.spotrac.comeplburnley FC
+## 6                  Https:www.spotrac.comeplchelsea FC
+## 7              Https:www.spotrac.comeplcrystal Palace
+## 8                  Https:www.spotrac.comepleverton FC
+## 9              Https:www.spotrac.comeplleicester City
+## 10               Https:www.spotrac.comeplliverpool FC
+## 11         Https:www.spotrac.comeplmanchester City FC
+## 12       Https:www.spotrac.comeplmanchester United FC
+## 13        Https:www.spotrac.comeplnewcastle United FC
+## 14            Https:www.spotrac.comeplnorwich City FC
+## 15        Https:www.spotrac.comeplsheffield United FC
+## 16             Https:www.spotrac.comeplsouthampton FC
+## 17       Https:www.spotrac.comepltottenham Hotspur FC
+## 18                    Https:www.spotrac.comeplwatford
+## 19         Https:www.spotrac.comeplwest Ham United FC
+## 20 Https:www.spotrac.comeplwolverhampton Wanderers FC
+##                                        short.names
+## 1          Https:www.spotrac.comeplAFC Bournemouth
+## 2                  Https:www.spotrac.comeplarsenal
+## 3              Https:www.spotrac.comeplaston Villa
+## 4     Https:www.spotrac.comeplbrighton Hove Albion
+## 5                  Https:www.spotrac.comeplburnley
+## 6                  Https:www.spotrac.comeplchelsea
+## 7           Https:www.spotrac.comeplcrystal Palace
+## 8                  Https:www.spotrac.comepleverton
+## 9           Https:www.spotrac.comeplleicester City
+## 10               Https:www.spotrac.comeplliverpool
+## 11         Https:www.spotrac.comeplmanchester City
+## 12       Https:www.spotrac.comeplmanchester United
+## 13        Https:www.spotrac.comeplnewcastle United
+## 14            Https:www.spotrac.comeplnorwich City
+## 15        Https:www.spotrac.comeplsheffield United
+## 16             Https:www.spotrac.comeplsouthampton
+## 17       Https:www.spotrac.comepltottenham Hotspur
+## 18                 Https:www.spotrac.comeplwatford
+## 19         Https:www.spotrac.comeplwest Ham United
+## 20 Https:www.spotrac.comeplwolverhampton Wanderers
+##                                                    team.URL
+## 1              https://www.spotrac.com/epl/afc-bournemouth/
+## 2                  https://www.spotrac.com/epl/arsenal-f.c/
+## 3              https://www.spotrac.com/epl/aston-villa-f.c/
+## 4         https://www.spotrac.com/epl/brighton-hove-albion/
+## 5                  https://www.spotrac.com/epl/burnley-f.c/
+## 6                  https://www.spotrac.com/epl/chelsea-f.c/
+## 7               https://www.spotrac.com/epl/crystal-palace/
+## 8                  https://www.spotrac.com/epl/everton-f.c/
+## 9               https://www.spotrac.com/epl/leicester-city/
+## 10               https://www.spotrac.com/epl/liverpool-f.c/
+## 11         https://www.spotrac.com/epl/manchester-city-f.c/
+## 12       https://www.spotrac.com/epl/manchester-united-f.c/
+## 13        https://www.spotrac.com/epl/newcastle-united-f.c/
+## 14            https://www.spotrac.com/epl/norwich-city-f.c/
+## 15        https://www.spotrac.com/epl/sheffield-united-f.c/
+## 16             https://www.spotrac.com/epl/southampton-f.c/
+## 17       https://www.spotrac.com/epl/tottenham-hotspur-f.c/
+## 18                     https://www.spotrac.com/epl/watford/
+## 19         https://www.spotrac.com/epl/west-ham-united-f.c/
+## 20 https://www.spotrac.com/epl/wolverhampton-wanderers-f.c/</code></pre>
+<p>With clean names, I can take each of the scraping tasks in order.</p>
+<div id="payroll-data" class="section level2">
+<h2>Payroll Data</h2>
+<p>The teams have payroll information that is broken down into active players, reserves, and loanees. The workflow is first to create the relevant URLs to scrape the payroll data.</p>
+<pre class="r"><code>team_links &lt;- paste0(team.URL,&quot;payroll/&quot;,sep=&quot;&quot;)</code></pre>
+<p>With URLs, I am going to set forth on the task. First, the <em>SelectorGadget</em> and a glimpse of the documents suggests an easy solution. I want to isolate the table nodes and keep the tables. First, a function for the URLs.</p>
+<pre class="r"><code>data.creator &lt;- function(link) {
+read_html(link) %&gt;% html_nodes(&quot;table&quot;) %&gt;% html_table(header=TRUE, fill=TRUE)
+}</code></pre>
+<p>Now I want to apply data scraping function to the URLs. Then, I want to name the list items, assess the size of the active roster, and then clean up the relevant data.</p>
+<pre class="r"><code>EPL.salary &lt;- sapply(team_links, function(x) {data.creator(x)})
+names(EPL.salary) &lt;- EPL.names$short.names
+team.len &lt;- sapply(seq(1,20), function(x) { dim(EPL.salary[[x]][[1]])[[1]]})
+Team &lt;- rep(EPL.names$short.names, team.len)
+Players &lt;- sapply(seq(1,20), function(x) { str_split(EPL.salary[[x]][[1]][,1], &quot;\t&quot;, simplify=TRUE)[,31]})
+Position &lt;- sapply(seq(1,20), function(x) { EPL.salary[[x]][[1]][,2]})
+Base.Salary &lt;- sapply(seq(1,20), function(x) { Res &lt;- gsub(&quot;£&quot;, &quot;&quot;, EPL.salary[[x]][[1]][,3]); gsub(&quot;,&quot;,&quot;&quot;,Res)})
+EPL.Result &lt;- data.frame(Players=unlist(Players), Team=Team, Position=unlist(Position), Base.Salary=unlist(Base.Salary))
+EPL.Result$Base.Salary &lt;- str_replace(EPL.Result$Base.Salary, &quot;-&quot;, NA_character_)
+EPL.Result$Base.Num &lt;- as.numeric(EPL.Result$Base.Salary)
+EPL.Result %&gt;% group_by(Position) %&gt;% summarise(Mean.Base.Salary=mean(Base.Num, na.rm=TRUE),sdBS=sd(Base.Num, na.rm = TRUE))</code></pre>
+<pre><code>## # A tibble: 4 x 3
+##   Position Mean.Base.Salary  sdBS
+##   &lt;fct&gt;               &lt;dbl&gt; &lt;dbl&gt;
+## 1 D                    25.9  3.73
+## 2 F                    24.7  3.75
+## 3 GK                   28.8  4.66
+## 4 M                    24.8  5.25</code></pre>
+<pre class="r"><code>EPL.Result %&gt;% group_by(Position,Team) %&gt;% summarise(Mean.Base.Salary=mean(Base.Num, na.rm=TRUE),sdBS=sd(Base.Num, na.rm = TRUE))</code></pre>
+<pre><code>## # A tibble: 80 x 4
+## # Groups:   Position [4]
+##    Position Team                                         Mean.Base.Salary  sdBS
+##    &lt;fct&gt;    &lt;fct&gt;                                                   &lt;dbl&gt; &lt;dbl&gt;
+##  1 D        Https:www.spotrac.comeplAFC Bournemouth                  25    4.38
+##  2 D        Https:www.spotrac.comeplarsenal                          24.8  3.63
+##  3 D        Https:www.spotrac.comeplaston Villa                      24.8  2.87
+##  4 D        Https:www.spotrac.comeplbrighton Hove Albion             27.7  2.14
+##  5 D        Https:www.spotrac.comeplburnley                          28.1  2.75
+##  6 D        Https:www.spotrac.comeplchelsea                          25.4  2.44
+##  7 D        Https:www.spotrac.comeplcrystal Palace                   27.8  3.19
+##  8 D        Https:www.spotrac.comepleverton                          26.9  3.87
+##  9 D        Https:www.spotrac.comeplleicester City                   25.9  5.59
+## 10 D        Https:www.spotrac.comeplliverpool                        25    3.42
+## # … with 70 more rows</code></pre>
+<p>Finally, a little picture to describe spending on the active roster.</p>
+<pre class="r"><code>fplot &lt;- ggplot(EPL.Result, aes(Base.Num,Team))
+gpl &lt;- fplot + geom_jitter(height=0.25, width=0) + facet_wrap(~Position) + labs(x=&quot;Base Salary&quot;)
+gpl</code></pre>
+<p><img src="/post/2018-04-08-scraping-epl-salary-data/index_files/figure-html/Picture-1.png" width="672" /></p>
+</div>
+<div id="contracts" class="section level2">
+<h2>Contracts</h2>
+<p>The contracts are stored in a different URL structure that is accessible via <em>contracts</em> in the html tree by tean. Firstm I want to paste the names together with links to explore.</p>
+<pre class="r"><code>team_links &lt;- paste0(team.URL,&quot;contracts/&quot;,sep=&quot;&quot;)</code></pre>
+<p>Now I have all the links that I need and can turn to processing the data. This is something of a mess. Let me first grab some data to showcase the problem. In what follows, first I will grab the HTML files.</p>
+<pre class="r"><code>Base.Contracts &lt;- lapply(team_links, read_html)</code></pre>
+<p>Processing them is a bit more difficult. What does the basic table look like?</p>
+<pre class="r"><code>Base.Contracts[[1]] %&gt;% html_nodes(&quot;table&quot;) %&gt;% html_table(header=TRUE, fill=TRUE)</code></pre>
+<pre><code>## [[1]]
+##                  Player (31) Pos. Age
+## 1         DefoeJermain Defoe    F  37
+## 2       BegovicAsmir Begovic   GK  32
+## 3       LermaJefferson Lerma    M  25
+## 4        WilsonCallum Wilson    F  27
+## 5            KingJoshua King    F  28
+## 6              AkeNathan Ake    D  24
+## 7             CookSteve Cook    D  28
+## 8        SurmanAndrew Surman    M  33
+## 9           ArterHarry Arter    M  30
+## 10             IbeJordon Ibe    F  24
+## 11            CookLewis Cook    M  22
+## 12        GoslingDan Gosling    M  29
+## 13           SmithAdam Smith    D  28
+## 14         FraserRyan Fraser    F  25
+## 15    DanielsCharlie Daniels    D  33
+## 16 StanislasJunior Stanislas    F  30
+## 17           SmithBrad Smith    D  25
+## 18        BrooksDavid Brooks    M  22
+## 19            RicoDiego Rico    D  26
+## 20    SolankeDominic Solanke    F  22
+## 21     BillingPhilip Billing    M  23
+## 22      FrancisSimon Francis    D  34
+## 23        MephamChris Mepham    D  22
+## 24          BorucArtur Boruc   GK  39
+## 25    RamsdaleAaron Ramsdale   GK  21
+## 26       SimpsonJack Simpson    D  23
+## 27      SurridgeSam Surridge    F  22
+## 28          KellyLloyd Kelly    D  21
+## 29         StaceyJack Stacey    D  23
+## 30       TraversMark Travers   GK  20
+## 31     DanjumaArnaut Danjuma    F  22
+##                                                             Contract Terms
+## 1  16140000\n\t\t\t\t\t\t\t\t\t\t\t3 yr\n\t\t\t\t\t\t\t\t\t\t\t£16,140,000
+## 2  14560000\n\t\t\t\t\t\t\t\t\t\t\t4 yr\n\t\t\t\t\t\t\t\t\t\t\t£14,560,000
+## 3  13000000\n\t\t\t\t\t\t\t\t\t\t\t5 yr\n\t\t\t\t\t\t\t\t\t\t\t£13,000,000
+## 4  12480000\n\t\t\t\t\t\t\t\t\t\t\t4 yr\n\t\t\t\t\t\t\t\t\t\t\t£12,480,000
+## 5  11700000\n\t\t\t\t\t\t\t\t\t\t\t5 yr\n\t\t\t\t\t\t\t\t\t\t\t£11,700,000
+## 6  10400000\n\t\t\t\t\t\t\t\t\t\t\t5 yr\n\t\t\t\t\t\t\t\t\t\t\t£10,400,000
+## 7    9360000\n\t\t\t\t\t\t\t\t\t\t\t4 yr\n\t\t\t\t\t\t\t\t\t\t\t£9,360,000
+## 8    9100000\n\t\t\t\t\t\t\t\t\t\t\t5 yr\n\t\t\t\t\t\t\t\t\t\t\t£9,100,000
+## 9    8320000\n\t\t\t\t\t\t\t\t\t\t\t4 yr\n\t\t\t\t\t\t\t\t\t\t\t£8,320,000
+## 10   7904000\n\t\t\t\t\t\t\t\t\t\t\t4 yr\n\t\t\t\t\t\t\t\t\t\t\t£7,904,000
+## 11   7280000\n\t\t\t\t\t\t\t\t\t\t\t4 yr\n\t\t\t\t\t\t\t\t\t\t\t£7,280,000
+## 12   7280000\n\t\t\t\t\t\t\t\t\t\t\t4 yr\n\t\t\t\t\t\t\t\t\t\t\t£7,280,000
+## 13   7280000\n\t\t\t\t\t\t\t\t\t\t\t4 yr\n\t\t\t\t\t\t\t\t\t\t\t£7,280,000
+## 14   5616000\n\t\t\t\t\t\t\t\t\t\t\t4 yr\n\t\t\t\t\t\t\t\t\t\t\t£5,616,000
+## 15   5460000\n\t\t\t\t\t\t\t\t\t\t\t3 yr\n\t\t\t\t\t\t\t\t\t\t\t£5,460,000
+## 16   5460000\n\t\t\t\t\t\t\t\t\t\t\t3 yr\n\t\t\t\t\t\t\t\t\t\t\t£5,460,000
+## 17   5200000\n\t\t\t\t\t\t\t\t\t\t\t4 yr\n\t\t\t\t\t\t\t\t\t\t\t£5,200,000
+## 18   4160000\n\t\t\t\t\t\t\t\t\t\t\t4 yr\n\t\t\t\t\t\t\t\t\t\t\t£4,160,000
+## 19   4004000\n\t\t\t\t\t\t\t\t\t\t\t4 yr\n\t\t\t\t\t\t\t\t\t\t\t£4,004,000
+## 20   3900000\n\t\t\t\t\t\t\t\t\t\t\t3 yr\n\t\t\t\t\t\t\t\t\t\t\t£3,900,000
+## 21   3900000\n\t\t\t\t\t\t\t\t\t\t\t5 yr\n\t\t\t\t\t\t\t\t\t\t\t£3,900,000
+## 22   3120000\n\t\t\t\t\t\t\t\t\t\t\t2 yr\n\t\t\t\t\t\t\t\t\t\t\t£3,120,000
+## 23   3035000\n\t\t\t\t\t\t\t\t\t\t\t5 yr\n\t\t\t\t\t\t\t\t\t\t\t£3,035,000
+## 24   2080000\n\t\t\t\t\t\t\t\t\t\t\t1 yr\n\t\t\t\t\t\t\t\t\t\t\t£2,080,000
+## 25      780000\n\t\t\t\t\t\t\t\t\t\t\t5 yr\n\t\t\t\t\t\t\t\t\t\t\t£780,000
+## 26      468000\n\t\t\t\t\t\t\t\t\t\t\t3 yr\n\t\t\t\t\t\t\t\t\t\t\t£468,000
+## 27                  0\n\t\t\t\t\t\t\t\t\t\t\t3 yr\n\t\t\t\t\t\t\t\t\t\t\t-
+## 28                  0\n\t\t\t\t\t\t\t\t\t\t\t3 yr\n\t\t\t\t\t\t\t\t\t\t\t-
+## 29                     0\n\t\t\t\t\t\t\t\t\t\t\t-\n\t\t\t\t\t\t\t\t\t\t\t-
+## 30                     0\n\t\t\t\t\t\t\t\t\t\t\t-\n\t\t\t\t\t\t\t\t\t\t\t-
+## 31                  0\n\t\t\t\t\t\t\t\t\t\t\t5 yr\n\t\t\t\t\t\t\t\t\t\t\t-
+##    Avg. Salary Transfer Fee Expires
+## 1   £5,380,000            -    2020
+## 2   £3,640,000   £9,780,000    2021
+## 3   £2,600,000  £25,125,000    2023
+## 4   £3,120,000   £3,000,000    2023
+## 5   £2,340,000            -    2021
+## 6   £2,080,000  £19,380,000    2022
+## 7   £2,340,000     £150,000    2021
+## 8   £1,820,000     £536,000    2020
+## 9   £2,080,000            -    2021
+## 10  £1,976,000  £15,000,000    2020
+## 11  £1,820,000   £5,950,000    2022
+## 12  £1,820,000            -    2021
+## 13  £1,820,000            -    2021
+## 14  £1,404,000     £400,000    2020
+## 15  £1,820,000     £191,000    2020
+## 16  £1,820,000            -    2021
+## 17  £1,300,000   £3,060,000    2020
+## 18  £1,040,000  £10,125,000    2022
+## 19  £1,001,000  £10,750,000    2022
+## 20  £1,300,000  £24,170,000    2022
+## 21    £780,000  £18,810,000    2024
+## 22  £1,560,000            -    2020
+## 23    £607,000  £15,500,000    2023
+## 24  £2,080,000  £10,000,000    2020
+## 25    £156,000     £799,000    2021
+## 26    £156,000            -    2020
+## 27           -            -    2021
+## 28           -  £16,870,000       -
+## 29           -   £5,070,000       -
+## 30           -            -       -
+## 31           -  £20,520,000    2024
+## 
+## [[2]]
+##    Player (31) Pos. Age                Contract Terms Avg. Salary Transfer Fee
+## 1 Harry Wilson    M  21 1 yr\n\t\t\t\t\t\t\t\t\t\t\t-           -            -
+##   Expires
+## 1       -</code></pre>
+<p>The names and the contract year and terms are going to require parsing. I have chosen the first html that corresponds to Bournemouth; other teams are worse because loan players are in a second table. That impacts the wage bill, perhaps, depending on the arrangement in the loan, but the contract details from the player do not have that team as signatory. This has to be fixed. That is easy enough to fix, there are two embedded tables and I can select the first one. When it comes to the names, there is no easy separation for the first column; I will grab them from nodes in the html.</p>
+<pre class="r"><code>data.creator &lt;- function(data) { 
+  data %&gt;% html_nodes(&quot;table&quot;) %&gt;% html_table(header=TRUE, fill=TRUE) -&gt; ret.tab
+  nrowsm &lt;- dim(ret.tab[[1]])[[1]]
+  split.me &lt;- ret.tab[[1]][,4]
+  tempdf &lt;- data.frame(matrix(data=gsub(&quot;\t|-&quot;,&quot;&quot;,unlist(strsplit(split.me, &quot;\\n&quot;))), nrow=nrowsm, byrow=TRUE))
+  names(tempdf) &lt;- c(&quot;value&quot;,&quot;years&quot;,&quot;value.pds&quot;)
+  data %&gt;% html_nodes(&quot;.player&quot;) %&gt;% html_nodes(&quot;a&quot;) %&gt;% html_text() -&gt; Player.Names
+  Player.Names &lt;- Player.Names[c(1:nrowsm)]
+  data %&gt;% html_nodes(&quot;.player&quot;) %&gt;% html_nodes(&quot;a&quot;) %&gt;% html_attr(&quot;href&quot;) -&gt; Player.Links
+  Player.links &lt;- Player.Links[c(1:nrowsm)]
+  data %&gt;% html_nodes(&quot;.player&quot;) %&gt;% html_nodes(&quot;span&quot;) %&gt;% html_text() -&gt; Last.Name
+  Last.Name &lt;- Last.Name[c(1:nrowsm)]
+  names(ret.tab[1][[1]])[c(1:2)] &lt;- c(&quot;Player&quot;,&quot;Position&quot;)
+#  data.frame(ret.tab[,c(5,6,7)]) 
+  return(data.frame(ret.tab[1][[1]],tempdf,Player.Names,Player.links,Last.Name))
+}
+EPL.Contracts &lt;- lapply(Base.Contracts, data.creator)
+names(EPL.Contracts) &lt;- EPL.names$short.names
+EPL.Contracts[[1]]</code></pre>
+<pre><code>##                       Player Position Age
+## 1         DefoeJermain Defoe        F  37
+## 2       BegovicAsmir Begovic       GK  32
+## 3       LermaJefferson Lerma        M  25
+## 4        WilsonCallum Wilson        F  27
+## 5            KingJoshua King        F  28
+## 6              AkeNathan Ake        D  24
+## 7             CookSteve Cook        D  28
+## 8        SurmanAndrew Surman        M  33
+## 9           ArterHarry Arter        M  30
+## 10             IbeJordon Ibe        F  24
+## 11            CookLewis Cook        M  22
+## 12        GoslingDan Gosling        M  29
+## 13           SmithAdam Smith        D  28
+## 14         FraserRyan Fraser        F  25
+## 15    DanielsCharlie Daniels        D  33
+## 16 StanislasJunior Stanislas        F  30
+## 17           SmithBrad Smith        D  25
+## 18        BrooksDavid Brooks        M  22
+## 19            RicoDiego Rico        D  26
+## 20    SolankeDominic Solanke        F  22
+## 21     BillingPhilip Billing        M  23
+## 22      FrancisSimon Francis        D  34
+## 23        MephamChris Mepham        D  22
+## 24          BorucArtur Boruc       GK  39
+## 25    RamsdaleAaron Ramsdale       GK  21
+## 26       SimpsonJack Simpson        D  23
+## 27      SurridgeSam Surridge        F  22
+## 28          KellyLloyd Kelly        D  21
+## 29         StaceyJack Stacey        D  23
+## 30       TraversMark Travers       GK  20
+## 31     DanjumaArnaut Danjuma        F  22
+##                                                             Contract.Terms
+## 1  16140000\n\t\t\t\t\t\t\t\t\t\t\t3 yr\n\t\t\t\t\t\t\t\t\t\t\t£16,140,000
+## 2  14560000\n\t\t\t\t\t\t\t\t\t\t\t4 yr\n\t\t\t\t\t\t\t\t\t\t\t£14,560,000
+## 3  13000000\n\t\t\t\t\t\t\t\t\t\t\t5 yr\n\t\t\t\t\t\t\t\t\t\t\t£13,000,000
+## 4  12480000\n\t\t\t\t\t\t\t\t\t\t\t4 yr\n\t\t\t\t\t\t\t\t\t\t\t£12,480,000
+## 5  11700000\n\t\t\t\t\t\t\t\t\t\t\t5 yr\n\t\t\t\t\t\t\t\t\t\t\t£11,700,000
+## 6  10400000\n\t\t\t\t\t\t\t\t\t\t\t5 yr\n\t\t\t\t\t\t\t\t\t\t\t£10,400,000
+## 7    9360000\n\t\t\t\t\t\t\t\t\t\t\t4 yr\n\t\t\t\t\t\t\t\t\t\t\t£9,360,000
+## 8    9100000\n\t\t\t\t\t\t\t\t\t\t\t5 yr\n\t\t\t\t\t\t\t\t\t\t\t£9,100,000
+## 9    8320000\n\t\t\t\t\t\t\t\t\t\t\t4 yr\n\t\t\t\t\t\t\t\t\t\t\t£8,320,000
+## 10   7904000\n\t\t\t\t\t\t\t\t\t\t\t4 yr\n\t\t\t\t\t\t\t\t\t\t\t£7,904,000
+## 11   7280000\n\t\t\t\t\t\t\t\t\t\t\t4 yr\n\t\t\t\t\t\t\t\t\t\t\t£7,280,000
+## 12   7280000\n\t\t\t\t\t\t\t\t\t\t\t4 yr\n\t\t\t\t\t\t\t\t\t\t\t£7,280,000
+## 13   7280000\n\t\t\t\t\t\t\t\t\t\t\t4 yr\n\t\t\t\t\t\t\t\t\t\t\t£7,280,000
+## 14   5616000\n\t\t\t\t\t\t\t\t\t\t\t4 yr\n\t\t\t\t\t\t\t\t\t\t\t£5,616,000
+## 15   5460000\n\t\t\t\t\t\t\t\t\t\t\t3 yr\n\t\t\t\t\t\t\t\t\t\t\t£5,460,000
+## 16   5460000\n\t\t\t\t\t\t\t\t\t\t\t3 yr\n\t\t\t\t\t\t\t\t\t\t\t£5,460,000
+## 17   5200000\n\t\t\t\t\t\t\t\t\t\t\t4 yr\n\t\t\t\t\t\t\t\t\t\t\t£5,200,000
+## 18   4160000\n\t\t\t\t\t\t\t\t\t\t\t4 yr\n\t\t\t\t\t\t\t\t\t\t\t£4,160,000
+## 19   4004000\n\t\t\t\t\t\t\t\t\t\t\t4 yr\n\t\t\t\t\t\t\t\t\t\t\t£4,004,000
+## 20   3900000\n\t\t\t\t\t\t\t\t\t\t\t3 yr\n\t\t\t\t\t\t\t\t\t\t\t£3,900,000
+## 21   3900000\n\t\t\t\t\t\t\t\t\t\t\t5 yr\n\t\t\t\t\t\t\t\t\t\t\t£3,900,000
+## 22   3120000\n\t\t\t\t\t\t\t\t\t\t\t2 yr\n\t\t\t\t\t\t\t\t\t\t\t£3,120,000
+## 23   3035000\n\t\t\t\t\t\t\t\t\t\t\t5 yr\n\t\t\t\t\t\t\t\t\t\t\t£3,035,000
+## 24   2080000\n\t\t\t\t\t\t\t\t\t\t\t1 yr\n\t\t\t\t\t\t\t\t\t\t\t£2,080,000
+## 25      780000\n\t\t\t\t\t\t\t\t\t\t\t5 yr\n\t\t\t\t\t\t\t\t\t\t\t£780,000
+## 26      468000\n\t\t\t\t\t\t\t\t\t\t\t3 yr\n\t\t\t\t\t\t\t\t\t\t\t£468,000
+## 27                  0\n\t\t\t\t\t\t\t\t\t\t\t3 yr\n\t\t\t\t\t\t\t\t\t\t\t-
+## 28                  0\n\t\t\t\t\t\t\t\t\t\t\t3 yr\n\t\t\t\t\t\t\t\t\t\t\t-
+## 29                     0\n\t\t\t\t\t\t\t\t\t\t\t-\n\t\t\t\t\t\t\t\t\t\t\t-
+## 30                     0\n\t\t\t\t\t\t\t\t\t\t\t-\n\t\t\t\t\t\t\t\t\t\t\t-
+## 31                  0\n\t\t\t\t\t\t\t\t\t\t\t5 yr\n\t\t\t\t\t\t\t\t\t\t\t-
+##    Avg..Salary Transfer.Fee Expires    value years   value.pds     Player.Names
+## 1   £5,380,000            -    2020 16140000  3 yr £16,140,000    Jermain Defoe
+## 2   £3,640,000   £9,780,000    2021 14560000  4 yr £14,560,000    Asmir Begovic
+## 3   £2,600,000  £25,125,000    2023 13000000  5 yr £13,000,000  Jefferson Lerma
+## 4   £3,120,000   £3,000,000    2023 12480000  4 yr £12,480,000    Callum Wilson
+## 5   £2,340,000            -    2021 11700000  5 yr £11,700,000      Joshua King
+## 6   £2,080,000  £19,380,000    2022 10400000  5 yr £10,400,000       Nathan Ake
+## 7   £2,340,000     £150,000    2021  9360000  4 yr  £9,360,000       Steve Cook
+## 8   £1,820,000     £536,000    2020  9100000  5 yr  £9,100,000    Andrew Surman
+## 9   £2,080,000            -    2021  8320000  4 yr  £8,320,000      Harry Arter
+## 10  £1,976,000  £15,000,000    2020  7904000  4 yr  £7,904,000       Jordon Ibe
+## 11  £1,820,000   £5,950,000    2022  7280000  4 yr  £7,280,000       Lewis Cook
+## 12  £1,820,000            -    2021  7280000  4 yr  £7,280,000      Dan Gosling
+## 13  £1,820,000            -    2021  7280000  4 yr  £7,280,000       Adam Smith
+## 14  £1,404,000     £400,000    2020  5616000  4 yr  £5,616,000      Ryan Fraser
+## 15  £1,820,000     £191,000    2020  5460000  3 yr  £5,460,000  Charlie Daniels
+## 16  £1,820,000            -    2021  5460000  3 yr  £5,460,000 Junior Stanislas
+## 17  £1,300,000   £3,060,000    2020  5200000  4 yr  £5,200,000       Brad Smith
+## 18  £1,040,000  £10,125,000    2022  4160000  4 yr  £4,160,000     David Brooks
+## 19  £1,001,000  £10,750,000    2022  4004000  4 yr  £4,004,000       Diego Rico
+## 20  £1,300,000  £24,170,000    2022  3900000  3 yr  £3,900,000  Dominic Solanke
+## 21    £780,000  £18,810,000    2024  3900000  5 yr  £3,900,000   Philip Billing
+## 22  £1,560,000            -    2020  3120000  2 yr  £3,120,000    Simon Francis
+## 23    £607,000  £15,500,000    2023  3035000  5 yr  £3,035,000     Chris Mepham
+## 24  £2,080,000  £10,000,000    2020  2080000  1 yr  £2,080,000      Artur Boruc
+## 25    £156,000     £799,000    2021   780000  5 yr    £780,000   Aaron Ramsdale
+## 26    £156,000            -    2020   468000  3 yr    £468,000     Jack Simpson
+## 27           -            -    2021        0  3 yr                 Sam Surridge
+## 28           -  £16,870,000       -        0  3 yr                  Lloyd Kelly
+## 29           -   £5,070,000       -        0                        Jack Stacey
+## 30           -            -       -        0                       Mark Travers
+## 31           -  £20,520,000    2024        0  5 yr               Arnaut Danjuma
+##                                      Player.links Last.Name
+## 1  https://www.spotrac.com/redirect/player/23836/     Defoe
+## 2  https://www.spotrac.com/redirect/player/22625/   Begovic
+## 3  https://www.spotrac.com/redirect/player/27878/     Lerma
+## 4  https://www.spotrac.com/redirect/player/22694/    Wilson
+## 5  https://www.spotrac.com/redirect/player/22685/      King
+## 6  https://www.spotrac.com/redirect/player/15521/       Ake
+## 7  https://www.spotrac.com/redirect/player/22677/      Cook
+## 8  https://www.spotrac.com/redirect/player/22692/    Surman
+## 9  https://www.spotrac.com/redirect/player/22674/     Arter
+## 10 https://www.spotrac.com/redirect/player/22684/       Ibe
+## 11 https://www.spotrac.com/redirect/player/22676/      Cook
+## 12 https://www.spotrac.com/redirect/player/22682/   Gosling
+## 13 https://www.spotrac.com/redirect/player/22689/     Smith
+## 14 https://www.spotrac.com/redirect/player/22680/    Fraser
+## 15 https://www.spotrac.com/redirect/player/22678/   Daniels
+## 16 https://www.spotrac.com/redirect/player/22691/ Stanislas
+## 17 https://www.spotrac.com/redirect/player/22690/     Smith
+## 18 https://www.spotrac.com/redirect/player/27877/    Brooks
+## 19 https://www.spotrac.com/redirect/player/27879/      Rico
+## 20 https://www.spotrac.com/redirect/player/22637/   Solanke
+## 21 https://www.spotrac.com/redirect/player/23192/   Billing
+## 22 https://www.spotrac.com/redirect/player/22679/   Francis
+## 23 https://www.spotrac.com/redirect/player/28460/    Mepham
+## 24 https://www.spotrac.com/redirect/player/22660/     Boruc
+## 25 https://www.spotrac.com/redirect/player/22661/  Ramsdale
+## 26 https://www.spotrac.com/redirect/player/24102/   Simpson
+## 27 https://www.spotrac.com/redirect/player/22693/  Surridge
+## 28 https://www.spotrac.com/redirect/player/30108/     Kelly
+## 29 https://www.spotrac.com/redirect/player/32060/    Stacey
+## 30 https://www.spotrac.com/redirect/player/32306/   Travers
+## 31 https://www.spotrac.com/redirect/player/32702/   Danjuma</code></pre>
+<p>The data now have some junk alongside workable versions of the variables of interest. It is worth noting that the header of the contracts data allows us to verify the size of the table as we picked it up [though I do rename them to allow the rbind to work]. This also suggests a strategy for picking up the rownames that is different than the above method that uses the dimension of the html table. Perhaps I should just gsub the header to recover the integer number of players. To tidy the data, they need to be stacked. A simple do.call and row bind will probably work.</p>
+<pre class="r"><code>Team.Base &lt;- sapply(EPL.Contracts, dim)[1,]
+Team &lt;- rep(as.character(names(Team.Base)),Team.Base)
+EPL.Contracts.df &lt;- do.call(&quot;rbind&quot;,EPL.Contracts)
+rownames(EPL.Contracts.df) &lt;- NULL
+EPL.Contracts.df$Team &lt;- Team
+EPL.Contracts.df$value &lt;- as.numeric(as.character(EPL.Contracts.df$value))
+EPL.Contracts.df %&gt;% group_by(Team) %&gt;% summarise(Team.Mean=mean(value, na.rm=TRUE)/1e3, Team.SD=sd(value, na.rm=TRUE)) -&gt; Team.mean
+pp &lt;- Team.mean %&gt;% arrange(Team.Mean)
+pp$Team &lt;- factor(pp$Team, levels = pp$Team)
+pp %&gt;% ggplot(aes(Team.Mean,Team, size=Team.SD)) + geom_point() + labs(x=&quot;Avg. Contract (1000s)&quot;) -&gt; cplot
+cplot</code></pre>
+<p><img src="/post/2018-04-08-scraping-epl-salary-data/index_files/figure-html/EPLT-1.png" width="672" /></p>
+<pre class="r"><code>EPL.Contracts.df %&gt;% group_by(Team) %&gt;% summarise(Age.Mean=mean(Age, na.rm=TRUE), Age.SD=sd(Age, na.rm=TRUE)) -&gt; Team.mean
+Team.mean %&gt;% ungroup() %&gt;% arrange(., Age.Mean) -&gt; pp
+pp$Team &lt;- factor(pp$Team, levels = pp$Team)
+pp %&gt;% ggplot(aes(Age.Mean,Team,size=Age.SD)) + geom_point() + labs(x=&quot;Age&quot;) -&gt; cplot
+cplot</code></pre>
+<p><img src="/post/2018-04-08-scraping-epl-salary-data/index_files/figure-html/EPLT2-1.png" width="672" /></p>
+</div>
+</div>
+
+    </div>
+
+    
+
+
+
+<div class="article-tags">
+  
+  <a class="badge badge-light" href="/tags/r-markdown/">R Markdown</a>
+  
+  <a class="badge badge-light" href="/tags/r/">R</a>
+  
+  <a class="badge badge-light" href="/tags/tidytext/">tidytext</a>
+  
+</div>
+
+
+
+<div class="share-box" aria-hidden="true">
+  <ul class="share">
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://twitter.com/intent/tweet?url=/2018/04/08/scraping-epl-salary-data/&amp;text=Scraping%20EPL%20Salary%20Data" target="_blank" rel="noopener" class="share-btn-twitter">
+          <i class="fab fa-twitter"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://www.facebook.com/sharer.php?u=/2018/04/08/scraping-epl-salary-data/&amp;t=Scraping%20EPL%20Salary%20Data" target="_blank" rel="noopener" class="share-btn-facebook">
+          <i class="fab fa-facebook"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="mailto:?subject=Scraping%20EPL%20Salary%20Data&amp;body=/2018/04/08/scraping-epl-salary-data/" target="_blank" rel="noopener" class="share-btn-email">
+          <i class="fas fa-envelope"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://www.linkedin.com/shareArticle?url=/2018/04/08/scraping-epl-salary-data/&amp;title=Scraping%20EPL%20Salary%20Data" target="_blank" rel="noopener" class="share-btn-linkedin">
+          <i class="fab fa-linkedin-in"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://web.whatsapp.com/send?text=Scraping%20EPL%20Salary%20Data%20/2018/04/08/scraping-epl-salary-data/" target="_blank" rel="noopener" class="share-btn-whatsapp">
+          <i class="fab fa-whatsapp"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://service.weibo.com/share/share.php?url=/2018/04/08/scraping-epl-salary-data/&amp;title=Scraping%20EPL%20Salary%20Data" target="_blank" rel="noopener" class="share-btn-weibo">
+          <i class="fab fa-weibo"></i>
+        </a>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  
+  
+    
+  
+  
+  
+  <div class="media author-card content-widget-hr">
+    
+      
+      <img class="avatar mr-3 avatar-circle" src="/authors/admin/avatar_hu5dc180fe8d34aaa1cfa26dba9dfe8fe0_107194_270x270_fill_q90_lanczos_center.jpg" alt="Avatar">
+    
+
+    <div class="media-body">
+      <h5 class="card-title"><a href="/">Robert W. Walker</a></h5>
+      <h6 class="card-subtitle">Associate Professor of Quantitative Methods</h6>
+      <p class="card-text">My research interests include causal inference, statistical computation and data visualisation.</p>
+      <ul class="network-icon" aria-hidden="true">
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="/#contact" >
+        <i class="fas fa-envelope"></i>
+      </a>
+    </li>
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="https://twitter.com/PieRatio" target="_blank" rel="noopener">
+        <i class="fab fa-twitter"></i>
+      </a>
+    </li>
+  
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="https://scholar.google.com/citations?user=FU8pL7sAAAAJ&amp;hl" target="_blank" rel="noopener">
+        <i class="ai ai-google-scholar"></i>
+      </a>
+    </li>
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="https://github.com/robertwwalker" target="_blank" rel="noopener">
+        <i class="fab fa-github"></i>
+      </a>
+    </li>
+  
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="/img/vita.pdf" >
+        <i class="ai ai-cv"></i>
+      </a>
+    </li>
+  
+</ul>
+
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+
+  
+  
+  <div class="article-widget content-widget-hr">
+    <h3>Related</h3>
+    <ul>
+      
+      <li><a href="/2018/02/21/tidytext-is-neat/">tidytext is neat! White House Communications</a></li>
+      
+      <li><a href="/2018/02/22/black-boxes-a-gender-gap-example/">Black Boxes: A Gender Gap Example</a></li>
+      
+      <li><a href="/2018/02/22/correlation-function/">Correlation Function</a></li>
+      
+      <li><a href="/2018/04/04/scraping-the-nfl-salary-cap-data-with-python-and-r/">Scraping the NFL Salary Cap Data with Python and R</a></li>
+      
+      <li><a href="/2018/04/03/tidytuesday-tuition/">tidyTuesday - Tuition</a></li>
+      
+    </ul>
+  </div>
+  
+
+
+
+  </div>
+</article>
+
+      
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js" integrity="sha256-lqvxZrPLtfffUl2G/e7szqSvPBILGbwmsGE1MKlOi0Q=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js" integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/8.4.4/mermaid.min.js" integrity="sha256-JEqEejGt4tR35L0a1zodzsV0/PJ6GIf7J4yDtywdrH8=" crossorigin="anonymous" title="mermaid"></script>
+      
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js" integrity="sha256-1zu+3BnLYV9LdiY85uXMzii3bdrkelyp37e0ZyTAQh0=" crossorigin="anonymous"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js"></script>
+        
+      
+
+    
+
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.js" integrity="sha256-EErZamuLefUnbMBQbsEqu1USa+btR2oIlCpBJbyD4/g=" crossorigin="anonymous"></script>
+    
+
+    
+    
+    <script>const code_highlighting = true;</script>
+    
+
+    
+    
+    
+    
+    
+    
+    <script>
+      const search_config = {"indexURI":"/index.json","minLength":1,"threshold":0.3};
+      const i18n = {"no_results":"No results found","placeholder":"Search...","results":"results found"};
+      const content_type = {
+        'post': "Posts",
+        'project': "Projects",
+        'publication' : "Publications",
+        'talk' : "Talks"
+        };
+    </script>
+    
+
+    
+    
+
+    
+    
+    <script id="search-hit-fuse-template" type="text/x-template">
+      <div class="search-hit" id="summary-{{key}}">
+      <div class="search-hit-content">
+        <div class="search-hit-name">
+          <a href="{{relpermalink}}">{{title}}</a>
+          <div class="article-metadata search-hit-type">{{type}}</div>
+          <p class="search-hit-description">{{snippet}}</p>
+        </div>
+      </div>
+      </div>
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+    
+
+    
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    
+    
+    
+    <script src="/js/academic.min.0630fec5958cb075a5a38f042b3ddde6.js"></script>
+
+    
+
+
+
+
+
+
+  
+  
+  <div class="container">
+    <footer class="site-footer">
+  
+  <p class="powered-by">
+    
+      <a href="/privacy/">Privacy Policy</a>
+    
+    
+       &middot; 
+      <a href="/terms/">Terms</a>
+    
+  </p>
+  
+
+  <p class="powered-by">
+    © 2018 &middot; 
+
+    Powered by the
+    <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+    <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+    
+    <span class="float-right" aria-hidden="true">
+      <a href="#" class="back-to-top">
+        <span class="button_icon">
+          <i class="fas fa-chevron-up fa-2x"></i>
+        </span>
+      </a>
+    </span>
+    
+  </p>
+</footer>
+
+  </div>
+  
+
+  
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

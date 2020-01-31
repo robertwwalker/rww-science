@@ -1,0 +1,125 @@
+---
+title: tidyTuesday does Pizza
+author: RWW
+date: '2019-10-09'
+slug: tidytuesday-does-pizza
+categories:
+  - tidyverse
+  - R
+  - Maps
+tags:
+  - Maps
+  - tidyTuesday
+  - R
+header:
+  caption: ''
+  image: ''
+  preview: yes
+---
+
+```{r setup, include=FALSE, warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(ggthemes)
+library(ggiraph)
+library(ggthemes)
+library(patchwork)
+library(cowplot)
+library(rayshader)
+library(emojifont)
+library(gridExtra)
+library(extrafont)
+```
+
+## Pizza Ratings
+
+The `#tidyTuesday` for this week involves pizza shop ratings data.  Let's see what we have.
+
+```{r cars}
+pizza_jared <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-10-01/pizza_jared.csv")
+pizza_barstool <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-10-01/pizza_barstool.csv")
+pizza_datafiniti <- readr::read_csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-10-01/pizza_datafiniti.csv")
+summary(pizza_jared)
+```
+
+```{r}
+summary(pizza_datafiniti)
+```
+
+```{r}
+summary(pizza_barstool)
+```
+
+I will use this data; it contains some Oregon pizzarias.
+
+```{r}
+pizza_datafiniti %>% filter(province=="OR")
+```
+
+For the first plot, let me show what is going on in Oregon.
+
+```{r ORPizza}
+pizzaData <- pizza_datafiniti %>% filter(province=="OR") %>% group_by(name) %>% mutate(Tcount = n(), PriceAvg = mean(price_range_max - price_range_min)) %>% ungroup()
+p <- pizzaData %>% ggplot(.) + aes(x=reorder(name,PriceAvg), fill=PriceAvg) + geom_bar() + coord_flip() + labs(x="Pizza Restaurant", y="Count", title="Oregon Pizzerias", caption = "data from #tidyTuesday; sorted by Average Price")
+p
+```
+
+Now I want a map.
+
+```{r}
+pizzaData$group <- 44
+states <- map_data("state")
+OR.df <- subset(states, region == "oregon")
+OR_base <- ggplot(data = OR.df, mapping = aes(x = long, y = lat, group = group)) +
+geom_polygon(color = "black", fill = "gray") + labs(title="Oregon Pizzerias")
+OR_base
+```
+
+```{r}
+OR.Pizza <- OR_base + geom_point(data = pizzaData, aes(y=latitude, x=longitude, group=group), color = "red")
+OR.Pizza
+```
+
+Combine them into one picture
+
+```{r}
+grid.arrange(p,OR.Pizza, ncol=2)
+```
+
+Now to try out cowplot.
+
+```{r}
+theme_set(theme_minimal())
+pizzaData <- pizzaData %>% mutate(name = str_remove(name, "['``]"))
+# Build the barplot
+gg1 <- ggplot(pizzaData, aes(x=reorder(name,PriceAvg), fill=PriceAvg)) +
+  geom_bar_interactive(aes(x = name, tooltip = name, data_id = name))  + 
+  coord_flip() + scale_fill_viridis_c() +
+  labs(x="Pizza Restaurant", y="Count", caption = "data from #tidyTuesday; sorted by Average Price") 
+# Build the map
+gg2 <- ggplot(data = OR.df, mapping = aes(x = long, y = lat, group = group)) +
+  geom_polygon(fill=gray(0.95)) + 
+  geom_text_interactive(data = pizzaData, aes(y=latitude, x=longitude, label=emoji('pizza'), tooltip = name, data_id = name), family='EmojiOne', size=2, color="orange") + 
+  scale_color_viridis_c(guide=FALSE) +
+  theme_nothing()
+# Bind them together with girafe
+girafe( code = print(gg1 + gg2 + plot_annotation(title="Pizza in Oregon")), width_svg = 8, height_svg = 4)
+```
+
+
+## Rayshader
+
+And a mini-rayshader.  This is a complete lift and replace of the vignette after calculating the Price Midpoint.
+
+```{r, dev='svg'}
+states <- map_data("state")
+PDF <- pizza_datafiniti %>% mutate(Price.Midpoint = (price_range_min + price_range_max / 2))
+mtplot <- ggplot(data = states, mapping = aes(x = long, y = lat)) +
+  geom_polygon(color = "black", fill = "gray") + 
+  geom_point(data=PDF, aes(x = longitude, y = latitude, color = Price.Midpoint)) + 
+  scale_color_viridis_c() + theme_minimal()
+plot_gg(mtplot, width = 3.5, multicore = TRUE, windowsize = c(1200, 1200), 
+        zoom = 0.5, phi = 35, theta = 30, sunangle = 15, soliddepth = -20)
+render_snapshot(clear = TRUE)
+```
+

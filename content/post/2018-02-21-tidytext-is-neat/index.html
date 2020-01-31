@@ -1,0 +1,173 @@
+---
+title: "tidytext is neat! White House Communications"
+author: "RWW"
+date: '2018-02-21'
+slug: tidytext-is-neat
+tags:
+- R Markdown
+- R
+- tidytext
+- tidyverse
+categories: []
+---
+
+
+
+<div id="presidential-press" class="section level1">
+<h1>Presidential Press</h1>
+<p>The language of presidential communications is interesting and I know very little about <em>text as data</em>. I have a number of applications in mind for these tools but I have to learn how to use them. What does the website look like?</p>
+<p><a href="https://www.whitehouse.gov/news/">White House News</a></p>
+<p>The site is split in four parts: all news, articles, presidential actions, and briefings and statements. The first one is a catch all and the second is news links. I will take the last two to process. To create a proper workflow, I will separate the investigation into two types of communications: briefing statements and presidential actions. For each, I will have to build a table of links and then I can extract the actual text.</p>
+<div id="processing-the-communications-links" class="section level2">
+<h2>Processing the Communications: Links</h2>
+<p>First, let me take on briefing statements. I will build a database of URLs to then process as text. This works for the design of the White House website currently; the only relevant hard-coding is the number of browsable pages. I captured this manually.</p>
+<pre class="r"><code>library(rvest)
+n.BSt &lt;- 208
+BSt.seq &lt;- as.list(seq(1,n.BSt))
+BSt.fun &lt;- function(val) {
+my.URL &lt;- paste(&quot;https://www.whitehouse.gov/briefings-statements/page/&quot;,val,&quot;/&quot;,sep=&quot;&quot;)
+temp.l1 &lt;- read_html(my.URL)
+my.links &lt;- html_nodes(temp.l1, &#39;h2&#39;) %&gt;% html_nodes(&quot;a&quot;) %&gt;% html_attr(&#39;href&#39;)
+my.links2 &lt;-html_nodes(temp.l1, &#39;h2&#39;) %&gt;% html_text(&quot;a&quot;) 
+data.frame(link=my.links,title=my.links2)
+}
+n.PAct &lt;- 46
+PAct.seq &lt;- as.list(seq(1,n.PAct))
+PAct.fun &lt;- function(val) {
+my.URL &lt;- paste(&quot;https://www.whitehouse.gov/presidential-actions/page/&quot;,val,&quot;/&quot;,sep=&quot;&quot;)
+temp.l1 &lt;- read_html(my.URL)
+my.links &lt;- html_nodes(temp.l1, &#39;h2&#39;) %&gt;% html_nodes(&quot;a&quot;) %&gt;% html_attr(&#39;href&#39;)
+my.links2 &lt;-html_nodes(temp.l1, &#39;h2&#39;) %&gt;% html_nodes(&quot;a&quot;) %&gt;% html_text(&quot;a&quot;) 
+data.frame(link=my.links,title=my.links2)
+}
+BriefState.linkset &lt;- do.call(&quot;rbind&quot;,rapply(BSt.seq, BSt.fun, how=&quot;list&quot;))
+PresAct.linkset &lt;- do.call(&quot;rbind&quot;,rapply(PAct.seq,PAct.fun, how=&quot;list&quot;))</code></pre>
+<p>I now have all the links. I cannot do much with that.</p>
+</div>
+<div id="text-extraction" class="section level2">
+<h2>Text Extraction</h2>
+<p>I will first write a simple function to download a URL and extract the text that I want.</p>
+<pre class="r"><code>library(rlist)
+library(stringr)
+PPR.Filter &lt;- function(file) {
+temp.res &lt;- str_replace_all(html_text(html_nodes(file, xpath=&#39;(//*[contains(concat( &quot; &quot;, @class, &quot; &quot; ), concat( &quot; &quot;, &quot;editor&quot;, &quot; &quot; ))])//*[not(ancestor::aside or name()=&quot;aside&quot;)]/text()&#39;)), &quot;[\t\n]&quot; , &quot;&quot;)
+temp.res
+}
+web.fetch &lt;- function(URL) {
+temp.web &lt;- read_html(URL)
+}
+PPR.Filter.Wrap &lt;- function(URL) {
+  temp.res &lt;- PPR.Filter(web.fetch(URL))
+  temp.res &lt;- list.clean(temp.res, function(x) nchar(x) == 0, TRUE)
+  temp.res 
+}
+#Res1 &lt;- PPR.Filter.Wrap(&quot;https://www.whitehouse.gov/briefings-statements/president-donald-j-trumps-first-year-of-foreign-policy-accomplishments/&quot;)
+#Res2 &lt;- PPR.Filter.Wrap(&quot;https://www.whitehouse.gov/briefings-statements/press-briefing-press-secretary-sarah-sanders-121917/&quot;)</code></pre>
+<div id="scraping-presidential-actions" class="section level3">
+<h3>Scraping Presidential Actions</h3>
+<pre class="r"><code>Pres.Acts &lt;- lapply(as.character(PresAct.linkset$link), PPR.Filter.Wrap)</code></pre>
+</div>
+<div id="scraping-the-briefings-and-statements" class="section level3">
+<h3>Scraping the Briefings and Statements</h3>
+<pre class="r"><code>Statements.Briefings &lt;- lapply(as.character(BriefState.linkset$link), PPR.Filter.Wrap)
+save(Pres.Acts,PresAct.linkset,Statements.Briefings,BriefState.linkset, file=&quot;data/PresText.RData&quot;)</code></pre>
+</div>
+</div>
+</div>
+<div id="tidying-the-text" class="section level1">
+<h1>Tidying the Text</h1>
+<pre class="r"><code>library(here)
+load(url(&quot;https://github.com/robertwwalker/academic-mymod/raw/master/data/PresText.RData&quot;))</code></pre>
+<p>The hard work is in cleaning up the text. When the document was compiled, there were 2074 statements and briefings and there were 457 Presidential actions with each as a list in the bigger list. I will unlist each individual document and transform it to character. For housekeeping, I will also tally the docs and the line/paragraph numbers; this fails for a misalignment in one of the two examples.</p>
+<pre class="r"><code>library(dplyr)
+library(magrittr)
+library(tidytext)
+text_df &lt;- data_frame(text=as.character(unlist(Pres.Acts))) # Create characters
+k &lt;- NULL
+for (i in 1:length(Pres.Acts)) {
+  k &lt;- c(k,length(Pres.Acts[[i]]))
+}
+mydoc &lt;- data.frame(rep(c(seq(1,length(Pres.Acts))),k))
+myline &lt;- data.frame(unlist(as.vector(sapply(k, function(x) {cbind(seq(1,x))}))))
+ind.df &lt;- data.frame(doc=mydoc,line=myline)
+myPA.df &lt;- data.frame(doc=mydoc,line=myline,text=text_df) # A full dataset
+names(myPA.df) &lt;- c(&quot;doc&quot;,&quot;line&quot;,&quot;text&quot;)
+tidy.PA &lt;-myPA.df %&gt;%
+# group_by(doc) %&gt;%
+ unnest_tokens(word, text)
+text_df &lt;- data_frame(text=as.character(unlist(Statements.Briefings)))
+k &lt;- NULL
+for (i in 1:length(Statements.Briefings)) {
+  k &lt;- c(k,length(Statements.Briefings[[i]]))
+}
+mydoc &lt;- rep(c(seq(1,length(Statements.Briefings))),k)
+# myline &lt;- unlist(as.vector(sapply(k, function(x) {cbind(seq(1,x))})))
+# ind.df &lt;- data.frame(doc=mydoc,line=myline)
+mySB.df &lt;- data.frame(doc=mydoc,text=text_df)
+names(mySB.df) &lt;- c(&quot;doc&quot;,&quot;text&quot;)
+tidy.SB &lt;-mySB.df %&gt;%
+# group_by(doc) %&gt;%
+ unnest_tokens(word, text)
+data(stop_words)
+# Remove stop words
+tidy.SB &lt;- tidy.SB %&gt;%
+  anti_join(stop_words)
+tidy.PA &lt;- tidy.PA %&gt;%
+  anti_join(stop_words)</code></pre>
+</div>
+<div id="what-does-the-president-talk-about" class="section level1">
+<h1>what does the President talk about?</h1>
+<p>Word frequencies can be tabulated for each set of data. I will plot the barplots.</p>
+<div id="statements-and-briefings" class="section level2">
+<h2>Statements and Briefings</h2>
+<pre class="r"><code>library(ggplot2)
+tidy.SB %&gt;%
+  count(word, sort = TRUE) %&gt;%
+  filter(n &gt; 5000) %&gt;%
+  mutate(word = reorder(word, n)) %&gt;%
+  ggplot(aes(word, n)) +
+  geom_col() +
+  xlab(NULL) +
+  coord_flip()</code></pre>
+<p><img src="/post/2018-02-21-tidytext-is-neat/index_files/figure-html/SBplot-1.png" width="672" /></p>
+</div>
+<div id="presidential-actions" class="section level2">
+<h2>Presidential Actions</h2>
+<pre class="r"><code>library(ggplot2)
+tidy.PA %&gt;%
+  count(word, sort = TRUE) %&gt;%
+  filter(n &gt; 500) %&gt;%
+  mutate(word = reorder(word, n)) %&gt;%
+  ggplot(aes(word, n)) +
+  geom_col() +
+  xlab(NULL) +
+  coord_flip()</code></pre>
+<p><img src="/post/2018-02-21-tidytext-is-neat/index_files/figure-html/PAplot-1.png" width="672" /></p>
+</div>
+<div id="word-clouds" class="section level2">
+<h2>Word Clouds</h2>
+<div id="presidential-actions-1" class="section level3">
+<h3>Presidential Actions</h3>
+<pre class="r"><code>library(wordcloud); library(tm)
+set.seed(1234)
+wc &lt;- tidy.PA %&gt;% count(word, sort = TRUE)
+wordcloud(wc$word,  wc$n, min.freq = 1,
+          max.words=200, random.order=FALSE, rot.per=0.35, 
+          colors=brewer.pal(8, &quot;Dark2&quot;))</code></pre>
+<p><img src="/post/2018-02-21-tidytext-is-neat/index_files/figure-html/WCPA-1.png" width="672" /></p>
+</div>
+<div id="statements-and-briefings-1" class="section level3">
+<h3>Statements and Briefings</h3>
+<pre class="r"><code>library(wordcloud2)
+wc &lt;- tidy.SB %&gt;% count(word, sort = TRUE)
+wc$freq &lt;- wc$n
+wc$n &lt;- NULL
+hw &lt;- wordcloud2(wc, size=3)
+library(htmlwidgets)
+saveWidget(hw,&quot;1.html&quot;,selfcontained = F)
+webshot::webshot(&quot;1.html&quot;,&quot;1.png&quot;,vwidth = 700, vheight = 500, delay =10)</code></pre>
+<p><img src="/post/2018-02-21-tidytext-is-neat/index_files/figure-html/WCSB-1.png" width="672" />
+<img src="1.png" /></p>
+</div>
+</div>
+</div>

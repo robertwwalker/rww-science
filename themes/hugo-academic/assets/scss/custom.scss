@@ -1,1 +1,13 @@
-// Override this file to add your own SCSS styling.
+/* Hero title: use brand color and bigger font. */
+.hero-title {
+  color: #00d1b2;
+  font-weight: 600;
+  font-size: 3rem;
+}
+
+/* Center tweets. */
+
+#tweets iframe {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}

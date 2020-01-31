@@ -1,0 +1,674 @@
+---
+title: Global mortality tidyTuesday
+author: RWW
+date: '2018-04-18'
+slug: tidytuesday-takes-on-global-mortality
+categories:
+  - tidyverse
+  - R
+tags:
+  - tidyTuesday
+  - tidyverse
+---
+
+
+
+<div id="tidytuesday-on-global-mortality" class="section level1">
+<h1>tidyTuesday on Global Mortality</h1>
+<p>The three generic challenge graphics involve two global summaries, a raw count by type and a percentage by type. The individual county breakdowns are recorded for a predetermined year below. This can all be seen in <a href="https://ourworldindata.org/what-does-the-world-die-from">the original</a>. For whatever reason, I cannot open this data remotely.</p>
+<p>Here is this week’s tidyTuesday.</p>
+<pre class="r"><code>library(skimr)
+library(tidyverse)
+library(rlang)
+# global_mortality &lt;- readRDS(&quot;../../data/global_mortality.rds&quot;)
+global_mortality &lt;- readRDS(url(&quot;https://github.com/robertwwalker/academic-mymod/raw/master/data/global_mortality.rds&quot;))
+skim(global_mortality)</code></pre>
+<table>
+<caption><span id="tab:DataLoad">Table 1: </span>Data summary</caption>
+<tbody>
+<tr class="odd">
+<td align="left">Name</td>
+<td align="left">global_mortality</td>
+</tr>
+<tr class="even">
+<td align="left">Number of rows</td>
+<td align="left">6156</td>
+</tr>
+<tr class="odd">
+<td align="left">Number of columns</td>
+<td align="left">35</td>
+</tr>
+<tr class="even">
+<td align="left">_______________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Column type frequency:</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">character</td>
+<td align="left">2</td>
+</tr>
+<tr class="odd">
+<td align="left">numeric</td>
+<td align="left">33</td>
+</tr>
+<tr class="even">
+<td align="left">________________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Group variables</td>
+<td align="left">None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: character</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">min</th>
+<th align="right">max</th>
+<th align="right">empty</th>
+<th align="right">n_unique</th>
+<th align="right">whitespace</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">country</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">4</td>
+<td align="right">32</td>
+<td align="right">0</td>
+<td align="right">228</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">country_code</td>
+<td align="right">864</td>
+<td align="right">0.86</td>
+<td align="right">3</td>
+<td align="right">8</td>
+<td align="right">0</td>
+<td align="right">196</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">p0</th>
+<th align="right">p25</th>
+<th align="right">p50</th>
+<th align="right">p75</th>
+<th align="right">p100</th>
+<th align="left">hist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">year</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">2003.00</td>
+<td align="right">7.79</td>
+<td align="right">1990.00</td>
+<td align="right">1996.00</td>
+<td align="right">2003.00</td>
+<td align="right">2010.00</td>
+<td align="right">2016.00</td>
+<td align="left">▇▇▇▇▇</td>
+</tr>
+<tr class="even">
+<td align="left">Cardiovascular diseases (%)</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">29.93</td>
+<td align="right">14.02</td>
+<td align="right">1.43</td>
+<td align="right">18.74</td>
+<td align="right">30.65</td>
+<td align="right">38.45</td>
+<td align="right">67.39</td>
+<td align="left">▃▅▇▂▁</td>
+</tr>
+<tr class="odd">
+<td align="left">Cancers (%)</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">14.39</td>
+<td align="right">8.15</td>
+<td align="right">0.58</td>
+<td align="right">6.93</td>
+<td align="right">13.31</td>
+<td align="right">21.36</td>
+<td align="right">33.62</td>
+<td align="left">▇▇▆▆▃</td>
+</tr>
+<tr class="even">
+<td align="left">Respiratory diseases (%)</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">4.10</td>
+<td align="right">2.35</td>
+<td align="right">0.30</td>
+<td align="right">2.26</td>
+<td align="right">3.63</td>
+<td align="right">5.38</td>
+<td align="right">16.29</td>
+<td align="left">▇▇▂▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">Diabetes (%)</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">6.29</td>
+<td align="right">4.44</td>
+<td align="right">0.33</td>
+<td align="right">3.20</td>
+<td align="right">4.99</td>
+<td align="right">7.93</td>
+<td align="right">35.82</td>
+<td align="left">▇▂▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">Dementia (%)</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">3.22</td>
+<td align="right">2.75</td>
+<td align="right">0.04</td>
+<td align="right">1.01</td>
+<td align="right">2.53</td>
+<td align="right">4.33</td>
+<td align="right">16.67</td>
+<td align="left">▇▃▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">Lower respiratory infections (%)</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">5.84</td>
+<td align="right">3.42</td>
+<td align="right">0.68</td>
+<td align="right">3.21</td>
+<td align="right">5.14</td>
+<td align="right">8.16</td>
+<td align="right">20.04</td>
+<td align="left">▇▆▃▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">Neonatal deaths (%)</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">4.57</td>
+<td align="right">3.85</td>
+<td align="right">0.04</td>
+<td align="right">0.69</td>
+<td align="right">3.89</td>
+<td align="right">7.74</td>
+<td align="right">17.81</td>
+<td align="left">▇▃▃▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">Diarrheal diseases (%)</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">3.20</td>
+<td align="right">4.36</td>
+<td align="right">0.01</td>
+<td align="right">0.18</td>
+<td align="right">0.77</td>
+<td align="right">5.29</td>
+<td align="right">25.18</td>
+<td align="left">▇▂▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">Road accidents (%)</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">2.53</td>
+<td align="right">2.19</td>
+<td align="right">0.28</td>
+<td align="right">1.36</td>
+<td align="right">1.93</td>
+<td align="right">2.90</td>
+<td align="right">20.90</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">Liver disease (%)</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">2.12</td>
+<td align="right">1.24</td>
+<td align="right">0.19</td>
+<td align="right">1.34</td>
+<td align="right">1.83</td>
+<td align="right">2.54</td>
+<td align="right">11.65</td>
+<td align="left">▇▂▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">Tuberculosis (%)</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">2.13</td>
+<td align="right">2.65</td>
+<td align="right">0.01</td>
+<td align="right">0.24</td>
+<td align="right">0.91</td>
+<td align="right">3.33</td>
+<td align="right">16.47</td>
+<td align="left">▇▂▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">Kidney disease (%)</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">2.09</td>
+<td align="right">1.49</td>
+<td align="right">0.06</td>
+<td align="right">0.90</td>
+<td align="right">1.73</td>
+<td align="right">2.96</td>
+<td align="right">9.95</td>
+<td align="left">▇▅▂▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">Digestive diseases (%)</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">1.97</td>
+<td align="right">0.68</td>
+<td align="right">0.31</td>
+<td align="right">1.51</td>
+<td align="right">1.93</td>
+<td align="right">2.29</td>
+<td align="right">5.16</td>
+<td align="left">▂▇▃▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">HIV/AIDS (%)</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">3.35</td>
+<td align="right">7.81</td>
+<td align="right">0.00</td>
+<td align="right">0.08</td>
+<td align="right">0.44</td>
+<td align="right">2.33</td>
+<td align="right">62.19</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">Suicide (%)</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">1.39</td>
+<td align="right">1.11</td>
+<td align="right">0.10</td>
+<td align="right">0.69</td>
+<td align="right">1.18</td>
+<td align="right">1.80</td>
+<td align="right">15.41</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">Malaria (%)</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">1.80</td>
+<td align="right">4.21</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.48</td>
+<td align="right">24.43</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">Homicide (%)</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">0.98</td>
+<td align="right">1.45</td>
+<td align="right">0.05</td>
+<td align="right">0.24</td>
+<td align="right">0.52</td>
+<td align="right">1.00</td>
+<td align="right">14.23</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">Nutritional deficiencies (%)</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">1.10</td>
+<td align="right">1.87</td>
+<td align="right">0.00</td>
+<td align="right">0.09</td>
+<td align="right">0.40</td>
+<td align="right">1.34</td>
+<td align="right">35.55</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">Meningitis (%)</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">0.78</td>
+<td align="right">0.97</td>
+<td align="right">0.03</td>
+<td align="right">0.11</td>
+<td align="right">0.35</td>
+<td align="right">1.02</td>
+<td align="right">6.98</td>
+<td align="left">▇▂▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">Protein-energy malnutrition (%)</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">1.00</td>
+<td align="right">1.81</td>
+<td align="right">0.00</td>
+<td align="right">0.06</td>
+<td align="right">0.32</td>
+<td align="right">1.22</td>
+<td align="right">35.52</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">Drowning (%)</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">0.71</td>
+<td align="right">0.51</td>
+<td align="right">0.05</td>
+<td align="right">0.35</td>
+<td align="right">0.61</td>
+<td align="right">0.96</td>
+<td align="right">4.51</td>
+<td align="left">▇▂▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">Maternal deaths (%)</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">0.59</td>
+<td align="right">0.70</td>
+<td align="right">0.00</td>
+<td align="right">0.03</td>
+<td align="right">0.24</td>
+<td align="right">1.00</td>
+<td align="right">3.41</td>
+<td align="left">▇▂▂▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">Parkinson disease (%)</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">0.29</td>
+<td align="right">0.26</td>
+<td align="right">0.00</td>
+<td align="right">0.07</td>
+<td align="right">0.21</td>
+<td align="right">0.43</td>
+<td align="right">1.59</td>
+<td align="left">▇▃▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">Alcohol disorders (%)</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">0.32</td>
+<td align="right">0.41</td>
+<td align="right">0.01</td>
+<td align="right">0.08</td>
+<td align="right">0.16</td>
+<td align="right">0.39</td>
+<td align="right">3.08</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">Intestinal infectious diseases (%)</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">0.18</td>
+<td align="right">0.30</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.01</td>
+<td align="right">0.27</td>
+<td align="right">2.28</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">Drug disorders (%)</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">0.18</td>
+<td align="right">0.19</td>
+<td align="right">0.00</td>
+<td align="right">0.06</td>
+<td align="right">0.12</td>
+<td align="right">0.23</td>
+<td align="right">1.31</td>
+<td align="left">▇▂▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">Hepatitis (%)</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">0.16</td>
+<td align="right">0.17</td>
+<td align="right">0.00</td>
+<td align="right">0.04</td>
+<td align="right">0.11</td>
+<td align="right">0.24</td>
+<td align="right">1.58</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">Fire (%)</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">0.33</td>
+<td align="right">0.18</td>
+<td align="right">0.06</td>
+<td align="right">0.19</td>
+<td align="right">0.32</td>
+<td align="right">0.43</td>
+<td align="right">1.34</td>
+<td align="left">▇▇▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">Heat-related (hot and cold exposure) (%)</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">0.10</td>
+<td align="right">0.13</td>
+<td align="right">0.01</td>
+<td align="right">0.04</td>
+<td align="right">0.07</td>
+<td align="right">0.11</td>
+<td align="right">1.17</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">Natural disasters (%)</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">0.09</td>
+<td align="right">1.28</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.02</td>
+<td align="right">65.29</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">Conflict (%)</td>
+<td align="right">1398</td>
+<td align="right">0.77</td>
+<td align="right">0.29</td>
+<td align="right">2.40</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.02</td>
+<td align="right">82.32</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">Terrorism (%)</td>
+<td align="right">1398</td>
+<td align="right">0.77</td>
+<td align="right">0.04</td>
+<td align="right">0.23</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">5.88</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+</tbody>
+</table>
+<p>That loads the data for the challenge.</p>
+<pre class="r"><code>Counts &lt;- read.csv(url(&quot;https://github.com/robertwwalker/academic-mymod/raw/master/data/annual-number-of-deaths-by-cause.csv&quot;))
+Counts %&gt;% filter(Year==2016) %&gt;% select(-Code,-Entity,-Execution..deaths.,-Year) %&gt;% apply(., 2, function(x) { sum(x, na.rm=TRUE)}) -&gt; temp1
+pp.df &lt;- data.frame(Total.Deaths=temp1,name=names(temp1))
+pp.df &lt;- pp.df %&gt;% arrange(Total.Deaths)
+pp.df$name &lt;- factor(pp.df$name, levels = pp.df$name)
+cplot &lt;- ggplot(pp.df, aes(name,Total.Deaths)) + geom_bar(stat=&quot;identity&quot;) + coord_flip() + scale_fill_gradientn(colours = terrain.colors(10)) + ggtitle(&quot;The Causes of Global Mortailty (2016)&quot;)
+cplot</code></pre>
+<p><img src="/post/2018-04-17-tidytuesday-takes-on-global-mortality/index_files/figure-html/COrig-1.png" width="672" /></p>
+<p>With a reenactment of the base target plots, I can turn to new visuals. I wanted to be able to develop a comparison of the various classified causes of death and to try out my nifty function for summarizing panel data. So here goes.</p>
+<pre class="r"><code>xtsum &lt;- function(formula, data) {
+  pform &lt;- terms(formula, data=data)
+  unit &lt;- pform[[2]]
+  vars &lt;- attr(pform, &quot;term.labels&quot;)
+  cls &lt;- sapply(data, class)
+  data &lt;- data %&gt;% select(which(cls%in%c(&quot;numeric&quot;,&quot;integer&quot;)))
+  varnames &lt;- intersect(names(data),vars)
+  sumfunc &lt;- function(data=data, varname, unit) {
+  loc.unit &lt;- enquo(unit)
+  varname &lt;- ensym(varname)
+    ores &lt;- data %&gt;% filter(!is.na(!! varname)==TRUE) %&gt;% summarise(
+    O.mean=round(mean(`$`(data, !! varname), na.rm=TRUE), digits=3),
+    O.sd=round(sd(`$`(data, !! varname), na.rm=TRUE), digits=3), 
+    O.min = min(`$`(data, !! varname), na.rm=TRUE), 
+    O.max=max(`$`(data, !! varname), na.rm=TRUE), 
+    O.SumSQ=round(sum(scale(`$`(data, !! varname), center=TRUE, scale=FALSE)^2, na.rm=TRUE), digits=3), 
+    O.N=sum(as.numeric((!is.na(`$`(data, !! varname))))))
+ bmeans &lt;- data %&gt;% filter(!is.na(!! varname)==TRUE) %&gt;% group_by(!! loc.unit) %&gt;% summarise(
+   meanx=mean(`$`(.data, !! varname), na.rm=T), 
+   t.count=sum(as.numeric(!is.na(`$`(.data, !! varname)))))
+    bres &lt;- bmeans %&gt;% ungroup() %&gt;% summarise(
+    B.mean = round(mean(meanx, na.rm=TRUE), digits=3),
+    B.sd = round(sd(meanx, na.rm=TRUE), digits=3),
+    B.min = min(meanx, na.rm=TRUE), 
+    B.max=max(meanx, na.rm=TRUE), 
+    Units=sum(as.numeric(!is.na(t.count))), 
+    t.bar=round(mean(t.count, na.rm=TRUE), digits=3))
+  wdat &lt;- data %&gt;% filter(!is.na(!! varname)==TRUE) %&gt;% group_by(!! loc.unit) %&gt;% mutate(
+    W.x = scale(`$`(.data,!! varname), scale=FALSE))
+  wres &lt;- wdat %&gt;% ungroup() %&gt;% summarise(
+    W.sd=round(sd(W.x, na.rm=TRUE), digits=3), 
+    W.min=min(W.x, na.rm=TRUE), 
+    W.max=max(W.x, na.rm=TRUE), 
+    W.SumSQ=round(sum(W.x^2, na.rm=TRUE), digits=3))
+    W.Ratio &lt;- round(wres$W.SumSQ/ores$O.SumSQ, digits=3)
+  return(c(ores,bres,wres,Within.Ovr.Ratio=W.Ratio))
+  }
+res1 &lt;- sapply(varnames, function(x) {sumfunc(data, !!x, !!unit)})
+return(t(res1))
+}  
+global_mortality$countryF &lt;- as.factor(global_mortality$country)
+global_mortality$countryN &lt;- as.numeric(as.factor(global_mortality$country))
+names(global_mortality) &lt;- gsub(&quot; \\(%\\)&quot;,&quot;&quot;,names(global_mortality))
+# For some reason, the xtsum function does not respond to the weird variable names but will accept them devoid of (%)
+myxt.res &lt;- xtsum(countryN~., data=global_mortality)
+myxt.res</code></pre>
+<pre><code>##              O.mean O.sd  O.min       O.max    O.SumSQ  O.N  B.mean B.sd 
+## year         2003   7.79  1990        2016     373464   6156 2003   0    
+## Cancers      14.387 8.154 0.5822726   33.6175  409267.1 6156 14.387 8.034
+## Diabetes     6.286  4.436 0.3271329   35.81619 121099.2 6156 6.286  4.24 
+## Dementia     3.221  2.746 0.04475178  16.67248 46417.87 6156 3.221  2.618
+## Tuberculosis 2.133  2.648 0.01088091  16.46586 43159.87 6156 2.133  2.554
+## Suicide      1.391  1.111 0.1016103   15.41202 7591.252 6156 1.391  1.086
+## Malaria      1.801  4.213 0           24.42596 109251.4 6156 1.801  4.11 
+## Homicide     0.983  1.454 0.04520209  14.22926 13007.95 6156 0.983  1.425
+## Meningitis   0.783  0.967 0.02798604  6.981346 5760.664 6156 0.783  0.951
+## Drowning     0.714  0.514 0.05330638  4.510948 1628.778 6156 0.714  0.487
+## Hepatitis    0.161  0.165 0.004847886 1.583289 167.675  6156 0.161  0.158
+## Fire         0.334  0.181 0.05691324  1.343686 201.769  6156 0.334  0.168
+## Conflict     0.291  2.399 0           82.317   27372.61 4758 0.291  0.921
+## Terrorism    0.037  0.229 0           5.877    250.161  4758 0.037  0.121
+##              B.min       B.max     Units t.bar W.sd  W.min      W.max    
+## year         2003        2003      228   27    7.79  -13        13       
+## Cancers      3.109526    30.19716  228   27    1.489 -8.017757  5.449552 
+## Diabetes     1.183787    27.70547  228   27    1.331 -9.750057  10.92867 
+## Dementia     0.2734327   11.82133  228   27    0.847 -5.183193  5.145011 
+## Tuberculosis 0.03205589  14.84698  228   27    0.72  -6.169898  7.156982 
+## Suicide      0.2441106   12.16457  228   27    0.243 -2.210464  3.247445 
+## Malaria      0           20.10408  228   27    0.963 -7.916651  6.903596 
+## Homicide     0.05593046  11.06133  228   27    0.303 -3.487857  3.167933 
+## Meningitis   0.04221932  5.315156  228   27    0.187 -1.984723  2.166714 
+## Drowning     0.06142987  3.515331  228   27    0.168 -1.775808  1.274717 
+## Hepatitis    0.008156611 0.9932521 228   27    0.048 -0.3946904 0.8763799
+## Fire         0.07003296  0.9950066 228   27    0.069 -0.4329619 0.8721761
+## Conflict     0           9.320885  183   26    2.216 -9.320885  78.38404 
+## Terrorism    0           1.298962  183   26    0.195 -1.298962  4.578038 
+##              W.SumSQ  Within.Ovr.Ratio
+## year         373464   1               
+## Cancers      13651.25 0.033           
+## Diabetes     10897.8  0.09            
+## Dementia     4420.371 0.095           
+## Tuberculosis 3193.133 0.074           
+## Suicide      364.808  0.048           
+## Malaria      5711.216 0.052           
+## Homicide     564.186  0.043           
+## Meningitis   216.175  0.038           
+## Drowning     174.405  0.107           
+## Hepatitis    14.147   0.084           
+## Fire         29.045   0.144           
+## Conflict     23357.85 0.853           
+## Terrorism    180.881  0.723</code></pre>
+<p>The function output can be read as follows. It needs better formatting as a table. For now, O. is an overall measure, overall mean, standard deviation, minimum, maximum, sum of squares and total observations. A between mean, standard deviation, minimum, and maximum with the number of units and the average number of time points. Finally, we have a within standard deviation, minimum, maximum, sum of squares, and a within proportion of the overall variance. In this case, terrorism and conflict are the two variables that vary almost entirely within and far less between countries. I suspect this is because they are rather high in a few places and consistently so.</p>
+<pre class="r"><code>ggplot.res &lt;- data.frame(myxt.res)
+ggplot.res &lt;- ggplot.res[-1,]; ggplot.res &lt;- ggplot.res[,17]
+mydf &lt;- t(data.frame(ggplot.res))
+mydf &lt;- data.frame(value=mydf,name=rownames(mydf))
+mydf &lt;- mydf %&gt;% arrange(value)
+mydf$name &lt;- factor(mydf$name, levels = mydf$name)
+mydf &lt;- mydf %&gt;% mutate(Emph=as.numeric(value&gt;0.5))
+mydf %&gt;% ggplot(aes(name,value, fill=Emph)) + geom_bar(stat=&quot;identity&quot;) + coord_flip() + ylab(&quot;Within Percent of Total Variation&quot;) + xlab(&quot;Cause of Mortality&quot;) + ggtitle(&quot;Within-country variation in the Causes of Death&quot;) + guides(fill=&quot;none&quot;)</code></pre>
+<p><img src="/post/2018-04-17-tidytuesday-takes-on-global-mortality/index_files/figure-html/Result-1.png" width="672" /></p>
+<pre class="r"><code>Mean.Homicide &lt;- global_mortality %&gt;% group_by(countryF) %&gt;% summarise(mymean=mean(Homicide, na.rm=TRUE))
+Mean.Homicide %&gt;% ungroup() %&gt;% arrange(mymean) -&gt; mydf
+mydf$countryF &lt;- factor(mydf$countryF, levels = mydf$countryF)
+mydf %&gt;% ungroup() %&gt;% top_n(30, mymean) %&gt;% arrange(mymean) %&gt;% mutate(Emph=c(rep(1,10),rep(2,10),rep(3,10))) -&gt; mydf
+mydf %&gt;% ggplot(aes(countryF,mymean, fill=Emph)) + geom_bar(stat=&quot;identity&quot;) + coord_flip() + ylab(&quot;Homicides&quot;) + ggtitle(&quot;Top 30 Countries/Places in Homicide&quot;) + xlab(&quot;&quot;) + guides(fill=&quot;none&quot;) -&gt; Homicideplot
+Homicideplot</code></pre>
+<p><img src="/post/2018-04-17-tidytuesday-takes-on-global-mortality/index_files/figure-html/MHG30-1.png" width="672" /></p>
+<pre class="r"><code>global_mortality %&gt;% filter(year==2016) %&gt;% ggplot(aes(`Drug disorders`,`Alcohol disorders`)) + geom_point() + ggtitle(&quot;Drugs and Alcohol in 2016&quot;) -&gt; scatterDA
+scatterDA</code></pre>
+<p><img src="/post/2018-04-17-tidytuesday-takes-on-global-mortality/index_files/figure-html/DandA-1.png" width="672" /></p>
+</div>

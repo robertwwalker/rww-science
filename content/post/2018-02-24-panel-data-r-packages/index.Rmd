@@ -1,0 +1,151 @@
+---
+title: "Longitudinal Panel Data R Packages"
+author: "Robert W. Walker"
+date: '2018-02-24'
+slug: panel-data-r-packages
+tags:
+- Essex
+- R
+- panel data
+categories: []
+---
+
+# Longitudinal and Panel Data Analysis in R
+
+Goal: A CRAN task view for panel/longitudinal data analysis in R.  
+
+## What is Panel Data?
+
+Panel data are variously called longitudinal, panel, cross-sectional time series, and pooled time series data.  The most precise definition is two-dimensional data; invariably one of the dimensions is time.  We can think about a general depiction of what a model with linear coefficients typical for such data structures, though ridiculously overparameterized, like so:
+
+$$ y_{it} = \alpha_{it} + X_{it}\beta_{it} + \epsilon_{it} $$
+
+For example, suppose that we have a set of countries, or US states, municipalities in a state, or even individual people, indexed by $i \in N$.  We observe those data at $t \in T$ points in time.  To be clear, a standard cross-section of data in this notation suppresses $t$ because there is no observed over time variation.  A single time series suppresses the $i$.  Of course, $N$ and $T$ are greater than 1.
+
+## Common transformations: ANOVA
+
+There are common transformations undertaken on the data prior to analysis.  For example, the *within* transformation that underlies a *fixed effects* regression model transforms each vector of data (for $i$) as follows:
+
+$$ x^{W}_{it} = x_{it} - \overline{x}_{i} $$
+
+The within-transformed data are of identical dimensions to the untransformed data.  The other common transformation isolates the $n-vector$ of unit means -- the so-called *between* data.  Because the dimensions are non-overlapping/orthogonal; the key result in the applied statistics shows that the total variation in a variable $x$ is the sum of the *within* variance and the *between* variance.
+
+# Some Basic Summary
+
+*dplyr* makes the basic summary and presentation quite straightforward.  `plm` contains a few datasets; I will choose an excerpt from Summers and Heston's Penn World Tables -- *SumHes*.
+
+```{r DataSum, message=FALSE, warning=FALSE}
+library(plm)
+library(tidyverse)
+library(dplyr)
+data(SumHes)
+summary(SumHes)
+```
+
+To actually summarize the data in an appropriate fashion, we will use *dplyr* and *summarise* after grouping the data by *country*.
+
+```{r xtsum1, message=FALSE,warning=FALSE}
+library(tidyverse)
+library(rlang)
+library(haven)
+nlswork <- read_stata("http://www.stata-press.com/data/r13/nlswork.dta")
+nlswork2 <- nlswork
+nlswork2$race <- as.character(nlswork$race)
+xtsum <- function(formula, data) {
+  require(rlang)
+  require(tidyverse)
+  pform <- terms(formula, data=data)
+  unit <- pform[[2]]
+  vars <- attr(pform, "term.labels")
+  cls <- sapply(data, class)
+  data <- data %>% select(which(cls%in%c("numeric","integer")))
+  varnames <- intersect(names(data),vars)
+  sumfunc <- function(data=data, varname, unit) {
+  loc.unit <- enquo(unit)
+  varname <- ensym(varname)
+    ores <- data %>% filter(!is.na(!! varname)==TRUE) %>% summarise(
+    O.mean=round(mean(`$`(data, !! varname), na.rm=TRUE), digits=3),
+    O.sd=round(sd(`$`(data, !! varname), na.rm=TRUE), digits=3), 
+    O.min = min(`$`(data, !! varname), na.rm=TRUE), 
+    O.max=max(`$`(data, !! varname), na.rm=TRUE), 
+    O.SumSQ=round(sum(scale(`$`(data, !! varname), center=TRUE, scale=FALSE)^2, na.rm=TRUE), digits=3), 
+    O.N=sum(as.numeric((!is.na(`$`(data, !! varname))))))
+ bmeans <- data %>% filter(!is.na(!! varname)==TRUE) %>% group_by(!! loc.unit) %>% summarise(
+   meanx=mean(`$`(.data, !! varname), na.rm=T), 
+   t.count=sum(as.numeric(!is.na(`$`(.data, !! varname)))))
+  bres <- bmeans %>% ungroup() %>% summarise(
+    B.sd = round(sd(meanx, na.rm=TRUE), digits=3),
+    B.min = min(meanx, na.rm=TRUE), 
+    B.max=max(meanx, na.rm=TRUE), 
+    Units=sum(as.numeric(!is.na(t.count))), 
+    t.bar=round(mean(t.count, na.rm=TRUE), digits=3))
+  wdat <- data %>% filter(!is.na(!! varname)==TRUE) %>% group_by(!! loc.unit) %>% mutate(
+    W.x = scale(`$`(.data,!! varname), scale=FALSE))
+  wres <- wdat %>% ungroup() %>% summarise(
+    W.sd=round(sd(W.x, na.rm=TRUE), digits=3), 
+    W.min=min(W.x, na.rm=TRUE), 
+    W.max=max(W.x, na.rm=TRUE), 
+    W.SumSQ=round(sum(W.x^2, na.rm=TRUE), digits=3))
+    W.Ratio <- round(wres$W.SumSQ/ores$O.SumSQ, digits=3)
+  return(c(ores,bres,wres,Within.Ovr.Ratio=W.Ratio))
+  }
+res1 <- sapply(varnames, function(x) {sumfunc(data, !!x, !!unit)})
+return(t(res1))
+}  
+xtsum(idcode~., data=nlswork2)
+```
+
+The previous command takes a panel dataset organized by the unit and decomposes the within and between variance and standard deviation, etc.  To summarize an individual variable in the same fashion, the command XTSUM below should accomplish the task.
+
+```{r XTSUM1V}
+XTSUM <- function(data, varname, unit) {
+  varname <- enquo(varname)
+  unit <- enquo(unit)
+  ores <- nlswork %>% summarise(ovr.mean=mean(!! varname, na.rm=TRUE), ovr.sd=sd(!! varname, na.rm=TRUE), ovr.min = min(!! varname, na.rm=TRUE), ovr.max=max(!! varname, na.rm=TRUE))
+  bmeans <- nlswork %>% group_by(!!unit) %>% summarise(meanx=mean(!! varname, na.rm=T))
+  bres <- bmeans %>% summarise(between.sd = sd(meanx, na.rm=TRUE), between.min = min(meanx, na.rm=TRUE), between.max=max(meanx, na.rm=TRUE), Groups=n())
+  wdat <- nlswork %>% group_by(!!unit) %>% mutate(W.x = scale(!! varname, scale=FALSE))
+  wres <- wdat %>% ungroup() %>% summarise(within.sd=sd(W.x, na.rm=TRUE), within.min=min(W.x, na.rm=TRUE), within.max=max(W.x, na.rm=TRUE))
+  return(list(ores=ores,bres=bres,wres=wres))
+}
+XTSUM(nlswork, varname=hours, unit=idcode)
+```
+
+# Models for panel data: Standard models in *plm()*
+
+The workhorse package/library for the basic panel data models in R is *plm*.  The *JStatSoft* [article was modified to become the vignette](https://cran.r-project.org/web/packages/plm/vignettes/plm.pdf) and is quite detailed, though dated.  The previous equation can be simplified and detailed to derive the commonly deployed models.
+
+### A Pooled Regression
+
+Simply suppresses all subscripts on $\alpha$ and $\beta$ to write:
+
+$$ y_{it} = \alpha + X_{it}\beta + \epsilon_{it} $$
+
+### A Within Regression
+
+$$ y_{it} = \alpha + X_{it}\beta^{W} + \epsilon^{W}_{it} $$
+
+### A Between Regression
+
+$$ \overline{y}_{i} = \alpha + \overline{X}_{i}\beta^{B} + \epsilon^{B}_{i} $$
+
+# Models with heterogeneous time trends: *phtt()*
+
+An [article](https://arxiv.org/pdf/1407.6484.pdf) on panel data analysis with heterogeneous time trends appears in *JStatSoft*.
+
+# Multi-state models in continuous time *msm()*
+
+The *msm* library fits homogenous and inhomogenous Markov models for multinomial outcomes.
+
+# Latent Markov models with *LMest()*
+
+```
+LM models are designed to deal with univariate and multivariate longitudinal data based on the repeated observation of a panel of subjects across time. More in detail, LM models are specially tailored to study the evolution of an individual characteristic of interest that is not directly observable. This characteristic is represented by a latent process following a Markov chain as in a Hidden Markov (HM) model (Zucchini and MacDonald, 2009). These models also allow us to account for time-varying unobserved heterogeneity in addition to the effect of observable covariates on the response variables.
+```
+
+The [preprint](https://arxiv.org/pdf/1501.04448.pdf) is here.
+
+# *cquad*
+
+In the study of non-linear panel data models, unobserved heterogeneity and state dependence are hardest with the least information -- binary outcomes.  The *cquad* package for Stata and R utilizes an approach by Bartolucci and Nigro described in [Bartolucci and Pigini](https://www.jstatsoft.org/article/view/v078i07/v78i07.pdf).
+

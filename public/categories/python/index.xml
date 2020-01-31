@@ -1,0 +1,921 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>python | rww.science</title>
+    <link>/categories/python/</link>
+      <atom:link href="/categories/python/index.xml" rel="self" type="application/rss+xml" />
+    <description>python</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© 2018</copyright><lastBuildDate>Wed, 04 Apr 2018 00:00:00 +0000</lastBuildDate>
+    <image>
+      <url>/img/portrait.jpg</url>
+      <title>python</title>
+      <link>/categories/python/</link>
+    </image>
+    
+    <item>
+      <title>Scraping the NFL Salary Cap Data with Python and R</title>
+      <link>/2018/04/04/scraping-the-nfl-salary-cap-data-with-python-and-r/</link>
+      <pubDate>Wed, 04 Apr 2018 00:00:00 +0000</pubDate>
+      <guid>/2018/04/04/scraping-the-nfl-salary-cap-data-with-python-and-r/</guid>
+      <description>
+
+
+&lt;div id=&#34;the-nfl-data&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;The NFL Data&lt;/h1&gt;
+&lt;p&gt;[SporTrac](&lt;a href=&#34;http://www.sportrac.com&#34; class=&#34;uri&#34;&gt;http://www.sportrac.com&lt;/a&gt;] has a wonderful array of financial data on sports. A student going to work for the Seattle Seahawks wanted the NFL salary cap data and I also found data on the English Premier League there. Now I have a source to scrape the data from.&lt;/p&gt;
+&lt;p&gt;With a source in hand, the key tool is the &lt;em&gt;SelectorGadget&lt;/em&gt;. &lt;em&gt;SelectorGadget&lt;/em&gt; is a browser add-in for Chrome that allows us to select text and identify the css or xpath selector to scrape the data. With that, it becomes easy to identify what we need. I navgiated to the website in base_url and found the team names had links to the cap data. I will use those links first. Let’s build that.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(rvest)
+base_url &amp;lt;- &amp;quot;http://www.spotrac.com/nfl/&amp;quot;
+read.base &amp;lt;- read_html(base_url)
+team.URL &amp;lt;- read.base %&amp;gt;% html_nodes(&amp;quot;.team-name&amp;quot;) %&amp;gt;% html_attr(&amp;#39;href&amp;#39;)
+team.URL&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##  [1] &amp;quot;https://www.spotrac.com/nfl/arizona-cardinals/cap/&amp;quot;   
+##  [2] &amp;quot;https://www.spotrac.com/nfl/atlanta-falcons/cap/&amp;quot;     
+##  [3] &amp;quot;https://www.spotrac.com/nfl/baltimore-ravens/cap/&amp;quot;    
+##  [4] &amp;quot;https://www.spotrac.com/nfl/buffalo-bills/cap/&amp;quot;       
+##  [5] &amp;quot;https://www.spotrac.com/nfl/carolina-panthers/cap/&amp;quot;   
+##  [6] &amp;quot;https://www.spotrac.com/nfl/chicago-bears/cap/&amp;quot;       
+##  [7] &amp;quot;https://www.spotrac.com/nfl/cincinnati-bengals/cap/&amp;quot;  
+##  [8] &amp;quot;https://www.spotrac.com/nfl/cleveland-browns/cap/&amp;quot;    
+##  [9] &amp;quot;https://www.spotrac.com/nfl/dallas-cowboys/cap/&amp;quot;      
+## [10] &amp;quot;https://www.spotrac.com/nfl/denver-broncos/cap/&amp;quot;      
+## [11] &amp;quot;https://www.spotrac.com/nfl/detroit-lions/cap/&amp;quot;       
+## [12] &amp;quot;https://www.spotrac.com/nfl/green-bay-packers/cap/&amp;quot;   
+## [13] &amp;quot;https://www.spotrac.com/nfl/houston-texans/cap/&amp;quot;      
+## [14] &amp;quot;https://www.spotrac.com/nfl/indianapolis-colts/cap/&amp;quot;  
+## [15] &amp;quot;https://www.spotrac.com/nfl/jacksonville-jaguars/cap/&amp;quot;
+## [16] &amp;quot;https://www.spotrac.com/nfl/kansas-city-chiefs/cap/&amp;quot;  
+## [17] &amp;quot;https://www.spotrac.com/nfl/los-angeles-chargers/cap/&amp;quot;
+## [18] &amp;quot;https://www.spotrac.com/nfl/los-angeles-rams/cap/&amp;quot;    
+## [19] &amp;quot;https://www.spotrac.com/nfl/miami-dolphins/cap/&amp;quot;      
+## [20] &amp;quot;https://www.spotrac.com/nfl/minnesota-vikings/cap/&amp;quot;   
+## [21] &amp;quot;https://www.spotrac.com/nfl/new-england-patriots/cap/&amp;quot;
+## [22] &amp;quot;https://www.spotrac.com/nfl/new-orleans-saints/cap/&amp;quot;  
+## [23] &amp;quot;https://www.spotrac.com/nfl/new-york-giants/cap/&amp;quot;     
+## [24] &amp;quot;https://www.spotrac.com/nfl/new-york-jets/cap/&amp;quot;       
+## [25] &amp;quot;https://www.spotrac.com/nfl/oakland-raiders/cap/&amp;quot;     
+## [26] &amp;quot;https://www.spotrac.com/nfl/philadelphia-eagles/cap/&amp;quot; 
+## [27] &amp;quot;https://www.spotrac.com/nfl/pittsburgh-steelers/cap/&amp;quot; 
+## [28] &amp;quot;https://www.spotrac.com/nfl/san-francisco-49ers/cap/&amp;quot; 
+## [29] &amp;quot;https://www.spotrac.com/nfl/seattle-seahawks/cap/&amp;quot;    
+## [30] &amp;quot;https://www.spotrac.com/nfl/tampa-bay-buccaneers/cap/&amp;quot;
+## [31] &amp;quot;https://www.spotrac.com/nfl/tennessee-titans/cap/&amp;quot;    
+## [32] &amp;quot;https://www.spotrac.com/nfl/washington-redskins/cap/&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Clean up the URLs to get the team names by themselves.
+team.names &amp;lt;- gsub(&amp;quot;/cap/&amp;quot;,&amp;quot;&amp;quot;, gsub(base_url, &amp;quot;&amp;quot;, team.URL))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;With 32 team links to scrape, I can now scrape them.&lt;/p&gt;
+&lt;div id=&#34;grabbing-team-tables&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Grabbing Team Tables&lt;/h2&gt;
+&lt;p&gt;Now I need to explore those links. When I started this, I wanted to learn some Python along the way. I found the following &lt;a href=&#34;https://wcontractor.github.io/nfl-salary-part2.html&#34;&gt;Python code&lt;/a&gt; that worked for the task. For completeness, I leave it here.&lt;/p&gt;
+&lt;pre class=&#34;python&#34;&gt;&lt;code&gt;import pandas as pd
+import bs4
+import re
+import urllib2
+#import requests
+
+from urllib import urlopen
+from bs4 import BeautifulSoup
+base_url = &amp;quot;http://www.spotrac.com/nfl/&amp;quot;
+
+def get_page(url):
+    page = urlopen(base_url)
+    soup = BeautifulSoup(page, &amp;#39;lxml&amp;#39;)
+    file = open(&amp;quot;spotrac_urls.txt&amp;quot;, &amp;#39;w&amp;#39;)
+    file.write(str(soup))
+    file.close()
+
+def get_team_table(url):
+    page = urlopen(url)
+    soup = BeautifulSoup(page, &amp;#39;lxml&amp;#39;)
+
+get_page(base_url)
+
+with open(&amp;quot;spotrac_urls.txt&amp;quot;, &amp;#39;r&amp;#39;) as file:
+    for line in file:
+        line = line.strip()
+
+from bs4 import BeautifulSoup
+page = open(&amp;quot;spotrac_urls.txt&amp;quot;, &amp;#39;r&amp;#39;)
+soup = BeautifulSoup(page, &amp;quot;lxml&amp;quot;)
+div = soup.find(&amp;quot;div&amp;quot;,&amp;quot;subnav-posts&amp;quot;)
+
+links = div.find_all(&amp;#39;a&amp;#39;)
+for link in links:
+    print(link.get(&amp;#39;href&amp;#39;))
+
+len(links)
+
+def get_team_table(url):
+    page = urlopen(url)
+    soup = BeautifulSoup(page, &amp;#39;lxml&amp;#39;)
+    data_rows = [row for row in soup.find(&amp;quot;table&amp;quot;, &amp;quot;datatable&amp;quot;).find_all(&amp;quot;tr&amp;quot;)]
+    return data_rows
+
+# create an empty list
+team_data = []
+
+for link in links:
+    team_data.append(get_team_table(link.get(&amp;#39;href&amp;#39;)))
+
+len(team_data)
+
+#data_rows = [row for row in soup.find(&amp;quot;td&amp;quot;, &amp;quot;center&amp;quot;).find_all(&amp;quot;tr&amp;quot;)]
+table_data = []
+
+#soup = BeautifulSoup(team_data[0], &amp;#39;lxml&amp;#39;)
+
+#This needs to be a nested for loop because inner items of the list are BeautifulSoup Elements
+for row in team_data:
+    for element in row:
+        #print(type(element))
+        if soup.find_all(&amp;quot;td&amp;quot;, attrs={&amp;quot;class&amp;quot;:&amp;quot; right xs-hide &amp;quot;}) is not None:
+            table_data.append(element.get_text())
+
+player_data = []
+for row in table_data:
+    player_data.append(row.split(&amp;quot;\n&amp;quot;))
+    #print(player_data)
+
+len(player_data)
+
+import pandas as pd
+df = pd.DataFrame(player_data)
+df = df.drop(14, 1)
+df = df.drop(0, 1)
+df = df.drop(1, 1)
+
+
+df = df.drop(df.index[[0]])
+df.set_index(1, inplace=True)
+print(df.shape)
+df.head()
+
+players = []
+for row in team_data[0]:
+    if row.get_text(&amp;quot;tr&amp;quot;) is not None:
+        players.append(row) 
+
+column_headers = [col.get_text() for col in players[0].find_all(&amp;quot;th&amp;quot;) if col.get_text()]
+len(column_headers)
+
+df.columns = column_headers
+df.head()
+
+#The header repeated itself in the data.  This didn&amp;#39;t reveal itself until the data type conversion step below
+#but this fixes all occurrences of it.
+rows_to_be_dropped = df.loc[df[&amp;#39;Cap Hit&amp;#39;] == &amp;#39;Cap %&amp;#39;].index
+rows_to_be_kept = df.loc[df[&amp;#39;Cap Hit&amp;#39;] != &amp;#39;Cap %&amp;#39;].index
+totlen = len(df)
+df2a = df.drop(rows_to_be_kept)
+df = df.drop(rows_to_be_dropped)
+df2 = pd.Series(data=rows_to_be_dropped)
+
+#Apply a regex to convert the &amp;#39;Cap Hit&amp;#39; column from a string to a float.  
+# df[&amp;#39;Cap Hit&amp;#39;] =(df[&amp;#39;Cap Hit&amp;#39;].replace(&amp;#39;[\$,)]&amp;#39;, &amp;quot;&amp;quot;, regex=True).replace( &amp;#39;[(]&amp;#39;,&amp;#39;-&amp;#39;,   regex=True ).astype(float))
+
+# My fix
+df[&amp;#39;Cap.Hit&amp;#39;] = (df[&amp;#39;Cap Hit&amp;#39;].replace(&amp;#39;[\$,)]&amp;#39;, &amp;quot;&amp;quot;, regex=True).replace(&amp;#39;[-,)]&amp;#39;, &amp;quot;&amp;quot;, regex=True).replace(&amp;#39;\s\s.*&amp;#39;, &amp;quot;&amp;quot;, regex=True).astype(float))
+df[&amp;#39;Base.Salary&amp;#39;] = (df[&amp;#39;Base Salary&amp;#39;].replace(&amp;#39;[\$,)]&amp;#39;, &amp;quot;&amp;quot;, regex=True).replace(&amp;#39;[-,)]&amp;#39;, &amp;quot;&amp;quot;, regex=True).astype(float))
+df[&amp;#39;Signing.Bonus&amp;#39;] = (df[&amp;#39;Signing Bonus&amp;#39;].replace(&amp;#39;[\$,)]&amp;#39;, &amp;quot;&amp;quot;, regex=True).replace(&amp;#39;[-,)]&amp;#39;, &amp;quot;&amp;quot;, regex=True).astype(float))
+df[&amp;#39;Roster.Bonus&amp;#39;] = (df[&amp;#39;Roster Bonus&amp;#39;].replace(&amp;#39;[\$,)]&amp;#39;, &amp;quot;&amp;quot;, regex=True).replace(&amp;#39;[-,)]&amp;#39;, &amp;quot;&amp;quot;, regex=True).astype(float))
+df[&amp;#39;Option.Bonus&amp;#39;] = (df[&amp;#39;Option Bonus&amp;#39;].replace(&amp;#39;[\$,)]&amp;#39;, &amp;quot;&amp;quot;, regex=True).replace(&amp;#39;[-,)]&amp;#39;, &amp;quot;&amp;quot;, regex=True).astype(float))
+df[&amp;#39;Workout.Bonus&amp;#39;] = (df[&amp;#39;Workout Bonus&amp;#39;].replace(&amp;#39;[\$,)]&amp;#39;, &amp;quot;&amp;quot;, regex=True).replace(&amp;#39;[-,)]&amp;#39;, &amp;quot;&amp;quot;, regex=True).astype(float))
+df[&amp;#39;Restruc.Bonus&amp;#39;] = (df[&amp;#39;Restruc. Bonus&amp;#39;].replace(&amp;#39;[\$,)]&amp;#39;, &amp;quot;&amp;quot;, regex=True).replace(&amp;#39;[-,)]&amp;#39;, &amp;quot;&amp;quot;, regex=True).astype(float))
+df[&amp;#39;Misc&amp;#39;] = (df[&amp;#39;Misc.&amp;#39;].replace(&amp;#39;[\$,)]&amp;#39;, &amp;quot;&amp;quot;, regex=True).replace(&amp;#39;[-,)]&amp;#39;, &amp;quot;&amp;quot;, regex=True).astype(float))
+df[&amp;#39;Dead.Cap&amp;#39;] = (df[&amp;#39;Dead Cap&amp;#39;].replace(&amp;#39;\(&amp;#39;,&amp;quot;&amp;quot;,regex=True).replace(&amp;#39;\)&amp;#39;,&amp;quot;&amp;quot;,regex=True).replace(&amp;#39;[\$,)]&amp;#39;, &amp;quot;&amp;quot;, regex=True).replace(&amp;#39;[-,)]&amp;#39;, &amp;quot;&amp;quot;, regex=True).astype(float))
+
+#Sanity check to make sure it worked.
+df[&amp;#39;Cap Hit&amp;#39;].sum()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;There are a few wonderful things about Beautiful Soup. But it is still faster and easier for me to do things in R. Here is some R code for the same task. The R table is a messy data structure but is easier to get.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(stringr)
+data.creator &amp;lt;- function(link) {
+read_html(link) %&amp;gt;% html_nodes(&amp;quot;table&amp;quot;) %&amp;gt;% html_table(header=TRUE, fill=TRUE) -&amp;gt; res
+names(res) &amp;lt;- c(&amp;quot;Active&amp;quot;,&amp;quot;Draft&amp;quot;,&amp;quot;Inactive&amp;quot;,&amp;quot;Team1&amp;quot;,&amp;quot;Team2&amp;quot;)
+return(res)
+  }
+team.names &amp;lt;- gsub(&amp;quot;-&amp;quot;, &amp;quot; &amp;quot;, team.names)
+simpleCap &amp;lt;- function(x) {
+  s &amp;lt;- strsplit(x, &amp;quot; &amp;quot;)[[1]]
+  paste(toupper(substring(s, 1,1)), substring(s, 2),
+      sep=&amp;quot;&amp;quot;, collapse=&amp;quot; &amp;quot;)
+}
+team.names &amp;lt;- sapply(team.names, simpleCap)
+NFL.scrape &amp;lt;- sapply(team.URL, function(x) {data.creator(x)})
+names(NFL.scrape) &amp;lt;- team.names 
+# This is a hack but it works
+Actives &amp;lt;- lapply(NFL.scrape, function(x){x$Active})
+rep.res &amp;lt;- sapply(seq(1,32), function(x) {dim(Actives[[x]])[[1]]})
+clean.me.2 &amp;lt;- function(data) {
+data %&amp;gt;% str_remove_all(&amp;quot;[\\t]&amp;quot;) %&amp;gt;% str_split(&amp;quot;\\n\\n\\n&amp;quot;) %&amp;gt;% unlist() %&amp;gt;% matrix(data=., ncol=2, byrow=TRUE) -&amp;gt; dat
+return(dat)
+}
+clean.me &amp;lt;- function(data) {
+str_remove_all(data, &amp;quot;[\\t]&amp;quot;)
+}
+clean.me.num &amp;lt;- function(data) {
+str_remove_all(data, &amp;quot;[\\$,()\\-]&amp;quot;)
+  }
+Players &amp;lt;- lapply(Actives, function(x){ clean.me.2(x[,1])})
+Last.Name &amp;lt;- unlist(lapply(Players, function(x) {x[,1]}))
+Player.Name &amp;lt;- unlist(lapply(Players, function(x) {x[,2]}))
+Team &amp;lt;- rep(names(Actives),rep.res)
+Position &amp;lt;- unlist(lapply(Actives, function(x){ clean.me(x[,2])}))
+Base.Salary &amp;lt;- unlist(lapply(Actives, function(x){ clean.me.num(x[,&amp;#39;Base Salary&amp;#39;])}))
+Base.Salary &amp;lt;- as.numeric(Base.Salary)
+Signing.Bonus &amp;lt;- unlist(lapply(Actives, function(x){ clean.me.num(x[,&amp;#39;Signing Bonus&amp;#39;])}))
+Signing.Bonus &amp;lt;- as.numeric(Signing.Bonus)
+Roster.Bonus &amp;lt;- unlist(lapply(Actives, function(x){ clean.me.num(x[,&amp;#39;Roster Bonus&amp;#39;])}))
+Roster.Bonus &amp;lt;- as.numeric(Roster.Bonus)
+Option.Bonus &amp;lt;- unlist(lapply(Actives, function(x){ clean.me.num(x[,&amp;#39;Option Bonus&amp;#39;])}))
+Option.Bonus &amp;lt;- as.numeric(Option.Bonus)
+Workout.Bonus &amp;lt;- unlist(lapply(Actives, function(x){ clean.me.num(x[,&amp;#39;Workout Bonus&amp;#39;])}))
+Workout.Bonus &amp;lt;- as.numeric(Workout.Bonus)
+Cap.Pct &amp;lt;- unlist(lapply(Actives, function(x){ x[,&amp;#39;Cap %&amp;#39;]}))
+Restruc.Bonus &amp;lt;- unlist(lapply(Actives, function(x){ clean.me.num(x[,&amp;#39;Restruc. Bonus&amp;#39;])}))
+Restruc.Bonus &amp;lt;- as.numeric(Restruc.Bonus)
+Dead.Cap &amp;lt;- unlist(lapply(Actives, function(x){ clean.me.num(x[,&amp;#39;Dead Cap&amp;#39;])}))
+Dead.Cap &amp;lt;- as.numeric(Dead.Cap)
+Misc.Cap &amp;lt;- unlist(lapply(Actives, function(x){ clean.me.num(x[,&amp;#39;Misc.&amp;#39;])}))
+Misc.Cap &amp;lt;- as.numeric(Misc.Cap)
+Cap.Hit &amp;lt;- unlist(lapply(Actives, function(x){ clean.me.num(x[,&amp;#39;Cap Hit&amp;#39;])}))
+Cap.Hit &amp;lt;- str_replace_all(Cap.Hit, pattern=&amp;quot;\\s\\s*&amp;quot;, &amp;quot;&amp;quot;)
+NFL.Salary.Data &amp;lt;- data.frame(Player=Player.Name, 
+                       Last.Name = Last.Name,
+                       Team=Team, 
+                       Position=Position, 
+                       Base.Salary=Base.Salary,
+                       Signing.Bonus=Signing.Bonus,
+                       Roster.Bonus=Roster.Bonus,
+                       Option.Bonus=Option.Bonus,
+                       Workout.Bonus=Workout.Bonus,
+                       Cap.Hit=Cap.Hit,
+                       Restruc.Bonus=Restruc.Bonus,
+                       Dead.Cap=Dead.Cap,
+                       Misc.Cap=Misc.Cap,
+                       Cap.Pct=Cap.Pct)
+save.image(&amp;quot;~/NFL-Data.RData&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Load up a local copy of the data for now.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;load(url(&amp;quot;https://github.com/robertwwalker/academic-mymod/raw/master/data/NFL-Data.RData&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;summaries&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Summaries&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(tidyverse)
+library(skimr)
+skim(NFL.Salary.Data)&lt;/code&gt;&lt;/pre&gt;
+&lt;table&gt;
+&lt;caption&gt;&lt;span id=&#34;tab:An1&#34;&gt;Table 1: &lt;/span&gt;Data summary&lt;/caption&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Name&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;NFL.Salary.Data&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Number of rows&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;2239&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Number of columns&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;14&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;_______________________&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Column type frequency:&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;factor&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;5&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;numeric&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;9&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;________________________&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Group variables&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;None&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;Variable type: factor&lt;/strong&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;left&#34;&gt;skim_variable&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;n_missing&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;complete_rate&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;ordered&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;n_unique&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;top_counts&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Player&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;FALSE&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2226&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Aus: 2, Bra: 2, Bra: 2, Chr: 2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Last.Name&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;FALSE&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1489&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Jon: 41, Wil: 39, Smi: 31, Joh: 30&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Team&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;FALSE&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;32&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;New: 86, Ind: 78, New: 78, Cle: 77&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Position&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;FALSE&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;22&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;WR: 289, CB: 242, DE: 179, OLB: 171&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Cap.Hit&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;FALSE&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1043&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;480: 279, 555: 230, 630: 185, 705: 66&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;Variable type: numeric&lt;/strong&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;left&#34;&gt;skim_variable&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;n_missing&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;complete_rate&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;mean&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;sd&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p0&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p25&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p50&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p75&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p100&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;hist&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Base.Salary&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1702378.82&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2559999.20&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;555000.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;700000.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1500000.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;22500000.00&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▁▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Signing.Bonus&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;449440.82&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;961034.55&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3333.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;397413.50&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;10500000.00&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▁▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Roster.Bonus&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;206966.64&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1021892.52&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;28800000.00&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▁▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Option.Bonus&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;13272.29&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;168050.78&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4750000.00&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▁▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Workout.Bonus&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;20166.59&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;76589.41&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1335000.00&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▁▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Restruc.Bonus&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;44915.31&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;341687.19&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;5561666.00&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▁▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Dead.Cap&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2237274.35&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;5646281.55&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;50178.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1330354.50&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;82500000.00&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▁▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Misc.Cap&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;9149.17&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;81182.62&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2085000.00&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▁▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Cap.Pct&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.36&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2.05&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.31&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.41&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.42&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;18.02&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▁▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;NFL.Salary.Data %&amp;gt;% group_by(Team) %&amp;gt;% summarise(Total.Base.Salary=sum(Base.Salary))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## # A tibble: 32 x 2
+##    Team               Total.Base.Salary
+##    &amp;lt;fct&amp;gt;                          &amp;lt;dbl&amp;gt;
+##  1 Arizona Cardinals          105629569
+##  2 Atlanta Falcons            132367353
+##  3 Baltimore Ravens           111906351
+##  4 Buffalo Bills               94577460
+##  5 Carolina Panthers          110158355
+##  6 Chicago Bears               85128180
+##  7 Cincinnati Bengals         134855807
+##  8 Cleveland Browns           122139767
+##  9 Dallas Cowboys             128347113
+## 10 Denver Broncos             140672444
+## # … with 22 more rows&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;NFL.Salary.Data %&amp;gt;% group_by(Position) %&amp;gt;% skim(Base.Salary)&lt;/code&gt;&lt;/pre&gt;
+&lt;table&gt;
+&lt;caption&gt;&lt;span id=&#34;tab:An1&#34;&gt;Table 1: &lt;/span&gt;Data summary&lt;/caption&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Name&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Piped data&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Number of rows&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;2239&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Number of columns&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;14&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;_______________________&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Column type frequency:&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;numeric&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;1&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;________________________&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Group variables&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Position&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;Variable type: numeric&lt;/strong&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;left&#34;&gt;skim_variable&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;Position&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;n_missing&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;complete_rate&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;mean&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;sd&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p0&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p25&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p50&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p75&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p100&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;hist&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Base.Salary&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;C&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1964379.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2173761.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;630000.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;862290.5&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2693750&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;9000000&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▂▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Base.Salary&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;CB&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1594781.4&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2433196.2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;555000.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;630000.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1329725&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;13500000&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▁▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Base.Salary&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;DE&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2007139.1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3065728.5&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;555000.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;790000.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1812276&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;17143000&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▁▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Base.Salary&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;DT&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2014004.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3128524.2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;555000.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;630000.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1760393&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;16985000&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▁▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Base.Salary&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;FB&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;815000.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;560564.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;555000.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;667500.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;837500&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2750000&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▂▇▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Base.Salary&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;FS&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2641985.1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2783070.4&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;762911.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1426150.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3250000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;11287000&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▁▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Base.Salary&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;G&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1704599.2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2115607.1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;555000.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;790000.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1880750&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;10000000&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▁▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Base.Salary&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;ILB&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1378939.2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1901654.3&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;555000.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;705000.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1049127&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;10000000&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▁▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Base.Salary&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;K&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1383498.1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;946083.5&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;480000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;555000.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;899464.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2037500&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3400000&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▂▂▂▂&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Base.Salary&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;LB&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;616500.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;NA&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;616500&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;616500.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;616500.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;616500&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;616500&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▁▁▇▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Base.Salary&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;LS&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;761617.7&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;201707.6&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;480000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;573750.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;790000.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;915000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1100000&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▆▅▅▆&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Base.Salary&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;LT&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4587732.8&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4142986.8&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;961056.2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2310342.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;8825000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;12496000&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▁▂▂▂&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Base.Salary&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;OLB&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1938283.6&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2869077.8&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;555000.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;705000.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1639242&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;14750000&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▁▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Base.Salary&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;P&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1242027.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;803853.9&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;480000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;555000.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1000000.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1500000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3000000&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▃▁▁▂&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Base.Salary&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;QB&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3408382.2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;5078200.9&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;592500.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;831832.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3242341&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;22500000&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▁▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Base.Salary&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;RB&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1088425.3&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1459116.9&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;555000.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;630000.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1000000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;14544000&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▁▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Base.Salary&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;RT&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2314986.2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1962841.7&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;768750.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1897621.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3918750&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;9341000&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▅▃▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Base.Salary&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;S&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;576320.5&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;123126.2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;480000.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;555000.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;630000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1037723&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▁▁▇▆▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Base.Salary&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;SS&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1566535.6&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1521405.5&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;630000.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;875000.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1750000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6800000&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▂▂▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Base.Salary&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;T&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;587082.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;222252.3&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;480000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;480000.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;555000.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;630000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2312212&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▁▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Base.Salary&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;TE&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1301806.2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1570488.6&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;480000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;555000.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;630000.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1048771&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;8250000&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▁▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Base.Salary&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;WR&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1624579.2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2486576.1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;555000.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;630000.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1200000&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;15982000&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▁▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Now I have my salary data.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;gplots::plotmeans(Base.Salary~Position, data=NFL.Salary.Data, n.label=FALSE, cex=0.6)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-04-04-scraping-the-nfl-salary-cap-data-with-python-and-r/index_files/figure-html/Plot-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;boxplot(Base.Salary~Position, data=NFL.Salary.Data)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-04-04-scraping-the-nfl-salary-cap-data-with-python-and-r/index_files/figure-html/Plot2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;combining-and-categorizing-data&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Combining and Categorizing Data&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;NFL.Salary.Data$Pos.Char &amp;lt;- NFL.Salary.Data$SideOfBall &amp;lt;- NFL.SubTeam &amp;lt;- as.character(NFL.Salary.Data$Position)
+O.Line &amp;lt;- c(&amp;quot;LT&amp;quot;,&amp;quot;RT&amp;quot;,&amp;quot;C&amp;quot;,&amp;quot;G&amp;quot;,&amp;quot;T&amp;quot;)
+D.Line &amp;lt;- c(&amp;quot;DT&amp;quot;,&amp;quot;DE&amp;quot;)
+LineBackers &amp;lt;- c(&amp;quot;LB&amp;quot;,&amp;quot;ILB&amp;quot;,&amp;quot;OLB&amp;quot;)
+Safeties &amp;lt;- c(&amp;quot;S&amp;quot;,&amp;quot;SS&amp;quot;,&amp;quot;FS&amp;quot;)
+CBs &amp;lt;- c(&amp;quot;CB&amp;quot;)
+Special.Teams &amp;lt;- c(&amp;quot;K&amp;quot;,&amp;quot;P&amp;quot;,&amp;quot;LS&amp;quot;)
+RBs &amp;lt;- c(&amp;quot;RB&amp;quot;,&amp;quot;FB&amp;quot;)
+TEs &amp;lt;- c(&amp;quot;TE&amp;quot;)
+WRs &amp;lt;- c(&amp;quot;WR&amp;quot;)
+QBs &amp;lt;- c(&amp;quot;QB&amp;quot;)
+Offense &amp;lt;- c(QBs,RBs,WRs,TEs,O.Line)
+Defense &amp;lt;- c(D.Line,LineBackers,Safeties,CBs)
+NFL.Salary.Data$SideOfBall[NFL.Salary.Data$Pos.Char %in% Offense] &amp;lt;- &amp;quot;Offense&amp;quot;
+NFL.Salary.Data$SideOfBall[NFL.Salary.Data$Pos.Char %in% Special.Teams] &amp;lt;- &amp;quot;Special Teams&amp;quot;
+NFL.Salary.Data$SideOfBall[NFL.Salary.Data$Pos.Char %in% Defense] &amp;lt;- &amp;quot;Defense&amp;quot;
+NFL.Salary.Data$SubTeam[NFL.Salary.Data$Pos.Char %in% Special.Teams] &amp;lt;- &amp;quot;Special Teams&amp;quot;
+NFL.Salary.Data$SubTeam[NFL.Salary.Data$Pos.Char %in% QBs] &amp;lt;- &amp;quot;Quarterbacks&amp;quot;
+NFL.Salary.Data$SubTeam[NFL.Salary.Data$Pos.Char %in% RBs] &amp;lt;- &amp;quot;Running Backs&amp;quot;
+NFL.Salary.Data$SubTeam[NFL.Salary.Data$Pos.Char %in% TEs] &amp;lt;- &amp;quot;Tight Ends&amp;quot;
+NFL.Salary.Data$SubTeam[NFL.Salary.Data$Pos.Char %in% WRs] &amp;lt;- &amp;quot;Wide Receivers&amp;quot;
+NFL.Salary.Data$SubTeam[NFL.Salary.Data$Pos.Char %in% O.Line] &amp;lt;- &amp;quot;Offensive Line&amp;quot;
+NFL.Salary.Data$SubTeam[NFL.Salary.Data$Pos.Char %in% LineBackers] &amp;lt;- &amp;quot;Linebackers&amp;quot;
+NFL.Salary.Data$SubTeam[NFL.Salary.Data$Pos.Char %in% CBs] &amp;lt;- &amp;quot;Cornerbacks&amp;quot;
+NFL.Salary.Data$SubTeam[NFL.Salary.Data$Pos.Char %in% D.Line] &amp;lt;- &amp;quot;Defensive Line&amp;quot;
+NFL.Salary.Data$SubTeam[NFL.Salary.Data$Pos.Char %in% Safeties] &amp;lt;- &amp;quot;Safeties&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;That gives some positional details to the data also.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

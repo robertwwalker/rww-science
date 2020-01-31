@@ -1,0 +1,137 @@
+---
+title: Some Basic Text on the Mueller Report
+author: RWW
+date: '2019-05-22'
+slug: some-basic-text-on-the-mueller-report
+categories:
+  - tidyverse
+  - tidytext
+tags:
+  - tidytext
+  - R
+header:
+  caption: ''
+  image: ''
+  preview: yes
+---
+
+
+# So this Robert Mueller guy wrote a report
+
+I may as well analyse it a bit.
+
+First, let me see if I can get a hold of the data.  I grabbed the report directly from the Department of Justice website.  You can follow this [link](https://www.justice.gov/storage/report.pdf).
+
+```{r, echo=TRUE, eval=FALSE}
+library(tidyverse)
+library(pdftools)
+# Download report from link above
+mueller_report_txt <- pdf_text("../data/report.pdf")
+# Create a tibble of the text with line numbers and pages
+mueller_report <- tibble(
+  page = 1:length(mueller_report_txt),
+  text = mueller_report_txt) %>% 
+  separate_rows(text, sep = "\n") %>% 
+  group_by(page) %>% 
+  mutate(line = row_number()) %>% 
+  ungroup() %>% 
+  select(page, line, text)
+write_csv(mueller_report, "data/mueller_report.csv")
+```
+
+Now I can use a .csv of the data; reading the .pdf and hacking it up takes time.
+
+```{r, warning=FALSE, message=FALSE}
+library(pdftools)
+library(here)
+library(tidyverse)
+load("MuellerReport.RData")
+head(mueller_report)
+```
+
+The text is generally pretty good though there is some garbage.  The second line contains redactions and those are the underlying cause.  In fact, every page contains this same line though they convert to text in a non-uniform fashion.
+
+```{r LR1}
+mueller_ml2 <- mueller_report %>% dplyr::filter(line != 2) 
+```
+
+I want to make use of [cleanNLP](https://github.com/statsmaths/cleanNLP) to turn this into something that I can analyze.  The first step is to get rid of the tidyness, of sorts.
+
+```
+Once upon a time, this worked with the linux tools and others.  The spacy and corenlp functionality is not native R and the python interface is currently broken, at least on this server.
+```
+
+```{r CNLP, warning=FALSE, message=FALSE}
+library(tidyverse)
+library(RCurl)
+library(tokenizers)
+library(cleanNLP)
+# cnlp_download_spacy("en")
+MRep <- paste(as.character(mueller_ml2$text), " ")
+# cnlp_init_stringi()
+# starttime <- Sys.time()
+# stringi_annotate <- MRep %>% as.character() %>% cnlp_annotate(., verbose=FALSE) 
+# endtime <- Sys.time()
+```
+
+I wanted to find the bigrams while removing stop words.  Apparently, the easiest way to do this is `quanteda`.  I got this from [stack overflow](https://stackoverflow.com/questions/34282370/form-bigrams-without-stopwords-in-r)
+
+```{r wc1}
+library(widgetframe)
+library(quanteda)
+library(wordcloud)
+myDfm <- tokens(MRep) %>%
+    tokens_remove("\\p{P}", valuetype = "regex", padding = TRUE) %>%
+    tokens_remove(stopwords("english"), padding  = TRUE) %>%
+    tokens_ngrams(n = 2) %>%
+    dfm()
+wc2 <- topfeatures(myDfm, n=150, scheme="count")
+wc2.df <- data.frame(word = names(wc2), freq=as.numeric(wc2))
+wc2.df$word <- as.character(wc2.df$word)
+wc2.df <- wc2.df %>% filter(freq < 300)
+# wordcloud(wc2.df, size=0.4)
+library(highcharter)
+frameWidget(hchart(wc2.df, "wordcloud", hcaes(name=word, weight=freq/30)))
+```
+
+
+
+## pdfpages: A little plot
+
+I found some instructions on constructing the entire document on a grid and pulled the report apart to visualise it in that way.
+
+```{r, eval=FALSE, echo=TRUE}
+library(pdftools)
+library(png)
+pdf_convert("data/report.pdf")
+ 
+# Dimensions of 1 page.
+imgwidth <- 612
+imgheight <- 792
+ 
+# Grid dimensions.
+gridwidth <- 30
+gridheight <- 15
+ 
+# Total plot width and height.
+spacing <- 1
+totalwidth <- (imgwidth+spacing) * (gridwidth)
+totalheight <- (imgheight+spacing) * gridheight
+ 
+# Plot all the pages and save as PNG.
+png("RSMReport.png", round((imgwidth+spacing)*gridwidth/7), round((imgheight+spacing)*gridheight/7))
+par(mar=c(0,0,0,0))
+plot(0, 0, type='n', xlim=c(0, totalwidth), ylim=c(0, totalheight), asp=1, bty="n", axes=FALSE)
+for (i in 1:448) {
+    fname <- paste("report_", i, ".png", sep="")
+    img <- readPNG(fname)
+     
+    x <- (i %% gridwidth) * (imgwidth+spacing)
+    y <- totalheight - (floor(i / gridwidth)) * (imgheight+spacing)
+     
+    rasterImage(img, xleft=x, ybottom = y-imgheight, xright = x+imgwidth, ytop=y)
+}
+dev.off()
+```
+
+![A Graphic](https://rww.science/img/RSMReport.png)

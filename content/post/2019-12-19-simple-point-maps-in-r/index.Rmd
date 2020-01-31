@@ -1,0 +1,94 @@
+---
+title: Simple Point Maps in R
+author: RWW
+date: '2019-12-19'
+slug: simple-point-maps-in-r
+categories:
+  - Maps
+  - R
+tags:
+  - Maps
+  - tidyverse
+header:
+  caption: ''
+  image: ''
+  preview: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+```
+
+
+# Mapping Points in R
+
+My goal is a streamlined and self-contained freeware map maker with points denoting addresses.  It is a three step process that involves:  
+
+1. Get a map.  
+2. Geocode the addresses into latitude and longitude.  
+3. Combine the the two with a first map layer and a second layer on top that contains the points.
+
+From there, it is pretty easy to get fancy using ggplotly to put relevant text hovers into place.
+
+## Get a map.
+
+There are a few map sources that R can access.  Google has now made most features pay to access with generous free allocations.  It is worth it to sign up if one plans to use it frequently.  I have never actually paid for use but I do not use it much.  There are nice instructions in a post by [littlemissdata](https://www.littlemissdata.com/blog/maps).  The other issue is the type of map.  The coordinates are crucial and I will need a map that is bounded on latitude and longitude.  For that purpose, I think I will use `ggmap`.  The `register_google` line invokes my Google API key.
+
+
+```{r cars}
+library(tidyverse)
+library(ggmap)
+library(osmdata)
+pdx_map <- get_map(getbb("portland oregon"), maptype = "roadmap")
+ggmap(pdx_map)
+```
+
+## Load Some Data and Geocode it with Google
+
+First, to get the data.  I will create some data using the Portland Center but it could easily be replaced with imported data.
+
+```{r}
+Portland.Center <- data.frame(address = c("905 NW 12th Ave, Portland, OR 97209"), stringsAsFactors = FALSE)
+Portland.Center <- Portland.Center %>% mutate_geocode(., address)
+Portland.Center
+```
+
+## Put them together
+
+Because they are same source geocodings, this works directly.
+
+```{r}
+ggmap(pdx_map) + geom_point(data=Portland.Center, aes(x=lon, y=lat), size=3, color="magenta")
+```
+
+# Now to Try Without Google
+
+First, an open source map.
+
+```{r PDXMap, cache=TRUE}
+pdx.map <- get_stamenmap(getbb("portland oregon"), 
+                         zoom = 14)
+ggmap(pdx.map)
+```
+
+# Free Geocode
+
+```{r}
+library(tmaptools)
+Geocoded.PDX <- geocode_OSM(Portland.Center$address, as.data.frame = TRUE) %>% select(query, lat, lon)
+p1 <- ggmap(pdx.map) + geom_point(data=Geocoded.PDX, aes(x=lon, y=lat, text=query), size=3, color="magenta")
+library(plotly)
+ggplotly(p1)
+```
+
+# Leaflet
+
+A very cool toy is leaflet.  The markers work the way as geom_point but hovers can be replaced with popups of various forms.  I really like this.
+
+```{r}
+library(leaflet)
+Geocoded.PDX
+m <- leaflet() %>% addTiles() %>% addMarkers(., data=Geocoded.PDX, lng=~lon, lat=~lat, popup = ~query)
+m
+```
+

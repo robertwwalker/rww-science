@@ -1,0 +1,198 @@
+---
+title: "Pew Data on Bond Ratings and Rainy Day Funds"
+author: "RWW"
+date: '2018-03-07'
+slug: pew-data-on-bond-ratings-and-rainy-day-funds
+tags:
+- R
+- panel data
+categories:
+- R
+- Public Finance
+---
+
+
+
+<div id="pew-on-rainy-day-funds-and-credit-quality" class="section level1">
+<h1>Pew on Rainy Day Funds and Credit Quality</h1>
+<p>The Pew Charitable Trusts released a report last May (2017) that portrays rainy day funds that are well designed and deployed as a form of insurance against ratings downgrades. One the one hand, this is perfectly sensible because the alternatives do not sound like very good ideas. A poorly designed rainy day fund, for example, is going to have to fall short on either the rainy day or the fund. A poorly deployed savings device for cash flow management over the not-so-short term also seems unlikely to bolster market confidence in the repayment abilities of an issuer. If this very simple perspective that seems plausible is true, then a simple replication should be easy. And it is. Pew gladly shared the data and code. If one has access to Stata, the study is easy to replicate.</p>
+<p>Taken from the website above:</p>
+<div class="figure">
+<img src="../../img/PewCTRecs.png" alt="Pew Recommendations" />
+<p class="caption">Pew Recommendations</p>
+</div>
+<div id="on-the-other-hand" class="section level2">
+<h2>On the other hand</h2>
+<p>The variation in the data may leave a good bit to be desired. Let’s have a look at some basic features of the data.</p>
+<pre class="r"><code>library(haven)
+library(dplyr)
+library(here)
+Pew.Data &lt;- read_dta(url(&quot;https://github.com/robertwwalker/academic-mymod/raw/master/data/Pew/modeledforprediction.dta&quot;))
+glimpse(Pew.Data)</code></pre>
+<pre><code>## Observations: 966
+## Variables: 45
+## $ fyear            &lt;dbl&gt; 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002…
+## $ statefips        &lt;dbl&gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1…
+## $ state            &lt;chr&gt; &quot;Alabama&quot;, &quot;Alabama&quot;, &quot;Alabama&quot;, &quot;Alabama&quot;, &quot;Alabama…
+## $ bbalance         &lt;dbl&gt; 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000…
+## $ withdraw         &lt;dbl&gt; 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.00…
+## $ deposit          &lt;dbl&gt; 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.0…
+## $ interest         &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+## $ ebalance         &lt;dbl&gt; 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000…
+## $ fund             &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1…
+## $ spo              &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, …
+## $ moodyo           &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 0, 0, 0, 0, …
+## $ fitcho           &lt;dbl&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 0, 0…
+## $ spnum            &lt;dbl&gt; 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5…
+## $ moodynum         &lt;dbl&gt; 6, 6, 6, 6, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 7, 7…
+## $ fitchnum         &lt;dbl&gt; 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6…
+## $ surplus          &lt;dbl&gt; -3, -73, 4, -35, 27, 21, 30, -34, -47, -177, 152, 35…
+## $ gfebal           &lt;dbl&gt; 128, 54, 58, 23, 51, 72, 101, 67, 19, 113, 347, 664,…
+## $ longdebt         &lt;dbl&gt; 0.10800536, 0.09275389, 0.08864151, 0.08145412, 0.08…
+## $ shortdebt        &lt;dbl&gt; 2.790155e-05, 8.648518e-05, 7.688679e-06, 4.916201e-…
+## $ totaldebt        &lt;dbl&gt; 0.10803326, 0.09284038, 0.08864920, 0.08145904, 0.08…
+## $ population       &lt;dbl&gt; 8.346216, 8.357078, 8.365626, 8.373577, 8.382046, 8.…
+## $ pop65            &lt;dbl&gt; 548.045, 554.718, 561.331, 567.094, 571.722, 574.279…
+## $ gfe              &lt;dbl&gt; 3860, 4151, 4240, 4475, 4688, 4919, 5215, 5213, 5325…
+## $ gfr              &lt;dbl&gt; 3857, 4078, 4244, 4440, 4715, 4940, 5245, 5179, 5278…
+## $ spi              &lt;dbl&gt; 79368.02, 84194.33, 88048.51, 92206.95, 98699.30, 10…
+## $ rdfbal           &lt;dbl&gt; 0.0000000, 0.0000000, 0.0000000, 0.0000000, 0.000000…
+## $ rdfdep           &lt;dbl&gt; 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000…
+## $ rdfwit           &lt;dbl&gt; 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.…
+## $ gfebalgfe        &lt;dbl&gt; 3.3160622, 1.3008914, 1.3679246, 0.5139665, 1.087883…
+## $ spratingshift    &lt;dbl&gt; NA, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ spupgrade        &lt;dbl&gt; NA, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ spdowngrade      &lt;dbl&gt; NA, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ moodyratingshift &lt;dbl&gt; NA, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1,…
+## $ moodyupgrade     &lt;dbl&gt; NA, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, …
+## $ moodydowngrade   &lt;dbl&gt; NA, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ fitchratingshift &lt;dbl&gt; NA, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, …
+## $ fitchupgrade     &lt;dbl&gt; NA, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, …
+## $ fitchdowngrade   &lt;dbl&gt; NA, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ rdfnet           &lt;dbl&gt; 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.00…
+## $ rdfnetgfe        &lt;dbl&gt; 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.…
+## $ revenuebw        &lt;dbl&gt; 4.613832, 15.427544, -32.826214, -55.708824, 5.46266…
+## $ revenuebwtrend   &lt;dbl&gt; 3852.386, 4062.573, 4276.826, 4495.709, 4709.537, 48…
+## $ trendstanding    &lt;dbl&gt; 1, 1, -1, -1, 1, 1, 1, 1, -1, -1, -1, -1, 1, 1, 1, -…
+## $ valenceusage     &lt;dbl&gt; 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.00…
+## $ valenceusagegfe  &lt;dbl&gt; 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.…</code></pre>
+<pre class="r"><code>table(Pew.Data$state)</code></pre>
+<pre><code>## 
+##        Alabama         Alaska        Arizona       Arkansas     California 
+##             21             21             21             21             21 
+##    Connecticut       Delaware        Florida        Georgia         Hawaii 
+##             21             21             21             21             21 
+##          Idaho        Indiana           Iowa       Kentucky      Louisiana 
+##             21             21             21             21             21 
+##          Maine       Maryland  Massachusetts       Michigan      Minnesota 
+##             21             21             21             21             21 
+##    Mississippi       Missouri       Nebraska         Nevada  New Hampshire 
+##             21             21             21             21             21 
+##     New Jersey     New Mexico       New York North Carolina   North Dakota 
+##             21             21             21             21             21 
+##           Ohio       Oklahoma         Oregon   Pennsylvania   Rhode Island 
+##             21             21             21             21             21 
+## South Carolina   South Dakota      Tennessee          Texas           Utah 
+##             21             21             21             21             21 
+##        Vermont       Virginia     Washington  West Virginia      Wisconsin 
+##             21             21             21             21             21 
+##        Wyoming 
+##             21</code></pre>
+<p>The panel is balanced; in the original, New Mexico, New York, South Carolina, and Vermont are duplicated but the Stata code writes out a transformed dataset for analysis that is recorded. The technical report accompanying the study and the stata code give us some insights. In all cases, there are two or more RDF’s and they require combining.</p>
+</div>
+</div>
+<div id="combining-ratings" class="section level1">
+<h1>Combining Ratings</h1>
+<p>In previous work, Skip Krueger and I have treated bond ratings as a multiple rater problem and have deployed cumulative IRT models to measure latent credit quality. One of the methodologically desireable approaches to the Pew study was a model deploying state-level fixed effects but the ordinal data precludes doing this reliably because states that have always experienced the highest rating will have unbounded fixed effects. The continuous latent scale post measurement allows us to sidestep that problem. First, let me scale the data</p>
+<div id="scaling-the-ratings" class="section level3">
+<h3>Scaling the Ratings</h3>
+<pre class="r"><code>library(MCMCpack)
+Scaled.BR &lt;- MCMCordfactanal(~spnum+fitchnum+moodynum, data=Pew.Data, factors=1, burnin = 1e6, mcmc=1e6, thin=100, store.scores=TRUE, tune=0.7, lambda.constraints=list(fitchnum=list(2,&quot;+&quot;)), verbose=50000)</code></pre>
+<pre class="r"><code>library(tidyverse)
+load(url(&quot;https://github.com/robertwwalker/academic-mymod/raw/master/data/Pew/Scaled-BR-Pew.RData&quot;))
+state.ratings &lt;- data.frame(state=Pew.Data$state, statefips=Pew.Data$statefips, year=Pew.Data$fyear, BR.Data)
+state.ratings.long &lt;- tidyr::gather(state.ratings, sampleno, value, -statefips, -year, -state)
+state.SE &lt;- state.ratings.long %&gt;% group_by(state,year) %&gt;% summarise(Credit.Quality=mean(value), t1=quantile(value, probs=0.025), t2=quantile(value, probs=0.975))</code></pre>
+</div>
+<div id="what-does-the-scaling-look-like" class="section level2">
+<h2>What does the scaling look like?</h2>
+<div id="the-first-group" class="section level3">
+<h3>The First Group</h3>
+<pre class="r"><code>stored &lt;- list()
+stored &lt;- state.SE %&gt;% group_by(state) %&gt;% filter(state%in%c(names(table(state.SE$state))[c(1:16)])) %&gt;%
+  ggplot(., aes(x=year, y=Credit.Quality)) + theme_minimal() + theme(axis.text.x  = element_text(angle=60)) +
+    geom_ribbon(aes(ymin=t1, ymax=t2, colour=state, fill=state), alpha=0.4) + guides(fill=&quot;none&quot;, alpha=&quot;none&quot;) +
+    geom_line() + guides(colour=&quot;none&quot;) +
+#    geom_jitter(width=0.2) +
+#    geom_point(shape=21, size=3, fill=&quot;white&quot;) +
+    ylim(-4,4) + facet_wrap(~state)
+stored</code></pre>
+<p><img src="/post/2018-03-07-pew-data-on-bond-ratings-and-rainy-day-funds/index_files/figure-html/Plot5-1.png" width="672" /></p>
+</div>
+<div id="the-second-group" class="section level3">
+<h3>The Second Group</h3>
+<pre class="r"><code>stored &lt;- list()
+stored &lt;- state.SE %&gt;% group_by(state) %&gt;% filter(state%in%c(names(table(state.SE$state))[c(17:32)])) %&gt;%
+  ggplot(., aes(x=year, y=Credit.Quality)) + theme_minimal() + theme(axis.text.x  = element_text(angle=60)) +
+    geom_ribbon(aes(ymin=t1, ymax=t2, colour=state, fill=state), alpha=0.4) + guides(fill=&quot;none&quot;, alpha=&quot;none&quot;) +
+    geom_line() + guides(colour=&quot;none&quot;) +
+#    geom_jitter(width=0.2) +
+#    geom_point(shape=21, size=3, fill=&quot;white&quot;) +
+    ylim(-4,4) + facet_wrap(~state)
+stored</code></pre>
+<p><img src="/post/2018-03-07-pew-data-on-bond-ratings-and-rainy-day-funds/index_files/figure-html/Plot5b-1.png" width="672" /></p>
+</div>
+<div id="the-third-group" class="section level3">
+<h3>The Third Group</h3>
+<pre class="r"><code>stored &lt;- list()
+stored &lt;- state.SE %&gt;% group_by(state) %&gt;% filter(state%in%c(names(table(state.SE$state))[c(33:46)])) %&gt;%
+  ggplot(., aes(x=year, y=Credit.Quality)) + theme_minimal() + theme(axis.text.x  = element_text(angle=60)) +
+    geom_ribbon(aes(ymin=t1, ymax=t2, colour=state, fill=state), alpha=0.4) + guides(fill=&quot;none&quot;, alpha=&quot;none&quot;) +
+    geom_line() + guides(colour=&quot;none&quot;) +
+#    geom_jitter(width=0.2) +
+#    geom_point(shape=21, size=3, fill=&quot;white&quot;) +
+    ylim(-4,4) + facet_wrap(~state)
+stored</code></pre>
+<p><img src="/post/2018-03-07-pew-data-on-bond-ratings-and-rainy-day-funds/index_files/figure-html/Plot5c-1.png" width="672" /></p>
+</div>
+</div>
+<div id="the-panel-data-properties" class="section level2">
+<h2>The Panel Data Properties</h2>
+<p>Panel data estmators for linear problems benefit from a very useful decomposition from ANOVA. The total variation in a variable can be decomposed into two components: a within-unit or short-run component and a between-unit averages component (that is constant for any given unit). It is always important, as emphasised in the modelling in Mundlak (1977), to consider the variance components because they conttribute insights into the nature of inferences by telling us how much information and of what sort is contained in each indicator. The number of controls in the study is manageable so in depth analysis is possible.</p>
+</div>
+<div id="analysing-the-scaled-data" class="section level2">
+<h2>Analysing the Scaled Data</h2>
+<p>With continuous measures on the response imputed over 10,000 samples, we can turn to an analysis of these samples to reexamine the dynamics of rainy day fund expenditures on bond ratings.</p>
+<pre class="r"><code>library(haven)
+nlswork &lt;- read_stata(&quot;http://www.stata-press.com/data/r13/nlswork.dta&quot;)
+library(dplyr)
+XTSUM &lt;- function(data, varname, unit) {
+  varname &lt;- enquo(varname)
+  unit &lt;- enquo(unit)
+  ores &lt;- nlswork %&gt;% summarise(ovr.mean=mean(!! varname, na.rm=TRUE), ovr.sd=sd(!! varname, na.rm=TRUE), ovr.min = min(!! varname, na.rm=TRUE), ovr.max=max(!! varname, na.rm=TRUE), N.overall=sum(as.numeric(!is.na(!! varname))))
+  bmeans &lt;- nlswork %&gt;% group_by(!!unit) %&gt;% summarise(meanx=mean(!! varname, na.rm=T), t.count=sum(as.numeric(!is.na(!! varname))))
+  bres &lt;- bmeans %&gt;% summarise(between.sd = sd(meanx, na.rm=TRUE), between.min = min(meanx, na.rm=TRUE), between.max=max(meanx, na.rm=TRUE), t.bar=mean(t.count, na.rm=TRUE), Groups=n())
+  wdat &lt;- nlswork %&gt;% group_by(!!unit) %&gt;% mutate(W.x = scale(!! varname, scale=FALSE))
+  wres &lt;- wdat %&gt;% ungroup() %&gt;% summarise(within.sd=sd(W.x, na.rm=TRUE), within.min=min(W.x, na.rm=TRUE), within.max=max(W.x, na.rm=TRUE))
+  return(list(ores=ores,bres=bres,wres=wres))
+}
+XTSUM(nlswork, varname=hours, unit=idcode)</code></pre>
+<pre><code>## $ores
+## # A tibble: 1 x 5
+##   ovr.mean ovr.sd ovr.min ovr.max N.overall
+##      &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;
+## 1     36.6   9.87       1     168     28467
+## 
+## $bres
+## # A tibble: 1 x 5
+##   between.sd between.min between.max t.bar Groups
+##        &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt; &lt;dbl&gt;  &lt;int&gt;
+## 1       7.85           1        83.5  6.04   4711
+## 
+## $wres
+## # A tibble: 1 x 3
+##   within.sd within.min within.max
+##       &lt;dbl&gt;      &lt;dbl&gt;      &lt;dbl&gt;
+## 1      7.52      -38.7       93.5</code></pre>
+</div>
+</div>

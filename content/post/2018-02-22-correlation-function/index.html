@@ -1,0 +1,45 @@
+---
+title: Correlation Function
+author: Robert W. Walker
+date: '2018-02-22'
+slug: correlation-function
+categories:
+  - R
+  - GSM622
+tags:
+  - R
+  - R Markdown
+  - plot
+---
+
+
+
+<div id="correlations-and-the-impact-on-sums-and-differences" class="section level1">
+<h1>Correlations and the Impact on Sums and Differences</h1>
+<p>I will use a simple R function to illustrate the effect of correlation on sums and differences of random variables. In general, the variance [and standard deviation] of a sum of random variables is the variance of the individual variables plus twice the covariance; the variance [and standard deviation] of a difference in random variables is the variance of the individual variables minus twice the (signed) covariance.</p>
+<p><span class="math display">\[ Var (\sum_{i=1}^{n} X_{i}) = \sum_{i=1}^{n} Var(X_{i}) + 2 \sum_{1 \leq i \leq j \leq n} Cov(X_{i},X_{j}) \]</span></p>
+<p>Now for the function and two examples.</p>
+</div>
+<div id="correlation-is-0.8" class="section level1">
+<h1>Correlation is 0.8</h1>
+<pre class="r"><code>library(MASS)
+plot.cor &lt;- function(cor) {
+  if(-1 &lt; cor &amp; cor &lt; 1) {
+mean.vec &lt;- c(0,0)
+sig.mat &lt;- matrix(c(1,cor,cor,1), nrow=2)
+df &lt;- data.frame(mvrnorm(n=1000, mean.vec, sig.mat))
+df$sum &lt;- rowSums(df)
+df$diff &lt;- with(df, X1-X2)
+plot(x=df$X1, y=df$X2, xlab=&quot;x1&quot;, ylab=&quot;x2&quot;, main=paste(&quot;Correlation:&quot;,cor), sub=paste(&quot;Std. Dev: Sum&quot;,round(sd(df$sum), digits=3),&quot; Difference:&quot;,round(sd(df$diff), digits=3)))
+  }
+  else { cat(&quot;Correlation must be between -1 and 1&quot;) }
+}
+plot.cor(cor=0.8)</code></pre>
+<p><img src="/post/2018-02-22-correlation-function/index_files/figure-html/CorF-1.png" width="672" /></p>
+<p>The correlation above is 0.8</p>
+</div>
+<div id="correlation-is--0.8" class="section level1">
+<h1>Correlation is -0.8</h1>
+<pre class="r"><code>plot.cor(cor=-0.8)</code></pre>
+<p><img src="/post/2018-02-22-correlation-function/index_files/figure-html/CorF2-1.png" width="672" /></p>
+</div>

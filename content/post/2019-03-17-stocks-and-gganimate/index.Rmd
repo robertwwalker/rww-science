@@ -1,0 +1,53 @@
+---
+title: Stocks and gganimate
+author: RWW
+date: '2019-03-17'
+slug: stocks-and-gganimate
+categories:
+  - R
+  - tidyverse
+tags:
+  - plot
+header:
+  caption: ''
+  image: ''
+  preview: yes
+---
+
+## tidyquant
+
+Automates a lot of equity research and calculation using *tidy* concepts.  Here, I will first use it to get the components of the S and P 500 and pick out those with weights over 1.25 percent.  In the next step, I download the data and finally calculate daily returns and a cumulative wealth index.
+
+```{r cars, message=FALSE}
+library(tidyquant)
+library(tidyverse)
+tq_index("SP500") %>% filter(weight > 0.0125) %>% select(symbol,company) -> Tickers
+Tickers <- Tickers %>% filter(symbol!="BRK.B") %>% filter(symbol!="GOOGL")
+Eq.P <- Tickers %>%  tq_get(., from="2018/01/01", to="2019/03/14") 
+Returns <- Eq.P %>% group_by(symbol) %>% tq_transmute(., adjusted, periodReturn, period="daily")
+C.Returns <- Eq.P %>% 
+  group_by(symbol) %>% 
+  tq_transmute(., adjusted, periodReturn, period="daily", type = "log", col_rename = "returns") %>% 
+  mutate(wealth.index = 100 * cumprod(1 + returns))
+library(skimr)
+Returns %>% skim()
+```
+
+## Animating a plot
+
+The goal of this was to play with `gganimate`.  I will take the big components and go through and plot them.  It is a big animation because it involves over a year of data.  The basic idea for the graphic was borrowed from a gganimate [sample](https://github.com/thomasp85/gganimate/wiki/Temperature-time-series).
+
+```{r AnimPlot}
+library(gganimate)
+library(ggrepel)
+p <- ggplot(C.Returns, aes(date, wealth.index, group = symbol, colour=symbol)) + 
+  geom_point(size = 2) + 
+  geom_line() + 
+  geom_segment(aes(xend = as.Date("2019-03-15"), yend = wealth.index), linetype = 2) + 
+    geom_text_repel(aes(y = wealth.index, x = as.Date("2019-03-15"), label = symbol), hjust = 1, nudge_x = 8) +
+  transition_reveal(date) + 
+  coord_cartesian(clip = 'off') + 
+  labs(title = 'Cumulative Wealth Index for S&P Top 10', subtitle="Begins January 1, 2018: Base 100", y = 'Cumulative Change', x = 'Date') +
+  theme_minimal() + theme(legend.position = "none")
+animate(p, nframes=300)
+```

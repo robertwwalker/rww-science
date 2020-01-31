@@ -1,0 +1,85 @@
+---
+title: Trying out Leaflet
+author: RWW
+date: '2019-12-16'
+slug: trying-out-leaflet
+categories:
+  - R
+tags:
+  - R
+  - R Markdown
+  - tidyTuesday
+header:
+  caption: ''
+  image: ''
+  preview: yes
+---
+
+<script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
+<script src="/rmarkdown-libs/pymjs/pym.v1.js"></script>
+<script src="/rmarkdown-libs/widgetframe-binding/widgetframe.js"></script>
+
+
+<div id="international-murders" class="section level1">
+<h1>International Murders</h1>
+<p>Are among the data for analysis in the tidyTuesday for December 10, 2019. These are made for a map.</p>
+<pre class="r"><code>library(tidyverse)
+library(leaflet)
+library(stringr)
+library(sf)
+library(here)
+library(widgetframe)
+library(htmlwidgets)
+library(htmltools)
+options(digits = 3)
+set.seed(1234)
+theme_set(theme_minimal())
+library(tidytuesdayR)
+tuesdata &lt;- tt_load(2019, week = 50)
+murders &lt;- tuesdata$gun_murders</code></pre>
+<p>There isn’t much data so it should make this a bit easier. Now for some data. As it happens, the best way I currently know how to do this is going to involve acquiring a spatial frame. There is one in the package <code>tmap</code>. First, to load it. My names are upper case.</p>
+<pre class="r"><code>library(tmap)
+data(&quot;World&quot;)
+World &lt;- World %&gt;% mutate(name = toupper(name))
+murders[murders$country==&quot;CZECH REPUBLIC&quot;,&quot;country&quot;] &lt;- &quot;CZECH REP.&quot;
+murders[murders$country==&quot;HUNGRY&quot;,&quot;country&quot;] &lt;- &quot;HUNGARY&quot;
+murders[murders$country==&quot;REPUBLIC OF KOREA&quot;,&quot;country&quot;] &lt;- &quot;KOREA&quot;
+World.M &lt;- World %&gt;% left_join(., murders, by = c( &quot;name&quot; = &quot;country&quot;))
+World.M &lt;- World.M %&gt;% mutate(Murders = count)
+tmap_style(&quot;white&quot;)
+tmap_mode(&quot;view&quot;)
+my.map &lt;- tm_shape(World.M) +
+    tm_polygons(&quot;Murders&quot;, title=&quot;&quot;, palette = &quot;viridis&quot;) + tm_layout(panel.labels = &quot;Gun Murders&quot;)
+lf &lt;- tmap_leaflet(my.map)
+frameWidget(lf, height=&#39;600&#39;)</code></pre>
+<div id="htmlwidget-1" style="width:100%;height:600px;" class="widgetframe html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/post/2019-12-16-trying-out-leaflet/index_files/figure-html//widgets/widget_unnamed-chunk-2.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+<p>That’s convenient because I think I can also modify this for something else.</p>
+<pre class="r"><code>World.M.SF &lt;- sf::as_Spatial(World.M)
+l &lt;- leaflet(World.M.SF) %&gt;% setView(0,0,2) %&gt;% addPolygons(weight = 1, smoothFactor = 0.5,
+    opacity = 1.0, fillOpacity = 0.5,
+    fillColor = ~colorQuantile(&quot;YlOrRd&quot;, Murders)(Murders),
+    highlightOptions = highlightOptions(color = &quot;white&quot;, weight = 2,
+      bringToFront = TRUE))
+esri &lt;- grep(&quot;^Esri&quot;, providers, value = TRUE)
+for (provider in esri) {
+    l &lt;- l %&gt;% addProviderTiles(provider, group = provider)
+}
+l &lt;- l %&gt;%
+    addLayersControl(baseGroups = names(esri),
+                     options = layersControlOptions(collapsed = FALSE)) %&gt;%
+    addMiniMap(tiles = esri[[1]], toggleDisplay = TRUE,
+               position = &quot;bottomleft&quot;) %&gt;%
+    htmlwidgets::onRender(&quot;
+    function(el, x) {
+      var myMap = this;
+      myMap.on(&#39;baselayerchange&#39;,
+        function (e) {
+          myMap.minimap.changeLayer(L.tileLayer.provider(e.name));
+        })
+    }&quot;)
+# sf:::as_Spatial()
+frameWidget(l, height = &#39;600&#39;)</code></pre>
+<div id="htmlwidget-2" style="width:100%;height:600px;" class="widgetframe html-widget"></div>
+<script type="application/json" data-for="htmlwidget-2">{"x":{"url":"/post/2019-12-16-trying-out-leaflet/index_files/figure-html//widgets/widget_unnamed-chunk-3.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+</div>

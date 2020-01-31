@@ -1,0 +1,518 @@
+---
+title: "tidy data Principles"
+subtitle: "Environments, Ordering, and the Nuts and Bolts of R"  
+author: "Robert W. Walker"
+date: '`r Sys.Date()`'
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: xaringan-themer.css
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE); library(tidyverse); library(dplyr)
+```
+
+```{r xaringan-themer, include=FALSE}
+library(xaringanthemer); library(kableExtra)
+solarized_dark(
+  code_font_family = "Fira Code",
+  code_font_url    = "https://cdn.rawgit.com/tonsky/FiraCode/1.204/distr/fira_code.css"
+)
+```
+
+
+# Let's Get Started:
+## An Overview of R and RStudio
+
+RStudio has tons of useful *Addins* that are useful for specialized tasks.  
+
+--
+
+- We will make use of one today: `esquisse`.  
+
+--
+
+- NB: It exports to powerpoint with some assistance packages<sup>A</sup>.
+
+.footnote[[A] Packages are prepared bits of R code that extend the functionality of base R.  The *tidyverse* is one of many entire ecosystems to perform specific tasks; it is optimized for orderly data analysis.  Among other things, R has extensive contributed documentation by specialists operating in those areas.]
+
+--
+
+```{r, eval=FALSE}
+install.packages("esquisse")
+```
+
+
+---
+# Let's Have a Look at R
+
+R is a *object oriented* programming language for data.
+That implies two things.  
+- We will have *functions* on *objects* that create new *objects*.   
+- It has a command prompt.  `>`  
+- Valid R functions, objects, and/or assignments ( `<-`) go there.  
+- The help for any function is provided by `?` before the command.
+
+---
+# tidy data
+
+We will think and talk about data organized in a `tidy` way where rows represent **cases/units/observations** and columns represent **variables**.  Many standard forms of enterprise data are not stored in this way though they could be.  Accounting data come to mind where there are `data` in the column names.  There are tools that we will later encounter for `pivoting` from long to wide forms where the `tidy` and long forms are synonymous.
+
+---
+# R's Variable Types
+
+- Factor: Qualitative labels with attached numbers.  Think key-value.
+- Character: Strings of letters and numbers demarcated by quotation marks.
+```
+There is 'something' or there is "something"
+There is 'Hello World!' or there is "Hello World!"
+```
+- Numeric [integer, double]
+- Complex [of you don't know what this means, worry not]
+- Logical
+- Date
+
+The global environment in RStudio helps us out.
+
+---
+# A Brief Bit on R-Markdown
+
+It is a wonderful technology for repeated tasks and for transparent communication with data.  I will use it extensively.  A Markdown is usually a *Sandbox*, it does not start with packages, libraries, or commands.  It is best to work with RStudio via the play button for *code chunks* and the play all above to make sure that everything syncs up.  One can find a template, with associated help under `Help`.
+
+```
+File > New file > R Markdown
+```
+
+We are working with FastFood.Rmd -- an R Markdown file.
+
+---
+# An Example with Excel Data
+
+When the `Environment` tab is active in the top right of the RStudio.  You will see a tab called `Import Dataset`.  The first thing to note is that *R* reads a number of data types [and link to databases and things].
+
+To import Excel data, `From Excel`   
+- We have to give it a file name. *NB Paths*.   
+
+```{r}
+library(readxl)
+{{ url <- "https://github.com/robertwwalker/DADMStuff/raw/master/FastFood.xlsx" }}
+destfile <- "FastFood.xlsx"
+curl::curl_download(url, destfile)
+FastFood <- read_excel(destfile)
+```
+
+--
+
+That's not exacly what I hoped for.  
+**There are intermediate steps to downloading it and checking the sheets that it does not do with remote files.**
+
+---
+# An Example with Excel Data
+
+When the `Environment` tab is active in the top right of the RStudio.  You will see a tab called `Import Dataset`.  The first thing to note is that *R* reads a number of data types [and link to databases and things].
+
+To import Excel data, `From Excel`   
+- We have to give it a file name. *NB Paths*.   
+- We have to choose a sheet.  
+- Types of variables.  
+- Missing data values.  
+- Ranges  
+
+```{r}
+library(readxl)
+url <- "https://github.com/robertwwalker/DADMStuff/raw/master/FastFood.xlsx" 
+destfile <- "FastFood.xlsx"
+curl::curl_download(url, destfile)
+{{ FastFood <- read_excel(destfile, sheet = "FastFood", na = "NA") }}
+```
+
+**This will have to be added to the RMarkdown file.**
+
+---
+# Some Crash R
+
+Operators:
+- +
+- -
+- *
+- /
+- and many others.
+- We will also be concerned with the difference between equals as assigning and equals in math [denoted with two equals signs in succession].
+
+---
+# Scoping and Environments
+
+The hardest thing to many learners about R is the scoping requirements and environments.  We will deploy a collection of packages that have a very data centric view of this problem.  Let me use our Fast Food example.  I can type the name to see what it is.  It dumps a lot to my screen.
+
+```{r eval=FALSE}
+FastFood
+```
+
+---
+
+```{r eval=require('DT'), tidy=FALSE, echo=FALSE}
+DT::datatable(FastFood)
+```
+
+---
+# In the Beginning [Base R]
+
+We referred to things via `$` to unpack it.  The RStudio remains smart about this; the elements in an object are [mostly] unpacked via `$`.  To find just calories in FastFood, I would need:
+
+```{r}
+FastFood$calories
+```
+
+---
+# Functions
+
+And to embed that into a function, I could have a function that takes some variable, call it x, adds them all up and divides by the total number:
+
+$$\bar{X}=\frac{1}{n}\sum_{i=1}^nX_i$$
+
+```{r}
+mean(FastFood$calories)
+```
+
+--
+
+Now let's try that for protein.
+
+```{r}
+mean(FastFood$protein)
+```
+
+
+**Though there is only one missing datum, that is enough to render the result missing.**
+
+---
+# How to Adjust for NA?
+
+Now let's try that for protein.
+
+```{r}
+mean(FastFood$protein)
+```
+
+**Though there is only one missing datum, that is enough to render the result missing.**
+
+If we wish to fix this, we need, from `?mean`:
+
+```{r}
+mean(FastFood$protein, na.rm=TRUE)
+```
+
+
+---
+# Scoping
+
+That operator `$` is the first encounter with the `scope` of something.  We are trying to pull `protein` from `FastFood`.  There are other basic operators in $R$ to accomplish the same thing.  We could have asked for the [even less typing-efficient] relevant row and column definition with:
+
+```{r}
+FastFood[,"protein"]
+```
+
+---
+
+If I want more than one, this becomes cumbersome.  The tidyverse, built around a `piping operator` -- `%>%` --, was developed as a solution to a data.frame centric form of analysis.  Here's how it works.  We start with data and `pipe` it so that the names are understood in the context of the data that we begin with.  The main initial helper that we will make use of is `skim` from the `skimr` library.
+
+---
+
+<small>
+```{r, results='markup'}
+library(skimr)
+FastFood %>% skim() %>% kable() %>% kable_styling() %>%
+  scroll_box(width = "800px", height = "500px")
+```
+</small>
+
+---
+# dplyr verbs
+
+There are four main `dplyr` verbs that we will play with, and some helpers. 
+- filter   
+--
+- select   
+--
+- mutate   
+--
+- summarize or summarise  
+
+---
+## filter [1 of 3]
+
+`filter` selects rows according to some set of conditions.  
+- Valid with `==`
+- Can use `%in%` with a vector `c()`.
+
+<small>
+```{r}
+FastFood %>% filter(restaurant=="Taco Bell")
+FastFood %>% filter(restaurant%in%c("Taco Bell","Burger King"))
+FastFood %>% filter(startsWith(restaurant,"S")==TRUE) %>% group_by(restaurant) %>% skim()
+```
+</small>
+
+---
+## filter [2 of 3]
+
+`filter` selects rows according to some set of conditions.  
+- Can use `%in%` with a vector `c()`.
+
+<small>
+```{r}
+FastFood %>% filter(restaurant%in%c("Taco Bell","Burger King"))
+```
+</small>
+
+---
+## filter [3 of 3]
+
+`filter` selects rows according to some set of conditions.  
+- Or more elaborate combinations of elements
+
+<small>
+```{r, results='markup'}
+FastFood %>% filter(startsWith(restaurant,"S")==TRUE) %>% group_by(restaurant) %>% skim() %>% kable() %>% kable_styling() %>%
+  scroll_box(width = "100%", height = "500px")
+```
+</small>
+
+
+---
+class: inverse
+## select [1/2]
+
+`select` selects columns according to some set of names/conditions.  
+
+<small>
+```{r}
+FastFood %>% select(restaurant, calories)
+```
+
+---
+class: inverse
+## select [2/2]
+
+`select` selects columns according to some set of names/conditions.  
+
+<small>
+```{r}
+FastFood %>% select(restaurant,starts_with("vit"))
+```
+
+
+---
+# mutate [and transmute]
+
+`mutate()` and `transmute()` are the core method for adding variables [columns] to existing data.  The key difference is that `mutate()` retains existing variables while `transmute()` drops them.  Let's see it for sodium, rescaled to grams.
+
+*mutate* will keep all columns.
+
+<small>
+```{r}
+FastFood %>% 
+  mutate(Sodium.Grams = sodium / 1000) %>%
+  select(restaurant,Sodium.Grams,sodium,everything())
+```
+</small>
+
+
+---
+## transmute
+
+*transmute* will only keep the called columns.
+
+<small>
+```{r}
+FastFood %>% transmute(Sodium.Grams = sodium / 1000)
+# To keep a variable, copy it.
+# FastFood %>% transmute(restaurant = restaurant, Sodium.Grams = sodium / 1000)
+```
+</small>
+
+---
+## NB: Reassigning or newly assigning
+
+To make these `mutate()` a part of the data, we assign it a *new name* or reassign it.
+
+<small>
+```{r}
+FastFood <- FastFood %>% mutate(Sodium.Grams = sodium / 1000)
+My.Fast.Food <- FastFood %>% mutate(Sodium.Grams = sodium / 1000)
+```
+
+
+---
+# The Magic of `group_by`
+
+`group_by` is a core `tidyverse` operator for repeating something by groups.  By itself, it simply splits a data object according to the grouping variable(s).
+
+--
+
+**But that is exactly what a pivot table does.**
+
+---
+# Grouping and pipes
+
+<small>
+```{r, results='markup'}
+FastFood %>% group_by(restaurant) %>% skim() %>% kable() %>% kable_styling() %>%
+  scroll_box(width = "100%", height = "500px")
+
+```
+</small>
+
+---
+
+# Fixing a Frustration
+
+```{r}
+FastFood <- FastFood %>% mutate(Chicken = grepl('Chicken|Chick-n',item))
+```
+
+---
+# A Two Variable Pivot
+
+<small>
+```{r, results='markup'}
+FastFood %>% group_by(restaurant,Chicken) %>% skim(Sodium.Grams) %>% kable() %>% kable_styling() %>% scroll_box(width = "100%", height = "50%")
+```
+</small>
+
+---
+# summarise / summarize
+
+Is the analog to creating a pivot table in R by whatever groupings we wish.
+
+```{r}
+FastFood %>% group_by(restaurant) %>% summarise(Mean.Protein = mean(protein), Mean.Protein.NA = mean(protein, na.rm=TRUE))
+```
+
+---
+# summarise
+
+Is the analog to creating a pivot table in R by whatever groupings we wish.
+
+```{r}
+FastFood %>% group_by(restaurant, Chicken) %>% summarise(Mean.Protein = mean(protein), Mean.Protein.NA = mean(protein, na.rm=TRUE))
+```
+
+
+---
+# ungroup()
+
+We need `ungroup()` when we want to combine `mutate()` and `group_by()` to calculate aggregate statistics for all relevant rows.
+
+<small>
+```{r}
+FastFood <- FastFood %>% 
+  group_by(restaurant) %>% 
+  mutate(Avg.Protein = mean(protein, na.rm=TRUE)) %>% 
+  ungroup()
+```
+</small>
+
+---
+# arrange() [1/2]
+
+We can use arrange to sort a result.  For example,
+
+```{r}
+FastFood %>% 
+  group_by(restaurant) %>% 
+  summarise(Avg.Calories = mean(calories)) %>% 
+  arrange(Avg.Calories)
+```
+
+---
+# arrange() [2/2]
+
+We can use arrange to sort a result, and `desc()` to flip it.  For example,
+
+```{r}
+FastFood %>% 
+  group_by(restaurant) %>% 
+  summarise(Avg.Calories = mean(calories)) %>% 
+  arrange(desc(Avg.Calories))
+```
+
+---
+# A Basic Table: Counts
+
+```{r}
+( Restaurant.Table <- FastFood %>% group_by(restaurant) %>% summarise(Count = n()) %>% arrange(Count) )
+```
+
+---
+# A More Elaborate Table: Counts
+
+```{r}
+( Rest.Chicken.Table <- FastFood %>% group_by(restaurant,Chicken) %>% summarise(Count = n()) )
+```
+
+---
+# Visualising Restaurants and Chicken
+
+```{r}
+Rest.Chicken.Table %>% ggplot() + aes(x=restaurant, y=Count, fill=Chicken) + geom_col() + coord_flip()
+```
+
+
+---
+# A First Data Visualisation [Chained]
+
+```{r}
+FastFood %>% 
+  group_by(restaurant) %>% 
+  summarise(Count = n()) %>%
+  ggplot() + aes(x=restaurant, y=Count) + geom_col()
+```
+
+---
+# More Chaining [`fct_reorder()`]
+
+```{r}
+FastFood %>% group_by(restaurant) %>% summarise(Count = n()) %>% ggplot() + aes(x=fct_reorder(restaurant, Count), y=Count) + geom_col() + labs(x="Chain", y="Count") + coord_flip() 
+```
+
+---
+# Even More Chaining
+
+```{r}
+FastFood %>% group_by(restaurant) %>% summarise(Count = n()) %>% ggplot() + aes(x=fct_reorder(restaurant, desc(Count)), y=Count) + geom_col() + labs(x="Chain", y="Count") + coord_flip() 
+```
+
+---
+class: inverse
+
+# A Note on Skim
+
+```{r}
+FastFood %>% group_by(restaurant) %>% 
+  summarise(Mean = mean(calories), 
+            SD = sd(calories), 
+            Min = min(calories), 
+            Median = median(calories), 
+            Max = max(calories), 
+            Q1 = quantile(calories, 0.25), 
+            Q3 = quantile(calories, 0.75))
+```
+
+---
+class: inverse
+
+# A Recap
+
+Four `dplyr` verbs:  
+- filter  
+- select  
+- mutate / transmute  
+- summarise  
+- `group_by` and `ungroup`
+- helpers: arrange and desc

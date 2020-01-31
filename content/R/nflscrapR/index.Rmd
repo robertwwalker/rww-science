@@ -1,0 +1,197 @@
+---
+title: NFL ScrapR
+author: RWW
+date: '2019-04-19'
+slug: nflscrapR-test
+categories:
+  - tidyverse
+  - R
+tags:
+  - R
+header:
+  caption: ''
+  image: ''
+  preview: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE, tidy = TRUE)
+```
+
+# Scraping NFL data with `nflscrapr`
+
+The `nflscrapR` package is designed to make data on NFL games more easily available.  To install the package, we need to grab it from github.
+
+```
+devtools::install_github(repo = "maksimhorowitz/nflscrapR")
+```
+
+The github page for [nflscrapR](https://github.com/maksimhorowitz/nflscrapR) is quite informative.  It has a lot of useful insight for working with the data; the set itself is quite large.
+
+## Getting Some Data
+
+Following the guide to the package on GitHub, let me try their example.
+
+```
+library(nflscrapR)
+all_2018_games <- scrape_game_ids(2018) # Default is regular season
+```
+
+I saved a local copy of it to work with; this is the 2018 season.
+
+```{r, warning=FALSE, message=FALSE, results='markup'}
+library(emo)
+library(tidyverse)
+library(kableExtra)
+library(nflscrapR)
+library(RCurl)
+all_2018_games <-readRDS(url("https://github.com/robertwwalker/academic-mymod/raw/master/data/NFLGames2018.rds"))
+all_2018_games %>% select(week,game_id,home_team,home_score,away_team,away_score) %>% kable(format = "html") %>% kable_styling() %>%
+  scroll_box(width = "600px", height = "500px")
+```
+
+That's all the regular season games in the 2018 season.  They suggest that it is straightforward to grab an entire season of play by play data and it is. `r emo::ji("clap")`.
+
+```
+full_season_2018 <- scrape_season_play_by_play(2018, "reg")
+saveRDS(full_season_2018, file="../../../data/2018NFLSeason.rds")
+```
+
+That gets the data though it took over an hour to acquire it all and it threw two error messages.  I do not yet know if they are conseequential.  My goal here is to use this package and the ability to plot the win probability charts to try to summarise an entire Dallas Cowboys season -- the team I grew up with along with the former Houston Oilers and I was never really okay about them moving.  `r emo::ji("down")`
+
+```{r}
+full_season_2018 <- readRDS(url("https://github.com/robertwwalker/academic-mymod/raw/master/data/2018NFLSeason.rds")) # Downloaded it once.  It sits in rww.science/data
+```
+
+Let me skim the data for an idea of what it looks like.  I will also pull in three packages that I am deploying or will.
+
+```{r, message=FALSE, warning=FALSE, results='markup'}
+library(skimr)
+library(teamcolors)
+library(gganimate)
+full_season_2018  %>% head() %>% kableExtra::kable() %>% kable_styling() %>%
+  scroll_box(width = "700px", height = "400px")
+```
+
+## Fixing up the color scheme
+
+```{r}
+nfl_teamcolors <- teamcolors %>% filter(league == "nfl")
+dal_color <- nfl_teamcolors %>%
+  filter(name == "Dallas Cowboys") %>%
+  pull(primary)
+car_color <- nfl_teamcolors %>%
+  filter(name == "Carolina Panthers") %>%
+  pull(primary)
+```
+
+`dal_color` is a value for the primary Cowboys color.
+
+## The Dallas Cowboys Games
+
+Now let me get the Dallas games.  The easiest way I can figure out how to do this would be to filter by Dallas being one of the two teams where Dallas is `DAL`.
+
+```{r}
+dal_season <- full_season_2018 %>% filter(home_team=="DAL" | away_team=="DAL")
+CAR_DAL <- full_season_2018 %>% filter(home_team=="CAR" & away_team=="DAL")
+```
+
+Cool.  Now let me plot the first game.  That is the filter line in the `ggplot`.  Then I will facet out the seasons but it will take some work to get the labels and things to generate.
+
+```{r}
+# DFS <- dal_season %>% left_join(all_2018_games)
+cardal_wp <- CAR_DAL %>% 
+  filter(!is.na(home_wp),
+         !is.na(away_wp)) %>% unite(GIDGSR, game_seconds_remaining, game_id, sep=":")
+cardal_wp <- cardal_wp %>% dplyr::select(GIDGSR,
+                home_wp,
+                away_wp) %>%
+  gather(team, wpa, -GIDGSR) %>% separate(., GIDGSR, c("GSR", "game_id"), sep=":") %>% 
+  mutate(game_seconds_remaining = as.integer(GSR))
+cardal_wp %>%  ggplot(aes(x = game_seconds_remaining, y = wpa, color = team)) +
+  geom_line(size = 2) +
+  geom_hline(yintercept = 0.5, color = "gray", linetype = "dashed") +
+  scale_color_manual(labels = c("CAR", "DAL"),
+                     values = c(car_color, dal_color),
+                     guide = FALSE) +
+  scale_x_reverse(breaks = seq(0, 3600, 300)) + 
+  annotate("text", x = 3000, y = .75, label = "CAR", color = car_color, size = 8) + 
+  annotate("text", x = 3000, y = .25, label = "DAL", color = dal_color, size = 8) +
+  geom_vline(xintercept = 900, linetype = "dashed", black) + 
+  geom_vline(xintercept = 1800, linetype = "dashed", black) + 
+  geom_vline(xintercept = 2700, linetype = "dashed", black) + 
+  geom_vline(xintercept = 0, linetype = "dashed", black) + 
+  labs(
+    x = "Time Remaining (seconds)",
+    y = "Win Probability",
+    title = "Week 1 Win Probability Chart",
+    subtitle = "Carolina Panthers vs. Dallas Cowboys",
+    caption = "Data from nflscrapR"
+  ) + theme_bw()
+```
+
+Now I want to try and build a plot of all of Dallas Cowboys games for the season.  Here are the steps.  First, I am going to make a table that contains all of the names and colors for all of the game IDs.  Even though I only need those for Dallas, building a shiny app for this would mean that I could select by teams above and make it extensible.  At the end, I will only need those for Dallas so I will separate them off.
+
+```{r}
+ntable <- all_2018_games %>% group_by(game_id) %>% summarise(home_team = first(home_team), away_team = first(away_team)) %>% ungroup()
+ntableH <- ntable
+ntableH <- ntableH %>% left_join(nflteams, by = c("home_team" = "abbr"))
+names(ntableH) <- paste0("Home_",names(ntableH), sep="")
+ntableH <- ntableH %>% rename(., game_id = Home_game_id, home_team = Home_home_team, away_team = Home_away_team)
+ntableA <- ntable
+ntableA <- ntableA %>% left_join(nflteams, by = c("away_team" = "abbr"))
+names(ntableA) <- paste0("Away_",names(ntableA), sep="")
+ntableA <- ntableA %>% rename(., game_id = Away_game_id, home_team = Away_home_team, away_team = Away_away_team)
+My.NFL.Table <- ntableH %>% inner_join(ntableA)
+Dallas.Table <- My.NFL.Table %>% filter(home_team=="DAL" | away_team=="DAL")
+Dallas.Table %>% head()
+```
+
+One nice little bit of data recovery here, the season schedule.
+
+```{r}
+Dallas.Table %>% select(game_id,Home_team,Away_team)
+```
+
+
+The first thing to notice is that this color scheme thing is going to cause trouble when Dallas plays teams that apparently have the same primary color.  For now, I think that I will just make the opponent some constant color.
+
+```{r}
+dal_wp <- dal_season %>% 
+  filter(!is.na(home_wp),
+         !is.na(away_wp)) %>% unite(GIDGSR, game_seconds_remaining, game_id, sep=":")
+dal_wp <- dal_wp %>% dplyr::select(GIDGSR,
+                home_wp,
+                away_wp)  %>%
+  gather(team, wpa, -GIDGSR) %>% separate(., GIDGSR, c("GSR", "game_id"), sep=":") %>% 
+  mutate(game_seconds_remaining = as.integer(GSR))
+dal_plt <- dal_wp %>% left_join(My.NFL.Table)
+dal_plt$colors1 <- NA
+dal_plt[dal_plt$team=="home_wp","colors1"] <- dal_plt[dal_plt$team=="home_wp","Home_primary"]
+dal_plt[dal_plt$team=="away_wp","colors1"] <- dal_plt[dal_plt$team=="away_wp","Away_primary"]
+dal_plt[dal_plt$team=="home_wp","team"] <- dal_plt[dal_plt$team=="home_wp","home_team"]
+dal_plt[dal_plt$team=="away_wp","team"] <- dal_plt[dal_plt$team=="away_wp","away_team"]
+dal_plt$dateG <- substring(dal_plt$game_id, 1, 8)
+dal_plt$titleS <- with(dal_plt, paste0(dateG,": ",Home_team," v. ",Away_team))
+p <- dal_plt %>% ggplot() + aes(x = game_seconds_remaining, y = wpa, color = team) +
+  geom_line(size = 2) +
+  geom_hline(yintercept = 0.5, color = "gray", linetype = "dashed") +
+  scale_color_viridis_d(guide=FALSE) +
+  scale_x_reverse(breaks = seq(0, 3600, 300)) + 
+  annotate("text", x = 3000, y = .75, label = "Home", size = 8) + 
+  annotate("text", x = 3000, y = .25, label = "Away", size = 8) +
+  geom_vline(xintercept = 900, linetype = "dashed", black) + 
+  geom_vline(xintercept = 1800, linetype = "dashed", black) + 
+  geom_vline(xintercept = 2700, linetype = "dashed", black) + 
+  geom_vline(xintercept = 0, linetype = "dashed", black) + 
+  labs(
+    x = "Time Remaining (seconds)",
+    y = "Win Probability",
+    title = "{closest_state}",
+#    subtitle = "Carolina Panthers vs. Dallas Cowboys",
+    caption = "Data from nflscrapR"
+  ) + theme_bw() + transition_states(titleS, transition_length=6, state_length = 10)
+animate(p, nframes=400)
+```
+
+I will stop with that.  In a blog post, I did a bit more with this and also [built a shiny app for doing it for all of the teams](https://rwalkerwu.shinyapps.io/NFL-Scrapr/) that is linked there.

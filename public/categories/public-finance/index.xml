@@ -1,0 +1,649 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Public Finance | rww.science</title>
+    <link>/categories/public-finance/</link>
+      <atom:link href="/categories/public-finance/index.xml" rel="self" type="application/rss+xml" />
+    <description>Public Finance</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© 2018</copyright><lastBuildDate>Wed, 07 Mar 2018 00:00:00 +0000</lastBuildDate>
+    <image>
+      <url>/img/portrait.jpg</url>
+      <title>Public Finance</title>
+      <link>/categories/public-finance/</link>
+    </image>
+    
+    <item>
+      <title>Pew Data on Bond Ratings and Rainy Day Funds</title>
+      <link>/2018/03/07/pew-data-on-bond-ratings-and-rainy-day-funds/</link>
+      <pubDate>Wed, 07 Mar 2018 00:00:00 +0000</pubDate>
+      <guid>/2018/03/07/pew-data-on-bond-ratings-and-rainy-day-funds/</guid>
+      <description>
+
+
+&lt;div id=&#34;pew-on-rainy-day-funds-and-credit-quality&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Pew on Rainy Day Funds and Credit Quality&lt;/h1&gt;
+&lt;p&gt;The Pew Charitable Trusts released a report last May (2017) that portrays rainy day funds that are well designed and deployed as a form of insurance against ratings downgrades. One the one hand, this is perfectly sensible because the alternatives do not sound like very good ideas. A poorly designed rainy day fund, for example, is going to have to fall short on either the rainy day or the fund. A poorly deployed savings device for cash flow management over the not-so-short term also seems unlikely to bolster market confidence in the repayment abilities of an issuer. If this very simple perspective that seems plausible is true, then a simple replication should be easy. And it is. Pew gladly shared the data and code. If one has access to Stata, the study is easy to replicate.&lt;/p&gt;
+&lt;p&gt;Taken from the website above:&lt;/p&gt;
+&lt;div class=&#34;figure&#34;&gt;
+&lt;img src=&#34;../../img/PewCTRecs.png&#34; alt=&#34;Pew Recommendations&#34; /&gt;
+&lt;p class=&#34;caption&#34;&gt;Pew Recommendations&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;on-the-other-hand&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;On the other hand&lt;/h2&gt;
+&lt;p&gt;The variation in the data may leave a good bit to be desired. Let’s have a look at some basic features of the data.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(haven)
+library(dplyr)
+library(here)
+Pew.Data &amp;lt;- read_dta(url(&amp;quot;https://github.com/robertwwalker/academic-mymod/raw/master/data/Pew/modeledforprediction.dta&amp;quot;))
+glimpse(Pew.Data)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Observations: 966
+## Variables: 45
+## $ fyear            &amp;lt;dbl&amp;gt; 1994, 1995, 1996, 1997, 1998, 1999, 2000, 2001, 2002…
+## $ statefips        &amp;lt;dbl&amp;gt; 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1…
+## $ state            &amp;lt;chr&amp;gt; &amp;quot;Alabama&amp;quot;, &amp;quot;Alabama&amp;quot;, &amp;quot;Alabama&amp;quot;, &amp;quot;Alabama&amp;quot;, &amp;quot;Alabama…
+## $ bbalance         &amp;lt;dbl&amp;gt; 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000…
+## $ withdraw         &amp;lt;dbl&amp;gt; 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.00…
+## $ deposit          &amp;lt;dbl&amp;gt; 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.000, 0.0…
+## $ interest         &amp;lt;dbl&amp;gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0…
+## $ ebalance         &amp;lt;dbl&amp;gt; 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000…
+## $ fund             &amp;lt;dbl&amp;gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1…
+## $ spo              &amp;lt;dbl&amp;gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, …
+## $ moodyo           &amp;lt;dbl&amp;gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 0, 0, 0, 0, …
+## $ fitcho           &amp;lt;dbl&amp;gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 0, 0…
+## $ spnum            &amp;lt;dbl&amp;gt; 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5…
+## $ moodynum         &amp;lt;dbl&amp;gt; 6, 6, 6, 6, 5, 5, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 7, 7…
+## $ fitchnum         &amp;lt;dbl&amp;gt; 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 5, 6, 6…
+## $ surplus          &amp;lt;dbl&amp;gt; -3, -73, 4, -35, 27, 21, 30, -34, -47, -177, 152, 35…
+## $ gfebal           &amp;lt;dbl&amp;gt; 128, 54, 58, 23, 51, 72, 101, 67, 19, 113, 347, 664,…
+## $ longdebt         &amp;lt;dbl&amp;gt; 0.10800536, 0.09275389, 0.08864151, 0.08145412, 0.08…
+## $ shortdebt        &amp;lt;dbl&amp;gt; 2.790155e-05, 8.648518e-05, 7.688679e-06, 4.916201e-…
+## $ totaldebt        &amp;lt;dbl&amp;gt; 0.10803326, 0.09284038, 0.08864920, 0.08145904, 0.08…
+## $ population       &amp;lt;dbl&amp;gt; 8.346216, 8.357078, 8.365626, 8.373577, 8.382046, 8.…
+## $ pop65            &amp;lt;dbl&amp;gt; 548.045, 554.718, 561.331, 567.094, 571.722, 574.279…
+## $ gfe              &amp;lt;dbl&amp;gt; 3860, 4151, 4240, 4475, 4688, 4919, 5215, 5213, 5325…
+## $ gfr              &amp;lt;dbl&amp;gt; 3857, 4078, 4244, 4440, 4715, 4940, 5245, 5179, 5278…
+## $ spi              &amp;lt;dbl&amp;gt; 79368.02, 84194.33, 88048.51, 92206.95, 98699.30, 10…
+## $ rdfbal           &amp;lt;dbl&amp;gt; 0.0000000, 0.0000000, 0.0000000, 0.0000000, 0.000000…
+## $ rdfdep           &amp;lt;dbl&amp;gt; 0.00000, 0.00000, 0.00000, 0.00000, 0.00000, 0.00000…
+## $ rdfwit           &amp;lt;dbl&amp;gt; 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.…
+## $ gfebalgfe        &amp;lt;dbl&amp;gt; 3.3160622, 1.3008914, 1.3679246, 0.5139665, 1.087883…
+## $ spratingshift    &amp;lt;dbl&amp;gt; NA, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ spupgrade        &amp;lt;dbl&amp;gt; NA, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ spdowngrade      &amp;lt;dbl&amp;gt; NA, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ moodyratingshift &amp;lt;dbl&amp;gt; NA, 0, 0, 0, -1, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1,…
+## $ moodyupgrade     &amp;lt;dbl&amp;gt; NA, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1, …
+## $ moodydowngrade   &amp;lt;dbl&amp;gt; NA, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ fitchratingshift &amp;lt;dbl&amp;gt; NA, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, …
+## $ fitchupgrade     &amp;lt;dbl&amp;gt; NA, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, …
+## $ fitchdowngrade   &amp;lt;dbl&amp;gt; NA, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ rdfnet           &amp;lt;dbl&amp;gt; 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.00…
+## $ rdfnetgfe        &amp;lt;dbl&amp;gt; 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.…
+## $ revenuebw        &amp;lt;dbl&amp;gt; 4.613832, 15.427544, -32.826214, -55.708824, 5.46266…
+## $ revenuebwtrend   &amp;lt;dbl&amp;gt; 3852.386, 4062.573, 4276.826, 4495.709, 4709.537, 48…
+## $ trendstanding    &amp;lt;dbl&amp;gt; 1, 1, -1, -1, 1, 1, 1, 1, -1, -1, -1, -1, 1, 1, 1, -…
+## $ valenceusage     &amp;lt;dbl&amp;gt; 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.0000, 0.00…
+## $ valenceusagegfe  &amp;lt;dbl&amp;gt; 0.000000, 0.000000, 0.000000, 0.000000, 0.000000, 0.…&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;table(Pew.Data$state)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## 
+##        Alabama         Alaska        Arizona       Arkansas     California 
+##             21             21             21             21             21 
+##    Connecticut       Delaware        Florida        Georgia         Hawaii 
+##             21             21             21             21             21 
+##          Idaho        Indiana           Iowa       Kentucky      Louisiana 
+##             21             21             21             21             21 
+##          Maine       Maryland  Massachusetts       Michigan      Minnesota 
+##             21             21             21             21             21 
+##    Mississippi       Missouri       Nebraska         Nevada  New Hampshire 
+##             21             21             21             21             21 
+##     New Jersey     New Mexico       New York North Carolina   North Dakota 
+##             21             21             21             21             21 
+##           Ohio       Oklahoma         Oregon   Pennsylvania   Rhode Island 
+##             21             21             21             21             21 
+## South Carolina   South Dakota      Tennessee          Texas           Utah 
+##             21             21             21             21             21 
+##        Vermont       Virginia     Washington  West Virginia      Wisconsin 
+##             21             21             21             21             21 
+##        Wyoming 
+##             21&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The panel is balanced; in the original, New Mexico, New York, South Carolina, and Vermont are duplicated but the Stata code writes out a transformed dataset for analysis that is recorded. The technical report accompanying the study and the stata code give us some insights. In all cases, there are two or more RDF’s and they require combining.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;combining-ratings&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Combining Ratings&lt;/h1&gt;
+&lt;p&gt;In previous work, Skip Krueger and I have treated bond ratings as a multiple rater problem and have deployed cumulative IRT models to measure latent credit quality. One of the methodologically desireable approaches to the Pew study was a model deploying state-level fixed effects but the ordinal data precludes doing this reliably because states that have always experienced the highest rating will have unbounded fixed effects. The continuous latent scale post measurement allows us to sidestep that problem. First, let me scale the data&lt;/p&gt;
+&lt;div id=&#34;scaling-the-ratings&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Scaling the Ratings&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(MCMCpack)
+Scaled.BR &amp;lt;- MCMCordfactanal(~spnum+fitchnum+moodynum, data=Pew.Data, factors=1, burnin = 1e6, mcmc=1e6, thin=100, store.scores=TRUE, tune=0.7, lambda.constraints=list(fitchnum=list(2,&amp;quot;+&amp;quot;)), verbose=50000)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(tidyverse)
+load(url(&amp;quot;https://github.com/robertwwalker/academic-mymod/raw/master/data/Pew/Scaled-BR-Pew.RData&amp;quot;))
+state.ratings &amp;lt;- data.frame(state=Pew.Data$state, statefips=Pew.Data$statefips, year=Pew.Data$fyear, BR.Data)
+state.ratings.long &amp;lt;- tidyr::gather(state.ratings, sampleno, value, -statefips, -year, -state)
+state.SE &amp;lt;- state.ratings.long %&amp;gt;% group_by(state,year) %&amp;gt;% summarise(Credit.Quality=mean(value), t1=quantile(value, probs=0.025), t2=quantile(value, probs=0.975))&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;what-does-the-scaling-look-like&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;What does the scaling look like?&lt;/h2&gt;
+&lt;div id=&#34;the-first-group&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;The First Group&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;stored &amp;lt;- list()
+stored &amp;lt;- state.SE %&amp;gt;% group_by(state) %&amp;gt;% filter(state%in%c(names(table(state.SE$state))[c(1:16)])) %&amp;gt;%
+  ggplot(., aes(x=year, y=Credit.Quality)) + theme_minimal() + theme(axis.text.x  = element_text(angle=60)) +
+    geom_ribbon(aes(ymin=t1, ymax=t2, colour=state, fill=state), alpha=0.4) + guides(fill=&amp;quot;none&amp;quot;, alpha=&amp;quot;none&amp;quot;) +
+    geom_line() + guides(colour=&amp;quot;none&amp;quot;) +
+#    geom_jitter(width=0.2) +
+#    geom_point(shape=21, size=3, fill=&amp;quot;white&amp;quot;) +
+    ylim(-4,4) + facet_wrap(~state)
+stored&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-03-07-pew-data-on-bond-ratings-and-rainy-day-funds/index_files/figure-html/Plot5-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-second-group&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;The Second Group&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;stored &amp;lt;- list()
+stored &amp;lt;- state.SE %&amp;gt;% group_by(state) %&amp;gt;% filter(state%in%c(names(table(state.SE$state))[c(17:32)])) %&amp;gt;%
+  ggplot(., aes(x=year, y=Credit.Quality)) + theme_minimal() + theme(axis.text.x  = element_text(angle=60)) +
+    geom_ribbon(aes(ymin=t1, ymax=t2, colour=state, fill=state), alpha=0.4) + guides(fill=&amp;quot;none&amp;quot;, alpha=&amp;quot;none&amp;quot;) +
+    geom_line() + guides(colour=&amp;quot;none&amp;quot;) +
+#    geom_jitter(width=0.2) +
+#    geom_point(shape=21, size=3, fill=&amp;quot;white&amp;quot;) +
+    ylim(-4,4) + facet_wrap(~state)
+stored&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-03-07-pew-data-on-bond-ratings-and-rainy-day-funds/index_files/figure-html/Plot5b-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-third-group&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;The Third Group&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;stored &amp;lt;- list()
+stored &amp;lt;- state.SE %&amp;gt;% group_by(state) %&amp;gt;% filter(state%in%c(names(table(state.SE$state))[c(33:46)])) %&amp;gt;%
+  ggplot(., aes(x=year, y=Credit.Quality)) + theme_minimal() + theme(axis.text.x  = element_text(angle=60)) +
+    geom_ribbon(aes(ymin=t1, ymax=t2, colour=state, fill=state), alpha=0.4) + guides(fill=&amp;quot;none&amp;quot;, alpha=&amp;quot;none&amp;quot;) +
+    geom_line() + guides(colour=&amp;quot;none&amp;quot;) +
+#    geom_jitter(width=0.2) +
+#    geom_point(shape=21, size=3, fill=&amp;quot;white&amp;quot;) +
+    ylim(-4,4) + facet_wrap(~state)
+stored&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-03-07-pew-data-on-bond-ratings-and-rainy-day-funds/index_files/figure-html/Plot5c-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-panel-data-properties&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;The Panel Data Properties&lt;/h2&gt;
+&lt;p&gt;Panel data estmators for linear problems benefit from a very useful decomposition from ANOVA. The total variation in a variable can be decomposed into two components: a within-unit or short-run component and a between-unit averages component (that is constant for any given unit). It is always important, as emphasised in the modelling in Mundlak (1977), to consider the variance components because they conttribute insights into the nature of inferences by telling us how much information and of what sort is contained in each indicator. The number of controls in the study is manageable so in depth analysis is possible.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;analysing-the-scaled-data&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Analysing the Scaled Data&lt;/h2&gt;
+&lt;p&gt;With continuous measures on the response imputed over 10,000 samples, we can turn to an analysis of these samples to reexamine the dynamics of rainy day fund expenditures on bond ratings.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(haven)
+nlswork &amp;lt;- read_stata(&amp;quot;http://www.stata-press.com/data/r13/nlswork.dta&amp;quot;)
+library(dplyr)
+XTSUM &amp;lt;- function(data, varname, unit) {
+  varname &amp;lt;- enquo(varname)
+  unit &amp;lt;- enquo(unit)
+  ores &amp;lt;- nlswork %&amp;gt;% summarise(ovr.mean=mean(!! varname, na.rm=TRUE), ovr.sd=sd(!! varname, na.rm=TRUE), ovr.min = min(!! varname, na.rm=TRUE), ovr.max=max(!! varname, na.rm=TRUE), N.overall=sum(as.numeric(!is.na(!! varname))))
+  bmeans &amp;lt;- nlswork %&amp;gt;% group_by(!!unit) %&amp;gt;% summarise(meanx=mean(!! varname, na.rm=T), t.count=sum(as.numeric(!is.na(!! varname))))
+  bres &amp;lt;- bmeans %&amp;gt;% summarise(between.sd = sd(meanx, na.rm=TRUE), between.min = min(meanx, na.rm=TRUE), between.max=max(meanx, na.rm=TRUE), t.bar=mean(t.count, na.rm=TRUE), Groups=n())
+  wdat &amp;lt;- nlswork %&amp;gt;% group_by(!!unit) %&amp;gt;% mutate(W.x = scale(!! varname, scale=FALSE))
+  wres &amp;lt;- wdat %&amp;gt;% ungroup() %&amp;gt;% summarise(within.sd=sd(W.x, na.rm=TRUE), within.min=min(W.x, na.rm=TRUE), within.max=max(W.x, na.rm=TRUE))
+  return(list(ores=ores,bres=bres,wres=wres))
+}
+XTSUM(nlswork, varname=hours, unit=idcode)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## $ores
+## # A tibble: 1 x 5
+##   ovr.mean ovr.sd ovr.min ovr.max N.overall
+##      &amp;lt;dbl&amp;gt;  &amp;lt;dbl&amp;gt;   &amp;lt;dbl&amp;gt;   &amp;lt;dbl&amp;gt;     &amp;lt;dbl&amp;gt;
+## 1     36.6   9.87       1     168     28467
+## 
+## $bres
+## # A tibble: 1 x 5
+##   between.sd between.min between.max t.bar Groups
+##        &amp;lt;dbl&amp;gt;       &amp;lt;dbl&amp;gt;       &amp;lt;dbl&amp;gt; &amp;lt;dbl&amp;gt;  &amp;lt;int&amp;gt;
+## 1       7.85           1        83.5  6.04   4711
+## 
+## $wres
+## # A tibble: 1 x 3
+##   within.sd within.min within.max
+##       &amp;lt;dbl&amp;gt;      &amp;lt;dbl&amp;gt;      &amp;lt;dbl&amp;gt;
+## 1      7.52      -38.7       93.5&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Mapping with the Government Finance Database</title>
+      <link>/2018/02/25/mapping-with-the-government-finance-database/</link>
+      <pubDate>Sun, 25 Feb 2018 00:00:00 +0000</pubDate>
+      <guid>/2018/02/25/mapping-with-the-government-finance-database/</guid>
+      <description>
+
+
+&lt;div id=&#34;the-government-finance-database&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;The Government Finance Database&lt;/h1&gt;
+&lt;p&gt;Some of my colleagues (Kawika Pierson, Mike Hand, and Fred Thompson) have put together a convenient access point for the &lt;a href=&#34;http://willamette.edu/mba/research_impact/public_datasets/index.html&#34;&gt;Government Finance data&lt;/a&gt; available from the Census. They published an article in &lt;a href=&#34;http://journals.plos.org/plosone/article/file?id=10.1371/journal.pone.0130119&amp;amp;type=printable&#34;&gt;PLoS One&lt;/a&gt; with the rationale; I want to build some maps from their project with extensible code and functions. The overall dataset is enormous. I have downloaded the whole thing and filtered out the states. It seems that &lt;code&gt;read.csv&lt;/code&gt; works better than &lt;code&gt;read_csv&lt;/code&gt; for this task.&lt;/p&gt;
+&lt;div id=&#34;splitting-the-data&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Splitting the Data&lt;/h2&gt;
+&lt;p&gt;A link to the .zip version for states is &lt;a href=&#34;http://www.willamette.edu/~kpierson/TheGovernmentFinanceDatabase_StateData.zip&#34;&gt;here&lt;/a&gt;. A link to the .zip version for counties is &lt;a href=&#34;http://www.willamette.edu/~kpierson/TheGovernmentFinanceDatabase_CountyData.zip&#34;&gt;here&lt;/a&gt;. You have to download their data directly as a .zip and unzip. If you downbload the entire file, as I did, unzip it, and you can import it to &lt;span class=&#34;math inline&#34;&gt;\(R\)&lt;/span&gt; with &lt;code&gt;read.csv&lt;/code&gt;.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;library(dplyr)
+GFD &amp;lt;- read.csv(&amp;quot;~/Documents/The Government Finance Database_All Data.csv&amp;quot;)
+State.Data &amp;lt;- GFD %&amp;gt;% filter(Type_Code==0)
+County.Data &amp;lt;- GFD %&amp;gt;% filter(Type_Code==1)
+rm(GFD)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-basic-maps&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;The basic maps&lt;/h1&gt;
+&lt;p&gt;&lt;em&gt;choroplethr&lt;/em&gt; makes the process of mapping data a bit too easy. It is locked down but it works very well. What I will require is a simple function to cleave off a particular year, the state name, and whatever series of data I wish to make; I will need to store the latter two with the name &lt;code&gt;region&lt;/code&gt; for the state name and &lt;code&gt;value&lt;/code&gt; for whatever data we wish to plot. Why? That is the way that &lt;em&gt;state_choropleth()&lt;/em&gt; is designed. For the automated functions &lt;em&gt;state_choropleth()&lt;/em&gt; and &lt;em&gt;county_choropleth()&lt;/em&gt;, this is quite easy. You will notice that there are FIPS and name inner joins available for this.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(choroplethr)
+library(choroplethrMaps)
+data(state.map)
+names(state.map)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##  [1] &amp;quot;long&amp;quot;       &amp;quot;lat&amp;quot;        &amp;quot;order&amp;quot;      &amp;quot;hole&amp;quot;       &amp;quot;piece&amp;quot;     
+##  [6] &amp;quot;group&amp;quot;      &amp;quot;id&amp;quot;         &amp;quot;GEO_ID&amp;quot;     &amp;quot;STATE&amp;quot;      &amp;quot;region&amp;quot;    
+## [11] &amp;quot;LSAD&amp;quot;       &amp;quot;CENSUSAREA&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;data(county.regions)
+names(county.regions)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;region&amp;quot;                &amp;quot;county.fips.character&amp;quot; &amp;quot;county.name&amp;quot;          
+## [4] &amp;quot;state.name&amp;quot;            &amp;quot;state.fips.character&amp;quot;  &amp;quot;state.abb&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;putting-them-together-states&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Putting them together: States&lt;/h1&gt;
+&lt;p&gt;Let’s see what we can do. The first step is that the state name conventions are inconsistent, though the FIPS codes, thankfully, do not change. I will convert them to strings, to drop the unused levels of the factors from import, and replace the state delineated names with a single standard name. The second relevant selector is going to be the year, &lt;em&gt;Year4&lt;/em&gt;. Finally, I have to choose something to put in values. Let me try total revenue per capita in year 2015. &lt;em&gt;dplyr&lt;/em&gt; is so neat that this can be done in only five lines. Define and name the object; filter by the year; mutate the data into the two things I need; select them off.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(dplyr)
+library(tidyverse)
+State.Data$Name &amp;lt;- as.character(State.Data$Name)
+State.Data$NameFixed &amp;lt;- gsub(&amp;quot; STATE GOVT&amp;quot;,&amp;quot;&amp;quot;,State.Data$Name)
+State.Data$NameFLower &amp;lt;- tolower(State.Data$NameFixed)
+# Clean up the names and store the cleaned result
+my.GFD.2015 &amp;lt;- State.Data %&amp;gt;% 
+  filter(Year4==2015) %&amp;gt;%
+  mutate(value = Total_Taxes / Population, region = NameFLower) %&amp;gt;%
+  select(region, value)
+my.GFD.2015&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##            region    value
+## 1         alabama 2.007714
+## 2          alaska 1.169672
+## 3         arizona 2.062385
+## 4        arkansas 3.085824
+## 5      california 3.861881
+## 6        colorado 2.347743
+## 7     connecticut 4.518299
+## 8        delaware 3.714758
+## 9         florida 1.835985
+## 10        georgia 1.930886
+## 11         hawaii 4.530280
+## 12          idaho 2.402183
+## 13       illinois 3.174292
+## 14        indiana 2.628473
+## 15           iowa 2.941598
+## 16         kansas 2.707783
+## 17       kentucky 2.620959
+## 18      louisiana 2.076066
+## 19          maine 3.057240
+## 20       maryland 3.329998
+## 21  massachusetts 3.975644
+## 22       michigan 2.716768
+## 23      minnesota 4.451924
+## 24    mississippi 2.641045
+## 25       missouri 1.965284
+## 26        montana 2.752764
+## 27       nebraska 2.682621
+## 28         nevada 2.605809
+## 29  new hampshire 1.869624
+## 30     new jersey 3.523957
+## 31     new mexico 2.882076
+## 32       new york 3.950608
+## 33 north carolina 2.497637
+## 34   north dakota 7.583087
+## 35           ohio 2.436590
+## 36       oklahoma 2.405160
+## 37         oregon 2.624777
+## 38   pennsylvania 2.842799
+## 39   rhode island 3.026298
+## 40 south carolina 1.967472
+## 41   south dakota 1.950109
+## 42      tennessee 1.923927
+## 43          texas 2.005396
+## 44           utah 2.237496
+## 45        vermont 4.860939
+## 46       virginia 2.449827
+## 47     washington 2.879141
+## 48  west virginia 3.018220
+## 49      wisconsin 2.948908
+## 50        wyoming 4.020295&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;That is exactly the data that I need. Finally, add a title and continuous color scheming.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;state_choropleth(my.GFD.2015, title=&amp;quot;Total Taxes per capita&amp;quot;, num_colors=1)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning in self$bind(): The following regions were missing and are being set to
+## NA: district of columbia&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-02-25-mapping-with-the-government-finance-database/index_files/figure-html/MapTheData-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;That’s far too easy. Total taxes, which I have not bothered to look up, appear to contain some unexpected details. What else can be done with it? The final code chunk does it all. To calculate a new map, just change the name of the thing per capitized. What data are available? See below….&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;names(State.Data)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##   [1] &amp;quot;SurveyYr&amp;quot;                     &amp;quot;Year4&amp;quot;                       
+##   [3] &amp;quot;YearofData&amp;quot;                   &amp;quot;ID&amp;quot;                          
+##   [5] &amp;quot;IDChanged&amp;quot;                    &amp;quot;State_Code&amp;quot;                  
+##   [7] &amp;quot;Type_Code&amp;quot;                    &amp;quot;County&amp;quot;                      
+##   [9] &amp;quot;Name&amp;quot;                         &amp;quot;FIPS_Code_State&amp;quot;             
+##  [11] &amp;quot;FIPS_County&amp;quot;                  &amp;quot;FIPS_Place&amp;quot;                  
+##  [13] &amp;quot;FYEndDate&amp;quot;                    &amp;quot;YearPop&amp;quot;                     
+##  [15] &amp;quot;SchLevCode&amp;quot;                   &amp;quot;Population&amp;quot;                  
+##  [17] &amp;quot;FunctionCode&amp;quot;                 &amp;quot;Enrollment&amp;quot;                  
+##  [19] &amp;quot;Total_Revenue&amp;quot;                &amp;quot;Total_Rev_Own_Sources&amp;quot;       
+##  [21] &amp;quot;General_Revenue&amp;quot;              &amp;quot;Gen_Rev_Own_Sources&amp;quot;         
+##  [23] &amp;quot;Total_Taxes&amp;quot;                  &amp;quot;Property_Tax&amp;quot;                
+##  [25] &amp;quot;Tot_Sales___Gr_Rec_Tax&amp;quot;       &amp;quot;Total_Gen_Sales_Tax&amp;quot;         
+##  [27] &amp;quot;Total_Select_Sales_Tax&amp;quot;       &amp;quot;Alcoholic_Beverage_Tax&amp;quot;      
+##  [29] &amp;quot;Amusement_Tax&amp;quot;                &amp;quot;Insurance_Premium_Tax&amp;quot;       
+##  [31] &amp;quot;Motor_Fuels_Tax&amp;quot;              &amp;quot;Pari_mutuels_Tax&amp;quot;            
+##  [33] &amp;quot;Public_Utility_Tax&amp;quot;           &amp;quot;Tobacco_Tax&amp;quot;                 
+##  [35] &amp;quot;Other_Select_Sales_Tax&amp;quot;       &amp;quot;Total_License_Taxes&amp;quot;         
+##  [37] &amp;quot;Alcoholic_Beverage_Lic&amp;quot;       &amp;quot;Amusement_License&amp;quot;           
+##  [39] &amp;quot;Corporation_License&amp;quot;          &amp;quot;Hunting___Fishing_License&amp;quot;   
+##  [41] &amp;quot;Motor_Vehicle_License&amp;quot;        &amp;quot;Motor_Veh_Oper_License&amp;quot;      
+##  [43] &amp;quot;Motor_Vehicle_License_Total&amp;quot;  &amp;quot;Public_Utility_License&amp;quot;      
+##  [45] &amp;quot;Occup_and_Bus_Lic_NEC&amp;quot;        &amp;quot;Other_License_Taxes&amp;quot;         
+##  [47] &amp;quot;Total_Income_Taxes&amp;quot;           &amp;quot;Individual_Income_Tax&amp;quot;       
+##  [49] &amp;quot;Corp_Net_Income_Tax&amp;quot;          &amp;quot;Death_and_Gift_Tax&amp;quot;          
+##  [51] &amp;quot;Docum_and_Stock_Tr_Tax&amp;quot;       &amp;quot;Severance_Tax&amp;quot;               
+##  [53] &amp;quot;Taxes_NEC&amp;quot;                    &amp;quot;Total_IG_Revenue&amp;quot;            
+##  [55] &amp;quot;Total_Fed_IG_Revenue&amp;quot;         &amp;quot;Fed_IGR_Air_Transport&amp;quot;       
+##  [57] &amp;quot;Fed_IGR_Education&amp;quot;            &amp;quot;Fed_IGR_Emp_Sec_Adm&amp;quot;         
+##  [59] &amp;quot;Fed_IGR_Gen_Rev_Shar&amp;quot;         &amp;quot;Fed_IGR_Gen_Support&amp;quot;         
+##  [61] &amp;quot;Fed_IGR_Health___Hos&amp;quot;         &amp;quot;Fed_IGR_Highways&amp;quot;            
+##  [63] &amp;quot;Fed_IGR_Transit_Sub&amp;quot;          &amp;quot;Fed_IGR_Hous_Com_Dev&amp;quot;        
+##  [65] &amp;quot;Fed_IGR_Natural_Res&amp;quot;          &amp;quot;Fed_IGR_Public_Welf&amp;quot;         
+##  [67] &amp;quot;Fed_IGR_Sewerage&amp;quot;             &amp;quot;Fed_IGR_Other&amp;quot;               
+##  [69] &amp;quot;Total_State_IG_Revenue&amp;quot;       &amp;quot;State_IGR_Education&amp;quot;         
+##  [71] &amp;quot;State_IGR_Tax_Relief&amp;quot;         &amp;quot;State_IGR_Oth_Gen_Sup&amp;quot;       
+##  [73] &amp;quot;State_IGR_Gen_Sup&amp;quot;            &amp;quot;State_IGR_Health___Hos&amp;quot;      
+##  [75] &amp;quot;State_IGR_Highways&amp;quot;           &amp;quot;State_IGR_Transit_Sub&amp;quot;       
+##  [77] &amp;quot;State_IGR_Hous_Com_Dev&amp;quot;       &amp;quot;State_IGR_Public_Welf&amp;quot;       
+##  [79] &amp;quot;State_IGR_Sewerage&amp;quot;           &amp;quot;State_IGR_Other&amp;quot;             
+##  [81] &amp;quot;Tot_Local_IG_Rev&amp;quot;             &amp;quot;Local_IGR_InterSchool_Aid&amp;quot;   
+##  [83] &amp;quot;Local_IGR_Other_Education&amp;quot;    &amp;quot;Local_IGR_Oth_Gen_Sup&amp;quot;       
+##  [85] &amp;quot;Local_IGR_Health___Hos&amp;quot;       &amp;quot;Local_IGR_Highways&amp;quot;          
+##  [87] &amp;quot;Local_IGR_Transit_Sub&amp;quot;        &amp;quot;Local_IGR_Hous_Com_Dev&amp;quot;      
+##  [89] &amp;quot;Local_IGR_Public_Welf&amp;quot;        &amp;quot;Local_IGR_Sewerage&amp;quot;          
+##  [91] &amp;quot;Local_IGR_Other&amp;quot;              &amp;quot;Tot_Chgs_and_Misc_Rev&amp;quot;       
+##  [93] &amp;quot;Total_General_Charges&amp;quot;        &amp;quot;Chg_Air_Transportation&amp;quot;      
+##  [95] &amp;quot;Chg_Misc_Com_Activ&amp;quot;           &amp;quot;Chg_Total_Education&amp;quot;         
+##  [97] &amp;quot;Chg_Total_Elem_Education&amp;quot;     &amp;quot;Chg_Elem_Ed_Sch_Lunch&amp;quot;       
+##  [99] &amp;quot;Chg_Elem_Ed_Tuition&amp;quot;          &amp;quot;Chg_Elem_Ed_NEC&amp;quot;             
+## [101] &amp;quot;Chg_Total_High_Ed&amp;quot;            &amp;quot;Chg_Hospitals&amp;quot;               
+## [103] &amp;quot;Chg_Highways&amp;quot;                 &amp;quot;Chg_Regular_Highways&amp;quot;        
+## [105] &amp;quot;Chg_Toll_Highways&amp;quot;            &amp;quot;Chg_Housing___Comm_Dev&amp;quot;      
+## [107] &amp;quot;Chg_Total_Nat_Res&amp;quot;            &amp;quot;Chg_Parking&amp;quot;                 
+## [109] &amp;quot;Chg_Parks___Recreation&amp;quot;       &amp;quot;Chg_Sewerage&amp;quot;                
+## [111] &amp;quot;Chg_Solid_Waste_Mgmt&amp;quot;         &amp;quot;Chg_Water_Transport&amp;quot;         
+## [113] &amp;quot;Chg_All_Other_NEC&amp;quot;            &amp;quot;Misc_General_Revenue&amp;quot;        
+## [115] &amp;quot;Special_Assessments&amp;quot;          &amp;quot;Prop_Sale_Total&amp;quot;             
+## [117] &amp;quot;Prop_Sale_Hous_Com_Dev&amp;quot;       &amp;quot;Prop_Sale_Other&amp;quot;             
+## [119] &amp;quot;Interest_Revenue&amp;quot;             &amp;quot;Fines_and_Forfeits&amp;quot;          
+## [121] &amp;quot;Rents_and_Royalties&amp;quot;          &amp;quot;Net_Lottery_Revenue&amp;quot;         
+## [123] &amp;quot;Misc_General_Rev_NEC&amp;quot;         &amp;quot;Liquor_Stores_Revenue&amp;quot;       
+## [125] &amp;quot;Total_Utility_Revenue&amp;quot;        &amp;quot;Water_Utility_Revenue&amp;quot;       
+## [127] &amp;quot;Electric_Utility_Rev&amp;quot;         &amp;quot;Gas_Utility_Rev&amp;quot;             
+## [129] &amp;quot;Transit_Utility_Rev&amp;quot;          &amp;quot;Total_Insur_Trust_Rev&amp;quot;       
+## [131] &amp;quot;Total_Insur_Trust_Ctrb&amp;quot;       &amp;quot;Tot_Ins_Trust_Inv_Rev&amp;quot;       
+## [133] &amp;quot;Total_Emp_Ret_Rev&amp;quot;            &amp;quot;Emp_Ret_Total_Ctrib&amp;quot;         
+## [135] &amp;quot;Emp_Ret_Loc_Emp_Ctrib&amp;quot;        &amp;quot;Emp_Ret_Loc_To_Loc_Sys&amp;quot;      
+## [137] &amp;quot;Emp_Ret_From_Other_Gov&amp;quot;       &amp;quot;Emp_Ret_Sta_To_Sta_Ctr&amp;quot;      
+## [139] &amp;quot;Emp_Ret_Int_Rev&amp;quot;              &amp;quot;Emp_Ret_Other_Earnings&amp;quot;      
+## [141] &amp;quot;Total_Unemp_Rev&amp;quot;              &amp;quot;Unemp_Payroll_Tax&amp;quot;           
+## [143] &amp;quot;Unemp_Int_Revenue&amp;quot;            &amp;quot;Unemp_Federal_Advances&amp;quot;      
+## [145] &amp;quot;Total_Expenditure&amp;quot;            &amp;quot;Total_IG_Expenditure&amp;quot;        
+## [147] &amp;quot;Direct_Expenditure&amp;quot;           &amp;quot;Total_Current_Expend&amp;quot;        
+## [149] &amp;quot;Total_Current_Oper&amp;quot;           &amp;quot;Total_Capital_Outlays&amp;quot;       
+## [151] &amp;quot;Total_Construction&amp;quot;           &amp;quot;Total_Other_Capital_Outlays&amp;quot; 
+## [153] &amp;quot;Tot_Assist___Subsidies&amp;quot;       &amp;quot;Total_Interest_on_Debt&amp;quot;      
+## [155] &amp;quot;Total_Insur_Trust_Ben&amp;quot;        &amp;quot;Total_Salaries___Wages&amp;quot;      
+## [157] &amp;quot;General_Expenditure&amp;quot;          &amp;quot;IG_Exp_To_State_Govt&amp;quot;        
+## [159] &amp;quot;IG_Exp_To_Local_Govts&amp;quot;        &amp;quot;IG_Exp_To_Federal_Govt&amp;quot;      
+## [161] &amp;quot;Direct_General_Expend&amp;quot;        &amp;quot;General_Current_Expend&amp;quot;      
+## [163] &amp;quot;General_Current_Oper&amp;quot;         &amp;quot;General_Capital_Outlay&amp;quot;      
+## [165] &amp;quot;General_Construction&amp;quot;         &amp;quot;General_Capital_Outlay_Other&amp;quot;
+## [167] &amp;quot;General_Assist___Sub&amp;quot;         &amp;quot;General_Debt_Interest&amp;quot;       
+## [169] &amp;quot;Air_Trans_Total_Expend&amp;quot;       &amp;quot;Air_Trans_Direct_Expend&amp;quot;     
+## [171] &amp;quot;Air_Trans_Cap_Outlay&amp;quot;         &amp;quot;Air_Trans_Current_Exp&amp;quot;       
+## [173] &amp;quot;Air_Trans_Construction&amp;quot;       &amp;quot;Air_Trans_IG_To_State&amp;quot;       
+## [175] &amp;quot;Air_Trans_IG_Local_Govts&amp;quot;     &amp;quot;Misc_Com_Activ_Tot_Exp&amp;quot;      
+## [177] &amp;quot;Misc_Com_Activ_Cap_Out&amp;quot;       &amp;quot;Misc_Com_Activ_Current_Exp&amp;quot;  
+## [179] &amp;quot;Misc_Com_Activ_Constr&amp;quot;        &amp;quot;Correct_Total_Exp&amp;quot;           
+## [181] &amp;quot;Correct_Direct_Exp&amp;quot;           &amp;quot;Correct_Cap_Outlay&amp;quot;          
+## [183] &amp;quot;Correct_Current_Exp&amp;quot;          &amp;quot;Correct_Construct&amp;quot;           
+## [185] &amp;quot;Correct_IG_To_St&amp;quot;             &amp;quot;Correct_IG_Loc_Govts&amp;quot;        
+## [187] &amp;quot;Total_Educ_Total_Exp&amp;quot;         &amp;quot;Total_Educ_Direct_Exp&amp;quot;       
+## [189] &amp;quot;Total_Educ_Assist___Sub&amp;quot;      &amp;quot;Total_Educ_Cap_Outlay&amp;quot;       
+## [191] &amp;quot;Total_Educ_Current_Exp&amp;quot;       &amp;quot;Total_Educ_Construct&amp;quot;        
+## [193] &amp;quot;Elem_Educ_Total_Exp&amp;quot;          &amp;quot;Elem_Educ_Direct_Exp&amp;quot;        
+## [195] &amp;quot;Elem_Educ_Cap_Outlay&amp;quot;         &amp;quot;Elem_Educ_Current_Exp&amp;quot;       
+## [197] &amp;quot;Elem_Educ_Construction&amp;quot;       &amp;quot;Elem_Educ_IG_To_State&amp;quot;       
+## [199] &amp;quot;Elem_Educ_IG_Local_Govts&amp;quot;     &amp;quot;Elem_Educ_IG_Sch_to_Sch&amp;quot;     
+## [201] &amp;quot;Higher_Ed_Total_Exp&amp;quot;          &amp;quot;Higher_Ed_Direct_Exp&amp;quot;        
+## [203] &amp;quot;Higher_Ed_Cap_Outlay&amp;quot;         &amp;quot;Higher_Ed_Current_Exp&amp;quot;       
+## [205] &amp;quot;Higher_Ed_Construct&amp;quot;          &amp;quot;Higher_Ed_IG_To_St&amp;quot;          
+## [207] &amp;quot;Higher_Ed_IG_Loc_Govts&amp;quot;       &amp;quot;Educ_NEC_Total_Expend&amp;quot;       
+## [209] &amp;quot;Educ_NEC_Direct_Expend&amp;quot;       &amp;quot;Educ_NEC_Assistance&amp;quot;         
+## [211] &amp;quot;Educ_NEC_Cap_Outlay&amp;quot;          &amp;quot;Educ_NEC_Current_Exp&amp;quot;        
+## [213] &amp;quot;Educ_NEC_Construction&amp;quot;        &amp;quot;Educ_NEC_IG_To_State&amp;quot;        
+## [215] &amp;quot;Educ_NEC_IG_Local_Govts&amp;quot;      &amp;quot;Emp_Sec_Adm_Direct_Exp&amp;quot;      
+## [217] &amp;quot;Emp_Sec_Adm_Cap_Outlay&amp;quot;       &amp;quot;Emp_Sec_Adm_Current_Exp&amp;quot;     
+## [219] &amp;quot;Emp_Sec_Adm_Construct&amp;quot;        &amp;quot;Fin_Admin_Total_Exp&amp;quot;         
+## [221] &amp;quot;Fin_Admin_Direct_Exp&amp;quot;         &amp;quot;Fin_Admin_Cap_Outlay&amp;quot;        
+## [223] &amp;quot;Fin_Admin_Current_Exp&amp;quot;        &amp;quot;Fin_Admin_Construction&amp;quot;      
+## [225] &amp;quot;Fin_Admin_IG_To_State&amp;quot;        &amp;quot;Fin_Admin_IG_Local_Govts&amp;quot;    
+## [227] &amp;quot;Fire_Prot_Total_Expend&amp;quot;       &amp;quot;Fire_Prot_Direct_Exp&amp;quot;        
+## [229] &amp;quot;Fire_Prot_Cap_Outlay&amp;quot;         &amp;quot;Fire_Prot_Current_Exp&amp;quot;       
+## [231] &amp;quot;Fire_Prot_Construction&amp;quot;       &amp;quot;Fire_Prot_IG_To_State&amp;quot;       
+## [233] &amp;quot;Fire_Prot_IG_Local_Govts&amp;quot;     &amp;quot;Judicial_Total_Expend&amp;quot;       
+## [235] &amp;quot;Judicial_Direct_Expend&amp;quot;       &amp;quot;Judicial_Cap_Outlay&amp;quot;         
+## [237] &amp;quot;Judicial_Current_Exp&amp;quot;         &amp;quot;Judicial_Construction&amp;quot;       
+## [239] &amp;quot;Judicial_IG_To_State&amp;quot;         &amp;quot;Judicial_IG_Local_Govts&amp;quot;     
+## [241] &amp;quot;Cen_Staff_Total_Expend&amp;quot;       &amp;quot;Cen_Staff_Direct_Exp&amp;quot;        
+## [243] &amp;quot;Cen_Staff_Cap_Outlay&amp;quot;         &amp;quot;Cen_Staff_Current_Exp&amp;quot;       
+## [245] &amp;quot;Cen_Staff_Construction&amp;quot;       &amp;quot;Cen_Staff_IG_To_State&amp;quot;       
+## [247] &amp;quot;Cen_Staff_IG_Local_Govts&amp;quot;     &amp;quot;Gen_Pub_Bldg_Total_Exp&amp;quot;      
+## [249] &amp;quot;Gen_Pub_Bldg_Cap_Out&amp;quot;         &amp;quot;Gen_Pub_Bldg_Current_Exp&amp;quot;    
+## [251] &amp;quot;Gen_Pub_Bldg_Construct&amp;quot;       &amp;quot;Health_Total_Expend&amp;quot;         
+## [253] &amp;quot;Health_Direct_Expend&amp;quot;         &amp;quot;Health_Capital_Outlay&amp;quot;       
+## [255] &amp;quot;Health_Current_Exp&amp;quot;           &amp;quot;Health_Construction&amp;quot;         
+## [257] &amp;quot;Health_IG_To_State&amp;quot;           &amp;quot;Health_IG_Local_Govts&amp;quot;       
+## [259] &amp;quot;Total_Hospital_Total_Exp&amp;quot;     &amp;quot;Total_Hospital_Dir_Exp&amp;quot;      
+## [261] &amp;quot;Total_Hospital_Cap_Out&amp;quot;       &amp;quot;Total_Hospital_Current_Exp&amp;quot;  
+## [263] &amp;quot;Total_Hospital_Construct&amp;quot;     &amp;quot;Total_Hospital_IG_To_State&amp;quot;  
+## [265] &amp;quot;Total_Hospital_IG_Loc_Govts&amp;quot;  &amp;quot;Own_Hospital_Total_Exp&amp;quot;      
+## [267] &amp;quot;Own_Hospital_Cap_Out&amp;quot;         &amp;quot;Own_Hospital_Current_Exp&amp;quot;    
+## [269] &amp;quot;Own_Hospital_Construct&amp;quot;       &amp;quot;Hosp_Other_Total_Exp&amp;quot;        
+## [271] &amp;quot;Hosp_Other_Direct_Exp&amp;quot;        &amp;quot;Hosp_Other_Cap_Outlay&amp;quot;       
+## [273] &amp;quot;Hosp_Other_Current_Exp&amp;quot;       &amp;quot;Hosp_Other_Construct&amp;quot;        
+## [275] &amp;quot;Hosp_Other_IG_To_State&amp;quot;       &amp;quot;Hosp_Other_IG_Loc_Govts&amp;quot;     
+## [277] &amp;quot;Total_Highways_Tot_Exp&amp;quot;       &amp;quot;Total_Highways_Dir_Exp&amp;quot;      
+## [279] &amp;quot;Total_Highways_Cap_Out&amp;quot;       &amp;quot;Total_Highways_Current_Exp&amp;quot;  
+## [281] &amp;quot;Total_Highways_Construct&amp;quot;     &amp;quot;Regular_Hwy_Total_Exp&amp;quot;       
+## [283] &amp;quot;Regular_Hwy_Direct_Exp&amp;quot;       &amp;quot;Regular_Hwy_Cap_Outlay&amp;quot;      
+## [285] &amp;quot;Regular_Hwy_Current_Exp&amp;quot;      &amp;quot;Regular_Hwy_Construct&amp;quot;       
+## [287] &amp;quot;Regular_Hwy_IG_To_Sta&amp;quot;        &amp;quot;Regular_Hwy_IG_Loc_Govts&amp;quot;    
+## [289] &amp;quot;Toll_Hwy_Total_Expend&amp;quot;        &amp;quot;Toll_Hwy_Cap_Outlay&amp;quot;         
+## [291] &amp;quot;Toll_Hwy_Current_Exp&amp;quot;         &amp;quot;Toll_Hwy_Construction&amp;quot;       
+## [293] &amp;quot;Transit_Sub_Total_Exp&amp;quot;        &amp;quot;Transit_Sub_Direct_Sub&amp;quot;      
+## [295] &amp;quot;Transit_Sub_IG_To_Sta&amp;quot;        &amp;quot;Transit_Sub_IG_Loc_Govts&amp;quot;    
+## [297] &amp;quot;Transit_Sub_To_Own_Sys&amp;quot;       &amp;quot;Hous___Com_Total_Exp&amp;quot;        
+## [299] &amp;quot;Hous___Com_Direct_Exp&amp;quot;        &amp;quot;Hous___Com_Cap_Outlay&amp;quot;       
+## [301] &amp;quot;Hous___Com_Current_Exp&amp;quot;       &amp;quot;Hous___Com_Construct&amp;quot;        
+## [303] &amp;quot;Hous___Com_IG_To_State&amp;quot;       &amp;quot;Hous___Com_IG_Loc_Govts&amp;quot;     
+## [305] &amp;quot;Libraries_Total_Expend&amp;quot;       &amp;quot;Libraries_Direct_Exp&amp;quot;        
+## [307] &amp;quot;Libraries_Cap_Outlay&amp;quot;         &amp;quot;Libraries_Current_Exp&amp;quot;       
+## [309] &amp;quot;Libraries_Construction&amp;quot;       &amp;quot;Libraries_IG_To_State&amp;quot;       
+## [311] &amp;quot;Libraries_IG_Local_Govts&amp;quot;     &amp;quot;Natural_Res_Total_Exp&amp;quot;       
+## [313] &amp;quot;Natural_Res_Direct_Exp&amp;quot;       &amp;quot;Natural_Res_Cap_Outlay&amp;quot;      
+## [315] &amp;quot;Natural_Res_Current_Exp&amp;quot;      &amp;quot;Natural_Res_Construct&amp;quot;       
+## [317] &amp;quot;Natural_Res_IG_To_Sta&amp;quot;        &amp;quot;Natural_Res_IG_Loc_Govts&amp;quot;    
+## [319] &amp;quot;Parking_Total_Expend&amp;quot;         &amp;quot;Parking_Direct_Expend&amp;quot;       
+## [321] &amp;quot;Parking_Capital_Outlay&amp;quot;       &amp;quot;Parking_Current_Exp&amp;quot;         
+## [323] &amp;quot;Parking_Construction&amp;quot;         &amp;quot;Parking_IG_To_State&amp;quot;         
+## [325] &amp;quot;Parking_IG_Local_Govts&amp;quot;       &amp;quot;Parks___Rec_Total_Exp&amp;quot;       
+## [327] &amp;quot;Parks___Rec_Direct_Exp&amp;quot;       &amp;quot;Parks___Rec_Cap_Outlay&amp;quot;      
+## [329] &amp;quot;Parks___Rec_Current_Exp&amp;quot;      &amp;quot;Parks___Rec_Construct&amp;quot;       
+## [331] &amp;quot;Parks___Rec_IG_To_Sta&amp;quot;        &amp;quot;Parks___Rec_IG_Loc_Govts&amp;quot;    
+## [333] &amp;quot;Police_Prot_Total_Exp&amp;quot;        &amp;quot;Police_Prot_Direct_Exp&amp;quot;      
+## [335] &amp;quot;Police_Prot_Cap_Outlay&amp;quot;       &amp;quot;Police_Prot_Current_Exp&amp;quot;     
+## [337] &amp;quot;Police_Prot_Construct&amp;quot;        &amp;quot;Police_Prot_IG_To_Sta&amp;quot;       
+## [339] &amp;quot;Police_Prot_IG_Loc_Govts&amp;quot;     &amp;quot;Prot_Insp_Total_Exp&amp;quot;         
+## [341] &amp;quot;Prot_Insp_Direct_Exp&amp;quot;         &amp;quot;Prot_Insp_Cap_Outlay&amp;quot;        
+## [343] &amp;quot;Prot_Insp_Current_Exp&amp;quot;        &amp;quot;Prot_Insp_Construction&amp;quot;      
+## [345] &amp;quot;Prot_Insp_IG_To_State&amp;quot;        &amp;quot;Prot_Insp_IG_Local_Govts&amp;quot;    
+## [347] &amp;quot;Public_Welf_Total_Exp&amp;quot;        &amp;quot;Public_Welf_Direct_Exp&amp;quot;      
+## [349] &amp;quot;Public_Welf_Cash_Asst&amp;quot;        &amp;quot;Public_Welf_Cap_Outlay&amp;quot;      
+## [351] &amp;quot;Public_Welf_Current_Exp&amp;quot;      &amp;quot;Public_Welf_Construct&amp;quot;       
+## [353] &amp;quot;Welf_Categ_Total_Exp&amp;quot;         &amp;quot;Welf_Categ_Cash_Assist&amp;quot;      
+## [355] &amp;quot;Welf_Categ_IG_To_State&amp;quot;       &amp;quot;Welf_Categ_IG_Loc_Govts&amp;quot;     
+## [357] &amp;quot;Welf_Cash_Total_Exp&amp;quot;          &amp;quot;Welf_Cash_Cash_Assist&amp;quot;       
+## [359] &amp;quot;Welf_Cash_IG_Local_Govts&amp;quot;     &amp;quot;Welf_Vend_Pmts_Medical&amp;quot;      
+## [361] &amp;quot;Welf_Vend_Pmts_NEC&amp;quot;           &amp;quot;Welf_State_Share_Part_D&amp;quot;     
+## [363] &amp;quot;Welf_Ins_Total_Exp&amp;quot;           &amp;quot;Welf_Ins_Cap_Outlay&amp;quot;         
+## [365] &amp;quot;Welf_Ins_Current_Exp&amp;quot;         &amp;quot;Welf_Ins_Construction&amp;quot;       
+## [367] &amp;quot;Welf_NEC_Total_Expend&amp;quot;        &amp;quot;Welf_NEC_Direct_Expend&amp;quot;      
+## [369] &amp;quot;Welf_NEC_Cap_Outlay&amp;quot;          &amp;quot;Welf_NEC_Current_Exp&amp;quot;        
+## [371] &amp;quot;Welf_NEC_Construction&amp;quot;        &amp;quot;Welf_NEC_IG_To_State&amp;quot;        
+## [373] &amp;quot;Welf_NEC_IG_Local_Govts&amp;quot;      &amp;quot;Sewerage_Total_Expend&amp;quot;       
+## [375] &amp;quot;Sewerage_Direct_Expend&amp;quot;       &amp;quot;Sewerage_Cap_Outlay&amp;quot;         
+## [377] &amp;quot;Sewerage_Current_Exp&amp;quot;         &amp;quot;Sewerage_Construction&amp;quot;       
+## [379] &amp;quot;Sewerage_IG_To_State&amp;quot;         &amp;quot;Sewerage_IG_Local_Govts&amp;quot;     
+## [381] &amp;quot;SW_Mgmt_Total_Expend&amp;quot;         &amp;quot;SW_Mgmt_Direct_Expend&amp;quot;       
+## [383] &amp;quot;SW_Mgmt_Capital_Outlay&amp;quot;       &amp;quot;SW_Mgmt_Current_Exp&amp;quot;         
+## [385] &amp;quot;SW_Mgmt_Construction&amp;quot;         &amp;quot;SW_Mgmt_IG_To_State&amp;quot;         
+## [387] &amp;quot;SW_Mgmt_IG_Local_Govts&amp;quot;       &amp;quot;Water_Trans_Total_Exp&amp;quot;       
+## [389] &amp;quot;Water_Trans_Direct_Exp&amp;quot;       &amp;quot;Water_Trans_Cap_Outlay&amp;quot;      
+## [391] &amp;quot;Water_Trans_Current_Exp&amp;quot;      &amp;quot;Water_Trans_Construct&amp;quot;       
+## [393] &amp;quot;Water_Trans_IG_To_Sta&amp;quot;        &amp;quot;Water_Trans_IG_Loc_Govts&amp;quot;    
+## [395] &amp;quot;Interest_on_Gen_Debt&amp;quot;         &amp;quot;General_NEC_Total_Exp&amp;quot;       
+## [397] &amp;quot;General_NEC_Direct_Exp&amp;quot;       &amp;quot;VetBonus&amp;quot;                    
+## [399] &amp;quot;General_NEC_Cap_Outlay&amp;quot;       &amp;quot;General_NEC_Current_Exp&amp;quot;     
+## [401] &amp;quot;General_NEC_Construct&amp;quot;        &amp;quot;General_NEC_IG_To_St&amp;quot;        
+## [403] &amp;quot;General_NEC_IG_Loc_Govts&amp;quot;     &amp;quot;General_NEC_IG_To_Fed&amp;quot;       
+## [405] &amp;quot;Liquor_Stores_Tot_Exp&amp;quot;        &amp;quot;Liquor_Stores_Cap_Out&amp;quot;       
+## [407] &amp;quot;Liquor_Stores_Current_Exp&amp;quot;    &amp;quot;Liquor_Stores_Constr&amp;quot;        
+## [409] &amp;quot;Total_Util_Total_Exp&amp;quot;         &amp;quot;Total_Util_Inter_Exp&amp;quot;        
+## [411] &amp;quot;Total_Util_Cap_Outlay&amp;quot;        &amp;quot;Total_Util_Current_Exp&amp;quot;      
+## [413] &amp;quot;Total_Util_Construct&amp;quot;         &amp;quot;Water_Util_Total_Exp&amp;quot;        
+## [415] &amp;quot;Water_Util_Inter_Exp&amp;quot;         &amp;quot;Water_Util_Cap_Outlay&amp;quot;       
+## [417] &amp;quot;Water_Util_Current_Exp&amp;quot;       &amp;quot;Water_Util_Construct&amp;quot;        
+## [419] &amp;quot;Elec_Util_Total_Exp&amp;quot;          &amp;quot;Elec_Util_Inter_Exp&amp;quot;         
+## [421] &amp;quot;Elec_Util_Cap_Outlay&amp;quot;         &amp;quot;Elec_Util_Current_Exp&amp;quot;       
+## [423] &amp;quot;Elec_Util_Construct&amp;quot;          &amp;quot;Gas_Util_Total_Exp&amp;quot;          
+## [425] &amp;quot;Gas_Util_Inter_Exp&amp;quot;           &amp;quot;Gas_Util_Cap_Outlay&amp;quot;         
+## [427] &amp;quot;Gas_Util_Current_Exp&amp;quot;         &amp;quot;Gas_Util_Construct&amp;quot;          
+## [429] &amp;quot;Trans_Util_Total_Exp&amp;quot;         &amp;quot;Trans_Util_Inter_Exp&amp;quot;        
+## [431] &amp;quot;Trans_Util_Cap_Outlay&amp;quot;        &amp;quot;Trans_Util_Current_Exp&amp;quot;      
+## [433] &amp;quot;Trans_Util_Construct&amp;quot;         &amp;quot;Emp_Ret_Total_Expend&amp;quot;        
+## [435] &amp;quot;Emp_Ret_Benefit_Paymts&amp;quot;       &amp;quot;Emp_Ret_Withdrawals&amp;quot;         
+## [437] &amp;quot;Emp_Ret_Other_Paymts&amp;quot;         &amp;quot;Unemp_Comp_Total_Exp&amp;quot;        
+## [439] &amp;quot;Unemp_Comp_Ben_Paymts&amp;quot;        &amp;quot;Unemp_Ext___Spec_Pmts&amp;quot;       
+## [441] &amp;quot;Total_Debt_Outstanding&amp;quot;       &amp;quot;Total_Long_Term_Debt_Out&amp;quot;    
+## [443] &amp;quot;ST_Debt_End_of_Year&amp;quot;          &amp;quot;Total_Beg_LTD_Out&amp;quot;           
+## [445] &amp;quot;Beg_LTD_Out_Private_Purp&amp;quot;     &amp;quot;Beg_LTD_Out_All_Other&amp;quot;       
+## [447] &amp;quot;Beg_LTD_Out_Utility&amp;quot;          &amp;quot;Beg_LTD_Out_Water_Util&amp;quot;      
+## [449] &amp;quot;Beg_LTD_Out_Elec_Util&amp;quot;        &amp;quot;Beg_LTD_Out_Gas_Util&amp;quot;        
+## [451] &amp;quot;Beg_LTD_Out_Trans_Util&amp;quot;       &amp;quot;Beg_LTD_Out_General&amp;quot;         
+## [453] &amp;quot;Beg_LTD_Out_Education&amp;quot;        &amp;quot;Beg_LTD_Out_Priv_Purp&amp;quot;       
+## [455] &amp;quot;Beg_LTD_Out_Other_NEC&amp;quot;        &amp;quot;Total_LTD_Issued&amp;quot;            
+## [457] &amp;quot;LTD_Iss_Private_Purp&amp;quot;         &amp;quot;LTD_Iss_All_Other&amp;quot;           
+## [459] &amp;quot;LTD_Iss_Utility&amp;quot;              &amp;quot;LTD_Iss_Util_Water&amp;quot;          
+## [461] &amp;quot;LTD_Iss_Util_Electric&amp;quot;        &amp;quot;LTD_Iss_Util_Gas_Supply&amp;quot;     
+## [463] &amp;quot;LTD_Iss_Util_Transit&amp;quot;         &amp;quot;LTD_Iss_General&amp;quot;             
+## [465] &amp;quot;LTD_Iss_Gen_Elem_Educ&amp;quot;        &amp;quot;LTD_Iss_Gen_Other_Educ&amp;quot;      
+## [467] &amp;quot;LTD_Iss_Gen_Other_NEC&amp;quot;        &amp;quot;Total_LTD_Iss_FFC&amp;quot;           
+## [469] &amp;quot;LTD_Iss_FFC_Utility&amp;quot;          &amp;quot;LTD_Iss_FFC_Water_Util&amp;quot;      
+## [471] &amp;quot;LTD_Iss_FFC_Elec_Util&amp;quot;        &amp;quot;LTD_Iss_FFC_Gas_Util&amp;quot;        
+## [473] &amp;quot;LTD_Iss_FFC_Trans_Util&amp;quot;       &amp;quot;LTD_Iss_FFC_General&amp;quot;         
+## [475] &amp;quot;LTD_Iss_FFC_Elem_Educ&amp;quot;        &amp;quot;LTD_Iss_FFC_Other_Educ&amp;quot;      
+## [477] &amp;quot;LTD_Iss_FFC_Other_NEC&amp;quot;        &amp;quot;Total_LTD_Iss_NG&amp;quot;            
+## [479] &amp;quot;LTD_Iss_NG_Utility&amp;quot;           &amp;quot;LTD_Iss_NG_Water_Util&amp;quot;       
+## [481] &amp;quot;LTD_Iss_NG_Elec_Util&amp;quot;         &amp;quot;LTD_Iss_NG_Gas_Util&amp;quot;         
+## [483] &amp;quot;LTD_Iss_NG_Trans_Util&amp;quot;        &amp;quot;LTD_Iss_NG_General&amp;quot;          
+## [485] &amp;quot;LTD_Iss_NG_Elem_Educ&amp;quot;         &amp;quot;LTD_Iss_NG_Other_Educ&amp;quot;       
+## [487] &amp;quot;LTD_Iss_NG_Private_Purp&amp;quot;      &amp;quot;LTD_Iss_NG_Other_NEC&amp;quot;        
+## [489] &amp;quot;Total_LTD_Iss_Unsp&amp;quot;           &amp;quot;LTD_Iss_Unsp_Utility&amp;quot;        
+## [491] &amp;quot;LTD_Iss_Unsp_Water_Util&amp;quot;      &amp;quot;LTD_Iss_Unsp_Elec_Util&amp;quot;      
+## [493] &amp;quot;LTD_Iss_Unsp_Gas_Util&amp;quot;        &amp;quot;LTD_Iss_Unsp_Trans_Util&amp;quot;     
+## [495] &amp;quot;LTD_Iss_Unsp_General&amp;quot;         &amp;quot;LTD_Iss_Unsp_Elem_Educ&amp;quot;      
+## [497] &amp;quot;LTD_Iss_Unsp_Other_Educ&amp;quot;      &amp;quot;LTD_Iss_Unsp_Other_NEC&amp;quot;      
+## [499] &amp;quot;Total_LTD_Retired&amp;quot;            &amp;quot;LTD_Ret_Private_Purp&amp;quot;        
+## [501] &amp;quot;LTD_Ret_All_Other&amp;quot;            &amp;quot;LTD_Ret_Utility&amp;quot;             
+## [503] &amp;quot;LTD_Ret_Util_Water&amp;quot;           &amp;quot;LTD_Ret_Util_Electric&amp;quot;       
+## [505] &amp;quot;LTD_Ret_Util_Gas_Supply&amp;quot;      &amp;quot;LTD_Ret_Util_Transit&amp;quot;        
+## [507] &amp;quot;LTD_Ret_General&amp;quot;              &amp;quot;LTD_Ret_Gen_Elem_Educ&amp;quot;       
+## [509] &amp;quot;LTD_Ret_Gen_Other_Educ&amp;quot;       &amp;quot;LTD_Ret_Gen_Other_NEC&amp;quot;       
+## [511] &amp;quot;Total_LTD_Ret_FFC&amp;quot;            &amp;quot;LTD_Ret_FFC_Utility&amp;quot;         
+## [513] &amp;quot;LTD_Ret_FFC_Water_Util&amp;quot;       &amp;quot;LTD_Ret_FFC_Elec_Util&amp;quot;       
+## [515] &amp;quot;LTD_Ret_FFC_Gas_Util&amp;quot;         &amp;quot;LTD_Ret_FFC_Trans_Util&amp;quot;      
+## [517] &amp;quot;LTD_Ret_FFC_General&amp;quot;          &amp;quot;LTD_Ret_FFC_Elem_Educ&amp;quot;       
+## [519] &amp;quot;LTD_Ret_FFC_Other_Educ&amp;quot;       &amp;quot;LTD_Ret_FFC_Other_NEC&amp;quot;       
+## [521] &amp;quot;Total_LTD_Ret_NG&amp;quot;             &amp;quot;LTD_Ret_NG_Utility&amp;quot;          
+## [523] &amp;quot;LTD_Ret_NG_Water_Util&amp;quot;        &amp;quot;LTD_Ret_NG_Elec_Util&amp;quot;        
+## [525] &amp;quot;LTD_Ret_NG_Gas_Util&amp;quot;          &amp;quot;LTD_Ret_NG_Trans_Util&amp;quot;       
+## [527] &amp;quot;LTD_Ret_NG_General&amp;quot;           &amp;quot;LTD_Ret_NG_Elem_Educ&amp;quot;        
+## [529] &amp;quot;LTD_Ret_NG_Other_Educ&amp;quot;        &amp;quot;LTD_Ret_NG_Private_Purp&amp;quot;     
+## [531] &amp;quot;LTD_Ret_NG_Other_NEC&amp;quot;         &amp;quot;Total_LTD_Ret_Unsp&amp;quot;          
+## [533] &amp;quot;LTD_Ret_Unsp_Utility&amp;quot;         &amp;quot;LTD_Ret_Unsp_Water_Util&amp;quot;     
+## [535] &amp;quot;LTD_Ret_Unsp_Elec_Utili&amp;quot;      &amp;quot;LTD_Ret_Unsp_Gas_Util&amp;quot;       
+## [537] &amp;quot;LTD_Ret_Unsp_Trans_Util&amp;quot;      &amp;quot;LTD_Ret_Unsp_General&amp;quot;        
+## [539] &amp;quot;LTD_Ret_Unsp_Elem_Educ&amp;quot;       &amp;quot;LTD_Ret_Unsp_Other_Educ&amp;quot;     
+## [541] &amp;quot;LTD_Ret_Unsp_Other_NEC&amp;quot;       &amp;quot;Total_LTD_Out&amp;quot;               
+## [543] &amp;quot;LTD_Out_Private_Purp&amp;quot;         &amp;quot;LTD_Out_All_Other&amp;quot;           
+## [545] &amp;quot;Total_LTD_Out_Utility&amp;quot;        &amp;quot;LTD_Out_Util_Water&amp;quot;          
+## [547] &amp;quot;LTD_Out_Util_Electric&amp;quot;        &amp;quot;LTD_Out_Util_Gas_Supply&amp;quot;     
+## [549] &amp;quot;LTD_Out_Util_Transit&amp;quot;         &amp;quot;LTD_Out_General&amp;quot;             
+## [551] &amp;quot;LTD_Out_Gen_Elem_Educ&amp;quot;        &amp;quot;LTD_Out_Gen_Other_Educ&amp;quot;      
+## [553] &amp;quot;LTD_Out_Gen_Other_NEC&amp;quot;        &amp;quot;Total_LTD_Out_FFC&amp;quot;           
+## [555] &amp;quot;LTD_Out_FFC_Utility&amp;quot;          &amp;quot;LTD_Out_FFC_Water_Util&amp;quot;      
+## [557] &amp;quot;LTD_Out_FFC_Elec_Util&amp;quot;        &amp;quot;LTD_Out_FFC_Gas_Util&amp;quot;        
+## [559] &amp;quot;LTD_Out_FFC_Trans_Util&amp;quot;       &amp;quot;LTD_Out_FFC_General&amp;quot;         
+## [561] &amp;quot;LTD_Out_FFC_Elem_Educ&amp;quot;        &amp;quot;LTD_Out_FFC_Other_Educ&amp;quot;      
+## [563] &amp;quot;LTD_Out_FFC_Other_NEC&amp;quot;        &amp;quot;Tot_LTD_Out_NG&amp;quot;              
+## [565] &amp;quot;LTD_Out_NG_Utility&amp;quot;           &amp;quot;LTD_Out_NG_Water_Util&amp;quot;       
+## [567] &amp;quot;LTD_Out_NG_Elec_Util&amp;quot;         &amp;quot;LTD_Out_NG_Gas_Util&amp;quot;         
+## [569] &amp;quot;LTD_Out_NG_Trans_Util&amp;quot;        &amp;quot;LTD_Out_NG_General&amp;quot;          
+## [571] &amp;quot;LTD_Out_NG_Elem_Educ&amp;quot;         &amp;quot;LTD_Out_NG_Other_Educ&amp;quot;       
+## [573] &amp;quot;LTD_Out_NG_Private_Purp&amp;quot;      &amp;quot;LTD_Out_NG_Other_NEC&amp;quot;        
+## [575] &amp;quot;Total_Cash___Securities&amp;quot;      &amp;quot;Insur_Trust_Cash___Sec&amp;quot;      
+## [577] &amp;quot;Emp_Retire_Cash___Sec&amp;quot;        &amp;quot;Emp_Retire_Cash___Dep&amp;quot;       
+## [579] &amp;quot;Emp_Retire_Total_Sec&amp;quot;         &amp;quot;Emp_Retire_Sec_Tot_Fed&amp;quot;      
+## [581] &amp;quot;Emp_Retire_Sec_S_L_Secur&amp;quot;     &amp;quot;Emp_Retire_Sec_Tot_Nong&amp;quot;     
+## [583] &amp;quot;Emp_Retire_Sec_Corp_Bds&amp;quot;      &amp;quot;Emp_Retire_Sec_Corp_Stk&amp;quot;     
+## [585] &amp;quot;Emp_Retire_Sec_Mortgages&amp;quot;     &amp;quot;Emp_Retire_Sec_Misc_Inv&amp;quot;     
+## [587] &amp;quot;Emp_Retire_Sec_Oth_Nong&amp;quot;      &amp;quot;Unemp_Comp_Cash___Sec&amp;quot;       
+## [589] &amp;quot;Unemp_Comp_Bal_In_US_Trs&amp;quot;     &amp;quot;Unemp_Comp_Other_Balance&amp;quot;    
+## [591] &amp;quot;Nonin_Trust_Cash___Sec&amp;quot;       &amp;quot;Sinking_Fd_Cash___Sec&amp;quot;       
+## [593] &amp;quot;Bond_Fd_Cash___Sec&amp;quot;           &amp;quot;Oth_Nonin_Fd_Cash___Sec&amp;quot;     
+## [595] &amp;quot;NameFixed&amp;quot;                    &amp;quot;NameFLower&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;revenues-per-capita&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Revenues per capita&lt;/h3&gt;
+&lt;p&gt;Change it up with a recalcalculation of the data and a new map.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;my.GFD.2015 &amp;lt;- State.Data %&amp;gt;% 
+  filter(Year4==2015) %&amp;gt;%
+  mutate(value = Total_Revenue / Population, region = NameFLower) %&amp;gt;%
+  select(region, value)
+state_choropleth(my.GFD.2015, title=&amp;quot;Total Revenues per capita&amp;quot;, num_colors=1)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning in self$bind(): The following regions were missing and are being set to
+## NA: district of columbia&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-02-25-mapping-with-the-government-finance-database/index_files/figure-html/Finished2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;putting-them-together-counties&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Putting them together: Counties&lt;/h1&gt;
+&lt;p&gt;This part is slightly harder. It would appear as though the Government Finance Data doesn’t have a combined FIPS code; this is the region in map. But, the data contain the state and county fips codes and we can recreate them with the state code times 1000 plus the county. After that, plot the General Revenue.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;#County.Data.2 &amp;lt;- read.csv(paste0(here(),&amp;quot;/data/CountyData.csv&amp;quot;)
+#County.Data.2 &amp;lt;- County.Data.2 %&amp;gt;% mutate(region = FIPS_Code_State* 1000 + FIPS_County)
+#my.County.GFD.2015 &amp;lt;- County.Data.2 %&amp;gt;% 
+#  filter(Year4==2012) %&amp;gt;% mutate(value = General_Revenue / Population) %&amp;gt;%
+#  select(region, value)
+county_choropleth(my.County.GFD.2015, title=&amp;quot;General Revenue per capita&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-02-25-mapping-with-the-government-finance-database/index_files/figure-html/County1-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;The zoom feature is pretty cool: there are two defined forms for the county and states. The naming conventions follow the &lt;code&gt;county.regions&lt;/code&gt; format and are lower case. Let me grab &lt;em&gt;oregon&lt;/em&gt;.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;#my.County.GFD.2015 &amp;lt;- County.Data.2 %&amp;gt;% 
+#  filter(Year4==2012) %&amp;gt;% mutate(value = General_Revenue / Population) %&amp;gt;%
+#  select(region, value)
+county_choropleth(my.County.GFD.2015, title=&amp;quot;General Revenue per capita&amp;quot;, state_zoom=&amp;quot;oregon&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-02-25-mapping-with-the-government-finance-database/index_files/figure-html/CountyMZ-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

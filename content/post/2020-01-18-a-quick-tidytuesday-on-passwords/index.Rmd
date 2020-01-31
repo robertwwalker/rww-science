@@ -1,0 +1,81 @@
+---
+title: a quick tidyTuesday on Passwords
+author: RWW
+date: '2020-01-18'
+slug: a-quick-tidytuesday-on-passwords
+categories:
+  - tidyTuesday
+  - tidyverse
+  - web scraping
+tags:
+  - R
+  - tidyTuesday
+header:
+  caption: ''
+  image: ''
+  preview: yes
+---
+
+First, I wanted to acquire the distribution of letters and then play with that.  I embedded the result here.  The second step is to import the tidyTuesday data.
+
+```{r, message=FALSE, warning=FALSE}
+library(tidyverse)
+Letter.Freq <- data.frame(stringsAsFactors=FALSE,
+                     Letter = c("E", "T", "A", "O", "I", "N", "S", "R", "H", "D", "L", "U",
+                                "C", "M", "F", "Y", "W", "G", "P", "B", "V",
+                                "K", "X", "Q", "J", "Z"),
+                  Frequency = c(12.02, 9.1, 8.12, 7.68, 7.31, 6.95, 6.28, 6.02, 5.92, 4.32,
+                                3.98, 2.88, 2.71, 2.61, 2.3, 2.11, 2.09, 2.03,
+                                1.82, 1.49, 1.11, 0.69, 0.17, 0.11, 0.1, 0.07)
+               )
+Letter.Freq <- Letter.Freq %>% mutate(Frequency = Frequency / 100, Letter = tolower(Letter))
+passwords <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-01-14/passwords.csv')
+```
+
+Let me visualize the distribution of letters.
+
+```{r}
+library(ggthemes)
+ggplot(Letter.Freq) + aes(x=reorder(Letter, desc(Letter)), y=Frequency) + geom_col() + coord_flip() + theme_economist() + labs(x="")
+```
+
+I want to use the `tm` library for topic models to extract out the numbers and only work with letters.  There is something probably worthwhile to do with Zipf's law or the like on that.
+
+```{r}
+library(tm)
+# Remove numbers
+passwords <- passwords %>% mutate(PasswordNN = removeNumbers(password))
+# Split each string into the letters; here I am repurposing a word count function
+freq <- function(x,y) {
+     word <- tolower(unlist(strsplit(x,"")))
+     word_table <- table(word)
+     ans <- word_table[names(word_table)==y]
+     return(ans)
+}
+# Use sapply to apply the function.  This is not tidy but I have never sat down with map
+Letter.FreqPW <- sapply(letters,function(x) { freq(passwords$PasswordNN, x) } )
+# Rename the resulting vector with proper labels
+names(Letter.FreqPW) <- letters
+# Clean up the names and metrics
+LFPW <- data.frame(Letter.FreqPW)
+LFPW$Letter <- row.names(LFPW)
+LFPW <- LFPW %>% mutate(Freq = Letter.FreqPW)
+# Join a result
+Res <- left_join(Letter.Freq, LFPW)
+Res
+```
+
+Turn it to a proportion.
+
+```{r}
+# Create a proportion
+Res <- Res %>% mutate(LF = Freq / sum(Freq))
+```
+
+Let me plot the result.
+
+```{r}
+library(ggrepel)
+gg1 <- ggplot(Res) + aes(x=Frequency, y=LF, label=Letter) + geom_label_repel(fill="white") + labs(x="Language Frequency", y="Frequency in Password", title="Password Letters vs. English Letter Frequency") + coord_equal() + geom_abline(slope=1, intercept=0) + ggthemes::theme_economist() 
+gg1
+```

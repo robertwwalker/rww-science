@@ -1,0 +1,124 @@
+---
+title: Global mortality tidyTuesday
+author: RWW
+date: '2018-04-18'
+slug: tidytuesday-takes-on-global-mortality
+categories:
+  - tidyverse
+  - R
+tags:
+  - tidyTuesday
+  - tidyverse
+---
+
+# tidyTuesday on Global Mortality
+
+The three generic challenge graphics involve two global summaries, a raw count by type and a percentage by type.  The individual county breakdowns are recorded for a predetermined year below.  This can all be seen in [the original](https://ourworldindata.org/what-does-the-world-die-from).  For whatever reason, I cannot open this data remotely.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+Here is this week's tidyTuesday.
+
+```{r DataLoad}
+library(skimr)
+library(tidyverse)
+library(rlang)
+# global_mortality <- readRDS("../../data/global_mortality.rds")
+global_mortality <- readRDS(url("https://github.com/robertwwalker/academic-mymod/raw/master/data/global_mortality.rds"))
+skim(global_mortality)
+```
+
+That loads the data for the challenge.
+
+```{r COrig}
+Counts <- read.csv(url("https://github.com/robertwwalker/academic-mymod/raw/master/data/annual-number-of-deaths-by-cause.csv"))
+Counts %>% filter(Year==2016) %>% select(-Code,-Entity,-Execution..deaths.,-Year) %>% apply(., 2, function(x) { sum(x, na.rm=TRUE)}) -> temp1
+pp.df <- data.frame(Total.Deaths=temp1,name=names(temp1))
+pp.df <- pp.df %>% arrange(Total.Deaths)
+pp.df$name <- factor(pp.df$name, levels = pp.df$name)
+cplot <- ggplot(pp.df, aes(name,Total.Deaths)) + geom_bar(stat="identity") + coord_flip() + scale_fill_gradientn(colours = terrain.colors(10)) + ggtitle("The Causes of Global Mortailty (2016)")
+cplot
+```
+
+With a reenactment of the base target plots, I can turn to new visuals.  I wanted to be able to develop a comparison of the various classified causes of death and to try out my nifty function for summarizing panel data.  So here goes.
+
+```{r TTuesP}
+xtsum <- function(formula, data) {
+  pform <- terms(formula, data=data)
+  unit <- pform[[2]]
+  vars <- attr(pform, "term.labels")
+  cls <- sapply(data, class)
+  data <- data %>% select(which(cls%in%c("numeric","integer")))
+  varnames <- intersect(names(data),vars)
+  sumfunc <- function(data=data, varname, unit) {
+  loc.unit <- enquo(unit)
+  varname <- ensym(varname)
+    ores <- data %>% filter(!is.na(!! varname)==TRUE) %>% summarise(
+    O.mean=round(mean(`$`(data, !! varname), na.rm=TRUE), digits=3),
+    O.sd=round(sd(`$`(data, !! varname), na.rm=TRUE), digits=3), 
+    O.min = min(`$`(data, !! varname), na.rm=TRUE), 
+    O.max=max(`$`(data, !! varname), na.rm=TRUE), 
+    O.SumSQ=round(sum(scale(`$`(data, !! varname), center=TRUE, scale=FALSE)^2, na.rm=TRUE), digits=3), 
+    O.N=sum(as.numeric((!is.na(`$`(data, !! varname))))))
+ bmeans <- data %>% filter(!is.na(!! varname)==TRUE) %>% group_by(!! loc.unit) %>% summarise(
+   meanx=mean(`$`(.data, !! varname), na.rm=T), 
+   t.count=sum(as.numeric(!is.na(`$`(.data, !! varname)))))
+    bres <- bmeans %>% ungroup() %>% summarise(
+    B.mean = round(mean(meanx, na.rm=TRUE), digits=3),
+    B.sd = round(sd(meanx, na.rm=TRUE), digits=3),
+    B.min = min(meanx, na.rm=TRUE), 
+    B.max=max(meanx, na.rm=TRUE), 
+    Units=sum(as.numeric(!is.na(t.count))), 
+    t.bar=round(mean(t.count, na.rm=TRUE), digits=3))
+  wdat <- data %>% filter(!is.na(!! varname)==TRUE) %>% group_by(!! loc.unit) %>% mutate(
+    W.x = scale(`$`(.data,!! varname), scale=FALSE))
+  wres <- wdat %>% ungroup() %>% summarise(
+    W.sd=round(sd(W.x, na.rm=TRUE), digits=3), 
+    W.min=min(W.x, na.rm=TRUE), 
+    W.max=max(W.x, na.rm=TRUE), 
+    W.SumSQ=round(sum(W.x^2, na.rm=TRUE), digits=3))
+    W.Ratio <- round(wres$W.SumSQ/ores$O.SumSQ, digits=3)
+  return(c(ores,bres,wres,Within.Ovr.Ratio=W.Ratio))
+  }
+res1 <- sapply(varnames, function(x) {sumfunc(data, !!x, !!unit)})
+return(t(res1))
+}  
+global_mortality$countryF <- as.factor(global_mortality$country)
+global_mortality$countryN <- as.numeric(as.factor(global_mortality$country))
+names(global_mortality) <- gsub(" \\(%\\)","",names(global_mortality))
+# For some reason, the xtsum function does not respond to the weird variable names but will accept them devoid of (%)
+myxt.res <- xtsum(countryN~., data=global_mortality)
+myxt.res
+```
+
+The function output can be read as follows.  It needs better formatting as a table.  For now, O. is an overall measure, overall mean, standard deviation, minimum, maximum, sum of squares and total observations.  A between mean, standard deviation, minimum, and maximum with the number of units and the average number of time points.  Finally, we have a within standard deviation, minimum, maximum, sum of squares, and a within proportion of the overall variance.  In this case, terrorism and conflict are the two variables that vary almost entirely within and far less between countries.  I suspect this is because they are rather high in a few places and consistently so.
+
+```{r Result}
+ggplot.res <- data.frame(myxt.res)
+ggplot.res <- ggplot.res[-1,]; ggplot.res <- ggplot.res[,17]
+mydf <- t(data.frame(ggplot.res))
+mydf <- data.frame(value=mydf,name=rownames(mydf))
+mydf <- mydf %>% arrange(value)
+mydf$name <- factor(mydf$name, levels = mydf$name)
+mydf <- mydf %>% mutate(Emph=as.numeric(value>0.5))
+mydf %>% ggplot(aes(name,value, fill=Emph)) + geom_bar(stat="identity") + coord_flip() + ylab("Within Percent of Total Variation") + xlab("Cause of Mortality") + ggtitle("Within-country variation in the Causes of Death") + guides(fill="none")
+```
+
+```{r MHG30}
+Mean.Homicide <- global_mortality %>% group_by(countryF) %>% summarise(mymean=mean(Homicide, na.rm=TRUE))
+Mean.Homicide %>% ungroup() %>% arrange(mymean) -> mydf
+mydf$countryF <- factor(mydf$countryF, levels = mydf$countryF)
+mydf %>% ungroup() %>% top_n(30, mymean) %>% arrange(mymean) %>% mutate(Emph=c(rep(1,10),rep(2,10),rep(3,10))) -> mydf
+mydf %>% ggplot(aes(countryF,mymean, fill=Emph)) + geom_bar(stat="identity") + coord_flip() + ylab("Homicides") + ggtitle("Top 30 Countries/Places in Homicide") + xlab("") + guides(fill="none") -> Homicideplot
+Homicideplot
+
+```
+
+```{r DandA}
+global_mortality %>% filter(year==2016) %>% ggplot(aes(`Drug disorders`,`Alcohol disorders`)) + geom_point() + ggtitle("Drugs and Alcohol in 2016") -> scatterDA
+scatterDA
+```
+
+

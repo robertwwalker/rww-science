@@ -1,0 +1,2076 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Source Themes Academic 4.7.0">
+
+  
+
+  
+  
+  
+  
+  
+    
+    
+    
+  
+  
+
+  <meta name="author" content="Robert W. Walker">
+
+  
+  
+  
+    
+  
+  <meta name="description" content="The NFL Data [SporTrac](http://www.sportrac.com] has a wonderful array of financial data on sports. A student going to work for the Seattle Seahawks wanted the NFL salary cap data and I also found data on the English Premier League there. Now I have a source to scrape the data from.
+With a source in hand, the key tool is the SelectorGadget. SelectorGadget is a browser add-in for Chrome that allows us to select text and identify the css or xpath selector to scrape the data.">
+
+  
+  <link rel="alternate" hreflang="en-us" href="/2018/04/04/scraping-the-nfl-salary-cap-data-with-python-and-r/">
+
+  
+
+
+  
+  
+  
+  <meta name="theme-color" content="#EAF04E">
+  
+
+  
+  
+  
+  <script src="/js/mathjax-config.js"></script>
+  
+
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-1/css/all.min.css" integrity="sha256-4w9DunooKSr3MFXHXWyFER38WmPdm361bQS/2KUWZbU=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+    
+    
+    
+      
+    
+    
+      
+      
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css" crossorigin="anonymous" title="hl-light">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css" crossorigin="anonymous" title="hl-dark" disabled>
+      
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.css" integrity="sha256-SHMGCYmST46SoyGgo4YR/9AlK1vf3ff84Aq9yK4hdqM=" crossorigin="anonymous">
+    
+
+    
+
+    
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.1.2/lazysizes.min.js" integrity="sha256-Md1qLToewPeKjfAHU1zyPwOutccPAm5tahnaw7Osw0A=" crossorigin="anonymous" async></script>
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" integrity="" crossorigin="anonymous" async></script>
+      
+    
+      
+
+      
+      
+
+      
+    
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cutive+Mono%7CLora:400,700%7CRoboto:400,700%7CJosefin+Slab&display=swap">
+  
+
+  
+  
+  
+  
+  <link rel="stylesheet" href="/css/academic.css">
+
+  
+
+
+
+
+  
+
+
+  
+
+  <link rel="manifest" href="/index.webmanifest">
+  <link rel="icon" type="image/png" href="/images/icon_hu441e8133bcb5f26868e76fcbf737199b_6526_32x32_fill_lanczos_center_2.png">
+  <link rel="apple-touch-icon" type="image/png" href="/images/icon_hu441e8133bcb5f26868e76fcbf737199b_6526_192x192_fill_lanczos_center_2.png">
+
+  <link rel="canonical" href="/2018/04/04/scraping-the-nfl-salary-cap-data-with-python-and-r/">
+
+  
+  
+  
+  
+  
+    
+  
+  
+  <meta property="twitter:card" content="summary_large_image">
+  
+  <meta property="twitter:site" content="@PieRatio">
+  <meta property="twitter:creator" content="@PieRatio">
+  
+  <meta property="og:site_name" content="rww.science">
+  <meta property="og:url" content="/2018/04/04/scraping-the-nfl-salary-cap-data-with-python-and-r/">
+  <meta property="og:title" content="Scraping the NFL Salary Cap Data with Python and R | rww.science">
+  <meta property="og:description" content="The NFL Data [SporTrac](http://www.sportrac.com] has a wonderful array of financial data on sports. A student going to work for the Seattle Seahawks wanted the NFL salary cap data and I also found data on the English Premier League there. Now I have a source to scrape the data from.
+With a source in hand, the key tool is the SelectorGadget. SelectorGadget is a browser add-in for Chrome that allows us to select text and identify the css or xpath selector to scrape the data."><meta property="og:image" content="/img/portrait.jpg">
+  <meta property="twitter:image" content="/img/portrait.jpg"><meta property="og:locale" content="en-us">
+  
+    
+      <meta property="article:published_time" content="2018-04-04T00:00:00&#43;00:00">
+    
+    <meta property="article:modified_time" content="2018-04-04T00:00:00&#43;00:00">
+  
+
+  
+
+
+    
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/2018/04/04/scraping-the-nfl-salary-cap-data-with-python-and-r/"
+  },
+  "headline": "Scraping the NFL Salary Cap Data with Python and R",
+  
+  "datePublished": "2018-04-04T00:00:00Z",
+  "dateModified": "2018-04-04T00:00:00Z",
+  
+  "author": {
+    "@type": "Person",
+    "name": "Robert W. Walker"
+  },
+  
+  "publisher": {
+    "@type": "Organization",
+    "name": [{"name":"Atkinson Graduate School of Management","url":"http://agsm.willamette.edu"},{"name":"Willamette University","url":"http:www.willamette.edu/"}],
+    "logo": {
+      "@type": "ImageObject",
+      "url": "img//"
+    }
+  },
+  "description": "The NFL Data [SporTrac](http://www.sportrac.com] has a wonderful array of financial data on sports. A student going to work for the Seattle Seahawks wanted the NFL salary cap data and I also found data on the English Premier League there. Now I have a source to scrape the data from.\nWith a source in hand, the key tool is the SelectorGadget. SelectorGadget is a browser add-in for Chrome that allows us to select text and identify the css or xpath selector to scrape the data."
+}
+</script>
+
+  
+
+  
+
+
+  
+  
+  
+  
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.1/cookieconsent.min.js" integrity="sha256-5VhCqFam2Cn+yjw61zbBNrbHVJ6SRydPeKopYlngbiQ=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.1/cookieconsent.min.css" integrity="sha256-zQ0LblD/Af8vOppw18+2anxsuaz3pWYyVWi+bTvTH8Q=" crossorigin="anonymous">
+  
+  <script>
+  window.addEventListener("load", function(){
+    window.cookieconsent.initialise({
+      "palette": {
+        "popup": {
+          "background": "#EAF04E",
+          "text": "#fff"
+        },
+        "button": {
+          "background": "#fff",
+          "text": "#EAF04E"
+        }
+      },
+      "theme": "classic",
+      "content": {
+        "message": "This website uses cookies to ensure you get the best experience on our website.",
+        "dismiss": "Got it!",
+        "link": "Learn more",
+        "href": "/privacy/"
+      }
+    })});
+  </script>
+
+
+
+  
+
+
+
+
+
+  <title>Scraping the NFL Salary Cap Data with Python and R | rww.science</title>
+
+</head>
+
+<body id="top" data-spy="scroll" data-offset="70" data-target="#TableOfContents" class="dark">
+
+  <aside class="search-results" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" spellcheck="false" type="search">
+        
+      </div>
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+  
+
+
+
+
+
+
+
+<nav class="navbar navbar-expand-lg navbar-light compensate-for-scrollbar" id="navbar-main">
+  <div class="container">
+
+    
+    <div class="d-none d-lg-inline-flex">
+      <a class="navbar-brand" href="/">rww.science</a>
+    </div>
+    
+
+    
+    <button type="button" class="navbar-toggler" data-toggle="collapse"
+            data-target="#navbar-content" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+    <span><i class="fas fa-bars"></i></span>
+    </button>
+    
+
+    
+    <div class="navbar-brand-mobile-wrapper d-inline-flex d-lg-none">
+      <a class="navbar-brand" href="/">rww.science</a>
+    </div>
+    
+
+    
+    
+    <div class="navbar-collapse main-menu-item collapse justify-content-end" id="navbar-content">
+
+      
+      <ul class="navbar-nav d-md-inline-flex">
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#about"><span>Home</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/publication/"><span>Publications</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#posts"><span>Posts</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/project/"><span>Projects</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link  active" href="/r/"><span>R</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/talk/"><span>Talks/Slides</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/courses/"><span>Teaching</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#contact"><span>Contact</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/img/vita.pdf"><span>Curriculum Vitae</span></a>
+        </li>
+
+        
+        
+
+      
+
+        
+      </ul>
+    </div>
+
+    <ul class="nav-icons navbar-nav flex-row ml-auto d-flex pl-md-2">
+      
+      <li class="nav-item">
+        <a class="nav-link js-search" href="#"><i class="fas fa-search" aria-hidden="true"></i></a>
+      </li>
+      
+
+      
+      <li class="nav-item">
+        <a class="nav-link js-dark-toggle" href="#"><i class="fas fa-moon" aria-hidden="true"></i></a>
+      </li>
+      
+
+      
+
+    </ul>
+
+  </div>
+</nav>
+
+
+  <article class="article">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+  
+  
+<div class="article-container pt-3">
+  <h1>Scraping the NFL Salary Cap Data with Python and R</h1>
+
+  
+
+  
+    
+
+
+<div class="article-metadata">
+
+  
+  
+
+  
+  <span class="article-date">
+    
+    
+      
+    
+    Apr 4, 2018
+  </span>
+  
+
+  
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    9 min read
+  </span>
+  
+
+  
+  
+  
+
+  
+  
+  <span class="middot-divider"></span>
+  <span class="article-categories">
+    <i class="fas fa-folder mr-1"></i><a href="/categories/r/">R</a>, <a href="/categories/tidyverse/">tidyverse</a>, <a href="/categories/python/">python</a>, <a href="/categories/reticulate/">reticulate</a></span>
+  
+
+</div>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+</div>
+
+
+
+  <div class="article-container">
+
+    <div class="article-style">
+      
+
+
+<div id="the-nfl-data" class="section level1">
+<h1>The NFL Data</h1>
+<p>[SporTrac](<a href="http://www.sportrac.com" class="uri">http://www.sportrac.com</a>] has a wonderful array of financial data on sports. A student going to work for the Seattle Seahawks wanted the NFL salary cap data and I also found data on the English Premier League there. Now I have a source to scrape the data from.</p>
+<p>With a source in hand, the key tool is the <em>SelectorGadget</em>. <em>SelectorGadget</em> is a browser add-in for Chrome that allows us to select text and identify the css or xpath selector to scrape the data. With that, it becomes easy to identify what we need. I navgiated to the website in base_url and found the team names had links to the cap data. I will use those links first. Let’s build that.</p>
+<pre class="r"><code>library(rvest)
+base_url &lt;- &quot;http://www.spotrac.com/nfl/&quot;
+read.base &lt;- read_html(base_url)
+team.URL &lt;- read.base %&gt;% html_nodes(&quot;.team-name&quot;) %&gt;% html_attr(&#39;href&#39;)
+team.URL</code></pre>
+<pre><code>##  [1] &quot;https://www.spotrac.com/nfl/arizona-cardinals/cap/&quot;   
+##  [2] &quot;https://www.spotrac.com/nfl/atlanta-falcons/cap/&quot;     
+##  [3] &quot;https://www.spotrac.com/nfl/baltimore-ravens/cap/&quot;    
+##  [4] &quot;https://www.spotrac.com/nfl/buffalo-bills/cap/&quot;       
+##  [5] &quot;https://www.spotrac.com/nfl/carolina-panthers/cap/&quot;   
+##  [6] &quot;https://www.spotrac.com/nfl/chicago-bears/cap/&quot;       
+##  [7] &quot;https://www.spotrac.com/nfl/cincinnati-bengals/cap/&quot;  
+##  [8] &quot;https://www.spotrac.com/nfl/cleveland-browns/cap/&quot;    
+##  [9] &quot;https://www.spotrac.com/nfl/dallas-cowboys/cap/&quot;      
+## [10] &quot;https://www.spotrac.com/nfl/denver-broncos/cap/&quot;      
+## [11] &quot;https://www.spotrac.com/nfl/detroit-lions/cap/&quot;       
+## [12] &quot;https://www.spotrac.com/nfl/green-bay-packers/cap/&quot;   
+## [13] &quot;https://www.spotrac.com/nfl/houston-texans/cap/&quot;      
+## [14] &quot;https://www.spotrac.com/nfl/indianapolis-colts/cap/&quot;  
+## [15] &quot;https://www.spotrac.com/nfl/jacksonville-jaguars/cap/&quot;
+## [16] &quot;https://www.spotrac.com/nfl/kansas-city-chiefs/cap/&quot;  
+## [17] &quot;https://www.spotrac.com/nfl/los-angeles-chargers/cap/&quot;
+## [18] &quot;https://www.spotrac.com/nfl/los-angeles-rams/cap/&quot;    
+## [19] &quot;https://www.spotrac.com/nfl/miami-dolphins/cap/&quot;      
+## [20] &quot;https://www.spotrac.com/nfl/minnesota-vikings/cap/&quot;   
+## [21] &quot;https://www.spotrac.com/nfl/new-england-patriots/cap/&quot;
+## [22] &quot;https://www.spotrac.com/nfl/new-orleans-saints/cap/&quot;  
+## [23] &quot;https://www.spotrac.com/nfl/new-york-giants/cap/&quot;     
+## [24] &quot;https://www.spotrac.com/nfl/new-york-jets/cap/&quot;       
+## [25] &quot;https://www.spotrac.com/nfl/oakland-raiders/cap/&quot;     
+## [26] &quot;https://www.spotrac.com/nfl/philadelphia-eagles/cap/&quot; 
+## [27] &quot;https://www.spotrac.com/nfl/pittsburgh-steelers/cap/&quot; 
+## [28] &quot;https://www.spotrac.com/nfl/san-francisco-49ers/cap/&quot; 
+## [29] &quot;https://www.spotrac.com/nfl/seattle-seahawks/cap/&quot;    
+## [30] &quot;https://www.spotrac.com/nfl/tampa-bay-buccaneers/cap/&quot;
+## [31] &quot;https://www.spotrac.com/nfl/tennessee-titans/cap/&quot;    
+## [32] &quot;https://www.spotrac.com/nfl/washington-redskins/cap/&quot;</code></pre>
+<pre class="r"><code># Clean up the URLs to get the team names by themselves.
+team.names &lt;- gsub(&quot;/cap/&quot;,&quot;&quot;, gsub(base_url, &quot;&quot;, team.URL))</code></pre>
+<p>With 32 team links to scrape, I can now scrape them.</p>
+<div id="grabbing-team-tables" class="section level2">
+<h2>Grabbing Team Tables</h2>
+<p>Now I need to explore those links. When I started this, I wanted to learn some Python along the way. I found the following <a href="https://wcontractor.github.io/nfl-salary-part2.html">Python code</a> that worked for the task. For completeness, I leave it here.</p>
+<pre class="python"><code>import pandas as pd
+import bs4
+import re
+import urllib2
+#import requests
+
+from urllib import urlopen
+from bs4 import BeautifulSoup
+base_url = &quot;http://www.spotrac.com/nfl/&quot;
+
+def get_page(url):
+    page = urlopen(base_url)
+    soup = BeautifulSoup(page, &#39;lxml&#39;)
+    file = open(&quot;spotrac_urls.txt&quot;, &#39;w&#39;)
+    file.write(str(soup))
+    file.close()
+
+def get_team_table(url):
+    page = urlopen(url)
+    soup = BeautifulSoup(page, &#39;lxml&#39;)
+
+get_page(base_url)
+
+with open(&quot;spotrac_urls.txt&quot;, &#39;r&#39;) as file:
+    for line in file:
+        line = line.strip()
+
+from bs4 import BeautifulSoup
+page = open(&quot;spotrac_urls.txt&quot;, &#39;r&#39;)
+soup = BeautifulSoup(page, &quot;lxml&quot;)
+div = soup.find(&quot;div&quot;,&quot;subnav-posts&quot;)
+
+links = div.find_all(&#39;a&#39;)
+for link in links:
+    print(link.get(&#39;href&#39;))
+
+len(links)
+
+def get_team_table(url):
+    page = urlopen(url)
+    soup = BeautifulSoup(page, &#39;lxml&#39;)
+    data_rows = [row for row in soup.find(&quot;table&quot;, &quot;datatable&quot;).find_all(&quot;tr&quot;)]
+    return data_rows
+
+# create an empty list
+team_data = []
+
+for link in links:
+    team_data.append(get_team_table(link.get(&#39;href&#39;)))
+
+len(team_data)
+
+#data_rows = [row for row in soup.find(&quot;td&quot;, &quot;center&quot;).find_all(&quot;tr&quot;)]
+table_data = []
+
+#soup = BeautifulSoup(team_data[0], &#39;lxml&#39;)
+
+#This needs to be a nested for loop because inner items of the list are BeautifulSoup Elements
+for row in team_data:
+    for element in row:
+        #print(type(element))
+        if soup.find_all(&quot;td&quot;, attrs={&quot;class&quot;:&quot; right xs-hide &quot;}) is not None:
+            table_data.append(element.get_text())
+
+player_data = []
+for row in table_data:
+    player_data.append(row.split(&quot;\n&quot;))
+    #print(player_data)
+
+len(player_data)
+
+import pandas as pd
+df = pd.DataFrame(player_data)
+df = df.drop(14, 1)
+df = df.drop(0, 1)
+df = df.drop(1, 1)
+
+
+df = df.drop(df.index[[0]])
+df.set_index(1, inplace=True)
+print(df.shape)
+df.head()
+
+players = []
+for row in team_data[0]:
+    if row.get_text(&quot;tr&quot;) is not None:
+        players.append(row) 
+
+column_headers = [col.get_text() for col in players[0].find_all(&quot;th&quot;) if col.get_text()]
+len(column_headers)
+
+df.columns = column_headers
+df.head()
+
+#The header repeated itself in the data.  This didn&#39;t reveal itself until the data type conversion step below
+#but this fixes all occurrences of it.
+rows_to_be_dropped = df.loc[df[&#39;Cap Hit&#39;] == &#39;Cap %&#39;].index
+rows_to_be_kept = df.loc[df[&#39;Cap Hit&#39;] != &#39;Cap %&#39;].index
+totlen = len(df)
+df2a = df.drop(rows_to_be_kept)
+df = df.drop(rows_to_be_dropped)
+df2 = pd.Series(data=rows_to_be_dropped)
+
+#Apply a regex to convert the &#39;Cap Hit&#39; column from a string to a float.  
+# df[&#39;Cap Hit&#39;] =(df[&#39;Cap Hit&#39;].replace(&#39;[\$,)]&#39;, &quot;&quot;, regex=True).replace( &#39;[(]&#39;,&#39;-&#39;,   regex=True ).astype(float))
+
+# My fix
+df[&#39;Cap.Hit&#39;] = (df[&#39;Cap Hit&#39;].replace(&#39;[\$,)]&#39;, &quot;&quot;, regex=True).replace(&#39;[-,)]&#39;, &quot;&quot;, regex=True).replace(&#39;\s\s.*&#39;, &quot;&quot;, regex=True).astype(float))
+df[&#39;Base.Salary&#39;] = (df[&#39;Base Salary&#39;].replace(&#39;[\$,)]&#39;, &quot;&quot;, regex=True).replace(&#39;[-,)]&#39;, &quot;&quot;, regex=True).astype(float))
+df[&#39;Signing.Bonus&#39;] = (df[&#39;Signing Bonus&#39;].replace(&#39;[\$,)]&#39;, &quot;&quot;, regex=True).replace(&#39;[-,)]&#39;, &quot;&quot;, regex=True).astype(float))
+df[&#39;Roster.Bonus&#39;] = (df[&#39;Roster Bonus&#39;].replace(&#39;[\$,)]&#39;, &quot;&quot;, regex=True).replace(&#39;[-,)]&#39;, &quot;&quot;, regex=True).astype(float))
+df[&#39;Option.Bonus&#39;] = (df[&#39;Option Bonus&#39;].replace(&#39;[\$,)]&#39;, &quot;&quot;, regex=True).replace(&#39;[-,)]&#39;, &quot;&quot;, regex=True).astype(float))
+df[&#39;Workout.Bonus&#39;] = (df[&#39;Workout Bonus&#39;].replace(&#39;[\$,)]&#39;, &quot;&quot;, regex=True).replace(&#39;[-,)]&#39;, &quot;&quot;, regex=True).astype(float))
+df[&#39;Restruc.Bonus&#39;] = (df[&#39;Restruc. Bonus&#39;].replace(&#39;[\$,)]&#39;, &quot;&quot;, regex=True).replace(&#39;[-,)]&#39;, &quot;&quot;, regex=True).astype(float))
+df[&#39;Misc&#39;] = (df[&#39;Misc.&#39;].replace(&#39;[\$,)]&#39;, &quot;&quot;, regex=True).replace(&#39;[-,)]&#39;, &quot;&quot;, regex=True).astype(float))
+df[&#39;Dead.Cap&#39;] = (df[&#39;Dead Cap&#39;].replace(&#39;\(&#39;,&quot;&quot;,regex=True).replace(&#39;\)&#39;,&quot;&quot;,regex=True).replace(&#39;[\$,)]&#39;, &quot;&quot;, regex=True).replace(&#39;[-,)]&#39;, &quot;&quot;, regex=True).astype(float))
+
+#Sanity check to make sure it worked.
+df[&#39;Cap Hit&#39;].sum()</code></pre>
+<p>There are a few wonderful things about Beautiful Soup. But it is still faster and easier for me to do things in R. Here is some R code for the same task. The R table is a messy data structure but is easier to get.</p>
+<pre class="r"><code>library(stringr)
+data.creator &lt;- function(link) {
+read_html(link) %&gt;% html_nodes(&quot;table&quot;) %&gt;% html_table(header=TRUE, fill=TRUE) -&gt; res
+names(res) &lt;- c(&quot;Active&quot;,&quot;Draft&quot;,&quot;Inactive&quot;,&quot;Team1&quot;,&quot;Team2&quot;)
+return(res)
+  }
+team.names &lt;- gsub(&quot;-&quot;, &quot; &quot;, team.names)
+simpleCap &lt;- function(x) {
+  s &lt;- strsplit(x, &quot; &quot;)[[1]]
+  paste(toupper(substring(s, 1,1)), substring(s, 2),
+      sep=&quot;&quot;, collapse=&quot; &quot;)
+}
+team.names &lt;- sapply(team.names, simpleCap)
+NFL.scrape &lt;- sapply(team.URL, function(x) {data.creator(x)})
+names(NFL.scrape) &lt;- team.names 
+# This is a hack but it works
+Actives &lt;- lapply(NFL.scrape, function(x){x$Active})
+rep.res &lt;- sapply(seq(1,32), function(x) {dim(Actives[[x]])[[1]]})
+clean.me.2 &lt;- function(data) {
+data %&gt;% str_remove_all(&quot;[\\t]&quot;) %&gt;% str_split(&quot;\\n\\n\\n&quot;) %&gt;% unlist() %&gt;% matrix(data=., ncol=2, byrow=TRUE) -&gt; dat
+return(dat)
+}
+clean.me &lt;- function(data) {
+str_remove_all(data, &quot;[\\t]&quot;)
+}
+clean.me.num &lt;- function(data) {
+str_remove_all(data, &quot;[\\$,()\\-]&quot;)
+  }
+Players &lt;- lapply(Actives, function(x){ clean.me.2(x[,1])})
+Last.Name &lt;- unlist(lapply(Players, function(x) {x[,1]}))
+Player.Name &lt;- unlist(lapply(Players, function(x) {x[,2]}))
+Team &lt;- rep(names(Actives),rep.res)
+Position &lt;- unlist(lapply(Actives, function(x){ clean.me(x[,2])}))
+Base.Salary &lt;- unlist(lapply(Actives, function(x){ clean.me.num(x[,&#39;Base Salary&#39;])}))
+Base.Salary &lt;- as.numeric(Base.Salary)
+Signing.Bonus &lt;- unlist(lapply(Actives, function(x){ clean.me.num(x[,&#39;Signing Bonus&#39;])}))
+Signing.Bonus &lt;- as.numeric(Signing.Bonus)
+Roster.Bonus &lt;- unlist(lapply(Actives, function(x){ clean.me.num(x[,&#39;Roster Bonus&#39;])}))
+Roster.Bonus &lt;- as.numeric(Roster.Bonus)
+Option.Bonus &lt;- unlist(lapply(Actives, function(x){ clean.me.num(x[,&#39;Option Bonus&#39;])}))
+Option.Bonus &lt;- as.numeric(Option.Bonus)
+Workout.Bonus &lt;- unlist(lapply(Actives, function(x){ clean.me.num(x[,&#39;Workout Bonus&#39;])}))
+Workout.Bonus &lt;- as.numeric(Workout.Bonus)
+Cap.Pct &lt;- unlist(lapply(Actives, function(x){ x[,&#39;Cap %&#39;]}))
+Restruc.Bonus &lt;- unlist(lapply(Actives, function(x){ clean.me.num(x[,&#39;Restruc. Bonus&#39;])}))
+Restruc.Bonus &lt;- as.numeric(Restruc.Bonus)
+Dead.Cap &lt;- unlist(lapply(Actives, function(x){ clean.me.num(x[,&#39;Dead Cap&#39;])}))
+Dead.Cap &lt;- as.numeric(Dead.Cap)
+Misc.Cap &lt;- unlist(lapply(Actives, function(x){ clean.me.num(x[,&#39;Misc.&#39;])}))
+Misc.Cap &lt;- as.numeric(Misc.Cap)
+Cap.Hit &lt;- unlist(lapply(Actives, function(x){ clean.me.num(x[,&#39;Cap Hit&#39;])}))
+Cap.Hit &lt;- str_replace_all(Cap.Hit, pattern=&quot;\\s\\s*&quot;, &quot;&quot;)
+NFL.Salary.Data &lt;- data.frame(Player=Player.Name, 
+                       Last.Name = Last.Name,
+                       Team=Team, 
+                       Position=Position, 
+                       Base.Salary=Base.Salary,
+                       Signing.Bonus=Signing.Bonus,
+                       Roster.Bonus=Roster.Bonus,
+                       Option.Bonus=Option.Bonus,
+                       Workout.Bonus=Workout.Bonus,
+                       Cap.Hit=Cap.Hit,
+                       Restruc.Bonus=Restruc.Bonus,
+                       Dead.Cap=Dead.Cap,
+                       Misc.Cap=Misc.Cap,
+                       Cap.Pct=Cap.Pct)
+save.image(&quot;~/NFL-Data.RData&quot;)</code></pre>
+<p>Load up a local copy of the data for now.</p>
+<pre class="r"><code>load(url(&quot;https://github.com/robertwwalker/academic-mymod/raw/master/data/NFL-Data.RData&quot;))</code></pre>
+</div>
+<div id="summaries" class="section level2">
+<h2>Summaries</h2>
+<pre class="r"><code>library(tidyverse)
+library(skimr)
+skim(NFL.Salary.Data)</code></pre>
+<table>
+<caption><span id="tab:An1">Table 1: </span>Data summary</caption>
+<tbody>
+<tr class="odd">
+<td align="left">Name</td>
+<td align="left">NFL.Salary.Data</td>
+</tr>
+<tr class="even">
+<td align="left">Number of rows</td>
+<td align="left">2239</td>
+</tr>
+<tr class="odd">
+<td align="left">Number of columns</td>
+<td align="left">14</td>
+</tr>
+<tr class="even">
+<td align="left">_______________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Column type frequency:</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">factor</td>
+<td align="left">5</td>
+</tr>
+<tr class="odd">
+<td align="left">numeric</td>
+<td align="left">9</td>
+</tr>
+<tr class="even">
+<td align="left">________________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Group variables</td>
+<td align="left">None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: factor</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="left">ordered</th>
+<th align="right">n_unique</th>
+<th align="left">top_counts</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Player</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="left">FALSE</td>
+<td align="right">2226</td>
+<td align="left">Aus: 2, Bra: 2, Bra: 2, Chr: 2</td>
+</tr>
+<tr class="even">
+<td align="left">Last.Name</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="left">FALSE</td>
+<td align="right">1489</td>
+<td align="left">Jon: 41, Wil: 39, Smi: 31, Joh: 30</td>
+</tr>
+<tr class="odd">
+<td align="left">Team</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="left">FALSE</td>
+<td align="right">32</td>
+<td align="left">New: 86, Ind: 78, New: 78, Cle: 77</td>
+</tr>
+<tr class="even">
+<td align="left">Position</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="left">FALSE</td>
+<td align="right">22</td>
+<td align="left">WR: 289, CB: 242, DE: 179, OLB: 171</td>
+</tr>
+<tr class="odd">
+<td align="left">Cap.Hit</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="left">FALSE</td>
+<td align="right">1043</td>
+<td align="left">480: 279, 555: 230, 630: 185, 705: 66</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">p0</th>
+<th align="right">p25</th>
+<th align="right">p50</th>
+<th align="right">p75</th>
+<th align="right">p100</th>
+<th align="left">hist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Base.Salary</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1702378.82</td>
+<td align="right">2559999.20</td>
+<td align="right">0</td>
+<td align="right">555000.00</td>
+<td align="right">700000.00</td>
+<td align="right">1500000.00</td>
+<td align="right">22500000.00</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">Signing.Bonus</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">449440.82</td>
+<td align="right">961034.55</td>
+<td align="right">0</td>
+<td align="right">0.00</td>
+<td align="right">3333.00</td>
+<td align="right">397413.50</td>
+<td align="right">10500000.00</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">Roster.Bonus</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">206966.64</td>
+<td align="right">1021892.52</td>
+<td align="right">0</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">28800000.00</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">Option.Bonus</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">13272.29</td>
+<td align="right">168050.78</td>
+<td align="right">0</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">4750000.00</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">Workout.Bonus</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">20166.59</td>
+<td align="right">76589.41</td>
+<td align="right">0</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">1335000.00</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">Restruc.Bonus</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">44915.31</td>
+<td align="right">341687.19</td>
+<td align="right">0</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">5561666.00</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">Dead.Cap</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2237274.35</td>
+<td align="right">5646281.55</td>
+<td align="right">0</td>
+<td align="right">0.00</td>
+<td align="right">50178.00</td>
+<td align="right">1330354.50</td>
+<td align="right">82500000.00</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">Misc.Cap</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">9149.17</td>
+<td align="right">81182.62</td>
+<td align="right">0</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">2085000.00</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">Cap.Pct</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1.36</td>
+<td align="right">2.05</td>
+<td align="right">0</td>
+<td align="right">0.31</td>
+<td align="right">0.41</td>
+<td align="right">1.42</td>
+<td align="right">18.02</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>NFL.Salary.Data %&gt;% group_by(Team) %&gt;% summarise(Total.Base.Salary=sum(Base.Salary))</code></pre>
+<pre><code>## # A tibble: 32 x 2
+##    Team               Total.Base.Salary
+##    &lt;fct&gt;                          &lt;dbl&gt;
+##  1 Arizona Cardinals          105629569
+##  2 Atlanta Falcons            132367353
+##  3 Baltimore Ravens           111906351
+##  4 Buffalo Bills               94577460
+##  5 Carolina Panthers          110158355
+##  6 Chicago Bears               85128180
+##  7 Cincinnati Bengals         134855807
+##  8 Cleveland Browns           122139767
+##  9 Dallas Cowboys             128347113
+## 10 Denver Broncos             140672444
+## # … with 22 more rows</code></pre>
+<pre class="r"><code>NFL.Salary.Data %&gt;% group_by(Position) %&gt;% skim(Base.Salary)</code></pre>
+<table>
+<caption><span id="tab:An1">Table 1: </span>Data summary</caption>
+<tbody>
+<tr class="odd">
+<td align="left">Name</td>
+<td align="left">Piped data</td>
+</tr>
+<tr class="even">
+<td align="left">Number of rows</td>
+<td align="left">2239</td>
+</tr>
+<tr class="odd">
+<td align="left">Number of columns</td>
+<td align="left">14</td>
+</tr>
+<tr class="even">
+<td align="left">_______________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Column type frequency:</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">numeric</td>
+<td align="left">1</td>
+</tr>
+<tr class="odd">
+<td align="left">________________________</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">Group variables</td>
+<td align="left">Position</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="left">Position</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">p0</th>
+<th align="right">p25</th>
+<th align="right">p50</th>
+<th align="right">p75</th>
+<th align="right">p100</th>
+<th align="left">hist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Base.Salary</td>
+<td align="left">C</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1964379.0</td>
+<td align="right">2173761.0</td>
+<td align="right">0</td>
+<td align="right">630000.0</td>
+<td align="right">862290.5</td>
+<td align="right">2693750</td>
+<td align="right">9000000</td>
+<td align="left">▇▂▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">Base.Salary</td>
+<td align="left">CB</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1594781.4</td>
+<td align="right">2433196.2</td>
+<td align="right">0</td>
+<td align="right">555000.0</td>
+<td align="right">630000.0</td>
+<td align="right">1329725</td>
+<td align="right">13500000</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">Base.Salary</td>
+<td align="left">DE</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2007139.1</td>
+<td align="right">3065728.5</td>
+<td align="right">0</td>
+<td align="right">555000.0</td>
+<td align="right">790000.0</td>
+<td align="right">1812276</td>
+<td align="right">17143000</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">Base.Salary</td>
+<td align="left">DT</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2014004.0</td>
+<td align="right">3128524.2</td>
+<td align="right">0</td>
+<td align="right">555000.0</td>
+<td align="right">630000.0</td>
+<td align="right">1760393</td>
+<td align="right">16985000</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">Base.Salary</td>
+<td align="left">FB</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">815000.0</td>
+<td align="right">560564.0</td>
+<td align="right">0</td>
+<td align="right">555000.0</td>
+<td align="right">667500.0</td>
+<td align="right">837500</td>
+<td align="right">2750000</td>
+<td align="left">▂▇▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">Base.Salary</td>
+<td align="left">FS</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2641985.1</td>
+<td align="right">2783070.4</td>
+<td align="right">0</td>
+<td align="right">762911.0</td>
+<td align="right">1426150.0</td>
+<td align="right">3250000</td>
+<td align="right">11287000</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">Base.Salary</td>
+<td align="left">G</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1704599.2</td>
+<td align="right">2115607.1</td>
+<td align="right">0</td>
+<td align="right">555000.0</td>
+<td align="right">790000.0</td>
+<td align="right">1880750</td>
+<td align="right">10000000</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">Base.Salary</td>
+<td align="left">ILB</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1378939.2</td>
+<td align="right">1901654.3</td>
+<td align="right">0</td>
+<td align="right">555000.0</td>
+<td align="right">705000.0</td>
+<td align="right">1049127</td>
+<td align="right">10000000</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">Base.Salary</td>
+<td align="left">K</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1383498.1</td>
+<td align="right">946083.5</td>
+<td align="right">480000</td>
+<td align="right">555000.0</td>
+<td align="right">899464.0</td>
+<td align="right">2037500</td>
+<td align="right">3400000</td>
+<td align="left">▇▂▂▂▂</td>
+</tr>
+<tr class="even">
+<td align="left">Base.Salary</td>
+<td align="left">LB</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">616500.0</td>
+<td align="right">NA</td>
+<td align="right">616500</td>
+<td align="right">616500.0</td>
+<td align="right">616500.0</td>
+<td align="right">616500</td>
+<td align="right">616500</td>
+<td align="left">▁▁▇▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">Base.Salary</td>
+<td align="left">LS</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">761617.7</td>
+<td align="right">201707.6</td>
+<td align="right">480000</td>
+<td align="right">573750.0</td>
+<td align="right">790000.0</td>
+<td align="right">915000</td>
+<td align="right">1100000</td>
+<td align="left">▇▆▅▅▆</td>
+</tr>
+<tr class="even">
+<td align="left">Base.Salary</td>
+<td align="left">LT</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">4587732.8</td>
+<td align="right">4142986.8</td>
+<td align="right">0</td>
+<td align="right">961056.2</td>
+<td align="right">2310342.0</td>
+<td align="right">8825000</td>
+<td align="right">12496000</td>
+<td align="left">▇▁▂▂▂</td>
+</tr>
+<tr class="odd">
+<td align="left">Base.Salary</td>
+<td align="left">OLB</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1938283.6</td>
+<td align="right">2869077.8</td>
+<td align="right">0</td>
+<td align="right">555000.0</td>
+<td align="right">705000.0</td>
+<td align="right">1639242</td>
+<td align="right">14750000</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">Base.Salary</td>
+<td align="left">P</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1242027.0</td>
+<td align="right">803853.9</td>
+<td align="right">480000</td>
+<td align="right">555000.0</td>
+<td align="right">1000000.0</td>
+<td align="right">1500000</td>
+<td align="right">3000000</td>
+<td align="left">▇▃▁▁▂</td>
+</tr>
+<tr class="odd">
+<td align="left">Base.Salary</td>
+<td align="left">QB</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">3408382.2</td>
+<td align="right">5078200.9</td>
+<td align="right">0</td>
+<td align="right">592500.0</td>
+<td align="right">831832.0</td>
+<td align="right">3242341</td>
+<td align="right">22500000</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">Base.Salary</td>
+<td align="left">RB</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1088425.3</td>
+<td align="right">1459116.9</td>
+<td align="right">0</td>
+<td align="right">555000.0</td>
+<td align="right">630000.0</td>
+<td align="right">1000000</td>
+<td align="right">14544000</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">Base.Salary</td>
+<td align="left">RT</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2314986.2</td>
+<td align="right">1962841.7</td>
+<td align="right">0</td>
+<td align="right">768750.0</td>
+<td align="right">1897621.0</td>
+<td align="right">3918750</td>
+<td align="right">9341000</td>
+<td align="left">▇▅▃▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">Base.Salary</td>
+<td align="left">S</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">576320.5</td>
+<td align="right">123126.2</td>
+<td align="right">0</td>
+<td align="right">480000.0</td>
+<td align="right">555000.0</td>
+<td align="right">630000</td>
+<td align="right">1037723</td>
+<td align="left">▁▁▇▆▁</td>
+</tr>
+<tr class="odd">
+<td align="left">Base.Salary</td>
+<td align="left">SS</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1566535.6</td>
+<td align="right">1521405.5</td>
+<td align="right">0</td>
+<td align="right">630000.0</td>
+<td align="right">875000.0</td>
+<td align="right">1750000</td>
+<td align="right">6800000</td>
+<td align="left">▇▂▂▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">Base.Salary</td>
+<td align="left">T</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">587082.0</td>
+<td align="right">222252.3</td>
+<td align="right">480000</td>
+<td align="right">480000.0</td>
+<td align="right">555000.0</td>
+<td align="right">630000</td>
+<td align="right">2312212</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">Base.Salary</td>
+<td align="left">TE</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1301806.2</td>
+<td align="right">1570488.6</td>
+<td align="right">480000</td>
+<td align="right">555000.0</td>
+<td align="right">630000.0</td>
+<td align="right">1048771</td>
+<td align="right">8250000</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">Base.Salary</td>
+<td align="left">WR</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">1624579.2</td>
+<td align="right">2486576.1</td>
+<td align="right">0</td>
+<td align="right">555000.0</td>
+<td align="right">630000.0</td>
+<td align="right">1200000</td>
+<td align="right">15982000</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+</tbody>
+</table>
+<p>Now I have my salary data.</p>
+<pre class="r"><code>gplots::plotmeans(Base.Salary~Position, data=NFL.Salary.Data, n.label=FALSE, cex=0.6)</code></pre>
+<p><img src="/post/2018-04-04-scraping-the-nfl-salary-cap-data-with-python-and-r/index_files/figure-html/Plot-1.png" width="672" /></p>
+<pre class="r"><code>boxplot(Base.Salary~Position, data=NFL.Salary.Data)</code></pre>
+<p><img src="/post/2018-04-04-scraping-the-nfl-salary-cap-data-with-python-and-r/index_files/figure-html/Plot2-1.png" width="672" /></p>
+</div>
+<div id="combining-and-categorizing-data" class="section level2">
+<h2>Combining and Categorizing Data</h2>
+<pre class="r"><code>NFL.Salary.Data$Pos.Char &lt;- NFL.Salary.Data$SideOfBall &lt;- NFL.SubTeam &lt;- as.character(NFL.Salary.Data$Position)
+O.Line &lt;- c(&quot;LT&quot;,&quot;RT&quot;,&quot;C&quot;,&quot;G&quot;,&quot;T&quot;)
+D.Line &lt;- c(&quot;DT&quot;,&quot;DE&quot;)
+LineBackers &lt;- c(&quot;LB&quot;,&quot;ILB&quot;,&quot;OLB&quot;)
+Safeties &lt;- c(&quot;S&quot;,&quot;SS&quot;,&quot;FS&quot;)
+CBs &lt;- c(&quot;CB&quot;)
+Special.Teams &lt;- c(&quot;K&quot;,&quot;P&quot;,&quot;LS&quot;)
+RBs &lt;- c(&quot;RB&quot;,&quot;FB&quot;)
+TEs &lt;- c(&quot;TE&quot;)
+WRs &lt;- c(&quot;WR&quot;)
+QBs &lt;- c(&quot;QB&quot;)
+Offense &lt;- c(QBs,RBs,WRs,TEs,O.Line)
+Defense &lt;- c(D.Line,LineBackers,Safeties,CBs)
+NFL.Salary.Data$SideOfBall[NFL.Salary.Data$Pos.Char %in% Offense] &lt;- &quot;Offense&quot;
+NFL.Salary.Data$SideOfBall[NFL.Salary.Data$Pos.Char %in% Special.Teams] &lt;- &quot;Special Teams&quot;
+NFL.Salary.Data$SideOfBall[NFL.Salary.Data$Pos.Char %in% Defense] &lt;- &quot;Defense&quot;
+NFL.Salary.Data$SubTeam[NFL.Salary.Data$Pos.Char %in% Special.Teams] &lt;- &quot;Special Teams&quot;
+NFL.Salary.Data$SubTeam[NFL.Salary.Data$Pos.Char %in% QBs] &lt;- &quot;Quarterbacks&quot;
+NFL.Salary.Data$SubTeam[NFL.Salary.Data$Pos.Char %in% RBs] &lt;- &quot;Running Backs&quot;
+NFL.Salary.Data$SubTeam[NFL.Salary.Data$Pos.Char %in% TEs] &lt;- &quot;Tight Ends&quot;
+NFL.Salary.Data$SubTeam[NFL.Salary.Data$Pos.Char %in% WRs] &lt;- &quot;Wide Receivers&quot;
+NFL.Salary.Data$SubTeam[NFL.Salary.Data$Pos.Char %in% O.Line] &lt;- &quot;Offensive Line&quot;
+NFL.Salary.Data$SubTeam[NFL.Salary.Data$Pos.Char %in% LineBackers] &lt;- &quot;Linebackers&quot;
+NFL.Salary.Data$SubTeam[NFL.Salary.Data$Pos.Char %in% CBs] &lt;- &quot;Cornerbacks&quot;
+NFL.Salary.Data$SubTeam[NFL.Salary.Data$Pos.Char %in% D.Line] &lt;- &quot;Defensive Line&quot;
+NFL.Salary.Data$SubTeam[NFL.Salary.Data$Pos.Char %in% Safeties] &lt;- &quot;Safeties&quot;</code></pre>
+<p>That gives some positional details to the data also.</p>
+</div>
+</div>
+
+    </div>
+
+    
+
+
+
+<div class="article-tags">
+  
+  <a class="badge badge-light" href="/tags/tidyverse/">tidyverse</a>
+  
+  <a class="badge badge-light" href="/tags/r/">R</a>
+  
+  <a class="badge badge-light" href="/tags/python/">python</a>
+  
+  <a class="badge badge-light" href="/tags/reticulate/">reticulate</a>
+  
+</div>
+
+
+
+<div class="share-box" aria-hidden="true">
+  <ul class="share">
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://twitter.com/intent/tweet?url=/2018/04/04/scraping-the-nfl-salary-cap-data-with-python-and-r/&amp;text=Scraping%20the%20NFL%20Salary%20Cap%20Data%20with%20Python%20and%20R" target="_blank" rel="noopener" class="share-btn-twitter">
+          <i class="fab fa-twitter"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://www.facebook.com/sharer.php?u=/2018/04/04/scraping-the-nfl-salary-cap-data-with-python-and-r/&amp;t=Scraping%20the%20NFL%20Salary%20Cap%20Data%20with%20Python%20and%20R" target="_blank" rel="noopener" class="share-btn-facebook">
+          <i class="fab fa-facebook"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="mailto:?subject=Scraping%20the%20NFL%20Salary%20Cap%20Data%20with%20Python%20and%20R&amp;body=/2018/04/04/scraping-the-nfl-salary-cap-data-with-python-and-r/" target="_blank" rel="noopener" class="share-btn-email">
+          <i class="fas fa-envelope"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://www.linkedin.com/shareArticle?url=/2018/04/04/scraping-the-nfl-salary-cap-data-with-python-and-r/&amp;title=Scraping%20the%20NFL%20Salary%20Cap%20Data%20with%20Python%20and%20R" target="_blank" rel="noopener" class="share-btn-linkedin">
+          <i class="fab fa-linkedin-in"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://web.whatsapp.com/send?text=Scraping%20the%20NFL%20Salary%20Cap%20Data%20with%20Python%20and%20R%20/2018/04/04/scraping-the-nfl-salary-cap-data-with-python-and-r/" target="_blank" rel="noopener" class="share-btn-whatsapp">
+          <i class="fab fa-whatsapp"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://service.weibo.com/share/share.php?url=/2018/04/04/scraping-the-nfl-salary-cap-data-with-python-and-r/&amp;title=Scraping%20the%20NFL%20Salary%20Cap%20Data%20with%20Python%20and%20R" target="_blank" rel="noopener" class="share-btn-weibo">
+          <i class="fab fa-weibo"></i>
+        </a>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  
+  
+    
+  
+  
+  
+  <div class="media author-card content-widget-hr">
+    
+      
+      <img class="avatar mr-3 avatar-circle" src="/authors/admin/avatar_hu5dc180fe8d34aaa1cfa26dba9dfe8fe0_107194_270x270_fill_q90_lanczos_center.jpg" alt="Avatar">
+    
+
+    <div class="media-body">
+      <h5 class="card-title"><a href="/">Robert W. Walker</a></h5>
+      <h6 class="card-subtitle">Associate Professor of Quantitative Methods</h6>
+      <p class="card-text">My research interests include causal inference, statistical computation and data visualisation.</p>
+      <ul class="network-icon" aria-hidden="true">
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="/#contact" >
+        <i class="fas fa-envelope"></i>
+      </a>
+    </li>
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="https://twitter.com/PieRatio" target="_blank" rel="noopener">
+        <i class="fab fa-twitter"></i>
+      </a>
+    </li>
+  
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="https://scholar.google.com/citations?user=FU8pL7sAAAAJ&amp;hl" target="_blank" rel="noopener">
+        <i class="ai ai-google-scholar"></i>
+      </a>
+    </li>
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="https://github.com/robertwwalker" target="_blank" rel="noopener">
+        <i class="fab fa-github"></i>
+      </a>
+    </li>
+  
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="/img/vita.pdf" >
+        <i class="ai ai-cv"></i>
+      </a>
+    </li>
+  
+</ul>
+
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+
+  
+  
+  <div class="article-widget content-widget-hr">
+    <h3>Related</h3>
+    <ul>
+      
+      <li><a href="/2018/04/03/tidytuesday-tuition/">tidyTuesday - Tuition</a></li>
+      
+      <li><a href="/2018/02/21/tidytext-is-neat/">tidytext is neat! White House Communications</a></li>
+      
+      <li><a href="/2018/03/07/pew-data-on-bond-ratings-and-rainy-day-funds/">Pew Data on Bond Ratings and Rainy Day Funds</a></li>
+      
+      <li><a href="/2018/02/25/mapping-with-the-government-finance-database/">Mapping with the Government Finance Database</a></li>
+      
+      <li><a href="/2018/02/24/panel-data-r-packages/">Longitudinal Panel Data R Packages</a></li>
+      
+    </ul>
+  </div>
+  
+
+
+
+  </div>
+</article>
+
+      
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js" integrity="sha256-lqvxZrPLtfffUl2G/e7szqSvPBILGbwmsGE1MKlOi0Q=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js" integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/8.4.4/mermaid.min.js" integrity="sha256-JEqEejGt4tR35L0a1zodzsV0/PJ6GIf7J4yDtywdrH8=" crossorigin="anonymous" title="mermaid"></script>
+      
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js" integrity="sha256-1zu+3BnLYV9LdiY85uXMzii3bdrkelyp37e0ZyTAQh0=" crossorigin="anonymous"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js"></script>
+        
+      
+
+    
+
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.js" integrity="sha256-EErZamuLefUnbMBQbsEqu1USa+btR2oIlCpBJbyD4/g=" crossorigin="anonymous"></script>
+    
+
+    
+    
+    <script>const code_highlighting = true;</script>
+    
+
+    
+    
+    
+    
+    
+    
+    <script>
+      const search_config = {"indexURI":"/index.json","minLength":1,"threshold":0.3};
+      const i18n = {"no_results":"No results found","placeholder":"Search...","results":"results found"};
+      const content_type = {
+        'post': "Posts",
+        'project': "Projects",
+        'publication' : "Publications",
+        'talk' : "Talks"
+        };
+    </script>
+    
+
+    
+    
+
+    
+    
+    <script id="search-hit-fuse-template" type="text/x-template">
+      <div class="search-hit" id="summary-{{key}}">
+      <div class="search-hit-content">
+        <div class="search-hit-name">
+          <a href="{{relpermalink}}">{{title}}</a>
+          <div class="article-metadata search-hit-type">{{type}}</div>
+          <p class="search-hit-description">{{snippet}}</p>
+        </div>
+      </div>
+      </div>
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+    
+
+    
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    
+    
+    
+    <script src="/js/academic.min.0630fec5958cb075a5a38f042b3ddde6.js"></script>
+
+    
+
+
+
+
+
+
+  
+  
+  <div class="container">
+    <footer class="site-footer">
+  
+  <p class="powered-by">
+    
+      <a href="/privacy/">Privacy Policy</a>
+    
+    
+       &middot; 
+      <a href="/terms/">Terms</a>
+    
+  </p>
+  
+
+  <p class="powered-by">
+    © 2018 &middot; 
+
+    Powered by the
+    <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+    <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+    
+    <span class="float-right" aria-hidden="true">
+      <a href="#" class="back-to-top">
+        <span class="button_icon">
+          <i class="fas fa-chevron-up fa-2x"></i>
+        </span>
+      </a>
+    </span>
+    
+  </p>
+</footer>
+
+  </div>
+  
+
+  
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="generator" content="Source Themes Academic 4.7.0">
+
+  
+
+  
+  
+  
+  
+  
+    
+    
+    
+  
+  
+
+  <meta name="author" content="Robert W. Walker">
+
+  
+  
+  
+    
+  
+  <meta name="description" content="FRED via fredr The Federal Reserve Economic Database [FRED] is a wonderful public resource for data and the r api that connects to it is very easy to use for the things that I have previously needed. For example, one of my students was interested in commercial credit default data. I used the FRED search instructions from the following vignette to find that data. My first step was the vignette for using fredr.">
+
+  
+  <link rel="alternate" hreflang="en-us" href="/2019/04/11/fredr-is-very-neat/">
+
+  
+
+
+  
+  
+  
+  <meta name="theme-color" content="#EAF04E">
+  
+
+  
+  
+  
+  <script src="/js/mathjax-config.js"></script>
+  
+
+  
+  
+  
+  
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/academicons/1.8.6/css/academicons.min.css" integrity="sha256-uFVgMKfistnJAfoCUQigIl+JfUaP47GrRKjf6CTPVmw=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0-1/css/all.min.css" integrity="sha256-4w9DunooKSr3MFXHXWyFER38WmPdm361bQS/2KUWZbU=" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.css" integrity="sha256-Vzbj7sDDS/woiFS3uNKo8eIuni59rjyNGtXfstRzStA=" crossorigin="anonymous">
+
+    
+    
+    
+      
+    
+    
+      
+      
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css" crossorigin="anonymous" title="hl-light">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/styles/github.min.css" crossorigin="anonymous" title="hl-dark" disabled>
+      
+    
+
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.css" integrity="sha256-SHMGCYmST46SoyGgo4YR/9AlK1vf3ff84Aq9yK4hdqM=" crossorigin="anonymous">
+    
+
+    
+
+    
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/lazysizes/5.1.2/lazysizes.min.js" integrity="sha256-Md1qLToewPeKjfAHU1zyPwOutccPAm5tahnaw7Osw0A=" crossorigin="anonymous" async></script>
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+    
+      
+
+      
+      
+
+      
+        <script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js" integrity="" crossorigin="anonymous" async></script>
+      
+    
+      
+
+      
+      
+
+      
+    
+
+  
+
+  
+  
+  
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cutive+Mono%7CLora:400,700%7CRoboto:400,700%7CJosefin+Slab&display=swap">
+  
+
+  
+  
+  
+  
+  <link rel="stylesheet" href="/css/academic.css">
+
+  
+
+
+
+
+  
+
+
+  
+
+  <link rel="manifest" href="/index.webmanifest">
+  <link rel="icon" type="image/png" href="/images/icon_hu441e8133bcb5f26868e76fcbf737199b_6526_32x32_fill_lanczos_center_2.png">
+  <link rel="apple-touch-icon" type="image/png" href="/images/icon_hu441e8133bcb5f26868e76fcbf737199b_6526_192x192_fill_lanczos_center_2.png">
+
+  <link rel="canonical" href="/2019/04/11/fredr-is-very-neat/">
+
+  
+  
+  
+  
+  
+    
+  
+  
+  <meta property="twitter:card" content="summary_large_image">
+  
+  <meta property="twitter:site" content="@PieRatio">
+  <meta property="twitter:creator" content="@PieRatio">
+  
+  <meta property="og:site_name" content="rww.science">
+  <meta property="og:url" content="/2019/04/11/fredr-is-very-neat/">
+  <meta property="og:title" content="fredr is very neat | rww.science">
+  <meta property="og:description" content="FRED via fredr The Federal Reserve Economic Database [FRED] is a wonderful public resource for data and the r api that connects to it is very easy to use for the things that I have previously needed. For example, one of my students was interested in commercial credit default data. I used the FRED search instructions from the following vignette to find that data. My first step was the vignette for using fredr."><meta property="og:image" content="/img/portrait.jpg">
+  <meta property="twitter:image" content="/img/portrait.jpg"><meta property="og:locale" content="en-us">
+  
+    
+      <meta property="article:published_time" content="2019-04-11T00:00:00&#43;00:00">
+    
+    <meta property="article:modified_time" content="2019-04-11T00:00:00&#43;00:00">
+  
+
+  
+
+
+    
+
+
+
+
+
+
+  
+
+
+
+
+
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "BlogPosting",
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "/2019/04/11/fredr-is-very-neat/"
+  },
+  "headline": "fredr is very neat",
+  
+  "datePublished": "2019-04-11T00:00:00Z",
+  "dateModified": "2019-04-11T00:00:00Z",
+  
+  "author": {
+    "@type": "Person",
+    "name": "Robert W. Walker"
+  },
+  
+  "publisher": {
+    "@type": "Organization",
+    "name": [{"name":"Atkinson Graduate School of Management","url":"http://agsm.willamette.edu"},{"name":"Willamette University","url":"http:www.willamette.edu/"}],
+    "logo": {
+      "@type": "ImageObject",
+      "url": "img//"
+    }
+  },
+  "description": "FRED via fredr The Federal Reserve Economic Database [FRED] is a wonderful public resource for data and the r api that connects to it is very easy to use for the things that I have previously needed. For example, one of my students was interested in commercial credit default data. I used the FRED search instructions from the following vignette to find that data. My first step was the vignette for using fredr."
+}
+</script>
+
+  
+
+  
+
+
+  
+  
+  
+  
+  
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.1/cookieconsent.min.js" integrity="sha256-5VhCqFam2Cn+yjw61zbBNrbHVJ6SRydPeKopYlngbiQ=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cookieconsent2/3.1.1/cookieconsent.min.css" integrity="sha256-zQ0LblD/Af8vOppw18+2anxsuaz3pWYyVWi+bTvTH8Q=" crossorigin="anonymous">
+  
+  <script>
+  window.addEventListener("load", function(){
+    window.cookieconsent.initialise({
+      "palette": {
+        "popup": {
+          "background": "#EAF04E",
+          "text": "#fff"
+        },
+        "button": {
+          "background": "#fff",
+          "text": "#EAF04E"
+        }
+      },
+      "theme": "classic",
+      "content": {
+        "message": "This website uses cookies to ensure you get the best experience on our website.",
+        "dismiss": "Got it!",
+        "link": "Learn more",
+        "href": "/privacy/"
+      }
+    })});
+  </script>
+
+
+
+  
+
+
+
+
+
+  <title>fredr is very neat | rww.science</title>
+
+</head>
+
+<body id="top" data-spy="scroll" data-offset="70" data-target="#TableOfContents" class="dark">
+
+  <aside class="search-results" id="search">
+  <div class="container">
+    <section class="search-header">
+
+      <div class="row no-gutters justify-content-between mb-3">
+        <div class="col-6">
+          <h1>Search</h1>
+        </div>
+        <div class="col-6 col-search-close">
+          <a class="js-search" href="#"><i class="fas fa-times-circle text-muted" aria-hidden="true"></i></a>
+        </div>
+      </div>
+
+      <div id="search-box">
+        
+        <input name="q" id="search-query" placeholder="Search..." autocapitalize="off"
+        autocomplete="off" autocorrect="off" spellcheck="false" type="search">
+        
+      </div>
+
+    </section>
+    <section class="section-search-results">
+
+      <div id="search-hits">
+        
+      </div>
+
+    </section>
+  </div>
+</aside>
+
+
+  
+
+
+
+
+
+
+
+<nav class="navbar navbar-expand-lg navbar-light compensate-for-scrollbar" id="navbar-main">
+  <div class="container">
+
+    
+    <div class="d-none d-lg-inline-flex">
+      <a class="navbar-brand" href="/">rww.science</a>
+    </div>
+    
+
+    
+    <button type="button" class="navbar-toggler" data-toggle="collapse"
+            data-target="#navbar-content" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
+    <span><i class="fas fa-bars"></i></span>
+    </button>
+    
+
+    
+    <div class="navbar-brand-mobile-wrapper d-inline-flex d-lg-none">
+      <a class="navbar-brand" href="/">rww.science</a>
+    </div>
+    
+
+    
+    
+    <div class="navbar-collapse main-menu-item collapse justify-content-end" id="navbar-content">
+
+      
+      <ul class="navbar-nav d-md-inline-flex">
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#about"><span>Home</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/publication/"><span>Publications</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#posts"><span>Posts</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/project/"><span>Projects</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/r/"><span>R</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/talk/"><span>Talks/Slides</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/courses/"><span>Teaching</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+          
+          
+          
+            
+          
+          
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/#contact"><span>Contact</span></a>
+        </li>
+
+        
+        
+
+        
+
+        
+        
+        
+          
+        
+
+        
+        
+        
+        
+        
+        
+
+        <li class="nav-item">
+          <a class="nav-link " href="/img/vita.pdf"><span>Curriculum Vitae</span></a>
+        </li>
+
+        
+        
+
+      
+
+        
+      </ul>
+    </div>
+
+    <ul class="nav-icons navbar-nav flex-row ml-auto d-flex pl-md-2">
+      
+      <li class="nav-item">
+        <a class="nav-link js-search" href="#"><i class="fas fa-search" aria-hidden="true"></i></a>
+      </li>
+      
+
+      
+      <li class="nav-item">
+        <a class="nav-link js-dark-toggle" href="#"><i class="fas fa-moon" aria-hidden="true"></i></a>
+      </li>
+      
+
+      
+
+    </ul>
+
+  </div>
+</nav>
+
+
+  <article class="article">
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+  
+  
+<div class="article-container pt-3">
+  <h1>fredr is very neat</h1>
+
+  
+
+  
+    
+
+
+<div class="article-metadata">
+
+  
+  
+
+  
+  <span class="article-date">
+    
+    
+      
+    
+    Apr 11, 2019
+  </span>
+  
+
+  
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    6 min read
+  </span>
+  
+
+  
+  
+  
+
+  
+  
+  <span class="middot-divider"></span>
+  <span class="article-categories">
+    <i class="fas fa-folder mr-1"></i><a href="/categories/tidyverse/">tidyverse</a>, <a href="/categories/r/">R</a>, <a href="/categories/maps/">Maps</a></span>
+  
+
+</div>
+
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+</div>
+
+
+
+  <div class="article-container">
+
+    <div class="article-style">
+      
+
+
+<div id="fred-via-fredr" class="section level1">
+<h1>FRED via <code>fredr</code></h1>
+<p>The Federal Reserve Economic Database [FRED] is a wonderful public resource for data and the r api that connects to it is very easy to use for the things that I have previously needed. For example, one of my students was interested in commercial credit default data. I used the FRED search instructions from the following vignette to find that data. My first step was the <a href="https://cran.r-project.org/web/packages/fredr/vignettes/fredr.html">vignette for using <code>fredr</code></a>. Some library lines give me tools.</p>
+<pre class="r"><code>library(fredr); library(purrr)
+library(dplyr)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;dplyr&#39;</code></pre>
+<pre><code>## The following objects are masked from &#39;package:stats&#39;:
+## 
+##     filter, lag</code></pre>
+<pre><code>## The following objects are masked from &#39;package:base&#39;:
+## 
+##     intersect, setdiff, setequal, union</code></pre>
+<pre class="r"><code>library(ggplot2)</code></pre>
+<p>A student wanted to find data on charge-offs. <code>fredr</code> has a search capability. Let’s see what we can find.</p>
+<pre class="r"><code>ChargeOff &lt;- fredr_series_search_text(
+  search_text = &quot;real estate charge offs&quot;,
+  order_by = &quot;popularity&quot;,
+  sort_order = &quot;desc&quot;)
+ChargeOff %&gt;% select(title)</code></pre>
+<pre><code>## # A tibble: 24 x 1
+##    title                                                                        
+##    &lt;chr&gt;                                                                        
+##  1 Charge-Off Rate on Commercial Real Estate Loans (Excluding Farmland), Booked…
+##  2 Charge-Off Rate on Loans Secured by Real Estate, All Commercial Banks        
+##  3 Charge-Off Rate on Commercial Real Estate Loans (Excluding Farmland), Booked…
+##  4 Charge-Off Rate on Loans Secured by Real Estate, Banks Not Among the 100 Lar…
+##  5 Charge-Off Rate on Commercial Real Estate Loans (Excluding Farmland), Booked…
+##  6 Net Charge-Offs on All Loans and Leases, Secured by Real Estate, Single Fami…
+##  7 Charge-Off Rate on Commercial Real Estate Loans (Excluding Farmland), Booked…
+##  8 Charge-Off Rate on Commercial Real Estate Loans (Excluding Farmland), Booked…
+##  9 Charge-Off Rate on Loans Secured by Real Estate, Top 100 Banks Ranked by Ass…
+## 10 Net Charge-Offs on All Loans and Leases, Secured by Real Estate, Commercial …
+## # … with 14 more rows</code></pre>
+<p>Wow, there is a rich array of data from that query. An even cooler feature is the ability to retrieve multiple at once in combination with the <code>map_dfr</code> command from the <code>purrr</code> library to make it tidy; that will go through the search results and stack the data that is returned [bind it together by rows]. These map commands are the tidy version of apply. In this case, binding the columns will likely fail because the times series are unlikely to be of the same length and that would create ragged columns. Better tidy from the start here.</p>
+<pre class="r"><code>library(stringr)
+ChargeOff.Data &lt;- map_dfr(ChargeOff$id, fredr) %&gt;% left_join(ChargeOff, by=c(&quot;series_id&quot; = &quot;id&quot;))</code></pre>
+<p>Just to finish one piece, let me show what these data look like for one series. Splitting the name into two parts gives us the title and subtitle but the split is inconsistent so the solution is not general.</p>
+<pre class="r"><code>ChargeOff.Short &lt;- ChargeOff.Data %&gt;% filter(series_id==&quot;CORSREOBS&quot;) 
+SeriesTitle &lt;- ChargeOff.Short[1,&quot;title&quot;] %&gt;% str_split(., &quot;[,]&quot;) %&gt;% unlist()
+ChargeOff.Short %&gt;% ggplot(data = ., mapping = aes(x = date, y = value)) +
+    geom_line() +
+    labs(x = &quot;Date&quot;, y = &quot;Rate&quot;, title=SeriesTitle[[1]], subtitle = SeriesTitle[[2]] )</code></pre>
+<p><img src="/post/2019-04-11-fredr-is-very-neat/index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<div id="counties-and-mapping" class="section level2">
+<h2>Counties and Mapping</h2>
+<p>When I was setting up <code>fredr</code>, I came across some data on subprime credit percentages. The data that I need for what I want to do is not obvious from the vignette and it turns out that this data is stored in a rather inconvenient fashion.</p>
+<pre><code>## # A tibble: 1 x 1
+##   id                
+##   &lt;chr&gt;             
+## 1 EQFXSUBPRIME036061</code></pre>
+<p>The way that these are organized in FRED is going to make this a mess. The series_id actually contains data. Every data vector is stored as the series name and a FIPS code embdeded. The FIPS code is likely to be the last five characters/numbers. Fun. My other limitation is that I am only seeing 1000 of 3000+ counties. That’s a limit of the API. I am going to have to do this a bit differently. I am going to work backward. I have access to the full set of county fips codes so I think that I can build the dataset to query. Here goes.</p>
+<pre class="r"><code>library(readr)
+CFIPS &lt;- read_delim(url(&quot;https://github.com/robertwwalker/academic-mymod/raw/master/data/COUNTYFIPS.txt&quot;), &quot;\t&quot;, escape_double = FALSE, trim_ws = TRUE)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   FIPS = col_character(),
+##   Name = col_character(),
+##   State = col_character()
+## )</code></pre>
+<pre class="r"><code>head(CFIPS)</code></pre>
+<pre><code>## # A tibble: 6 x 3
+##   FIPS  Name    State
+##   &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;
+## 1 01001 Autauga AL   
+## 2 01003 Baldwin AL   
+## 3 01005 Barbour AL   
+## 4 01007 Bibb    AL   
+## 5 01009 Blount  AL   
+## 6 01011 Bullock AL</code></pre>
+<p>That is all the FIPS codes that I will need. To create a new character vector for the data, it should just be a new column. From above, I know the names. Let me just concatenate the names to the FIPS code.</p>
+<pre class="r"><code>CFIPS$series_id &lt;- as.character(paste0(&quot;EQFXSUBPRIME0&quot;,CFIPS$FIPS))</code></pre>
+<p>Now for the moment of truth; I will only try this for Oregon.</p>
+<pre class="r"><code>SubPrime.OR &lt;- CFIPS %&gt;% filter(State==&quot;OR&quot;) %&gt;% select(series_id) %&gt;% unlist() %&gt;% map_dfr(., fredr)
+SubPrime.OR &lt;- left_join(SubPrime.OR, CFIPS, by=&quot;series_id&quot;)
+SubPrime.OR %&gt;% ggplot(aes(x=date, y=value, colour=series_id)) +
+  geom_line() + theme(legend.position=&quot;none&quot;) + ggtitle(&quot;The Subprime Credit Rate Across Oregon Counties&quot;)</code></pre>
+<p><img src="/post/2019-04-11-fredr-is-very-neat/index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>Now I have something to work with. Just to show what <code>gganimate</code> can do; I will animate that.</p>
+<pre class="r"><code>library(gganimate)
+library(ggrepel)
+library(tidyr)
+SubPrime.OR %&gt;% ggplot(aes(x=date, y=value, colour=series_id)) +
+  geom_line() + 
+  geom_point(aes(group=series_id)) +
+  geom_text_repel(aes(y = value, x = as.Date(&quot;2019-01-01&quot;), label = Name), hjust = 1, nudge_x = 8) + theme(legend.position=&quot;none&quot;) + labs(title=&#39;The Subprime Credit Rate Across Oregon Counties: {frame_along}&#39;, y =&quot;Subprime Rate&quot;) +
+  transition_reveal(date)</code></pre>
+<p><img src="/post/2019-04-11-fredr-is-very-neat/index_files/figure-html/unnamed-chunk-6-1.gif" /><!-- --></p>
+<p>My goal here is to build an animation of the map of this. So here goes.</p>
+<pre class="r"><code>states &lt;- map_data(&quot;state&quot;)
+OR.df &lt;- subset(states, region == &quot;oregon&quot;)
+OR_base &lt;- ggplot(data = OR.df, mapping = aes(x = long, y = lat, group = group)) +
+geom_polygon(color = &quot;black&quot;, fill = &quot;gray&quot;)+ theme_minimal() 
+OR_base + geom_point(aes(x=-123.0433, y=44.925167))</code></pre>
+<p><img src="/post/2019-04-11-fredr-is-very-neat/index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<pre class="r"><code>library(emoGG)
+counties &lt;- map_data(&quot;county&quot;)
+OR.county &lt;- subset(counties, region == &quot;oregon&quot;)
+OR.Map &lt;- ggplot(data = OR.df, mapping = aes(x = long, y = lat, group = group)) + 
+    geom_polygon(color = &quot;black&quot;, fill = &quot;gray&quot;)+ theme_minimal() 
+OR_emoj &lt;- OR_base +  add_emoji(&quot;1f352&quot;, x=-123.0433, y=44.925167, ysize=0.5)
+OR_emoj</code></pre>
+<p><img src="/post/2019-04-11-fredr-is-very-neat/index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>Now to build a first map to make sure that it works.</p>
+<pre class="r"><code>library(maps)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;maps&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:purrr&#39;:
+## 
+##     map</code></pre>
+<pre class="r"><code>county.fips$fips &lt;- as.character(county.fips$fips)
+SubPrime.M &lt;- left_join(SubPrime.OR, county.fips, by=c(&quot;FIPS&quot;=&quot;fips&quot;))
+SubPrime.M &lt;- SubPrime.M %&gt;% separate(., polyname, c(&quot;region&quot;,&quot;subregion&quot;), sep=&quot;,&quot;)
+SubPrime.M %&gt;% filter(date==&quot;1999-01-01&quot;) -&gt; OneYear
+OR.MD &lt;- inner_join(OR.county, OneYear, by = &quot;subregion&quot;)</code></pre>
+<p>One of my favortite bits of code from I do not know where:</p>
+<pre class="r"><code>ditch_the_axes &lt;- theme(
+  axis.text = element_blank(),
+  axis.line = element_blank(),
+  axis.ticks = element_blank(),
+  panel.border = element_blank(),
+  panel.grid = element_blank(),
+  axis.title = element_blank()
+  )</code></pre>
+<p>Now to a single map.</p>
+<pre class="r"><code>Polt1 &lt;- OR.Map + 
+      geom_polygon(data = OR.MD, aes(fill = value), color=&quot;white&quot;) +
+#      geom_polygon(color = &quot;black&quot;, fill = NA) +
+      theme_bw() +
+      ditch_the_axes +
+      ggtitle(&quot;Subprime Credit Percentages by County&quot;)
+Polt1</code></pre>
+<p><img src="/post/2019-04-11-fredr-is-very-neat/index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p>Now for the general case. Same merge but with all the data.</p>
+<pre class="r"><code>OR.MD2 &lt;- left_join(SubPrime.M, OR.county, by = &quot;subregion&quot;)
+OR.MD2 &lt;- OR.MD2 %&gt;% mutate(Subprime.Pct = value)</code></pre>
+<p>Here goes.</p>
+<pre class="r"><code>library(viridis)</code></pre>
+<pre><code>## Loading required package: viridisLite</code></pre>
+<pre class="r"><code># ggplot(data = OR.MD2, mapping = aes(x = long, y = lat, group = group)) +
+p &lt;- OR.Map +
+  geom_polygon(data=OR.MD2, aes(x = long, y = lat, group = subregion, fill = Subprime.Pct), color=&quot;white&quot;) +
+  viridis::scale_fill_viridis(option=&quot;C&quot;) +   
+  ditch_the_axes +
+  labs(title = &#39;Subprime Credit Percentage by Quarter: {closest_state}&#39;) +
+  transition_states(date, transition_length = 3, state_length = 3)
+animate(p, nframes = 300)</code></pre>
+<p><img src="/post/2019-04-11-fredr-is-very-neat/index_files/figure-html/unnamed-chunk-13-1.gif" /><!-- --></p>
+</div>
+</div>
+
+    </div>
+
+    
+
+
+
+<div class="article-tags">
+  
+  <a class="badge badge-light" href="/tags/r/">R</a>
+  
+  <a class="badge badge-light" href="/tags/r-markdown/">R Markdown</a>
+  
+  <a class="badge badge-light" href="/tags/maps/">Maps</a>
+  
+  <a class="badge badge-light" href="/tags/panel-data/">panel data</a>
+  
+</div>
+
+
+
+<div class="share-box" aria-hidden="true">
+  <ul class="share">
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://twitter.com/intent/tweet?url=/2019/04/11/fredr-is-very-neat/&amp;text=fredr%20is%20very%20neat" target="_blank" rel="noopener" class="share-btn-twitter">
+          <i class="fab fa-twitter"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://www.facebook.com/sharer.php?u=/2019/04/11/fredr-is-very-neat/&amp;t=fredr%20is%20very%20neat" target="_blank" rel="noopener" class="share-btn-facebook">
+          <i class="fab fa-facebook"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="mailto:?subject=fredr%20is%20very%20neat&amp;body=/2019/04/11/fredr-is-very-neat/" target="_blank" rel="noopener" class="share-btn-email">
+          <i class="fas fa-envelope"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://www.linkedin.com/shareArticle?url=/2019/04/11/fredr-is-very-neat/&amp;title=fredr%20is%20very%20neat" target="_blank" rel="noopener" class="share-btn-linkedin">
+          <i class="fab fa-linkedin-in"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://web.whatsapp.com/send?text=fredr%20is%20very%20neat%20/2019/04/11/fredr-is-very-neat/" target="_blank" rel="noopener" class="share-btn-whatsapp">
+          <i class="fab fa-whatsapp"></i>
+        </a>
+      </li>
+    
+      
+      
+      
+        
+      
+      
+      
+      <li>
+        <a href="https://service.weibo.com/share/share.php?url=/2019/04/11/fredr-is-very-neat/&amp;title=fredr%20is%20very%20neat" target="_blank" rel="noopener" class="share-btn-weibo">
+          <i class="fab fa-weibo"></i>
+        </a>
+      </li>
+    
+  </ul>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+  
+  
+  
+    
+  
+  
+  
+  <div class="media author-card content-widget-hr">
+    
+      
+      <img class="avatar mr-3 avatar-circle" src="/authors/admin/avatar_hu5dc180fe8d34aaa1cfa26dba9dfe8fe0_107194_270x270_fill_q90_lanczos_center.jpg" alt="Avatar">
+    
+
+    <div class="media-body">
+      <h5 class="card-title"><a href="/">Robert W. Walker</a></h5>
+      <h6 class="card-subtitle">Associate Professor of Quantitative Methods</h6>
+      <p class="card-text">My research interests include causal inference, statistical computation and data visualisation.</p>
+      <ul class="network-icon" aria-hidden="true">
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="/#contact" >
+        <i class="fas fa-envelope"></i>
+      </a>
+    </li>
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="https://twitter.com/PieRatio" target="_blank" rel="noopener">
+        <i class="fab fa-twitter"></i>
+      </a>
+    </li>
+  
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="https://scholar.google.com/citations?user=FU8pL7sAAAAJ&amp;hl" target="_blank" rel="noopener">
+        <i class="ai ai-google-scholar"></i>
+      </a>
+    </li>
+  
+    
+    
+    
+      
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="https://github.com/robertwwalker" target="_blank" rel="noopener">
+        <i class="fab fa-github"></i>
+      </a>
+    </li>
+  
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    <li>
+      <a href="/img/vita.pdf" >
+        <i class="ai ai-cv"></i>
+      </a>
+    </li>
+  
+</ul>
+
+    </div>
+  </div>
+
+
+
+
+
+
+
+
+
+  
+  
+  <div class="article-widget content-widget-hr">
+    <h3>Related</h3>
+    <ul>
+      
+      <li><a href="/2018/12/19/trump-s-tweets-part-ii/">Trump&#39;s Tweets, Part II</a></li>
+      
+      <li><a href="/2018/04/08/scraping-epl-salary-data/">Scraping EPL Salary Data</a></li>
+      
+      <li><a href="/2018/03/07/pew-data-on-bond-ratings-and-rainy-day-funds/">Pew Data on Bond Ratings and Rainy Day Funds</a></li>
+      
+      <li><a href="/2018/02/25/mapping-with-the-government-finance-database/">Mapping with the Government Finance Database</a></li>
+      
+      <li><a href="/2018/02/24/panel-data-r-packages/">Longitudinal Panel Data R Packages</a></li>
+      
+    </ul>
+  </div>
+  
+
+
+
+  </div>
+</article>
+
+      
+
+    
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js" integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.imagesloaded/4.1.4/imagesloaded.pkgd.min.js" integrity="sha256-lqvxZrPLtfffUl2G/e7szqSvPBILGbwmsGE1MKlOi0Q=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.isotope/3.0.6/isotope.pkgd.min.js" integrity="sha256-CBrpuqrMhXwcLLUd5tvQ4euBHCdh7wGlDfNz8vbu/iI=" crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.5.7/jquery.fancybox.min.js" integrity="sha256-yt2kYMy0w8AbtF89WXb2P1rfjcP/HTHLT7097U8Y5b8=" crossorigin="anonymous"></script>
+
+      
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/mermaid/8.4.4/mermaid.min.js" integrity="sha256-JEqEejGt4tR35L0a1zodzsV0/PJ6GIf7J4yDtywdrH8=" crossorigin="anonymous" title="mermaid"></script>
+      
+
+      
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/highlight.min.js" integrity="sha256-1zu+3BnLYV9LdiY85uXMzii3bdrkelyp37e0ZyTAQh0=" crossorigin="anonymous"></script>
+        
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.15.10/languages/r.min.js"></script>
+        
+      
+
+    
+
+    
+    
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.5.1/leaflet.js" integrity="sha256-EErZamuLefUnbMBQbsEqu1USa+btR2oIlCpBJbyD4/g=" crossorigin="anonymous"></script>
+    
+
+    
+    
+    <script>const code_highlighting = true;</script>
+    
+
+    
+    
+    
+    
+    
+    
+    <script>
+      const search_config = {"indexURI":"/index.json","minLength":1,"threshold":0.3};
+      const i18n = {"no_results":"No results found","placeholder":"Search...","results":"results found"};
+      const content_type = {
+        'post': "Posts",
+        'project': "Projects",
+        'publication' : "Publications",
+        'talk' : "Talks"
+        };
+    </script>
+    
+
+    
+    
+
+    
+    
+    <script id="search-hit-fuse-template" type="text/x-template">
+      <div class="search-hit" id="summary-{{key}}">
+      <div class="search-hit-content">
+        <div class="search-hit-name">
+          <a href="{{relpermalink}}">{{title}}</a>
+          <div class="article-metadata search-hit-type">{{type}}</div>
+          <p class="search-hit-description">{{snippet}}</p>
+        </div>
+      </div>
+      </div>
+    </script>
+    
+
+    
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fuse.js/3.2.1/fuse.min.js" integrity="sha256-VzgmKYmhsGNNN4Ph1kMW+BjoYJM2jV5i4IlFoeZA9XI=" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mark.js/8.11.1/jquery.mark.min.js" integrity="sha256-4HLtjeVgH0eIB3aZ9mLYF6E8oU5chNdjU6p6rrXpl9U=" crossorigin="anonymous"></script>
+    
+
+    
+    
+
+    
+    
+
+    
+    
+    
+    
+    
+    
+    
+    
+    
+      
+    
+    
+    
+    
+    <script src="/js/academic.min.0630fec5958cb075a5a38f042b3ddde6.js"></script>
+
+    
+
+
+
+
+
+
+  
+  
+  <div class="container">
+    <footer class="site-footer">
+  
+  <p class="powered-by">
+    
+      <a href="/privacy/">Privacy Policy</a>
+    
+    
+       &middot; 
+      <a href="/terms/">Terms</a>
+    
+  </p>
+  
+
+  <p class="powered-by">
+    © 2018 &middot; 
+
+    Powered by the
+    <a href="https://sourcethemes.com/academic/" target="_blank" rel="noopener">Academic theme</a> for
+    <a href="https://gohugo.io" target="_blank" rel="noopener">Hugo</a>.
+
+    
+    <span class="float-right" aria-hidden="true">
+      <a href="#" class="back-to-top">
+        <span class="button_icon">
+          <i class="fas fa-chevron-up fa-2x"></i>
+        </span>
+      </a>
+    </span>
+    
+  </p>
+</footer>
+
+  </div>
+  
+
+  
+<div id="modal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Cite</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <pre><code class="tex hljs"></code></pre>
+      </div>
+      <div class="modal-footer">
+        <a class="btn btn-outline-primary my-1 js-copy-cite" href="#" target="_blank">
+          <i class="fas fa-copy"></i> Copy
+        </a>
+        <a class="btn btn-outline-primary my-1 js-download-cite" href="#" target="_blank">
+          <i class="fas fa-download"></i> Download
+        </a>
+        <div id="modal-error"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

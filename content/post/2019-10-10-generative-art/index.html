@@ -1,0 +1,97 @@
+---
+title: Generative aRt
+author: RWW
+date: '2019-10-10'
+slug: generative-art
+categories:
+  - R art
+  - simulation
+tags:
+  - R
+  - plot
+  - art
+header:
+  caption: ''
+  image: ''
+  preview: yes
+---
+
+
+
+<div id="mathart" class="section level1">
+<h1><code>mathart</code></h1>
+<p>A cool package for math generated art that I just discovered. Here is the install code for it</p>
+<pre><code>install.packages(c(&quot;devtools&quot;, &quot;mapproj&quot;, &quot;tidyverse&quot;, &quot;ggforce&quot;, &quot;Rcpp&quot;))
+devtools::install_github(&quot;marcusvolz/mathart&quot;)
+devtools::install_github(&quot;marcusvolz/ggart&quot;)
+devtools::install_github(&quot;gsimchoni/kandinsky&quot;)</code></pre>
+<div id="load-some-libraries" class="section level2">
+<h2>Load some libraries</h2>
+<pre class="r"><code>library(mathart)
+library(ggart)
+library(ggforce)
+library(Rcpp)
+library(tidyverse)</code></pre>
+</div>
+<div id="generate-some-art" class="section level2">
+<h2>Generate some Art?</h2>
+<p>This is quite fun to do.</p>
+<pre class="r"><code>set.seed(12341)
+
+terminals &lt;- data.frame(x = runif(10, 0, 10000), y = runif(10, 0, 10000))
+
+df &lt;- 1:10000 %&gt;%
+  map_df(~weiszfeld(terminals, c(points$x[.], points$y[.])), .id = &quot;id&quot;)
+
+p &lt;- ggplot() +
+  geom_point(aes(x, y), points, size = 1, alpha = 0.25, color = &quot;skyblue&quot;) +
+  geom_point(aes(x, y), terminals, size = 5, alpha = 1, color=&quot;purple&quot;) +
+  geom_line(aes(x, y, group = id), df, colour = &quot;blue&quot;, size = 0.5, alpha = 0.03) +
+  coord_equal() +
+  xlim(0, 10000) +
+  ylim(0, 10000) +
+  theme_blankcanvas(margin_cm = 0)
+
+ggsave(&quot;weiszfeld.png&quot;, p, width = 20, height = 20, units = &quot;in&quot;)</code></pre>
+<div class="figure">
+<img src="https://rww.science/img/art/weiszfeld.png" alt="Weiszfeld" />
+<p class="caption">Weiszfeld</p>
+</div>
+<pre class="r"><code>df &lt;- lorenz_attractor(a=18, b=8/3, c=26, n=1000000)
+
+p &lt;- ggplot() +
+  geom_path(aes(x, z), df, alpha = 0.15, size = 0.03, color=&quot;purple&quot;) +
+  coord_equal() +
+  xlim(-25, 25) + ylim(2.5, 52.5) +
+  theme_blankcanvas(margin_cm = 0)
+
+ggsave(&quot;LAttr.png&quot;, p, width = 20, height = 20, units = &quot;cm&quot;)</code></pre>
+<div class="figure">
+<img src="https://rww.science/img/art/LAttr.png" alt="Lorenz" />
+<p class="caption">Lorenz</p>
+</div>
+<pre class="r"><code>df &lt;- lorenz_attractor(a=3, b = 3, x0 = -1, y0 = 1, n=1000000)
+p &lt;- ggplot() +
+  geom_path(aes(x, z), df, alpha = 0.5, size = 0.1, color=&quot;pink&quot;) +
+  coord_equal() +
+  xlim(-25, 25) + ylim(-40, 45) +
+  theme_blankcanvas(margin_cm = 0)
+ggsave(&quot;LAttr2.png&quot;, p, width = 20, height = 20, units = &quot;cm&quot;)</code></pre>
+<div class="figure">
+<img src="https://rww.science/img/art/LAttr2.png" alt="Lorenz2" />
+<p class="caption">Lorenz2</p>
+</div>
+</div>
+<div id="bob-ross-as-a-kandinsky" class="section level2">
+<h2>Bob Ross as a Kandinsky</h2>
+<p>One interesting thing that I found is the ability to build a Kandinsky out of data. There was a tidyTuesday on Bob Ross paintings/episodes; nothing could be better than to Kandinsky Bob Ross.</p>
+<pre class="r"><code>library(kandinsky)
+bob_ross &lt;- readr::read_csv(&quot;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-08-06/bob-ross.csv&quot;)
+kandinsky(bob_ross)</code></pre>
+<p><img src="/post/2019-10-10-generative-art/index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p>That’s kinda lame. Let’s try visits to US National Parks.</p>
+<pre class="r"><code>park_visits &lt;- readr::read_csv(&quot;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-09-17/national_parks.csv&quot;)
+kandinsky(park_visits)</code></pre>
+<p><img src="/post/2019-10-10-generative-art/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+</div>
+</div>

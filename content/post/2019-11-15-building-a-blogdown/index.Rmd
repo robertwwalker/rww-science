@@ -1,0 +1,139 @@
+---
+title: Building a Blogdown
+author: RWW
+date: '2019-11-15'
+slug: building-a-blogdown
+categories: []
+tags: []
+header:
+  caption: ''
+  image: ''
+  preview: yes
+---
+
+## Pre-Talk
+
+[Slides](https://rww.science/presentations/BlogdownPresentation.html)
+
+Set the RStudio to install blogdown.
+
+```
+install.packages("blogdown")
+```
+
+and to get a working local version of Hugo, the static site generator at the heart of this,
+
+```
+blogdown::install_hugo()
+```
+
+# Motivation
+
+Credit where credit is due; Alison Hill motivated all of this with her wealth of resources.  Indeed, I redesigned the flow for today because of her brilliant R-Ladies Canberra seminar [I found the resource links on Twitter and the idea is 
+
+![](https://media.giphy.com/media/vyaVOTmCl7o1MAlnwK/giphy.gif)
+
+# All Credit to Alison Hill and Yihui Xie
+
+Alison Hill's magnificent resources on this.  
+
+[The Blogdown Book](https://bookdown.org/yihui/blogdown/)
+
+[Summer of Blogdown](https://summer-of-blogdown.netlify.com/)
+
+I wish I had them when I had to figure this all out for myself.
+
+## Why Blogdown
+
+![](/post/2019-11-15-building-a-blogdown_files/HadleyThread.png)
+
+## Workflow
+
+Navigate to the [github base for this](https://github.com/WUCDS1920/blankslate).
+
+![Go!](https://media.giphy.com/media/69D4FSNqihhKpFcc1a/giphy.gif)
+
+## Create a github site
+
+If you do not already have one, you will need to create a github site.  I created one for today called wucds1920 -- Willamette University Certificate in Data Science 19/20.  *I would associate it with a professional durable email account.*
+
+![Go!](https://media.giphy.com/media/69D4FSNqihhKpFcc1a/giphy.gif)
+
+##  Fork blankslate
+
+![](/post/2019-11-15-building-a-blogdown_files/ForkMe.png)
+
+## Migrate to your fork
+
+![Go!](https://media.giphy.com/media/69D4FSNqihhKpFcc1a/giphy.gif)
+
+### The Action
+
+We will need to edit `config.toml` in the root directory to reflect our chosen URL on netlify.  The remaining action is:
+
+![](/post/2019-11-15-building-a-blogdown_files/TheAction.png)
+
+
+## The Magic of GitHub
+
+My objectives are more limited.  We want to Start a New Project...
+
+From our github
+
+We may need:
+
+![](/post/2019-11-15-building-a-blogdown_files/GitandRStudio.png)
+
+Hadley Wickham has a great writeup on this:
+[](http://r-pkgs.had.co.nz/git.html)
+
+## Let's Edit....
+
+<blockquote class="imgur-embed-pub" lang="en" data-id="7J1bEaJ"><a href="//imgur.com/7J1bEaJ">just typing R code - Hadley Wickham</a></blockquote><script async src="//s.imgur.com/min/embed.js" charset="utf-8"></script>
+
+## Change the name
+
+And some associated content.  Only a bit at a time.
+
+## For Fun: A First Post?
+
+Addins : New Post
+
+Something pretty simple.
+
+```{r, message=FALSE, warning=FALSE}
+data("UCBAdmissions")
+# install.packages("ggalluvial")
+library(tidyverse); library(ggalluvial)
+ggplot(as.data.frame(UCBAdmissions), # Flatten the table
+       aes(y = Freq, axis1 = Gender, axis2 = Dept)) +
+  geom_alluvium(aes(fill = Admit), width = 1/12) +
+  geom_stratum(width = 1/12, fill = "black", color = "grey") +
+  geom_label(stat = "stratum", label.strata = TRUE) +
+  scale_x_discrete(limits = c("Gender", "Dept"), expand = c(.05, .05)) +
+  scale_fill_brewer(type = "qual", palette = "Set1") +
+  ggtitle("Admissions by sex and department: UCB") + labs(caption = "A ggalluvial example")
+```
+  
+Now we are going to undertake our first interaction with GitHub from RStudio.
+
+# First a commit.
+
+Stage all the changes and produce an informative commit message.  My first post and the initial edits to blankslate or something like that.
+
+# To Netlify
+
+And check out the deployment.  In the meantime, we can, and probably should, copy off the deployment part from Netlify so we can check the status without logging in.  We should also edit README.md to make the deploy button unique to our fork.
+
+## A Portfolio
+
+<iframe src="https://rwalkerwu.shinyapps.io/NFL-Scrapr/" width="1000" height="700" style="border: none;"></iframe>
+
+
+## Note
+
+Blogdown can also allow you to link up your groovy shiny apps.  I made one to run through an NFL season and show the win probabilities.
+
+```
+<iframe src="https://rwalkerwu.shinyapps.io/NFL-Scrapr/" width="1000" height="700" style="border: none;"></iframe>
+```

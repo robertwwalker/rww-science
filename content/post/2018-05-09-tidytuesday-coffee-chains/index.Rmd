@@ -1,0 +1,89 @@
+---
+title: 'tidyTuesday: coffee chains'
+author: RWW
+date: '2018-05-09'
+slug: tidytuesday-coffee-chains
+categories:
+  - R
+  - tidyverse
+  - Maps
+tags:
+  - R
+  - tidyTuesday
+  - tidyverse
+---
+
+# The tidyTuesday for this week is coffee chain locations
+
+For this week:
+1. The basic link to the [`#tidyTuesday`](https://github.com/rfordatascience/tidytuesday) shows [an original article](http://flowingdata.com/2014/03/18/coffee-place-geography/) for Week 6.
+
+First, let's import the data; it is a single Excel spreadsheet.  The page notes that starbucks, Tim Horton, and Dunkin Donuts have raw data available.
+
+```{r LoadData}
+library(readxl)
+library(tidyverse)
+library(janitor)
+library(geofacet)
+library(ggbeeswarm)
+library(ggrepel)
+# A great function appears below that I grabbed from Stack Overflow a while back.....
+# URL functionality with read_excel is tricky so I turned them in to rds
+read_excel_allsheets <- function(filename, tibble = TRUE) {
+    sheets <- readxl::excel_sheets(filename)
+    x <- lapply(sheets, function(X) readxl::read_excel(filename, sheet = X))
+    if(!tibble) x <- lapply(x, as.data.frame)
+    names(x) <- sheets
+    x
+}
+download.file("https://github.com/rfordatascience/tidytuesday/raw/master/data/2018/2018-05-07/week6_coffee_chains.xlsx", "coffee.xlsx")
+coffee.xl <- read_excel_allsheets("coffee.xlsx")
+Starbucks <- readRDS(url("https://github.com/robertwwalker/academic-mymod/raw/master/data/week6SB.rds"))
+Dunkin.Donuts <- readRDS(url("https://github.com/robertwwalker/academic-mymod/raw/master/data/week6DD.rds"))
+Tim.Hortons <- readRDS(url("https://github.com/robertwwalker/academic-mymod/raw/master/data/week6TH.rds"))
+```
+
+What do the data look like?
+
+```{r}
+library(skimr)
+skim(Starbucks)
+skim(Dunkin.Donuts)
+skim(Tim.Hortons)
+```
+
+A basic plot of the global Starbucks data.
+
+```{r}
+library(ggmap)
+mapWorld <- borders("world", colour="gray50", fill="gray50") # create a layer of borders
+mp <- ggplot() +   mapWorld
+mp <- mp + geom_point(aes(x=Starbucks$Longitude, y=Starbucks$Latitude) ,color="dark green", size=0.5) + xlab("") + ylab("")
+mp <- mp + geom_point(aes(x=Dunkin.Donuts$loc_LONG_centroid, y=Dunkin.Donuts$loc_LAT_centroid) ,color="orange", size=0.5) + xlab("") + ylab("")
+mp
+```
+
+## Starbucks and Dunkin
+
+Google Maps interface changed and I have not updated this part.  Shame.
+
+```{r, eval=FALSE, echo=FALSE}
+coffee.xl$timhorton <- coffee.xl$timhorton %>% mutate(full.address=paste(address,city,state,toupper(country),sep=", "))
+# Tim.H <- coffee.xl$timhorton %>% filter(country=="us") %>% mutate_geocode(full.address, source="dsk")
+load(paste0(here(),"/data/geocoded.RData"))
+THUS <- Tim.H %>% select(country,full.address,lon,lat)
+names(THUS) <- c("Country","Address","Longitude","Latitude")
+THUS$chain <- "Tim Horton's"
+DDUS <- coffee.xl$dunkin %>% select(e_country, e_address, loc_LONG_centroid,loc_LAT_centroid)
+names(DDUS) <- c("Country","Address","Longitude","Latitude")
+DDUS$chain <- "Dunkin"
+SBUX <- coffee.xl$starbucks %>% filter(Country=="us") %>% select(Country,`Street Address`,Longitude,Latitude)
+names(SBUX) <- c("Country","Address","Longitude","Latitude")
+US.Map.Coffee <- bind_rows(DDUS,SBUX,THUS)
+USmap <- get_stamenmap(us, zoom = 5)
+mp <- ggmap(USmap)
+mp <- mp + geom_point(aes(x=Starbucks$Longitude, y=Starbucks$Latitude) ,color="dark green", size=0.5) + xlab("") + ylab("")
+mp <- mp + geom_point(aes(x=Dunkin.Donuts$loc_LONG_centroid, y=Dunkin.Donuts$loc_LAT_centroid) ,color="orange", size=0.5) + xlab("") + ylab("")
+mp
+```
+

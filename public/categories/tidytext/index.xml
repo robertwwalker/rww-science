@@ -1,0 +1,718 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>tidytext | rww.science</title>
+    <link>/categories/tidytext/</link>
+      <atom:link href="/categories/tidytext/index.xml" rel="self" type="application/rss+xml" />
+    <description>tidytext</description>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© 2018</copyright><lastBuildDate>Wed, 22 May 2019 00:00:00 +0000</lastBuildDate>
+    <image>
+      <url>/img/portrait.jpg</url>
+      <title>tidytext</title>
+      <link>/categories/tidytext/</link>
+    </image>
+    
+    <item>
+      <title>Some Basic Text on the Mueller Report</title>
+      <link>/2019/05/22/some-basic-text-on-the-mueller-report/</link>
+      <pubDate>Wed, 22 May 2019 00:00:00 +0000</pubDate>
+      <guid>/2019/05/22/some-basic-text-on-the-mueller-report/</guid>
+      <description>
+&lt;script src=&#34;/rmarkdown-libs/htmlwidgets/htmlwidgets.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;/rmarkdown-libs/pymjs/pym.v1.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;/rmarkdown-libs/widgetframe-binding/widgetframe.js&#34;&gt;&lt;/script&gt;
+
+
+&lt;div id=&#34;so-this-robert-mueller-guy-wrote-a-report&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;So this Robert Mueller guy wrote a report&lt;/h1&gt;
+&lt;p&gt;I may as well analyse it a bit.&lt;/p&gt;
+&lt;p&gt;First, let me see if I can get a hold of the data. I grabbed the report directly from the Department of Justice website. You can follow this &lt;a href=&#34;https://www.justice.gov/storage/report.pdf&#34;&gt;link&lt;/a&gt;.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(tidyverse)
+library(pdftools)
+# Download report from link above
+mueller_report_txt &amp;lt;- pdf_text(&amp;quot;../data/report.pdf&amp;quot;)
+# Create a tibble of the text with line numbers and pages
+mueller_report &amp;lt;- tibble(
+  page = 1:length(mueller_report_txt),
+  text = mueller_report_txt) %&amp;gt;% 
+  separate_rows(text, sep = &amp;quot;\n&amp;quot;) %&amp;gt;% 
+  group_by(page) %&amp;gt;% 
+  mutate(line = row_number()) %&amp;gt;% 
+  ungroup() %&amp;gt;% 
+  select(page, line, text)
+write_csv(mueller_report, &amp;quot;data/mueller_report.csv&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now I can use a .csv of the data; reading the .pdf and hacking it up takes time.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(pdftools)
+library(here)
+library(tidyverse)
+load(&amp;quot;MuellerReport.RData&amp;quot;)
+head(mueller_report)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##   page line
+## 1    1    1
+## 2    1    2
+## 3    1    3
+## 4    1    4
+## 5    1    5
+## 6    1    6
+##                                                                                                text
+## 1                                                                        U.S. Department of Justice
+## 2 AttarAe:,c \\\\&amp;#39;erlc Predtiet // Mtt; CeA1:ttiA Ma1:ertal Prn1:eeted UAder Fed. R. Crhtt. P. 6(e)
+## 3                                                                  Report On The Investigation Into
+## 4                                                                       Russian Interference In The
+## 5                                                                        2016 Presidential Election
+## 6                                                                                    Volume I of II&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The text is generally pretty good though there is some garbage. The second line contains redactions and those are the underlying cause. In fact, every page contains this same line though they convert to text in a non-uniform fashion.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;mueller_ml2 &amp;lt;- mueller_report %&amp;gt;% dplyr::filter(line != 2) &lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;I want to make use of &lt;a href=&#34;https://github.com/statsmaths/cleanNLP&#34;&gt;cleanNLP&lt;/a&gt; to turn this into something that I can analyze. The first step is to get rid of the tidyness, of sorts.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;Once upon a time, this worked with the linux tools and others.  The spacy and corenlp functionality is not native R and the python interface is currently broken, at least on this server.&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(tidyverse)
+library(RCurl)
+library(tokenizers)
+library(cleanNLP)
+# cnlp_download_spacy(&amp;quot;en&amp;quot;)
+MRep &amp;lt;- paste(as.character(mueller_ml2$text), &amp;quot; &amp;quot;)
+# cnlp_init_stringi()
+# starttime &amp;lt;- Sys.time()
+# stringi_annotate &amp;lt;- MRep %&amp;gt;% as.character() %&amp;gt;% cnlp_annotate(., verbose=FALSE) 
+# endtime &amp;lt;- Sys.time()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;I wanted to find the bigrams while removing stop words. Apparently, the easiest way to do this is &lt;code&gt;quanteda&lt;/code&gt;. I got this from &lt;a href=&#34;https://stackoverflow.com/questions/34282370/form-bigrams-without-stopwords-in-r&#34;&gt;stack overflow&lt;/a&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(widgetframe)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Loading required package: htmlwidgets&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(quanteda)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Package version: 1.5.2&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Parallel computing: 2 of 16 threads used.&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## See https://quanteda.io for tutorials and examples.&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## 
+## Attaching package: &amp;#39;quanteda&amp;#39;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## The following object is masked from &amp;#39;package:utils&amp;#39;:
+## 
+##     View&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(wordcloud)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Loading required package: RColorBrewer&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;myDfm &amp;lt;- tokens(MRep) %&amp;gt;%
+    tokens_remove(&amp;quot;\\p{P}&amp;quot;, valuetype = &amp;quot;regex&amp;quot;, padding = TRUE) %&amp;gt;%
+    tokens_remove(stopwords(&amp;quot;english&amp;quot;), padding  = TRUE) %&amp;gt;%
+    tokens_ngrams(n = 2) %&amp;gt;%
+    dfm()
+wc2 &amp;lt;- topfeatures(myDfm, n=150, scheme=&amp;quot;count&amp;quot;)
+wc2.df &amp;lt;- data.frame(word = names(wc2), freq=as.numeric(wc2))
+wc2.df$word &amp;lt;- as.character(wc2.df$word)
+wc2.df &amp;lt;- wc2.df %&amp;gt;% filter(freq &amp;lt; 300)
+# wordcloud(wc2.df, size=0.4)
+library(highcharter)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Registered S3 method overwritten by &amp;#39;quantmod&amp;#39;:
+##   method            from
+##   as.zoo.data.frame zoo&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Highcharts (www.highcharts.com) is a Highsoft software product which is&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## not free for commercial and Governmental use&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;frameWidget(hchart(wc2.df, &amp;quot;wordcloud&amp;quot;, hcaes(name=word, weight=freq/30)))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning: `parse_quosure()` is deprecated as of rlang 0.2.0.
+## Please use `parse_quo()` instead.
+## This warning is displayed once per session.&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;htmlwidget-1&#34; style=&#34;width:100%;height:480px;&#34; class=&#34;widgetframe html-widget&#34;&gt;&lt;/div&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-1&#34;&gt;{&#34;x&#34;:{&#34;url&#34;:&#34;/post/2019-05-22-some-basic-text-on-the-mueller-report/index_files/figure-html//widgets/widget_wc1.html&#34;,&#34;options&#34;:{&#34;xdomain&#34;:&#34;*&#34;,&#34;allowfullscreen&#34;:false,&#34;lazyload&#34;:false}},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;div id=&#34;pdfpages-a-little-plot&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;pdfpages: A little plot&lt;/h2&gt;
+&lt;p&gt;I found some instructions on constructing the entire document on a grid and pulled the report apart to visualise it in that way.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(pdftools)
+library(png)
+pdf_convert(&amp;quot;data/report.pdf&amp;quot;)
+ 
+# Dimensions of 1 page.
+imgwidth &amp;lt;- 612
+imgheight &amp;lt;- 792
+ 
+# Grid dimensions.
+gridwidth &amp;lt;- 30
+gridheight &amp;lt;- 15
+ 
+# Total plot width and height.
+spacing &amp;lt;- 1
+totalwidth &amp;lt;- (imgwidth+spacing) * (gridwidth)
+totalheight &amp;lt;- (imgheight+spacing) * gridheight
+ 
+# Plot all the pages and save as PNG.
+png(&amp;quot;RSMReport.png&amp;quot;, round((imgwidth+spacing)*gridwidth/7), round((imgheight+spacing)*gridheight/7))
+par(mar=c(0,0,0,0))
+plot(0, 0, type=&amp;#39;n&amp;#39;, xlim=c(0, totalwidth), ylim=c(0, totalheight), asp=1, bty=&amp;quot;n&amp;quot;, axes=FALSE)
+for (i in 1:448) {
+    fname &amp;lt;- paste(&amp;quot;report_&amp;quot;, i, &amp;quot;.png&amp;quot;, sep=&amp;quot;&amp;quot;)
+    img &amp;lt;- readPNG(fname)
+     
+    x &amp;lt;- (i %% gridwidth) * (imgwidth+spacing)
+    y &amp;lt;- totalheight - (floor(i / gridwidth)) * (imgheight+spacing)
+     
+    rasterImage(img, xleft=x, ybottom = y-imgheight, xright = x+imgwidth, ytop=y)
+}
+dev.off()&lt;/code&gt;&lt;/pre&gt;
+&lt;div class=&#34;figure&#34;&gt;
+&lt;img src=&#34;https://rww.science/img/RSMReport.png&#34; alt=&#34;A Graphic&#34; /&gt;
+&lt;p class=&#34;caption&#34;&gt;A Graphic&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Trump&#39;s Tweets, Part II</title>
+      <link>/2018/12/19/trump-s-tweets-part-ii/</link>
+      <pubDate>Wed, 19 Dec 2018 00:00:00 +0000</pubDate>
+      <guid>/2018/12/19/trump-s-tweets-part-ii/</guid>
+      <description>
+
+
+&lt;div id=&#34;trumps-tone&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Trump’s Tone&lt;/h1&gt;
+&lt;p&gt;A cool post on sentiment analysis can be found &lt;a href=&#34;http://dataaspirant.com/2018/03/22/twitter-sentiment-analysis-using-r/&#34;&gt;here&lt;/a&gt;. I will now get at the time series characteristics of his tweets and the sentiment stuff.&lt;/p&gt;
+&lt;p&gt;I start by loading the tmls object that I created &lt;a href=&#34;https://rww.science/post/trump-tweet-word-clouds/&#34;&gt;in the previous post&lt;/a&gt;.&lt;/p&gt;
+&lt;div id=&#34;trumps-overall-tweeting&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Trump’s Overall Tweeting&lt;/h2&gt;
+&lt;p&gt;What does it look like?&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(tidyverse)
+library(tidytext)
+library(SnowballC)
+library(tm)
+library(syuzhet)
+library(rtweet)
+load(url(&amp;quot;https://github.com/robertwwalker/academic-mymod/raw/master/data/TMLS.RData&amp;quot;))
+names(tml.djt)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##  [1] &amp;quot;user_id&amp;quot;                 &amp;quot;status_id&amp;quot;              
+##  [3] &amp;quot;created_at&amp;quot;              &amp;quot;screen_name&amp;quot;            
+##  [5] &amp;quot;text&amp;quot;                    &amp;quot;source&amp;quot;                 
+##  [7] &amp;quot;display_text_width&amp;quot;      &amp;quot;reply_to_status_id&amp;quot;     
+##  [9] &amp;quot;reply_to_user_id&amp;quot;        &amp;quot;reply_to_screen_name&amp;quot;   
+## [11] &amp;quot;is_quote&amp;quot;                &amp;quot;is_retweet&amp;quot;             
+## [13] &amp;quot;favorite_count&amp;quot;          &amp;quot;retweet_count&amp;quot;          
+## [15] &amp;quot;hashtags&amp;quot;                &amp;quot;symbols&amp;quot;                
+## [17] &amp;quot;urls_url&amp;quot;                &amp;quot;urls_t.co&amp;quot;              
+## [19] &amp;quot;urls_expanded_url&amp;quot;       &amp;quot;media_url&amp;quot;              
+## [21] &amp;quot;media_t.co&amp;quot;              &amp;quot;media_expanded_url&amp;quot;     
+## [23] &amp;quot;media_type&amp;quot;              &amp;quot;ext_media_url&amp;quot;          
+## [25] &amp;quot;ext_media_t.co&amp;quot;          &amp;quot;ext_media_expanded_url&amp;quot; 
+## [27] &amp;quot;ext_media_type&amp;quot;          &amp;quot;mentions_user_id&amp;quot;       
+## [29] &amp;quot;mentions_screen_name&amp;quot;    &amp;quot;lang&amp;quot;                   
+## [31] &amp;quot;quoted_status_id&amp;quot;        &amp;quot;quoted_text&amp;quot;            
+## [33] &amp;quot;quoted_created_at&amp;quot;       &amp;quot;quoted_source&amp;quot;          
+## [35] &amp;quot;quoted_favorite_count&amp;quot;   &amp;quot;quoted_retweet_count&amp;quot;   
+## [37] &amp;quot;quoted_user_id&amp;quot;          &amp;quot;quoted_screen_name&amp;quot;     
+## [39] &amp;quot;quoted_name&amp;quot;             &amp;quot;quoted_followers_count&amp;quot; 
+## [41] &amp;quot;quoted_friends_count&amp;quot;    &amp;quot;quoted_statuses_count&amp;quot;  
+## [43] &amp;quot;quoted_location&amp;quot;         &amp;quot;quoted_description&amp;quot;     
+## [45] &amp;quot;quoted_verified&amp;quot;         &amp;quot;retweet_status_id&amp;quot;      
+## [47] &amp;quot;retweet_text&amp;quot;            &amp;quot;retweet_created_at&amp;quot;     
+## [49] &amp;quot;retweet_source&amp;quot;          &amp;quot;retweet_favorite_count&amp;quot; 
+## [51] &amp;quot;retweet_retweet_count&amp;quot;   &amp;quot;retweet_user_id&amp;quot;        
+## [53] &amp;quot;retweet_screen_name&amp;quot;     &amp;quot;retweet_name&amp;quot;           
+## [55] &amp;quot;retweet_followers_count&amp;quot; &amp;quot;retweet_friends_count&amp;quot;  
+## [57] &amp;quot;retweet_statuses_count&amp;quot;  &amp;quot;retweet_location&amp;quot;       
+## [59] &amp;quot;retweet_description&amp;quot;     &amp;quot;retweet_verified&amp;quot;       
+## [61] &amp;quot;place_url&amp;quot;               &amp;quot;place_name&amp;quot;             
+## [63] &amp;quot;place_full_name&amp;quot;         &amp;quot;place_type&amp;quot;             
+## [65] &amp;quot;country&amp;quot;                 &amp;quot;country_code&amp;quot;           
+## [67] &amp;quot;geo_coords&amp;quot;              &amp;quot;coords_coords&amp;quot;          
+## [69] &amp;quot;bbox_coords&amp;quot;             &amp;quot;status_url&amp;quot;             
+## [71] &amp;quot;name&amp;quot;                    &amp;quot;location&amp;quot;               
+## [73] &amp;quot;description&amp;quot;             &amp;quot;url&amp;quot;                    
+## [75] &amp;quot;protected&amp;quot;               &amp;quot;followers_count&amp;quot;        
+## [77] &amp;quot;friends_count&amp;quot;           &amp;quot;listed_count&amp;quot;           
+## [79] &amp;quot;statuses_count&amp;quot;          &amp;quot;favourites_count&amp;quot;       
+## [81] &amp;quot;account_created_at&amp;quot;      &amp;quot;verified&amp;quot;               
+## [83] &amp;quot;profile_url&amp;quot;             &amp;quot;profile_expanded_url&amp;quot;   
+## [85] &amp;quot;account_lang&amp;quot;            &amp;quot;profile_banner_url&amp;quot;     
+## [87] &amp;quot;profile_background_url&amp;quot;  &amp;quot;profile_image_url&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ts_plot(tml.djt, &amp;quot;days&amp;quot;) +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(face = &amp;quot;bold&amp;quot;)) +
+  ggplot2::labs(
+    x = NULL, y = NULL,
+    title = &amp;quot;Frequency of @realDonaldTrump tweets and retweeets&amp;quot;,
+    subtitle = &amp;quot;Twitter status (tweet) counts aggregated using days&amp;quot;,
+    caption = &amp;quot;\nSource: Data collected from Twitter&amp;#39;s REST API via rtweet&amp;quot;
+  )&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-12-19-trump-s-tweets-part-ii/index_files/figure-html/unnamed-chunk-1-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;trumps-tweets-by-day&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Trump’s Tweets by Day&lt;/h2&gt;
+&lt;p&gt;I want to first get rid of retweets to render President Trump in his own voice.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;DJTDF &amp;lt;- tml.djt %&amp;gt;% filter(is_retweet==FALSE)
+ts_plot(DJTDF, &amp;quot;days&amp;quot;) +
+  ggplot2::theme_minimal() +
+  ggplot2::theme(plot.title = ggplot2::element_text(face = &amp;quot;bold&amp;quot;)) +
+  ggplot2::labs(
+    x = NULL, y = NULL,
+    title = &amp;quot;Frequency of @realDonaldTrump tweets [retweeets removed]&amp;quot;,
+    subtitle = &amp;quot;Twitter status (tweet) counts aggregated using days&amp;quot;,
+    caption = &amp;quot;\nSource: Data collected from Twitter&amp;#39;s REST API via rtweet&amp;quot;
+  )&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-12-19-trump-s-tweets-part-ii/index_files/figure-html/unnamed-chunk-2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Some more stuff from &lt;a href=&#34;https://stackoverflow.com/questions/31348453/how-do-i-clean-twitter-data-in-r&#34;&gt;stack overflow&lt;/a&gt;. There is quite a bit of code in here. I simply wrote a function that takes an input character string and cleans it up. Uncomment the various components and pipe them. The sequencing is important and I found this to get everything that I wanted.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(RColorBrewer)
+TDF &amp;lt;- DJTDF %&amp;gt;% select(text)
+library(tidyr)
+CT &amp;lt;- TDF %&amp;gt;% mutate(tweetno= row_number())
+# TDF contains the text of tweets amd the id
+library(stringr)
+tweet_cleaner &amp;lt;- function(text) {
+  temp1 &amp;lt;- str_replace_all(text, &amp;quot;&amp;amp;amp&amp;quot;, &amp;quot;&amp;quot;) %&amp;gt;% 
+    str_replace_all(., &amp;quot;https.*&amp;quot;,&amp;quot;&amp;quot;) %&amp;gt;%
+#    str_replace_all(., &amp;quot;http.*&amp;quot;, &amp;quot;&amp;quot;) %&amp;gt;%
+    str_replace_all(.,&amp;quot;@[a-z,A-Z]*&amp;quot;,&amp;quot;&amp;quot;)
+#    str_replace_all(., &amp;quot;[[:punct:]]&amp;quot;, &amp;quot;&amp;quot;)  
+#    str_replace_all(., &amp;quot;[[:digit:]]&amp;quot;, &amp;quot;&amp;quot;) %&amp;gt;%
+#    str_replace_all(., &amp;quot;[ \t]{2,}&amp;quot;, &amp;quot;&amp;quot;) %&amp;gt;%
+#    str_replace_all(., &amp;quot;^\\s+|\\s+$&amp;quot;, &amp;quot;&amp;quot;)  %&amp;gt;%
+#    str_replace_all(., &amp;quot; &amp;quot;,&amp;quot; &amp;quot;) %&amp;gt;%
+#    str_replace_all(.,&amp;quot;RT @[a-z,A-Z]*: &amp;quot;,&amp;quot;&amp;quot;) %&amp;gt;% 
+#    str_replace_all(.,&amp;quot;#[a-z,A-Z]*&amp;quot;,&amp;quot;&amp;quot;)
+  return(temp1)
+}
+clean_tweets &amp;lt;- data.frame(text=sapply(1:dim(TDF)[[1]], function(x) {tweet_cleaner(TDF[x,&amp;quot;text&amp;quot;])}))
+clean_tweets$text &amp;lt;- as.character(clean_tweets$text)
+clean_tweets$created_at &amp;lt;- DJTDF$created_at
+Trumps.Sent.Words &amp;lt;- clean_tweets %&amp;gt;% unnest_tokens(., word, text) %&amp;gt;% anti_join(stop_words, &amp;quot;word&amp;quot;)
+# word.df &amp;lt;- as.vector(TDF)
+# emotion.df &amp;lt;- get_nrc_sentiment(word.df)
+SNTR1 &amp;lt;- apply(TDF, 1, function(x) {get_nrc_sentiment(x)})
+Sent.Res &amp;lt;- bind_rows(SNTR1)
+head(Sent.Res)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##   anger anticipation disgust fear joy sadness surprise trust negative positive
+## 1     1            1       0    2   2       0        1     4        3        4
+## 2     0            2       0    0   2       0        1     2        0        3
+## 3     0            1       0    1   1       0        0     1        1        2
+## 4     1            1       0    1   0       1        1     0        1        3
+## 5     4            1       4    3   0       3        1     1        4        0
+## 6     3            0       4    2   0       3        1     1        4        1&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;a-single-number-sentiment&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;A Single Number Sentiment&lt;/h1&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(tidytext)
+SNTRB &amp;lt;- apply(TDF, 1, function(x) {get_sentiment(x, method=&amp;quot;bing&amp;quot;)})
+DJTDF$Bing &amp;lt;- SNTRB
+DJTDF &amp;lt;- DJTDF %&amp;gt;% mutate(RN=row_number())
+DJTDF &amp;lt;- DJTDF
+DJTDF &amp;lt;- DJTDF[order(DJTDF$RN, decreasing = T),]
+library(tibbletime)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## 
+## Attaching package: &amp;#39;tibbletime&amp;#39;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## The following object is masked from &amp;#39;package:stats&amp;#39;:
+## 
+##     filter&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;DJTDF_tbl_time_d &amp;lt;- DJTDF %&amp;gt;%
+     as_tbl_time(index = created_at) 
+My.Res &amp;lt;- DJTDF_tbl_time_d %&amp;gt;%
+    collapse_by(&amp;quot;daily&amp;quot;) %&amp;gt;%
+    dplyr::group_by(created_at) %&amp;gt;%
+    dplyr::summarise_if(is.numeric, mean) %&amp;gt;% select(created_at,Bing)
+SBP &amp;lt;- My.Res %&amp;gt;% filter(Bing&amp;gt;0)
+SBN &amp;lt;- My.Res %&amp;gt;% filter(Bing&amp;lt;0)
+plot(My.Res, type=&amp;quot;l&amp;quot;, xlab=&amp;quot;2018&amp;quot;, ylab=&amp;quot;Avg. Bing Sentiment&amp;quot;, main=&amp;quot;Trump&amp;#39;s Bing Daily Mood&amp;quot;)
+points(SBP, col=&amp;quot;green&amp;quot;)
+points(SBN, col=&amp;quot;red&amp;quot;)
+text(My.Res[316,], &amp;quot;GHW Bush Passes&amp;quot;, cex=0.6)
+text(My.Res[66,], &amp;quot;March for Our Life&amp;quot;, cex=0.6)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-12-19-trump-s-tweets-part-ii/index_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;table(sign(My.Res$Bing))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## 
+##  -1   0   1 
+##  84  16 231&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;That’s pretty interesting. There are considerably more positive days than negative ones. The timing of the maximum and minimum are fairly clear in time. Some changes the tidytext and licenses for sentiments broke this. To fix it, I have to save a local.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;tidy.tweets &amp;lt;- DJTDF %&amp;gt;% select(created_at, text) %&amp;gt;% unnest_tokens(word, text)
+afinn &amp;lt;- tidy.tweets %&amp;gt;% 
+  inner_join(get_sentiments(&amp;quot;afinn&amp;quot;)) %&amp;gt;% 
+  group_by(created_at) %&amp;gt;% 
+  summarise(sentiment = sum(value)) %&amp;gt;% 
+  mutate(method = &amp;quot;AFINN&amp;quot;)
+bing_and_nrc &amp;lt;- bind_rows(tidy.tweets %&amp;gt;% 
+                            inner_join(get_sentiments(&amp;quot;bing&amp;quot;)) %&amp;gt;%
+                            mutate(method = &amp;quot;Bing&amp;quot;),
+                          tidy.tweets %&amp;gt;% 
+                            inner_join(get_sentiments(&amp;quot;nrc&amp;quot;) %&amp;gt;% 
+                                         filter(sentiment %in% c(&amp;quot;positive&amp;quot;, 
+                                                                 &amp;quot;negative&amp;quot;))) %&amp;gt;%
+                            mutate(method = &amp;quot;NRC&amp;quot;)) %&amp;gt;%
+  count(method, created_at, sentiment) %&amp;gt;%
+  spread(sentiment, n, fill = 0) %&amp;gt;%
+  mutate(sentiment = positive - negative) %&amp;gt;% select(created_at, sentiment, method)
+Sents.Me &amp;lt;- bind_rows(afinn,bing_and_nrc)
+SME_tbl_time_d &amp;lt;- Sents.Me  %&amp;gt;% as_tbl_time(index = created_at) 
+My.Res &amp;lt;- SME_tbl_time_d %&amp;gt;% group_by(method) %&amp;gt;%
+    collapse_by(&amp;quot;daily&amp;quot;) %&amp;gt;%
+    dplyr::group_by(created_at, method) %&amp;gt;%
+    dplyr::summarise_if(is.numeric, mean) %&amp;gt;% ungroup()
+save(Sents.Me,SME_tbl_time_d,My.Res,bing_and_nrc,tidy.tweets, file=&amp;quot;~/TrumpTweets.RData&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;load(&amp;quot;TrumpTweets.RData&amp;quot;)
+ggplot(data = My.Res) +
+  aes(x = created_at, y = sentiment, color = method) +
+  geom_line() +
+  theme_minimal()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-12-19-trump-s-tweets-part-ii/index_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;div id=&#34;averaging-three-types-of-scaled-sentiments&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Averaging three types of scaled sentiments&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;MRS &amp;lt;- My.Res %&amp;gt;% group_by(method) %&amp;gt;% mutate(SS=scale(sentiment))
+MRS2 &amp;lt;- MRS %&amp;gt;%  collapse_by(&amp;quot;daily&amp;quot;) %&amp;gt;% select(created_at, SS) %&amp;gt;%
+    dplyr::group_by(created_at) %&amp;gt;%
+    dplyr::summarise_if(is.numeric, mean) &lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Adding missing grouping variables: `method`&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggplot(data = MRS2) +
+  aes(x = created_at, y = SS) +
+  geom_line(color = &amp;#39;#781c6d&amp;#39;) +
+  labs(title = &amp;#39;Sentiment: Averaged&amp;#39;,
+    x = &amp;#39;Date&amp;#39;,
+    y = &amp;#39;Mean Scaled Sentiment&amp;#39;) +
+  theme_minimal()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-12-19-trump-s-tweets-part-ii/index_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;common-words&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Common Words&lt;/h2&gt;
+&lt;p&gt;The &lt;code&gt;comparson_cloud()&lt;/code&gt; features in &lt;code&gt;wordcloud&lt;/code&gt; allow a split of the most common words in the positive and negative sentiment dictionaries.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(wordcloud)
+library(reshape2)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## 
+## Attaching package: &amp;#39;reshape2&amp;#39;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## The following object is masked from &amp;#39;package:tidyr&amp;#39;:
+## 
+##     smiths&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;tidy.tweets %&amp;gt;%
+  inner_join(get_sentiments(&amp;quot;bing&amp;quot;)) %&amp;gt;%
+  count(word, sentiment, sort = TRUE) %&amp;gt;%
+  acast(word ~ sentiment, value.var = &amp;quot;n&amp;quot;, fill = 0) %&amp;gt;%
+  comparison.cloud(colors = c(&amp;quot;red&amp;quot;,&amp;quot;green&amp;quot;),
+                   max.words = 100)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Joining, by = &amp;quot;word&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-12-19-trump-s-tweets-part-ii/index_files/figure-html/unnamed-chunk-8-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;networks&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Networks&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(dplyr)
+library(tidyr)
+library(tidytext)
+library(ggplot2)
+library(igraph)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## 
+## Attaching package: &amp;#39;igraph&amp;#39;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## The following objects are masked from &amp;#39;package:dplyr&amp;#39;:
+## 
+##     as_data_frame, groups, union&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## The following objects are masked from &amp;#39;package:purrr&amp;#39;:
+## 
+##     compose, simplify&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## The following object is masked from &amp;#39;package:tidyr&amp;#39;:
+## 
+##     crossing&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## The following object is masked from &amp;#39;package:tibble&amp;#39;:
+## 
+##     as_data_frame&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## The following objects are masked from &amp;#39;package:stats&amp;#39;:
+## 
+##     decompose, spectrum&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## The following object is masked from &amp;#39;package:base&amp;#39;:
+## 
+##     union&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(ggraph)
+
+count_bigrams &amp;lt;- function(dataset) {
+  dataset %&amp;gt;%
+    unnest_tokens(bigram, text, token = &amp;quot;ngrams&amp;quot;, n = 2) %&amp;gt;%
+    separate(bigram, c(&amp;quot;word1&amp;quot;, &amp;quot;word2&amp;quot;), sep = &amp;quot; &amp;quot;) %&amp;gt;%
+    filter(!word1 %in% stop_words$word,
+           !word2 %in% stop_words$word) %&amp;gt;%
+    count(word1, word2, sort = TRUE)
+}
+
+visualize_bigrams &amp;lt;- function(bigrams) {
+  set.seed(2016)
+  a &amp;lt;- grid::arrow(type = &amp;quot;closed&amp;quot;, length = unit(.15, &amp;quot;inches&amp;quot;))
+  bigrams %&amp;gt;%
+    graph_from_data_frame() %&amp;gt;%
+    ggraph(layout = &amp;quot;fr&amp;quot;) +
+    geom_edge_link(aes(edge_alpha = n), show.legend = FALSE, arrow = a) +
+    geom_node_point(color = &amp;quot;lightblue&amp;quot;, size = 5) +
+    geom_node_text(aes(label = name), vjust = 1, hjust = 1) +
+    theme_void()
+}
+library(stringr)
+
+djt_bigrams &amp;lt;- clean_tweets %&amp;gt;% select(created_at, text) %&amp;gt;% 
+  count_bigrams()
+
+# filter out rare combinations, as well as digits
+djt_bigrams %&amp;gt;%
+  filter(n &amp;gt; 20,
+         !str_detect(word1, &amp;quot;\\d&amp;quot;),
+         !str_detect(word2, &amp;quot;\\d&amp;quot;)) %&amp;gt;%
+  visualize_bigrams()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-12-19-trump-s-tweets-part-ii/index_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;clean_tweets$RN &amp;lt;- DJTDF$RN
+tidy.tweets.RN &amp;lt;- clean_tweets %&amp;gt;% select(RN, text) %&amp;gt;% unnest_tokens(word, text) %&amp;gt;%
+  anti_join(stop_words) %&amp;gt;%
+  count(RN, word, sort = TRUE) %&amp;gt;%
+  ungroup()&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Joining, by = &amp;quot;word&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;tweets_dtm &amp;lt;- tidy.tweets.RN %&amp;gt;%
+  cast_dtm(RN, word, n)
+library(topicmodels)
+tweets_lda &amp;lt;- LDA(tweets_dtm, k = 7, control = list(seed = 12345))
+tweet_topics &amp;lt;- tidy(tweets_lda, matrix=&amp;quot;beta&amp;quot;)
+top_terms &amp;lt;- tweet_topics %&amp;gt;% group_by(topic) %&amp;gt;% top_n(10, beta) %&amp;gt;%
+    ungroup() %&amp;gt;%
+    arrange(topic, -beta)
+top_terms %&amp;gt;%
+    mutate(term = reorder(term, beta)) %&amp;gt;%
+    ggplot(aes(term, beta, fill = factor(topic))) +
+    geom_col(show.legend = FALSE) +
+    facet_wrap(~ topic, scales = &amp;quot;free&amp;quot;) +
+    coord_flip()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-12-19-trump-s-tweets-part-ii/index_files/figure-html/unnamed-chunk-10-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;tweet_topicM &amp;lt;- tidy(tweets_lda, matrix=&amp;quot;gamma&amp;quot;)
+top_tweets &amp;lt;- tweet_topicM %&amp;gt;% group_by(topic) %&amp;gt;% top_n(10, gamma) %&amp;gt;%
+    ungroup() %&amp;gt;%
+    arrange(topic, -gamma)
+top_tweets&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## # A tibble: 70 x 3
+##    document topic gamma
+##    &amp;lt;chr&amp;gt;    &amp;lt;int&amp;gt; &amp;lt;dbl&amp;gt;
+##  1 1888         1 0.172
+##  2 555          1 0.171
+##  3 252          1 0.170
+##  4 234          1 0.167
+##  5 1830         1 0.166
+##  6 1340         1 0.166
+##  7 2525         1 0.166
+##  8 434          1 0.163
+##  9 1101         1 0.162
+## 10 399          1 0.162
+## # … with 60 more rows&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Tweet.Res &amp;lt;- cbind(TDF[as.numeric(top_tweets$document),],top_tweets)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Mallet is finicky. Below is some playing with it but the stop words are messy.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(qdap)
+clean_tweets$text &amp;lt;- clean_tweets %&amp;gt;% select(text) %&amp;gt;% rm_stopwords(., tm::stopwords(&amp;quot;english&amp;quot;), separate = FALSE, unlist=FALSE)
+library(mallet)
+clean_tweets$RN &amp;lt;- as.character(clean_tweets$RN)
+clean_tweets &amp;lt;- clean_tweets
+# create an empty file of &amp;quot;stopwords&amp;quot;
+# file.create(empty_file &amp;lt;- tempfile())
+# mystopwords &amp;lt;- as.character(stop_words[,1])
+stopwords_en &amp;lt;-  stop_words
+#system.file(&amp;quot;stoplists/en.txt&amp;quot;, package = &amp;quot;mallet&amp;quot;)
+docs &amp;lt;- mallet.import(clean_tweets$RN, clean_tweets$text, stoplist=stopwords_en)
+mallet_model &amp;lt;- MalletLDA(num.topics = 6)
+mallet_model$loadDocuments(docs)
+mallet_model$train(250)
+mallet_model$maximize(100)
+topic.words &amp;lt;- mallet.topic.words(mallet_model, smoothed=TRUE, normalized=TRUE)
+names(topic.words)
+mallet.top.words(mallet_model, word.weights = topic.words[4,], num.top.words = 5)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;sentiments-and-tidy-calendars&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Sentiments and Tidy Calendars&lt;/h2&gt;
+&lt;p&gt;Now I want to play with the time series properties of the tweet sentiments. Days of the week and times of day aggregated over different periods can say something… Perhaps some day?&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Trump Tweet Word Clouds</title>
+      <link>/2018/12/18/trump-tweet-word-clouds/</link>
+      <pubDate>Tue, 18 Dec 2018 00:00:00 +0000</pubDate>
+      <guid>/2018/12/18/trump-tweet-word-clouds/</guid>
+      <description>
+&lt;script src=&#34;/rmarkdown-libs/htmlwidgets/htmlwidgets.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;/rmarkdown-libs/pymjs/pym.v1.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;/rmarkdown-libs/widgetframe-binding/widgetframe.js&#34;&gt;&lt;/script&gt;
+
+
+&lt;div id=&#34;mining-twitter-data&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Mining Twitter Data&lt;/h1&gt;
+&lt;p&gt;Is rather easy. You have to arrange a developer account with Twitter and set up an app. After that, Twitter gives you access to a consumer key and secret and an access token and access secret. My tool of choice for this is &lt;em&gt;rtweet&lt;/em&gt; because it automagically processes tweet elements and makes them easy to slice and dice. I also played with &lt;code&gt;twitteR&lt;/code&gt; but it was harder to work with for what I wanted. The first section involves setting up a token for `&lt;em&gt;rtweet&lt;/em&gt;.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Change the next four lines based on your own consumer_key, consume_secret, access_token, and access_secret. 
+token &amp;lt;- create_token(
+  app = &amp;quot;MyAppName&amp;quot;,
+  consumer_key &amp;lt;- &amp;quot;CK&amp;quot;,
+  consumer_secret &amp;lt;- &amp;quot;CS&amp;quot;,
+  access_token &amp;lt;- &amp;quot;AT&amp;quot;,
+  access_secret &amp;lt;- &amp;quot;AS&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now I want to collect some tweets from a particular user’s timeline and look into them. For this example, I will use &lt;code&gt;@realDonaldTrump&lt;/code&gt;.&lt;/p&gt;
+&lt;div id=&#34;who-does-trump-tweet-about&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Who does Trump tweet about?&lt;/h2&gt;
+&lt;p&gt;A cool post on sentiment analysis can be found &lt;a href=&#34;http://dataaspirant.com/2018/03/22/twitter-sentiment-analysis-using-r/&#34;&gt;here&lt;/a&gt;. The first step is to grab his timeline. &lt;code&gt;rtweet&lt;/code&gt; makes this quite easy. I will grab it and then save it in the code below so that I do not spam the API. I will get at the time series characteristics of his tweets and the sentiment stuff in a further analysis. For now, let me just show some wordclouds.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;tml.djt &amp;lt;- get_timeline(&amp;quot;realDonaldTrump&amp;quot;, n = 3200)
+save(tml.djt, file=&amp;quot;../data/TMLS.RData&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;I start by loading the tmls object that I created above. What does it look like?&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(wordcloud2)
+library(tidyverse)
+library(tidytext)
+library(rtweet)
+load(url(&amp;quot;https://github.com/robertwwalker/academic-mymod/raw/master/data/TMLS.RData&amp;quot;))
+names(tml.djt)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##  [1] &amp;quot;user_id&amp;quot;                 &amp;quot;status_id&amp;quot;              
+##  [3] &amp;quot;created_at&amp;quot;              &amp;quot;screen_name&amp;quot;            
+##  [5] &amp;quot;text&amp;quot;                    &amp;quot;source&amp;quot;                 
+##  [7] &amp;quot;display_text_width&amp;quot;      &amp;quot;reply_to_status_id&amp;quot;     
+##  [9] &amp;quot;reply_to_user_id&amp;quot;        &amp;quot;reply_to_screen_name&amp;quot;   
+## [11] &amp;quot;is_quote&amp;quot;                &amp;quot;is_retweet&amp;quot;             
+## [13] &amp;quot;favorite_count&amp;quot;          &amp;quot;retweet_count&amp;quot;          
+## [15] &amp;quot;hashtags&amp;quot;                &amp;quot;symbols&amp;quot;                
+## [17] &amp;quot;urls_url&amp;quot;                &amp;quot;urls_t.co&amp;quot;              
+## [19] &amp;quot;urls_expanded_url&amp;quot;       &amp;quot;media_url&amp;quot;              
+## [21] &amp;quot;media_t.co&amp;quot;              &amp;quot;media_expanded_url&amp;quot;     
+## [23] &amp;quot;media_type&amp;quot;              &amp;quot;ext_media_url&amp;quot;          
+## [25] &amp;quot;ext_media_t.co&amp;quot;          &amp;quot;ext_media_expanded_url&amp;quot; 
+## [27] &amp;quot;ext_media_type&amp;quot;          &amp;quot;mentions_user_id&amp;quot;       
+## [29] &amp;quot;mentions_screen_name&amp;quot;    &amp;quot;lang&amp;quot;                   
+## [31] &amp;quot;quoted_status_id&amp;quot;        &amp;quot;quoted_text&amp;quot;            
+## [33] &amp;quot;quoted_created_at&amp;quot;       &amp;quot;quoted_source&amp;quot;          
+## [35] &amp;quot;quoted_favorite_count&amp;quot;   &amp;quot;quoted_retweet_count&amp;quot;   
+## [37] &amp;quot;quoted_user_id&amp;quot;          &amp;quot;quoted_screen_name&amp;quot;     
+## [39] &amp;quot;quoted_name&amp;quot;             &amp;quot;quoted_followers_count&amp;quot; 
+## [41] &amp;quot;quoted_friends_count&amp;quot;    &amp;quot;quoted_statuses_count&amp;quot;  
+## [43] &amp;quot;quoted_location&amp;quot;         &amp;quot;quoted_description&amp;quot;     
+## [45] &amp;quot;quoted_verified&amp;quot;         &amp;quot;retweet_status_id&amp;quot;      
+## [47] &amp;quot;retweet_text&amp;quot;            &amp;quot;retweet_created_at&amp;quot;     
+## [49] &amp;quot;retweet_source&amp;quot;          &amp;quot;retweet_favorite_count&amp;quot; 
+## [51] &amp;quot;retweet_retweet_count&amp;quot;   &amp;quot;retweet_user_id&amp;quot;        
+## [53] &amp;quot;retweet_screen_name&amp;quot;     &amp;quot;retweet_name&amp;quot;           
+## [55] &amp;quot;retweet_followers_count&amp;quot; &amp;quot;retweet_friends_count&amp;quot;  
+## [57] &amp;quot;retweet_statuses_count&amp;quot;  &amp;quot;retweet_location&amp;quot;       
+## [59] &amp;quot;retweet_description&amp;quot;     &amp;quot;retweet_verified&amp;quot;       
+## [61] &amp;quot;place_url&amp;quot;               &amp;quot;place_name&amp;quot;             
+## [63] &amp;quot;place_full_name&amp;quot;         &amp;quot;place_type&amp;quot;             
+## [65] &amp;quot;country&amp;quot;                 &amp;quot;country_code&amp;quot;           
+## [67] &amp;quot;geo_coords&amp;quot;              &amp;quot;coords_coords&amp;quot;          
+## [69] &amp;quot;bbox_coords&amp;quot;             &amp;quot;status_url&amp;quot;             
+## [71] &amp;quot;name&amp;quot;                    &amp;quot;location&amp;quot;               
+## [73] &amp;quot;description&amp;quot;             &amp;quot;url&amp;quot;                    
+## [75] &amp;quot;protected&amp;quot;               &amp;quot;followers_count&amp;quot;        
+## [77] &amp;quot;friends_count&amp;quot;           &amp;quot;listed_count&amp;quot;           
+## [79] &amp;quot;statuses_count&amp;quot;          &amp;quot;favourites_count&amp;quot;       
+## [81] &amp;quot;account_created_at&amp;quot;      &amp;quot;verified&amp;quot;               
+## [83] &amp;quot;profile_url&amp;quot;             &amp;quot;profile_expanded_url&amp;quot;   
+## [85] &amp;quot;account_lang&amp;quot;            &amp;quot;profile_banner_url&amp;quot;     
+## [87] &amp;quot;profile_background_url&amp;quot;  &amp;quot;profile_image_url&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;I want to first get rid of retweets to render President Trump in his own voice.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;DJTDF &amp;lt;- tml.djt %&amp;gt;% filter(is_retweet==FALSE)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;With just his tweets, a few things can be easily accomplished. Who does he mention?&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(wordcloud)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Loading required package: RColorBrewer&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;MNTDJT &amp;lt;- DJTDF %&amp;gt;% filter(!is.na(mentions_screen_name)) %&amp;gt;% select(mentions_screen_name)
+Ments &amp;lt;- as.character(unlist(MNTDJT))
+TMents &amp;lt;- data.frame(table(Ments))
+pal &amp;lt;- brewer.pal(8,&amp;quot;Spectral&amp;quot;)
+wordcloud(TMents$Ments,TMents$Freq, colors=pal)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-12-18-trump-tweet-word-clouds/index_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;That’s interesting. But that is twitter accounts. That is far less interesting that his actual text. I want to look at words and bigrams for this segment.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;what-does-trump-tweet-about&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;What does Trump tweet about?&lt;/h2&gt;
+&lt;p&gt;Some more stuff from &lt;a href=&#34;https://stackoverflow.com/questions/31348453/how-do-i-clean-twitter-data-in-r&#34;&gt;stack overflow&lt;/a&gt;. There is quite a bit of code in here. I simply wrote a function that takes an input character string and cleans it up. Uncomment the various components and pipe them. The sequencing is important and I found this to get everything that I wanted.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(RColorBrewer)
+TDF &amp;lt;- DJTDF %&amp;gt;% select(text)
+# TDF contains the text of tweets.
+library(stringr)
+tweet_cleaner &amp;lt;- function(text) {
+  temp1 &amp;lt;- str_replace_all(text, &amp;quot;&amp;amp;amp&amp;quot;, &amp;quot;&amp;quot;) %&amp;gt;% 
+    str_replace_all(., &amp;quot;https://t+&amp;quot;, &amp;quot;&amp;quot;) %&amp;gt;%
+    str_replace_all(.,&amp;quot;@[a-z,A-Z]*&amp;quot;,&amp;quot;&amp;quot;)
+#    str_replace_all(., &amp;quot;[[:punct:]]&amp;quot;, &amp;quot;&amp;quot;)  
+#    str_replace_all(., &amp;quot;[[:digit:]]&amp;quot;, &amp;quot;&amp;quot;) %&amp;gt;%
+#    str_replace_all(., &amp;quot;[ \t]{2,}&amp;quot;, &amp;quot;&amp;quot;) %&amp;gt;%
+#    str_replace_all(., &amp;quot;^\\s+|\\s+$&amp;quot;, &amp;quot;&amp;quot;)  %&amp;gt;%
+#    str_replace_all(., &amp;quot; &amp;quot;,&amp;quot; &amp;quot;) %&amp;gt;%
+#    str_replace_all(., &amp;quot;http://t.co/[a-z,A-Z,0-9]*{8}&amp;quot;,&amp;quot;&amp;quot;)
+#    str_replace_all(.,&amp;quot;RT @[a-z,A-Z]*: &amp;quot;,&amp;quot;&amp;quot;) %&amp;gt;% 
+#    str_replace_all(.,&amp;quot;#[a-z,A-Z]*&amp;quot;,&amp;quot;&amp;quot;)
+  return(temp1)
+}
+clean_tweets &amp;lt;- data.frame(text=sapply(1:dim(TDF)[[1]], function(x) {tweet_cleaner(TDF[x,&amp;quot;text&amp;quot;])}))
+clean_tweets$text &amp;lt;- as.character(clean_tweets$text)
+Trumps.Words &amp;lt;- clean_tweets %&amp;gt;% unnest_tokens(., word, text) %&amp;gt;% anti_join(stop_words, &amp;quot;word&amp;quot;)
+TTW &amp;lt;- table(Trumps.Words)
+TTW &amp;lt;- TTW[order(TTW, decreasing = T)]
+TTW &amp;lt;- data.frame(TTW)
+names(TTW) &amp;lt;- c(&amp;quot;word&amp;quot;,&amp;quot;freq&amp;quot;)
+wordcloud(TTW$word, TTW$freq)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2018-12-18-trump-tweet-word-clouds/index_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Well, that is kinda cool. Now, I want to do a bit more with it using more complicated word combinations.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-wonders-of-tidytext&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;The Wonders of tidytext&lt;/h2&gt;
+&lt;p&gt;The &lt;em&gt;tidytext&lt;/em&gt; &lt;a href=&#34;https://www.tidytextmining.com/ngrams.html&#34;&gt;section on n-grams&lt;/a&gt; is great. I will start with a tweet identifier – something I should have deployed long ago – before parsing these; I will not need this now but it will be encessary when the sentiment stuff comes around.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(tidyr)
+CT &amp;lt;- clean_tweets %&amp;gt;% mutate(tweetno= row_number())
+DJT2G &amp;lt;- clean_tweets %&amp;gt;% unnest_tokens(bigram, text, token = &amp;quot;ngrams&amp;quot;, n=2)
+
+bigrams_separated &amp;lt;- DJT2G %&amp;gt;%
+  separate(bigram, c(&amp;quot;word1&amp;quot;, &amp;quot;word2&amp;quot;), sep = &amp;quot; &amp;quot;)
+
+bigrams_filtered &amp;lt;- bigrams_separated %&amp;gt;%
+  filter(!word1 %in% stop_words$word) %&amp;gt;%
+  filter(!word2 %in% stop_words$word)
+
+# new bigram counts:
+bigram_counts &amp;lt;- bigrams_filtered %&amp;gt;% 
+  count(word1, word2, sort = TRUE)
+
+bigram_counts&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## # A tibble: 10,514 x 3
+##    word1   word2           n
+##    &amp;lt;chr&amp;gt;   &amp;lt;chr&amp;gt;       &amp;lt;int&amp;gt;
+##  1 fake    news          160
+##  2 witch   hunt          128
+##  3 north   korea          84
+##  4 white   house          71
+##  5 news    media          56
+##  6 total   endorsement    49
+##  7 law     enforcement    47
+##  8 crooked hillary        43
+##  9 supreme court          39
+## 10 border  security       38
+## # … with 10,504 more rows&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;bigrams_united &amp;lt;- bigrams_filtered %&amp;gt;%
+  unite(bigram, word1, word2, sep = &amp;quot; &amp;quot;)
+
+my.df &amp;lt;- data.frame(table(bigrams_united))
+my.df &amp;lt;- my.df[order(my.df$Freq, decreasing=TRUE),]
+my.df &amp;lt;- my.df[c(1:500),]
+head(my.df)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##          bigrams_united Freq
+## 3599          fake news  160
+## 10268        witch hunt  128
+## 6583        north korea   84
+## 10220       white house   71
+## 6517         news media   56
+## 9375  total endorsement   49&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;With that, we have the data for the bigram cloud.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(wordcloud2)
+wordcloud2(my.df, color=&amp;quot;random-light&amp;quot;, backgroundColor = &amp;quot;black&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;After seeing a few competing renditions, I prefer &lt;code&gt;wordcloud2&lt;/code&gt;. One thing to be careful about is scaling. In this case, the most frequent bigram is missing because the ratio makes it too large to fit. With size smaller, it can be made to show. It appears that embedding multiple of these in one post does not render. I will stick with the one correct one.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(wordcloud2)
+hhww &amp;lt;- wordcloud2(my.df, color=&amp;quot;random-light&amp;quot;, backgroundColor = &amp;quot;black&amp;quot;, size = 0.5)
+library(widgetframe)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Loading required package: htmlwidgets&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;frameWidget(hhww, width=600)&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;htmlwidget-1&#34; style=&#34;width:600px;height:480px;&#34; class=&#34;widgetframe html-widget&#34;&gt;&lt;/div&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-1&#34;&gt;{&#34;x&#34;:{&#34;url&#34;:&#34;/post/2018-12-18-trump-tweet-word-clouds/index_files/figure-html//widgets/widget_jj.html&#34;,&#34;options&#34;:{&#34;xdomain&#34;:&#34;*&#34;,&#34;allowfullscreen&#34;:false,&#34;lazyload&#34;:false}},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;p&gt;Getting this to work with frame widgets is tricky. I started something below but cannot seem to make it work so I am constrained to one wordcloud2 per document because they rely on underlying html rendering.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(htmlwidgets)
+library(webshot)
+library(widgetframe)
+hw1 &amp;lt;- wordcloud2(my.df, color=&amp;quot;random-light&amp;quot;, backgroundColor = &amp;quot;black&amp;quot;, size = 0.5)
+frameWidget(hw1, width=600)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;I think that works quite nicely. The use of jpg for shapes has not worked for me. Nor has letterCloud. I found some code on github that will supposedly solve this but it does not seem to work either. It is supposed to render as an htmlwidget but something about that seems not to work properly.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(htmlwidgets)
+library(webshot)
+library(widgetframe)
+Ments.Tab &amp;lt;- data.frame(table(Ments))
+Ments.Tab &amp;lt;- Ments.Tab[order(Ments.Tab$Freq, decreasing=TRUE),]
+my.df.short &amp;lt;- my.df[c(1:40),]
+hw1 &amp;lt;- letterCloud(Ments.Tab, &amp;quot;@&amp;quot;, size=4, color=&amp;#39;random-light&amp;#39;)
+frameWidget(hw1, width=600)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+  </channel>
+</rss>

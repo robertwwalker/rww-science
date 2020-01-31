@@ -1,73 +1,135 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Publications | Academic</title>
+    <title>Publications | rww.science</title>
     <link>/publication/</link>
       <atom:link href="/publication/index.xml" rel="self" type="application/rss+xml" />
     <description>Publications</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><lastBuildDate>Sun, 07 Apr 2019 00:00:00 +0000</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© 2018</copyright><lastBuildDate>Tue, 01 Oct 2019 00:00:00 -0700</lastBuildDate>
     <image>
-      <url>img/map[gravatar:%!s(bool=false) shape:circle]</url>
+      <url>/img/headers/bubbles-wide.jpg</url>
       <title>Publications</title>
       <link>/publication/</link>
     </image>
     
     <item>
-      <title>An example preprint / working paper</title>
-      <link>/publication/preprint/</link>
-      <pubDate>Sun, 07 Apr 2019 00:00:00 +0000</pubDate>
-      <guid>/publication/preprint/</guid>
-      <description>&lt;div class=&#34;alert alert-note&#34;&gt;
-  &lt;div&gt;
-    Click the &lt;em&gt;Slides&lt;/em&gt; button above to demo Academic&amp;rsquo;s Markdown slides feature.
-  &lt;/div&gt;
-&lt;/div&gt;
-&lt;p&gt;Supplementary notes can be added here, including 
-&lt;a href=&#34;https://sourcethemes.com/academic/docs/writing-markdown-latex/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;code and math&lt;/a&gt;
-.&lt;/p&gt;
-</description>
+      <title>Overcoming equivocality on projects in the fuzzy front end: Bringing social networks back in</title>
+      <link>/publication/publication/journal-article/techno/</link>
+      <pubDate>Sun, 02 Dec 2018 00:00:00 +0000</pubDate>
+      <guid>/publication/publication/journal-article/techno/</guid>
+      <description></description>
     </item>
     
     <item>
-      <title>An example journal article</title>
-      <link>/publication/journal-article/</link>
-      <pubDate>Tue, 01 Sep 2015 00:00:00 +0000</pubDate>
-      <guid>/publication/journal-article/</guid>
-      <description>&lt;div class=&#34;alert alert-note&#34;&gt;
-  &lt;div&gt;
-    Click the &lt;em&gt;Cite&lt;/em&gt; button above to demo the feature to enable visitors to import publication metadata into their reference management software.
-  &lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&#34;alert alert-note&#34;&gt;
-  &lt;div&gt;
-    Click the &lt;em&gt;Slides&lt;/em&gt; button above to demo Academic&amp;rsquo;s Markdown slides feature.
-  &lt;/div&gt;
-&lt;/div&gt;
-&lt;p&gt;Supplementary notes can be added here, including 
-&lt;a href=&#34;https://sourcethemes.com/academic/docs/writing-markdown-latex/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;code and math&lt;/a&gt;
-.&lt;/p&gt;
-</description>
+      <title>The Career Advancement of Military Veterans in Recent Cohorts of the U.S. Executive Branch</title>
+      <link>/publication/publication/journal-article/ppm/</link>
+      <pubDate>Tue, 05 Jun 2018 00:00:00 +0000</pubDate>
+      <guid>/publication/publication/journal-article/ppm/</guid>
+      <description></description>
     </item>
     
     <item>
-      <title>An example conference paper</title>
-      <link>/publication/conference-paper/</link>
-      <pubDate>Mon, 01 Jul 2013 00:00:00 +0000</pubDate>
-      <guid>/publication/conference-paper/</guid>
-      <description>&lt;div class=&#34;alert alert-note&#34;&gt;
-  &lt;div&gt;
-    Click the &lt;em&gt;Cite&lt;/em&gt; button above to demo the feature to enable visitors to import publication metadata into their reference management software.
-  &lt;/div&gt;
-&lt;/div&gt;
-&lt;div class=&#34;alert alert-note&#34;&gt;
-  &lt;div&gt;
-    Click the &lt;em&gt;Slides&lt;/em&gt; button above to demo Academic&amp;rsquo;s Markdown slides feature.
-  &lt;/div&gt;
-&lt;/div&gt;
-&lt;p&gt;Supplementary notes can be added here, including 
-&lt;a href=&#34;https://sourcethemes.com/academic/docs/writing-markdown-latex/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;code and math&lt;/a&gt;
-.&lt;/p&gt;
-</description>
+      <title>On Generalizing Ordered Cumulative Regression Models</title>
+      <link>/publication/publication/journal-article/geon-ord-logit/</link>
+      <pubDate>Sat, 05 Nov 2016 00:00:00 +0000</pubDate>
+      <guid>/publication/publication/journal-article/geon-ord-logit/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Property Tax Fairness in Multnomah County, Oregon</title>
+      <link>/publication/publication/journal-article/cjpp/</link>
+      <pubDate>Fri, 01 Jan 2016 00:00:00 +0000</pubDate>
+      <guid>/publication/publication/journal-article/cjpp/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The State, Property Rights, and the Middle Class: Empirical Support for an Aristotelian Observation</title>
+      <link>/publication/publication/journal-article/mc2/</link>
+      <pubDate>Sun, 01 Jun 2014 00:00:00 +0000</pubDate>
+      <guid>/publication/publication/journal-article/mc2/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>A Tale of Two Cities: Learning from Oregon&#39;s Property Tax Administration</title>
+      <link>/publication/publication/journal-article/proptax/</link>
+      <pubDate>Mon, 02 Sep 2013 00:00:00 +0000</pubDate>
+      <guid>/publication/publication/journal-article/proptax/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The intergovernmental context of alternative service delivery choices</title>
+      <link>/publication/publication/journal-article/publius/</link>
+      <pubDate>Sat, 01 Sep 2012 00:00:00 +0000</pubDate>
+      <guid>/publication/publication/journal-article/publius/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Management Practices and State Bond Ratings</title>
+      <link>/publication/publication/journal-article/ratingsmgmt/</link>
+      <pubDate>Thu, 02 Dec 2010 00:00:00 +0000</pubDate>
+      <guid>/publication/publication/journal-article/ratingsmgmt/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>The Cost of Boosterism: Economic Development, Growth Management, and Municipal Bond Ratings</title>
+      <link>/publication/publication/journal-article/boosterism/</link>
+      <pubDate>Wed, 01 Sep 2010 00:00:00 +0000</pubDate>
+      <guid>/publication/publication/journal-article/boosterism/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>THE MIDDLE CLASS: A NEW CONCEPTUAL FRAMEWORK AND A BRIEF APPLICATION TO THE CAUCASUS</title>
+      <link>/publication/publication/journal-article/midclas/</link>
+      <pubDate>Wed, 01 Sep 2010 00:00:00 +0000</pubDate>
+      <guid>/publication/publication/journal-article/midclas/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Unpacking civic participation: Analyzing trends in black [and white] participation over time</title>
+      <link>/publication/publication/journal-article/civicpart/</link>
+      <pubDate>Wed, 02 Dec 2009 00:00:00 +0000</pubDate>
+      <guid>/publication/publication/journal-article/civicpart/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Now You See It, Now You Don&#39;t: The Mysterious Case of the Vanishing Split Bond Rating in States</title>
+      <link>/publication/publication/journal-article/splits/</link>
+      <pubDate>Wed, 02 Sep 2009 00:00:00 +0000</pubDate>
+      <guid>/publication/publication/journal-article/splits/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Divided government, political turnover, and state bond ratings</title>
+      <link>/publication/publication/journal-article/divgovpt/</link>
+      <pubDate>Mon, 15 Oct 2007 00:00:00 +0000</pubDate>
+      <guid>/publication/publication/journal-article/divgovpt/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Statistical Backwards Induction</title>
+      <link>/publication/publication/journal-article/sbi/</link>
+      <pubDate>Mon, 15 Oct 2007 00:00:00 +0000</pubDate>
+      <guid>/publication/publication/journal-article/sbi/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>You must remember this: Dealing with long memory in political analyses</title>
+      <link>/publication/publication/journal-article/longmem/</link>
+      <pubDate>Thu, 02 Dec 1999 00:00:00 +0000</pubDate>
+      <guid>/publication/publication/journal-article/longmem/</guid>
+      <description></description>
     </item>
     
   </channel>

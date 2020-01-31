@@ -1,8 +1,7 @@
 ---
 header:
-  caption: ""
-  image: ""
-layout: docs
+  caption: "Teaching"
+  image: "headers/bubbles-wide.jpg"
 title: Courses
 ---
 

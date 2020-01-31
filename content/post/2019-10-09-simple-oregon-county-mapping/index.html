@@ -1,0 +1,107 @@
+---
+title: Simple Oregon County Mapping
+author: RWW
+date: '2019-10-09'
+slug: simple-oregon-county-mapping
+categories:
+  - tidyverse
+  - Maps
+tags:
+  - Maps
+  - R
+header:
+  caption: ''
+  image: ''
+  preview: yes
+---
+
+
+
+<div id="some-data-for-the-map" class="section level2">
+<h2>Some Data for the Map</h2>
+<p>I want to get some data to place on the map. I found a website with population and population change data for Oregon <a href="http://worldpopulationreview.com/us-counties/or/">in .csv format</a>. I cannot direct download it from R, instead I have to button download it and import it.</p>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
+<pre><code>## ✓ ggplot2 3.2.1     ✓ purrr   0.3.3
+## ✓ tibble  2.1.3     ✓ dplyr   0.8.3
+## ✓ tidyr   1.0.2     ✓ stringr 1.4.0
+## ✓ readr   1.3.1     ✓ forcats 0.4.0</code></pre>
+<pre><code>## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code># Oregon.Population &lt;- read.csv(&quot;~/Downloads/data.csv&quot;, stringsAsFactors = FALSE)
+Oregon.Population &lt;- structure(list(CTYNAME = c(&quot;Multnomah County&quot;, &quot;Washington County&quot;, 
+&quot;Clackamas County&quot;, &quot;Lane County&quot;, &quot;Marion County&quot;, &quot;Jackson County&quot;, 
+&quot;Deschutes County&quot;, &quot;Linn County&quot;, &quot;Douglas County&quot;, &quot;Yamhill County&quot;, 
+&quot;Benton County&quot;, &quot;Josephine County&quot;, &quot;Polk County&quot;, &quot;Umatilla County&quot;, 
+&quot;Klamath County&quot;, &quot;Coos County&quot;, &quot;Columbia County&quot;, &quot;Lincoln County&quot;, 
+&quot;Clatsop County&quot;, &quot;Malheur County&quot;, &quot;Tillamook County&quot;, &quot;Wasco County&quot;, 
+&quot;Union County&quot;, &quot;Jefferson County&quot;, &quot;Crook County&quot;, &quot;Hood River County&quot;, 
+&quot;Curry County&quot;, &quot;Baker County&quot;, &quot;Morrow County&quot;, &quot;Lake County&quot;, 
+&quot;Harney County&quot;, &quot;Grant County&quot;, &quot;Wallowa County&quot;, &quot;Gilliam County&quot;, 
+&quot;Sherman County&quot;, &quot;Wheeler County&quot;), Pop = c(811880L, 597695L, 
+416075L, 379611L, 346868L, 219564L, 191996L, 127335L, 110283L, 
+107002L, 92101L, 87393L, 85234L, 77516L, 67653L, 64389L, 52377L, 
+49388L, 39764L, 30725L, 26787L, 26505L, 26461L, 24192L, 23867L, 
+23428L, 22813L, 16006L, 11372L, 7879L, 7329L, 7176L, 7081L, 1894L, 
+1708L, 1366L), GrowthRate = c(10.1166, 12.4237, 10.4262, 7.8676, 
+9.7854, 7.9772, 21.7144, 8.9385, 2.4611, 7.7563, 7.6273, 5.4516, 
+12.8255, 1.8674, 2.013, 2.1869, 6.123, 7.3652, 7.2211, -1.9936, 
+6.0703, 4.825, 2.833, 11.6898, 14.2782, 4.3796, 1.9439, -0.6332, 
+1.4361, 0.0635, -0.9595, -3.8585, 0.984, 0.6376, -3.991, -5.5978
+)), class = &quot;data.frame&quot;, row.names = c(NA, -36L))</code></pre>
+</div>
+<div id="build-some-maps" class="section level2">
+<h2>Build Some Maps</h2>
+<p><code>urbnmapr</code> from the Urban Institute has a bunch of useful maps.</p>
+<p>To install it from GitHub, try</p>
+<pre><code>devtools::install_github(&quot;UrbanInstitute/urbnmapr&quot;)</code></pre>
+</div>
+<div id="the-oregon-map" class="section level2">
+<h2>The Oregon Map</h2>
+<p>First, just to plot the map. I will pull their counties map, then filter off Oregon, merge the data, and plot it.</p>
+<pre class="r"><code>library(urbnmapr)
+counties %&gt;% 
+  filter(state_name == &quot;Oregon&quot;) %&gt;% # drop the other states
+  ggplot() + aes(x=long, y=lat, group=group) +  # lat and long with a group for the polygons; the countries have complex shapes.
+  geom_polygon(color=&quot;white&quot;) + # draw the county polygons with white boundaries.
+  labs(title=&quot;Oregon&quot;) # A title</code></pre>
+<p><img src="/post/2019-10-09-simple-oregon-county-mapping/index_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+</div>
+<div id="population-by-counties-in-oregon" class="section level2">
+<h2>Population by Counties in Oregon</h2>
+<p>Now I want to add to that map. I need to <code>left_join</code> the counties and add a fill to the previous aesthetic.</p>
+<pre class="r"><code>( p1 &lt;- counties %&gt;%     # the data
+  filter(state_name == &quot;Oregon&quot;) %&gt;% # drop the other states
+  left_join(., Oregon.Population, by=c(&quot;county_name&quot; = &quot;CTYNAME&quot;)) %&gt;% # join the population data with the map.
+  ggplot() + aes(x=long, y=lat, group=group, fill=Pop) +  # lat and long with a group for the polygons; the countries have complex shapes.
+  geom_polygon(color=&quot;white&quot;) + # draw the county polygons with white boundaries.
+  labs(fill = &quot;Population&quot;, title=&quot;Oregon Population by County&quot;) + # labels
+    theme_minimal() + # Remove clutter from the theme
+    scale_fill_viridis_c() )</code></pre>
+<p><img src="/post/2019-10-09-simple-oregon-county-mapping/index_files/figure-html/MergeMap1-1.png" width="672" /></p>
+</div>
+<div id="changes-in-population" class="section level2">
+<h2>Changes in Population</h2>
+<p>Same as above, just plot something different, the change in population.</p>
+<pre class="r"><code>(counties %&gt;% 
+   filter(state_name==&quot;Oregon&quot;) %&gt;% 
+   left_join(., Oregon.Population, by=c(&quot;county_name&quot; = &quot;CTYNAME&quot;)) %&gt;% 
+   ggplot(., aes(x=long, y=lat, group=group, fill=GrowthRate)) + 
+   geom_polygon(color=&quot;black&quot;, size=0.5) + 
+   theme_minimal() + scale_fill_viridis_c() + 
+   labs(fill = &quot;Growth Rate&quot;, title=&quot;Oregon Population Growth by County&quot;) -&gt; p2)</code></pre>
+<p><img src="/post/2019-10-09-simple-oregon-county-mapping/index_files/figure-html/Plot2-1.png" width="672" /></p>
+</div>
+<div id="grid.arrange" class="section level2">
+<h2><code>grid.arrange</code></h2>
+<p>Put them together with grid.arrange.</p>
+<pre class="r"><code>library(gridExtra)</code></pre>
+<pre><code>## 
+## Attaching package: &#39;gridExtra&#39;</code></pre>
+<pre><code>## The following object is masked from &#39;package:dplyr&#39;:
+## 
+##     combine</code></pre>
+<pre class="r"><code>grid.arrange(p1,p2)</code></pre>
+<p><img src="/post/2019-10-09-simple-oregon-county-mapping/index_files/figure-html/GridCreator-1.png" width="672" /></p>
+</div>

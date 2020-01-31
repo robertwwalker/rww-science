@@ -1,0 +1,454 @@
+---
+title: Tables, Pivots, Bars, and Mosaics
+author: RWW
+date: '2019-10-09'
+slug: tables-pivots-bars-and-mosaics
+categories:
+  - R
+  - tidyverse
+  - tables
+tags:
+  - tidyverse
+  - R Markdown
+header:
+  caption: ''
+  image: ''
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+Bond.Funds <- structure(list(`Fund Number` = c("FN-1", "FN-2", "FN-3", "FN-4", 
+"FN-5", "FN-6", "FN-7", "FN-8", "FN-9", "FN-10", "FN-11", "FN-12", 
+"FN-13", "FN-14", "FN-15", "FN-16", "FN-17", "FN-18", "FN-19", 
+"FN-20", "FN-21", "FN-22", "FN-23", "FN-24", "FN-25", "FN-26", 
+"FN-27", "FN-28", "FN-29", "FN-30", "FN-31", "FN-32", "FN-33", 
+"FN-34", "FN-35", "FN-36", "FN-37", "FN-38", "FN-39", "FN-40", 
+"FN-41", "FN-42", "FN-43", "FN-44", "FN-45", "FN-46", "FN-47", 
+"FN-48", "FN-49", "FN-50", "FN-51", "FN-52", "FN-53", "FN-54", 
+"FN-55", "FN-56", "FN-57", "FN-58", "FN-59", "FN-60", "FN-61", 
+"FN-62", "FN-63", "FN-64", "FN-65", "FN-66", "FN-67", "FN-68", 
+"FN-69", "FN-70", "FN-71", "FN-72", "FN-73", "FN-74", "FN-75", 
+"FN-76", "FN-77", "FN-78", "FN-79", "FN-80", "FN-81", "FN-82", 
+"FN-83", "FN-84", "FN-85", "FN-86", "FN-87", "FN-88", "FN-89", 
+"FN-90", "FN-91", "FN-92", "FN-93", "FN-94", "FN-95", "FN-96", 
+"FN-97", "FN-98", "FN-99", "FN-100", "FN-101", "FN-102", "FN-103", 
+"FN-104", "FN-105", "FN-106", "FN-107", "FN-108", "FN-109", "FN-110", 
+"FN-111", "FN-112", "FN-113", "FN-114", "FN-115", "FN-116", "FN-117", 
+"FN-118", "FN-119", "FN-120", "FN-121", "FN-122", "FN-123", "FN-124", 
+"FN-125", "FN-126", "FN-127", "FN-128", "FN-129", "FN-130", "FN-131", 
+"FN-132", "FN-133", "FN-134", "FN-135", "FN-136", "FN-137", "FN-138", 
+"FN-139", "FN-140", "FN-141", "FN-142", "FN-143", "FN-144", "FN-145", 
+"FN-146", "FN-147", "FN-148", "FN-149", "FN-150", "FN-151", "FN-152", 
+"FN-153", "FN-154", "FN-155", "FN-156", "FN-157", "FN-158", "FN-159", 
+"FN-160", "FN-161", "FN-162", "FN-163", "FN-164", "FN-165", "FN-166", 
+"FN-167", "FN-168", "FN-169", "FN-170", "FN-171", "FN-172", "FN-173", 
+"FN-174", "FN-175", "FN-176", "FN-177", "FN-178", "FN-179", "FN-180", 
+"FN-181", "FN-182", "FN-183", "FN-184"), Type = c("Intermediate Government", 
+"Intermediate Government", "Intermediate Government", "Intermediate Government", 
+"Intermediate Government", "Intermediate Government", "Intermediate Government", 
+"Intermediate Government", "Intermediate Government", "Intermediate Government", 
+"Intermediate Government", "Intermediate Government", "Intermediate Government", 
+"Intermediate Government", "Intermediate Government", "Intermediate Government", 
+"Intermediate Government", "Intermediate Government", "Intermediate Government", 
+"Intermediate Government", "Intermediate Government", "Intermediate Government", 
+"Intermediate Government", "Intermediate Government", "Intermediate Government", 
+"Intermediate Government", "Intermediate Government", "Intermediate Government", 
+"Intermediate Government", "Intermediate Government", "Intermediate Government", 
+"Intermediate Government", "Intermediate Government", "Intermediate Government", 
+"Intermediate Government", "Intermediate Government", "Intermediate Government", 
+"Intermediate Government", "Intermediate Government", "Intermediate Government", 
+"Intermediate Government", "Intermediate Government", "Intermediate Government", 
+"Intermediate Government", "Intermediate Government", "Intermediate Government", 
+"Intermediate Government", "Intermediate Government", "Intermediate Government", 
+"Intermediate Government", "Intermediate Government", "Intermediate Government", 
+"Intermediate Government", "Intermediate Government", "Intermediate Government", 
+"Intermediate Government", "Intermediate Government", "Intermediate Government", 
+"Intermediate Government", "Intermediate Government", "Intermediate Government", 
+"Intermediate Government", "Intermediate Government", "Intermediate Government", 
+"Intermediate Government", "Intermediate Government", "Intermediate Government", 
+"Intermediate Government", "Intermediate Government", "Intermediate Government", 
+"Intermediate Government", "Intermediate Government", "Intermediate Government", 
+"Intermediate Government", "Intermediate Government", "Intermediate Government", 
+"Intermediate Government", "Intermediate Government", "Intermediate Government", 
+"Intermediate Government", "Intermediate Government", "Intermediate Government", 
+"Intermediate Government", "Intermediate Government", "Intermediate Government", 
+"Intermediate Government", "Intermediate Government", "Short Term Corporate", 
+"Short Term Corporate", "Short Term Corporate", "Short Term Corporate", 
+"Short Term Corporate", "Short Term Corporate", "Short Term Corporate", 
+"Short Term Corporate", "Short Term Corporate", "Short Term Corporate", 
+"Short Term Corporate", "Short Term Corporate", "Short Term Corporate", 
+"Short Term Corporate", "Short Term Corporate", "Short Term Corporate", 
+"Short Term Corporate", "Short Term Corporate", "Short Term Corporate", 
+"Short Term Corporate", "Short Term Corporate", "Short Term Corporate", 
+"Short Term Corporate", "Short Term Corporate", "Short Term Corporate", 
+"Short Term Corporate", "Short Term Corporate", "Short Term Corporate", 
+"Short Term Corporate", "Short Term Corporate", "Short Term Corporate", 
+"Short Term Corporate", "Short Term Corporate", "Short Term Corporate", 
+"Short Term Corporate", "Short Term Corporate", "Short Term Corporate", 
+"Short Term Corporate", "Short Term Corporate", "Short Term Corporate", 
+"Short Term Corporate", "Short Term Corporate", "Short Term Corporate", 
+"Short Term Corporate", "Short Term Corporate", "Short Term Corporate", 
+"Short Term Corporate", "Short Term Corporate", "Short Term Corporate", 
+"Short Term Corporate", "Short Term Corporate", "Short Term Corporate", 
+"Short Term Corporate", "Short Term Corporate", "Short Term Corporate", 
+"Short Term Corporate", "Short Term Corporate", "Short Term Corporate", 
+"Short Term Corporate", "Short Term Corporate", "Short Term Corporate", 
+"Short Term Corporate", "Short Term Corporate", "Short Term Corporate", 
+"Short Term Corporate", "Short Term Corporate", "Short Term Corporate", 
+"Short Term Corporate", "Short Term Corporate", "Short Term Corporate", 
+"Short Term Corporate", "Short Term Corporate", "Short Term Corporate", 
+"Short Term Corporate", "Short Term Corporate", "Short Term Corporate", 
+"Short Term Corporate", "Short Term Corporate", "Short Term Corporate", 
+"Short Term Corporate", "Short Term Corporate", "Short Term Corporate", 
+"Short Term Corporate", "Short Term Corporate", "Short Term Corporate", 
+"Short Term Corporate", "Short Term Corporate", "Short Term Corporate", 
+"Short Term Corporate", "Short Term Corporate", "Short Term Corporate", 
+"Short Term Corporate", "Short Term Corporate", "Short Term Corporate", 
+"Short Term Corporate", "Short Term Corporate", "Short Term Corporate"
+), Assets = c(7268.1, 475.1, 193, 18603.5, 142.6, 1401.6, 985.6, 
+2188.8, 390.6, 544.1, 1407.4, 155.5, 397.5, 906.1, 379.1, 62.7, 
+1539.1, 167.3, 448, 238.1, 557.8, 192.7, 261.8, 135.8, 1807.3, 
+4615.4, 86.2, 291.1, 6332.5, 110.7, 619.7, 628.7, 274.3, 891.8, 
+94.7, 676.3, 1182.1, 135.9, 588.8, 40, 1080.4, 309.1, 4472.2, 
+498.7, 278.2, 1525.5, 556.6, 588.6, 332.5, 84.9, 17.3, 104.1, 
+530.7, 333.6, 1133.3, 322.5, 123.8, 425.6, 184.7, 122.7, 107.2, 
+135.6, 82.2, 305.7, 551.3, 24.2, 661.2, 154.6, 106.9, 1011.1, 
+634.8, 168.7, 792.1, 583.5, 56.1, 285.5, 640.3, 84.7, 81.3, 611.7, 
+595.1, 131.3, 88, 686.6, 3531.8, 358, 33, 139.1, 123.9, 1922, 
+203.4, 66.1, 1346, 4772.9, 77.5, 76.2, 146.3, 49.2, 96.1, 226.8, 
+122.3, 725.9, 1248.4, 36.5, 127.4, 605.2, 1879.2, 964.7, 325.3, 
+69.8, 177.8, 156.6, 244.9, 475.5, 46.1, 181.3, 63.8, 135.4, 388, 
+18.6, 298.1, 461.3, 159.9, 3662.7, 42.6, 111.4, 114.5, 5282.9, 
+17.4, 518, 262.5, 93.9, 1130, 1101.9, 49.9, 640.3, 477.4, 569.4, 
+36.8, 145.4, 148.9, 195.8, 2361.1, 12.4, 26.3, 681, 486.1, 10744.6, 
+108.9, 69, 128.3, 374.4, 280.6, 456.2, 16297.1, 517, 80.5, 119.3, 
+88.3, 5701.6, 478.4, 369.3, 297.4, 230.6, 115.7, 6981.5, 190.1, 
+278.4, 246.1, 143.8, 1469.6, 80, 95.5, 170.5, 95.4, 237.1, 983, 
+51.9, 249.7, 33.8, 249.8, 52.9, 39.7, 182.3), Fees = c("No", 
+"No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", 
+"No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "Yes", 
+"No", "Yes", "No", "No", "Yes", "Yes", "No", "Yes", "No", "No", 
+"Yes", "Yes", "Yes", "Yes", "No", "Yes", "No", "No", "Yes", "Yes", 
+"Yes", "No", "No", "Yes", "Yes", "Yes", "No", "No", "Yes", "Yes", 
+"No", "No", "Yes", "No", "Yes", "Yes", "No", "No", "Yes", "No", 
+"Yes", "No", "No", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", 
+"Yes", "No", "No", "No", "No", "Yes", "Yes", "No", "No", "No", 
+"No", "Yes", "No", "Yes", "No", "No", "No", "Yes", "Yes", "No", 
+"No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", 
+"No", "No", "No", "No", "Yes", "No", "No", "Yes", "No", "No", 
+"Yes", "No", "No", "Yes", "No", "No", "No", "No", "No", "Yes", 
+"No", "No", "No", "No", "No", "No", "No", "No", "No", "Yes", 
+"No", "No", "No", "No", "No", "No", "Yes", "No", "No", "Yes", 
+"No", "No", "Yes", "No", "No", "No", "Yes", "No", "No", "Yes", 
+"No", "No", "No", "No", "No", "No", "Yes", "No", "No", "Yes", 
+"No", "Yes", "No", "No", "Yes", "No", "No", "Yes", "No", "No", 
+"No", "Yes", "No", "No", "No", "No", "No", "Yes", "No", "No", 
+"No"), `Expense Ratio` = c(0.45, 0.5, 0.71, 0.13, 0.6, 0.54, 
+0.49, 0.55, 0.67, 0.63, 0.45, 0.91, 0.6, 0.51, 0.57, 0.74, 0.66, 
+0.6, 0.77, 1.13, 0.74, 0.7, 1.08, 0.65, 0.8, 0.45, 0.61, 1.1, 
+0.73, 1.08, 0.96, 0.55, 0.8, 0.88, 0.83, 0.93, 0.92, 0.47, 0.96, 
+1.94, 0.95, 0.98, 0.64, 0.95, 0.2, 0.13, 0.94, 0.96, 1, 0.71, 
+1.58, 0.95, 0.92, 0.37, 0.46, 1.13, 0.75, 0.97, 1.03, 0.26, 0.9, 
+1.15, 0.57, 0.99, 0.52, 0.52, 0.97, 0.9, 0.79, 0.87, 0.9, 0.99, 
+1, 0.5, 0.65, 0.36, 0.27, 1, 1.16, 0.51, 0.55, 0.65, 0.82, 0.94, 
+0.12, 1.06, 1, 0.51, 0.32, 1.08, 1, 0.71, 0.65, 0.56, 0.51, 0.68, 
+0.55, 0.6, 0.73, 0.45, 0.53, 0.68, 0.72, 0.76, 0.45, 0.3, 0.48, 
+0.85, 0.53, 0.9, 0.94, 0.63, 0.81, 0.91, 0.92, 0.36, 0.62, 0.7, 
+0.56, 0.89, 0.51, 0.46, 0.8, 0.52, 0.74, 0.97, 0.65, 0.22, 0.75, 
+0.72, 0.85, 0.74, 0.86, 0.64, 0.6, 0.54, 0.6, 0.52, 0.38, 0.9, 
+1.1, 0.52, 0.8, 0.7, 0.49, 0.75, 0.5, 0.46, 0.63, 0.98, 0.55, 
+0.73, 0.99, 0.37, 0.14, 0.65, 0.7, 0.82, 0.92, 0.69, 0.64, 0.86, 
+1.05, 0.95, 0.7, 0.45, 0.5, 0.85, 0.75, 0.8, 1.08, 0.7, 0.66, 
+0.46, 1.02, 0.5, 0.6, 0.7, 0.55, 0.53, 0.43, 0.87, 0.51, 0.53
+), `Return 2009` = c(6.9, 9.8, 6.3, 5.4, 5.9, 5.7, 3, 7.4, 5.3, 
+5.7, 0.9, 12.4, 6, 8.1, 5.7, 4.5, 6.4, 5.8, 10.1, 4.4, 9, 3.2, 
+3.5, -1.1, 7.8, 1.3, -0.2, 5.1, 4.8, 1.9, 5, 2.1, 12.7, 4.2, 
+3.5, 22.3, 28.6, 13, 5.2, 17.1, 3.5, 0, 2.2, 0.9, -3.8, -0.7, 
+7.9, 6.2, 3.7, 11.2, 2.1, -3.6, 4.6, 12, 3.4, 4.7, 6.4, 9.1, 
+1.7, -3.6, 0.1, 3.7, -3.3, 3, -1.4, 0.7, 0, 2.9, -4.8, 1.4, 7.3, 
+-2.9, 1.2, 6, 0.7, 7.1, 0.2, -0.6, 7, 6.5, 5.5, -3.8, 2, 7.2, 
+-1.6, 0.5, 0.2, 5.5, 5, 12.1, 8.3, 6.8, 8.6, 5, 2.2, 2.5, 12.2, 
+10, 7.3, 2.9, 7.3, 15.5, 14, 5.5, 3.6, 8.1, 9.6, 12.9, 10.7, 
+6, 8.2, 12, 16.4, 6, 5.4, 4.9, 8.6, 6.8, 6.7, 4.1, 11.2, 8.4, 
+5.9, 9, 5.4, 9.1, 9.5, 4.3, 2.8, 10.8, 9.5, 9.4, 13.2, 13, 1.6, 
+7, 12.9, 12, 3.6, 10.1, 7.7, 7.2, 17.4, 3.4, 4, 11.3, 10.3, 13.4, 
+11.4, 5.2, 8.8, 13.2, 16.6, 13.6, 14.2, 10.6, 13.4, 6, 4.5, 6.7, 
+6.8, 13.5, 12.8, 13.9, 11.5, 7.3, 11.6, 15.5, 11.9, 24.8, 29.7, 
+9.9, 19.2, 15.6, 1.5, 14.5, 15.2, 13.4, 2.4, 16.4, 6.7, 5.2, 
+-8.8, 32), `3-Year Return` = c(6.9, 7.5, 7, 6.6, 6.7, 6.4, 6.8, 
+6.4, 6.1, 6.2, 6.2, 6.4, 6.3, 6.1, 6.6, 7.8, 6.2, 6.2, 6.5, 5.5, 
+6, 6, 5.1, 6, 6.1, 6.7, 5.6, 5.8, 6, 5.4, 5.9, 6.3, 6.1, 6.6, 
+6.4, 9.4, 9.4, 5.1, 6.7, 6.6, 6, 5.8, 5.5, 4.9, 6, 7.1, 5.5, 
+5.1, 4.7, 3.9, 4.9, 4.7, 5.5, 4.9, 2.3, 5.6, 3.3, 4.7, 5.6, 6.1, 
+5.3, 5.9, 5.1, 6.2, 7.3, -0.1, 3.2, 2.4, 5.6, 1.6, 3.7, 6, 2.3, 
+7.3, 5.2, 5.5, 6.5, 2.5, 1, 6.8, 6.3, 4.4, 5.8, 3.7, 7.2, 4.9, 
+6.1, 5.1, 4.4, 5.5, 5.2, 4.9, 6.1, 4.9, 3.7, 5.2, 5.8, 5, 4.8, 
+3.6, 5.9, 5.9, 5.5, 5, 3.3, 4.1, 4.9, 7.1, 4.5, 4.6, 5.4, 6.3, 
+5.5, 6.4, 4.2, 4.5, 5.5, 4.2, 4.6, 3.4, 5, 4.5, 4.8, 5.2, 4.6, 
+4.5, 4.9, 5.6, 3.9, 6.4, 4.4, 5.5, 6.5, 3.5, 1.3, 2.3, 4.6, 4.9, 
+1.7, 3.1, 4.3, 4.2, 7.1, 5.5, 6, 3.5, 5.7, 6.5, 4.1, 4.7, 5.9, 
+4.6, 8, 3.7, 4.9, 4.7, 5.1, 5, 1, 3.4, 2.2, 2.7, 2.6, 3.5, 1.8, 
+1.7, 5.5, 4.4, 0.8, 8.9, 4.8, 2.9, 0, 0.7, -0.2, 0.7, 0.2, 0.1, 
+0.4, 0.7, -4.5, -3, -13.8, -2.7), `5-Year Return` = c(5.5, 6.1, 
+5.6, 5.5, 5.4, 6.2, 5.3, 5.2, 5, 5.1, 4.7, 5.1, 5.1, 5.1, 5.2, 
+5.6, 5, 5.1, 5.3, 4.3, 4.9, 4.9, 4, 4.6, 4.9, 5.2, 4.4, 4.6, 
+4.9, 4.2, 4.9, 5.1, 5, 5.1, 5.1, 6.4, 6.8, 4.5, 5.3, 5.1, 4.7, 
+4.4, 4.4, 4.1, 4.7, 5.3, 4.3, 4.4, 4, 3.7, 3.7, 3.7, 4.5, 4.5, 
+2.5, 4.4, 3.2, 4.1, 4.4, 4.7, 4, 4.4, 4.2, 4.9, 5.2, 1.2, 3, 
+2.6, 4.6, 2.3, 3.4, 4.1, 2.6, 5.7, 4.4, 4.8, 5.2, 2.5, 1.7, 5.5, 
+5.2, 3.8, 4.5, 3.5, 5.4, 4, 4.8, 4.3, 4.1, 5, 4.4, 4, 4.8, 4.2, 
+3.5, 4.2, 4.8, 4.6, 4.1, 3.6, 4.6, 4.7, 4.7, 4, 3.3, 3.7, 4.2, 
+5.3, 4.1, 3.8, 4.4, 4.9, 4.6, 4.7, 3.6, 3.8, 4.3, 3.7, 3.8, 3.1, 
+4.3, 4, 4, 4.3, 4, 3.7, 4.1, 4.4, 3.4, 4.9, 3.9, 4.3, 4.9, 3.8, 
+2.3, 2.7, 3.9, 4, 2.5, 3, 3.4, 3.6, 5.1, 4.2, 4.6, 3.3, 4.4, 
+4.9, 3.6, 3.4, 4.5, 3.8, 4.6, 3.5, 4.4, 3.8, 4.2, 4, 1.7, 3.1, 
+2.4, 2.6, 2.7, 3.2, 2.4, 2.4, 4.4, 3.8, 2, 6.4, 4.3, 3, 1.3, 
+2, 1.8, 1.7, 1.9, 1.2, 1.5, 1.8, -1.5, -0.7, -7.3, 0.2), Risk = c("Below average", 
+"Below average", "Average", "Average", "Average", "Average", 
+"Average", "Below average", "Below average", "Below average", 
+"Average", "Below average", "Below average", "Below average", 
+"Below average", "Above average", "Below average", "Below average", 
+"Below average", "Below average", "Below average", "Average", 
+"Below average", "Average", "Average", "Above average", "Average", 
+"Below average", "Below average", "Average", "Average", "Above average", 
+"Average", "Average", "Average", "Above average", "Above average", 
+"Below average", "Average", "Above average", "Average", "Above average", 
+"Average", "Above average", "Above average", "Above average", 
+"Above average", "Below average", "Average", "Below average", 
+"Average", "Above average", "Average", "Above average", "Below average", 
+"Above average", "Average", "Below average", "Above average", 
+"Above average", "Average", "Average", "Above average", "Above average", 
+"Above average", "Above average", "Above average", "Average", 
+"Above average", "Average", "Above average", "Above average", 
+"Above average", "Average", "Average", "Below average", "Above average", 
+"Average", "Above average", "Average", "Below average", "Above average", 
+"Average", "Below average", "Above average", "Average", "Below average", 
+"Below average", "Below average", "Average", "Below average", 
+"Below average", "Below average", "Below average", "Below average", 
+"Below average", "Average", "Average", "Below average", "Below average", 
+"Average", "Average", "Average", "Below average", "Below average", 
+"Average", "Average", "Average", "Average", "Average", "Below average", 
+"Average", "Average", "Average", "Average", "Average", "Average", 
+"Below average", "Below average", "Below average", "Average", 
+"Average", "Below average", "Average", "Below average", "Below average", 
+"Below average", "Average", "Below average", "Average", "Below average", 
+"Above average", "Above average", "Above average", "Below average", 
+"Below average", "Average", "Average", "Below average", "Below average", 
+"Average", "Average", "Above average", "Above average", "Above average", 
+"Average", "Above average", "Above average", "Average", "Below average", 
+"Above average", "Above average", "Above average", "Average", 
+"Above average", "Average", "Above average", "Average", "Average", 
+"Average", "Below average", "Above average", "Above average", 
+"Average", "Average", "Below average", "Above average", "Above average", 
+"Average", "Above average", "Above average", "Above average", 
+"Above average", "Above average", "Below average", "Above average", 
+"Above average", "Above average", "Average", "Above average", 
+"Above average", "Above average", "Above average", "Above average"
+)), row.names = c(NA, -184L), class = c("tbl_df", "tbl", "data.frame"
+))
+```
+
+# R Markdown
+
+There is detailed help for all that Markdown can do under Help in the RStudio.  The key to it is knitting documents with the *Knit* button in the RStudio.  If we use helpers like the R Commander, Radiant, or 
+*esquisse*, we will need the R code implanted in the Markdown document in particular ways.  I will use Markdown for *everything*.  I even use a close relation of Markdown in my scholarly pursuits.
+
+## The Packages: *tidyverse* and *esquisse*
+
+We will rely on five.  The *tidyverse* is Hadley Wickham's collection of packages.  It represents a different philosophy for the construction of exploratory data analysis with literate programming -- code that you can read.  We will rely on the `%>%` piping operators of the *magrittr* package that pipes something to a subsequent command as a core function of the tidyverse.  
+
+For everything that we want in a summary, there is the *skimr* function *skim*.  For cross-tabulation the easy way, there is *janitor*.  The other two are developmental pieces of software that have yet to deploy into the regular package system of R.  *esquisse* and parts of *that's so random* blog's package for implementing ggmosaic.
+
+```
+pkgTest <- function(x)
+  {
+    if (!require(x,character.only = TRUE))
+    {
+      install.packages(x,dep=TRUE, type="binary")
+        if(!require(x,character.only = TRUE)) stop("Package not found")
+    }
+}
+pkgTest("tidyverse")
+pkgTest("magrittr")
+pkgTest("skimr")
+pkgTest("janitor")
+pkgTest("devtools")
+devtools::install_github("EdwinTH/thatssorandom")
+pkgTest("dreamRs/esquisse")
+```
+
+## A first go
+
+We have an embedded data object; if you look at the beginning of the document, I have used an *R* command called *dput* to embed the data in the document.  Above, there is encoded text of *Bond.Funds* to use as an example.  To get a sense of the data, I will load the *skim* function and put it to work.  In *R*, we will use the `library` command to load *functions* into the *namespace* -- the set of recognizable commands.  *R* needs to know how a function is defined to use it.  The function *skim* appears in the *skimr* library.
+
+```{r SkBF}
+library(skimr)
+skim(Bond.Funds)
+# skimr::skim(Bond.Funds)
+```
+
+
+# tidy?
+
+The beauty of *tidy* is rendering code readable with an organizational focus on data objects.  Let me take the Bond Funds example and use a simple literate example to mirror a pivot table.  Let's pivot two basic statistics, the mean and standard deviation, then the median and interquartile range grouped by Risk.  I should point out that the variable names containing spaces are difficult and have to be enclosed in quotes.  Better naming at the outset would help.  With simple names, we can ignore the quoting.
+
+## Numerical Summary
+
+```{r BF1, message=FALSE}
+library(tidyverse)
+Bond.Funds %>% group_by(Risk) %>% 
+  summarise(Avg.Return = mean(`Return 2009`), SD.Return=sd(`Return 2009`), median.Return=median(`Return 2009`), IQR.Return=IQR(`Return 2009`))
+```
+
+I can also use *skim*.
+
+```{r SKBF1}
+Bond.Funds %>% group_by(Risk,Fees) %>% skim(`Return 2009`)
+```
+
+
+I want to recreate a categorical pivot table also.  
+
+## Categorical Descriptions Requires Tables [or Graphics]
+
+There are numerous ways to build tables in R.  Base R has a *table* function that works but it does not naturally work inside data environments; we have to provide them using `$` or `with` environments [or `%$%` in *magrittr*].  This brief description of environments is part of a broader idea of *scoping* in R.
+
+### Easiest: janitor
+
+The package *janitor* contains a *tabyl* with the ability to add totals and calculate percentages of relevance.  Here are two examples.
+
+```{r BFJan}
+library(janitor)
+Bond.Funds %>% tabyl(Fees,Risk) %>% adorn_totals(c("row","col"))
+Bond.Funds %>% tabyl(Fees,Risk) %>% adorn_percentages("row")
+```
+
+
+### Easier with xtabs and formulae
+
+This is actually made much easier with a slightly new form of syntax: formulae.  Base R, as you have already learned (or will learn) with *swirl*, uses different and less readable syntax than the tidyverse.  But this is a problem that is quite easy for R in the base commands *table* and *xtabs* [crosstabs].  In the first instance, we merely create a table counting values.  In the second, the data is a named argument for the function *xtabs* that requires a statement of *margins* for the table as a series of names with "+".  The order will determine the rows [first] and the columns [second]. 
+
+```{r PTXT2}
+table(Bond.Funds$Fees,Bond.Funds$Risk)
+xtabs(~Fees+Risk, data=Bond.Funds)
+```
+
+These can also be assigned as objects using the "<-"; this saves a local version of the table as something that we can work on.  I will call mine FR.Tab for the F(ees)R(isk).Tab(le).
+
+```{r NT1}
+FR.Tab <- xtabs(~Fees+Risk, data=Bond.Funds)
+```
+
+### Worst: Table
+
+Base R table is great but it requires that we specify an environment.  To grab a variable from inside a data.frame requires `$`, as in
+
+```{r BRT1}
+table(Bond.Funds$Fees,Bond.Funds$Risk)
+BRTab1 <- table(Bond.Funds$Fees,Bond.Funds$Risk)
+```
+
+We can accomplish the same with *with*, telling R to evaluate something inside whatever data object is in *with*, for example,
+
+```{r WTab1}
+with(Bond.Funds, table(Fees,Risk))
+WBF1 <- with(Bond.Funds, table(Fees,Risk))
+```
+
+## Conditional Frequency
+
+If we think about conditional probability as measured in proportions of the table, we can ask R to calculate them.  The command is *prop.table* and the inputs are a table and a *margin* here 1 is rows [conditioning on the first name you entered] and 2 is columns [the second name you entered].  Nothing specified is joint or total.
+
+```{r PTXT1}
+prop.table(FR.Tab)
+prop.table(FR.Tab, 1)
+prop.table(FR.Tab, 2)
+prop.table(WBF1)
+prop.table(WBF1, 1)
+prop.table(WBF1, 2)
+```
+
+
+## Pivot Plots [Mosaic]
+
+Base R Graphics contain a mosaic with the same formula as the cross-tabulation above.
+
+```{r MP1, message=FALSE}
+mosaicplot(~Risk+Fees, data=Bond.Funds)
+```
+
+I recently came across a nice plotter for tabular data on *github*.  You can search for it as *thatssorandom*.  We installed it above.
+
+```{r pMos, echo=FALSE, eval=TRUE, message=FALSE}
+library(thatssorandom)
+ggmm(Bond.Funds, y=Fees, x=Risk, add_text = "n")
+```
+
+Notice it handles an implicit plotting of the set of conditional probabilities along the relevant margin.  It is plotting $Pr(Fees|Risk)$ as breaks along the *y-axis* defined by frequency/empirical probability.  This would be the equivalent of taking the *column marginal* of the table of Fees and Risk that we saw before.  Now it has a graphical representation.
+
+```{r PTRes1}
+prop.table(FR.Tab, 2)
+```
+
+## For Berkeley Admissions:
+
+```{r}
+data("UCBAdmissions")
+UCB <- DescTools::Untable(UCBAdmissions)
+UCB$Gender <- as.character(UCB$Gender)
+UCB$Gender[UCB$Gender=="Male"] <- "M"
+UCB$Gender[UCB$Gender=="Female"] <- "F"
+UCB$DeptMF <- paste(UCB$Dept,UCB$Gender, sep=":")
+UCB <- UCB %>% select(Admit,DeptMF)
+p1 <- ggmm(UCB, x=DeptMF, y=Admit, add_text = "n")
+p1 + labs(x="Dept:M/F", y="Admitted") + theme(axis.text=element_text(size=10))
+```
+
+
+## Barplots
+
+Basic things like barplots can be accomplished in many ways.  Using the *R4DS* approach, we have
+
+```{r GGBar}
+ggplot(data = Bond.Funds) + 
+  stat_count(mapping = aes(x = Risk))
+```
+
+Placed into densities.  This is really only helpful with another dimension because the X is categorical so all bars will be height 1.
+
+```{r GGBar2}
+ggplot(data = Bond.Funds, aes(x = Risk, fill=Fees)) + geom_bar(position="fill")
+```
+
+Or in Base R
+
+```{r BRBar}
+par(mfrow=c(1,2))
+barplot(table(Bond.Funds$Risk))
+barplot(table(Bond.Funds$Fees,Bond.Funds$Risk))
+```
+
+A legend would help.
+
+```{r BRBar2}
+par(mfrow=c(1,2))
+barplot(table(Bond.Funds$Fees,Bond.Funds$Risk), legend=TRUE)
+barplot(table(Bond.Funds$Fees,Bond.Funds$Risk), legend=TRUE, args.legend=list(bty="n"))
+```
+
+## Simple Visualization: *esquisse()*
+
+There is a wonderful tool for quickly succeeding with one of the most elegant and frustrating parts of R -- *ggplot2*.  Hadley Wickham's *Grammar of Graphics* is brilliant when understood but is hard to comprehend initially and the programming structure of the package *makes* it hard for learners.  Fortunately, a package called *esquisse* is available to make *ggplot2* drag and drop to harness much of the power in an easy fashion.  With code in the output, it also facilitates learning how to manipulate the code of *ggplot2*.
+
+*esquisse* is quite powerful; we can explore this at length.  Here is a simple graphic that I created with x and fills.
+
+```{r GGP1}
+library(ggplot2)
+plt1 <- ggplot(data = Bond.Funds) +
+  aes(x = Type, fill = Fees) +
+  geom_bar() +
+  theme_minimal()
+plt1
+```
+
+If you notice, *esquisse* directly outputs graphics to powerpoint.  This feature is quite useful.
