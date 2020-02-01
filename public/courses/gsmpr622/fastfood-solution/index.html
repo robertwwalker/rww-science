@@ -234,8 +234,8 @@
   <meta property="og:site_name" content="rww.science">
   <meta property="og:url" content="/courses/gsmpr622/fastfood-solution/">
   <meta property="og:title" content="A Fast Food Solution | rww.science">
-  <meta property="og:description" content="Fast Food Data These data came care of a Tidy Tuesday a while ago. The data consist of Fast Food menu items for a selection of fast food chains. The units are menu items. We have the chain [restaurant], item [the item name], and a series of variables (columns) representing sodium, cholesterol, fat, calories, and other information. Some is missing. The data can be imported from the tidytuesday website on github as ."><meta property="og:image" content="/img/portrait.jpg">
-  <meta property="twitter:image" content="/img/portrait.jpg"><meta property="og:locale" content="en-us">
+  <meta property="og:description" content="Fast Food Data These data came care of a Tidy Tuesday a while ago. The data consist of Fast Food menu items for a selection of fast food chains. The units are menu items. We have the chain [restaurant], item [the item name], and a series of variables (columns) representing sodium, cholesterol, fat, calories, and other information. Some is missing. The data can be imported from the tidytuesday website on github as ."><meta property="og:image" content="/img/headers/bubbles-wide.jpg">
+  <meta property="twitter:image" content="/img/headers/bubbles-wide.jpg"><meta property="og:locale" content="en-us">
   
     
       <meta property="article:published_time" content="2020-01-21T00:00:00&#43;00:00">
@@ -264,10 +264,10 @@
       "palette": {
         "popup": {
           "background": "#EAF04E",
-          "text": "#312450"
+          "text": "#5e42a6"
         },
         "button": {
-          "background": "#312450",
+          "background": "#5e42a6",
           "text": "#EAF04E"
         }
       },
@@ -623,6 +623,15 @@
 
 
 
+<div class="article-header">
+  
+  
+  <img src="/img/headers/bubbles-wide.jpg" class="article-banner" alt="">
+  
+
+  
+</div>
+
 
 
 
@@ -695,19 +704,15 @@
     <div class="article-style">
       
 <script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
-<script src="/rmarkdown-libs/plotly-binding/plotly.js"></script>
-<script src="/rmarkdown-libs/typedarray/typedarray.min.js"></script>
-<script src="/rmarkdown-libs/jquery/jquery.min.js"></script>
-<link href="/rmarkdown-libs/crosstalk/css/crosstalk.css" rel="stylesheet" />
-<script src="/rmarkdown-libs/crosstalk/js/crosstalk.min.js"></script>
-<link href="/rmarkdown-libs/plotly-htmlwidgets-css/plotly-htmlwidgets.css" rel="stylesheet" />
-<script src="/rmarkdown-libs/plotly-main/plotly-latest.min.js"></script>
+<script src="/rmarkdown-libs/pymjs/pym.v1.js"></script>
+<script src="/rmarkdown-libs/widgetframe-binding/widgetframe.js"></script>
 
 
 <div id="fast-food-data" class="section level1">
 <h1>Fast Food Data</h1>
-<p>These data came care of a Tidy Tuesday a while ago. The data consist of Fast Food menu items for a selection of fast food chains. The units are menu items. We have the chain [restaurant], item [the item name], and a series of variables (columns) representing sodium, cholesterol, fat, calories, and other information. Some is missing. The data can be imported from the <code>tidytuesday</code> website on github as .csv.</p>
-<pre class="r"><code>FFood &lt;- read.csv(&quot;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2018/2018-09-04/fastfood_calories.csv&quot;)</code></pre>
+<p>These data came care of a Tidy Tuesday a while ago. The data consist of Fast Food menu items for a selection of fast food chains. The units are menu items. We have the chain [restaurant], item [the item name], and a series of variables (columns) representing sodium, cholesterol, fat, calories, and other information. Some is missing. The data can be imported from the <code>tidytuesday</code> website on github as .csv. It is worth noting that the code in the setup chunk is not echoed.</p>
+<pre class="r"><code>library(plotly); library(widgetframe)
+FFood &lt;- read.csv(&quot;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2018/2018-09-04/fastfood_calories.csv&quot;)</code></pre>
 <div id="basic-summary" class="section level2">
 <h2>Basic Summary</h2>
 <p>A basic summary of the data.</p>
@@ -1398,10 +1403,10 @@ ggplot(FFood) + aes(x=restaurant, y=cholesterol, fill=restaurant) + geom_violin(
 ( My.Plot &lt;- FFood %&gt;% group_by(restaurant) %&gt;% summarise(calories = mean(calories, na.rm=TRUE)) %&gt;% ggplot(.) + aes(x=reorder(x=restaurant, calories), y=calories) + geom_bar(stat=&quot;identity&quot;, fill=&quot;magenta&quot;) + labs(title=&quot;Average Calories for Fast Food Chains&quot;, x=&quot;Chain&quot;, y=&quot;Average Calories&quot;) + theme_light() + coord_flip() )</code></pre>
 <p><img src="/courses/GSMPR622/FastFood-Solution/index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 <p>Ok. Now, something quite fancy.</p>
-<pre class="r"><code>library(plotly)
-ggplotly(My.Plot)</code></pre>
-<div id="htmlwidget-1" style="width:672px;height:480px;" class="plotly html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1">{"x":{"data":[{"orientation":"h","width":[0.9,0.9,0.9,0.9,0.9,0.9,0.9,0.899999999999999],"base":[0,0,0,0,0,0,0,0],"x":[384.444444444444,443.652173913043,503.020833333333,520.238095238095,532.727272727273,608.571428571429,631.698113207547,640.350877192982],"y":[1,2,3,4,5,6,7,8],"text":["reorder(x = restaurant, calories): Chick Fil-A<br />calories: 384.4444","reorder(x = restaurant, calories): Taco Bell<br />calories: 443.6522","reorder(x = restaurant, calories): Subway<br />calories: 503.0208","reorder(x = restaurant, calories): Dairy Queen<br />calories: 520.2381","reorder(x = restaurant, calories): Arbys<br />calories: 532.7273","reorder(x = restaurant, calories): Burger King<br />calories: 608.5714","reorder(x = restaurant, calories): Sonic<br />calories: 631.6981","reorder(x = restaurant, calories): Mcdonalds<br />calories: 640.3509"],"type":"bar","marker":{"autocolorscale":false,"color":"rgba(255,0,255,1)","line":{"width":1.88976377952756,"color":"transparent"}},"showlegend":false,"xaxis":"x","yaxis":"y","hoverinfo":"text","frame":null}],"layout":{"margin":{"t":43.7625570776256,"r":7.30593607305936,"b":40.1826484018265,"l":89.8630136986302},"plot_bgcolor":"rgba(255,255,255,1)","paper_bgcolor":"rgba(255,255,255,1)","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187},"title":{"text":"Average Calories for Fast Food Chains","font":{"color":"rgba(0,0,0,1)","family":"","size":17.5342465753425},"x":0,"xref":"paper"},"xaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[-32.0175438596491,672.368421052632],"tickmode":"array","ticktext":["0","200","400","600"],"tickvals":[0,200,400,600],"categoryorder":"array","categoryarray":["0","200","400","600"],"nticks":null,"ticks":"outside","tickcolor":"rgba(179,179,179,1)","ticklen":3.65296803652968,"tickwidth":0.33208800332088,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(222,222,222,1)","gridwidth":0.33208800332088,"zeroline":false,"anchor":"y","title":{"text":"Average Calories","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}},"hoverformat":".2f"},"yaxis":{"domain":[0,1],"automargin":true,"type":"linear","autorange":false,"range":[0.4,8.6],"tickmode":"array","ticktext":["Chick Fil-A","Taco Bell","Subway","Dairy Queen","Arbys","Burger King","Sonic","Mcdonalds"],"tickvals":[1,2,3,4,5,6,7,8],"categoryorder":"array","categoryarray":["Chick Fil-A","Taco Bell","Subway","Dairy Queen","Arbys","Burger King","Sonic","Mcdonalds"],"nticks":null,"ticks":"outside","tickcolor":"rgba(179,179,179,1)","ticklen":3.65296803652968,"tickwidth":0.33208800332088,"showticklabels":true,"tickfont":{"color":"rgba(77,77,77,1)","family":"","size":11.689497716895},"tickangle":-0,"showline":false,"linecolor":null,"linewidth":0,"showgrid":true,"gridcolor":"rgba(222,222,222,1)","gridwidth":0.33208800332088,"zeroline":false,"anchor":"x","title":{"text":"Chain","font":{"color":"rgba(0,0,0,1)","family":"","size":14.6118721461187}},"hoverformat":".2f"},"shapes":[{"type":"rect","fillcolor":"transparent","line":{"color":"rgba(179,179,179,1)","width":0.66417600664176,"linetype":"solid"},"yref":"paper","xref":"paper","x0":0,"x1":1,"y0":0,"y1":1}],"showlegend":false,"legend":{"bgcolor":"rgba(255,255,255,1)","bordercolor":"transparent","borderwidth":1.88976377952756,"font":{"color":"rgba(0,0,0,1)","family":"","size":11.689497716895}},"hovermode":"closest","barmode":"relative"},"config":{"doubleClick":"reset","showSendToCloud":false},"source":"A","attrs":{"70443cb0a7a1":{"x":{},"y":{},"type":"bar"}},"cur_data":"70443cb0a7a1","visdat":{"70443cb0a7a1":["function (y) ","x"]},"highlight":{"on":"plotly_click","persistent":false,"dynamic":false,"selectize":false,"opacityDim":0.2,"selected":{"opacity":1},"debounce":0},"shinyEvents":["plotly_hover","plotly_click","plotly_selected","plotly_relayout","plotly_brushed","plotly_brushing","plotly_clickannotation","plotly_doubleclick","plotly_deselect","plotly_afterplot","plotly_sunburstclick"],"base_url":"https://plot.ly"},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>MP &lt;- ggplotly(My.Plot)
+frameWidget(MP)</code></pre>
+<div id="htmlwidget-1" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/courses/GSMPR622/FastFood-Solution/index_files/figure-html//widgets/widget_unnamed-chunk-12.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <div id="a-great-feature-filter-grepl" class="section level1">
@@ -1409,6 +1414,11 @@ ggplotly(My.Plot)</code></pre>
 <pre class="r"><code># Let&#39;s Fix the Chicken Variable
 FFood &lt;- FFood %&gt;% mutate(Chicken = grepl(&#39;Chicken|Chick-n&#39;,item))
 FFood$Chicken[FFood$restaurant==&quot;Chick Fil-A&quot;] &lt;- TRUE</code></pre>
+</div>
+<div id="graphing-just-chicken" class="section level1">
+<h1>Graphing Just Chicken</h1>
+<pre class="r"><code>FFood %&gt;% filter(Chicken==TRUE) %&gt;% ggplot(.) + aes(x=restaurant, y=calories, fill=restaurant, color=restaurant) + geom_violin(alpha=0.3) + scale_fill_viridis_d() + scale_color_viridis_d() + geom_jitter(alpha=0.2) + coord_flip() + guides(fill=FALSE, color=FALSE) + labs(x=&quot;Chain&quot;, y=&quot;Calories&quot;, main=&quot;Calories of Chicken Items by Chain&quot;)</code></pre>
+<p><img src="/courses/GSMPR622/FastFood-Solution/index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 </div>
 
     </div>

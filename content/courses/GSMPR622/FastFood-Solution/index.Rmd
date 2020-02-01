@@ -4,7 +4,7 @@ author: 'Robert W. Walker'
 date: '2020-01-21'
 header:
   caption: ''
-  image: ''
+  image: 'headers/bubbles-wide.jpg'
   preview: yes
 ---
 
@@ -12,7 +12,7 @@ header:
 
 # Fast Food Data
 
-These data came care of a Tidy Tuesday a while ago.  The data consist of Fast Food menu items for a selection of fast food chains.  The units are menu items.  We have the chain [restaurant], item [the item name], and a series of variables (columns) representing sodium, cholesterol, fat, calories, and other information.  Some is missing.  The data can be imported from the `tidytuesday` website on github as .csv.
+These data came care of a Tidy Tuesday a while ago.  The data consist of Fast Food menu items for a selection of fast food chains.  The units are menu items.  We have the chain [restaurant], item [the item name], and a series of variables (columns) representing sodium, cholesterol, fat, calories, and other information.  Some is missing.  The data can be imported from the `tidytuesday` website on github as .csv.  It is worth noting that the code in the setup chunk is not echoed.
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
@@ -20,6 +20,7 @@ library(tidyverse); library(skimr)
 ```
 
 ```{r LoadData}
+library(plotly); library(widgetframe)
 FFood <- read.csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2018/2018-09-04/fastfood_calories.csv")
 ```
 
@@ -28,7 +29,6 @@ FFood <- read.csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday
 A basic summary of the data.
 
 ```{r pressure, echo=FALSE, message=FALSE}
-library(skimr)
 skim(FFood)
 ```
 
@@ -133,8 +133,8 @@ library(tidyverse)
 Ok.  Now, something quite fancy.
 
 ```{r}
-library(plotly)
-ggplotly(My.Plot)
+MP <- ggplotly(My.Plot)
+frameWidget(MP)
 ```
 
 # A Great Feature, filter grepl
@@ -143,4 +143,10 @@ ggplotly(My.Plot)
 # Let's Fix the Chicken Variable
 FFood <- FFood %>% mutate(Chicken = grepl('Chicken|Chick-n',item))
 FFood$Chicken[FFood$restaurant=="Chick Fil-A"] <- TRUE
+```
+
+# Graphing Just Chicken
+
+```{r}
+FFood %>% filter(Chicken==TRUE) %>% ggplot(.) + aes(x=restaurant, y=calories, fill=restaurant, color=restaurant) + geom_violin(alpha=0.3) + scale_fill_viridis_d() + scale_color_viridis_d() + geom_jitter(alpha=0.2) + coord_flip() + guides(fill=FALSE, color=FALSE) + labs(x="Chain", y="Calories", main="Calories of Chicken Items by Chain")
 ```

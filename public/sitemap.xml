@@ -418,22 +418,22 @@
   </url>
   
   <url>
-    <loc>/tags/python/</loc>
-    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/categories/python/</loc>
     <lastmod>2020-01-31T00:02:25-08:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/reticulate/</loc>
+    <loc>/tags/python/</loc>
     <lastmod>2020-01-31T00:02:25-08:00</lastmod>
   </url>
   
   <url>
     <loc>/categories/reticulate/</loc>
+    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/reticulate/</loc>
     <lastmod>2020-01-31T00:02:25-08:00</lastmod>
   </url>
   

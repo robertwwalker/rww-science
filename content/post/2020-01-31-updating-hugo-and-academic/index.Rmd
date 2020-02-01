@@ -32,7 +32,7 @@ R was key to doing this.  Turning every .Rmd file to a page bundle would have be
 
 In my original website, there was only one configuation file.  Now it has split into four parts; for blogdown, config.toml stays in root but three new files are created, languages, params, and menus.
 
-## My Current Annoyance
+## The Logo and Icons
 
-I cannot get the logo to work.  I checked that my file is the right size, that it is in the right place, that all of the relevant calls are as they need be.  I think the new version broke it.  There is a bug for the mobile version but I think it is a bigger issue.
+This was the last issue and it took a bit of time to find in the docs.  They are extensive but I never mastered finding things in them.  You have to create `assets/images` and then include the `logo.png` and the `icon.png` in that directory.  Then the websites icon on the browser bar and the logo on the navigation bar are, or should be sorted out.
 
