@@ -9,7 +9,7 @@
   weight = 10
 
 [[main]]
-  name = "Publications"
+  name = "Papers"
   url = "publication/"
   weight = 20
 
@@ -24,13 +24,13 @@
   weight = 40
 
 [[main]]
-  name = "Teaching"
+  name = "Courses"
   url = "courses/"
   weight = 60
 
 
 [[main]]
-  name = "Talks/Slides"
+  name = "Talks"
   url = "talk/"
   weight = 55
 
@@ -45,6 +45,6 @@
   weight = 50
 
 [[main]]
-   name = "Curriculum Vitae"
+   name = "CV"
    url = "img/vita.pdf"
    weight = 80
