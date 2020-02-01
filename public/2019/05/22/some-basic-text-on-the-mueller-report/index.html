@@ -233,9 +233,9 @@ library(tidyverse) library(pdftools) # Download report from link above mueller_r
   <meta property="twitter:site" content="@PieRatio">
   <meta property="twitter:creator" content="@PieRatio">
   
-  <meta property="og:site_name" content="">
+  <meta property="og:site_name" content="rww.science">
   <meta property="og:url" content="/2019/05/22/some-basic-text-on-the-mueller-report/">
-  <meta property="og:title" content="Some Basic Text on the Mueller Report | ">
+  <meta property="og:title" content="Some Basic Text on the Mueller Report | rww.science">
   <meta property="og:description" content="So this Robert Mueller guy wrote a report I may as well analyse it a bit.
 First, let me see if I can get a hold of the data. I grabbed the report directly from the Department of Justice website. You can follow this link.
 library(tidyverse) library(pdftools) # Download report from link above mueller_report_txt &lt;- pdf_text(&quot;../data/report.pdf&quot;) # Create a tibble of the text with line numbers and pages mueller_report &lt;- tibble( page = 1:length(mueller_report_txt), text = mueller_report_txt) %&gt;% separate_rows(text, sep = &quot;\n&quot;) %&gt;% group_by(page) %&gt;% mutate(line = row_number()) %&gt;% ungroup() %&gt;% select(page, line, text) write_csv(mueller_report, &quot;data/mueller_report."><meta property="og:image" content="/img/portrait.jpg">
@@ -313,10 +313,10 @@ library(tidyverse) library(pdftools) # Download report from link above mueller_r
       "palette": {
         "popup": {
           "background": "#EAF04E",
-          "text": "#fff"
+          "text": "#312450"
         },
         "button": {
-          "background": "#fff",
+          "background": "#312450",
           "text": "#EAF04E"
         }
       },
@@ -338,7 +338,7 @@ library(tidyverse) library(pdftools) # Download report from link above mueller_r
 
 
 
-  <title>Some Basic Text on the Mueller Report | </title>
+  <title>Some Basic Text on the Mueller Report | rww.science</title>
 
 </head>
 
@@ -391,7 +391,7 @@ library(tidyverse) library(pdftools) # Download report from link above mueller_r
 
     
     <div class="d-none d-lg-inline-flex">
-      <a class="navbar-brand" href="/"><img src="/images/logo_hu9f3875aeabe8a1aaa7016e57355d11ff_13955_0x75_resize_lanczos_2.png" alt=""></a>
+      <a class="navbar-brand" href="/"><img src="/images/logo_hu9f3875aeabe8a1aaa7016e57355d11ff_13955_0x75_resize_lanczos_2.png" alt="rww.science"></a>
     </div>
     
 
@@ -404,7 +404,7 @@ library(tidyverse) library(pdftools) # Download report from link above mueller_r
 
     
     <div class="navbar-brand-mobile-wrapper d-inline-flex d-lg-none">
-      <a class="navbar-brand" href="/"><img src="/images/logo_hu9f3875aeabe8a1aaa7016e57355d11ff_13955_0x75_resize_lanczos_2.png" alt=""></a>
+      <a class="navbar-brand" href="/"><img src="/images/logo_hu9f3875aeabe8a1aaa7016e57355d11ff_13955_0x75_resize_lanczos_2.png" alt="rww.science"></a>
     </div>
     
 

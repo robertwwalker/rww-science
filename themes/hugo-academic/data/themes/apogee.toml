@@ -6,6 +6,7 @@ light = false
 
 # Primary
 primary = "#EAF04E"
+background = "#312450"
 
 # Menu
 menu_primary = "#312450"
