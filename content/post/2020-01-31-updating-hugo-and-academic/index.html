@@ -31,7 +31,23 @@ projects: []
 </div>
 <div id="the-config.toml-and-the-like" class="section level2">
 <h2>The config.toml and the like</h2>
-<p>In my original website, there was only one configuation file. Now it has split into four parts; for blogdown, config.toml stays in root but three new files are created, languages, params, and menus.</p>
+<p>In my original website, there was only one configuation file. Now it has split into four parts; for blogdown, config.toml stays in root but three new files are created, languages, params, and menus. I do not know of a way to handle this automatically or automagically.</p>
+</div>
+<div id="the-posts" class="section level2">
+<h2>The Posts</h2>
+<p>One innovation over the range of versions between my original build and the present is the use of containerized posts. You can now put everything relevant to a particular post in post’s own directory. The previous need for separate data folders and the extensive use of <code>here()</code> was something of a pain. This is much improved. But the transition was less than simple.</p>
+<p>My favorite tools for doing this became the system capabilities of R. Here is how it worked.</p>
+<pre><code>library(tidyverse)
+setwd(&quot;content/post/&quot;) # Get to the root of posts
+Posts &lt;- as.vector(as.character(dir())) # Create a vector listing files
+Post.List &lt;- Posts %&gt;% data.frame(Post=.) %&gt;% filter(Post != &quot;_index.md&quot;) %&gt;% transmute(Post = as.character(Post))
+Dir.List &lt;- Post.List %&gt;% filter(str_ends(Post, &quot;.Rmd&quot;)) %&gt;% mutate(Dirs=str_remove(Post, &quot;.Rmd&quot;))
+Paste.List &lt;- Dir.List %&gt;% mutate(fileTO = paste0(Dirs,&#39;/index.Rmd&#39;))
+sapply(1:dim(Dir.List)[[1]], function(x) { dir.create(Dir.List$Dirs[x])} )
+file.copy(Paste.List$Post,Paste.List$fileTO)</code></pre>
+<p>Then it becomes a matter of cleaning up the remaining .Rmd files. In <em>blogdown</em>, the next step is:</p>
+<pre><code>file.remove(Paste.List$Post)</code></pre>
+<p>You can then use the clean function in Build to get rid of the rest automagically. I should point out that the same trick works for containerizing other content.</p>
 </div>
 <div id="the-logo-and-icons" class="section level2">
 <h2>The Logo and Icons</h2>

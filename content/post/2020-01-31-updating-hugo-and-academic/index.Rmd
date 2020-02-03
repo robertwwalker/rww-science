@@ -30,7 +30,33 @@ R was key to doing this.  Turning every .Rmd file to a page bundle would have be
 
 ## The config.toml and the like
 
-In my original website, there was only one configuation file.  Now it has split into four parts; for blogdown, config.toml stays in root but three new files are created, languages, params, and menus.
+In my original website, there was only one configuation file.  Now it has split into four parts; for blogdown, config.toml stays in root but three new files are created, languages, params, and menus.  I do not know of a way to handle this automatically or automagically.
+
+## The Posts
+
+One innovation over the range of versions between my original build and the present is the use of containerized posts.  You can now put everything relevant to a particular post in post's own directory.  The previous need for separate data folders and the extensive use of `here()` was something of a pain.  This is much improved.  But the transition was less than simple.
+
+My favorite tools for doing this became the system capabilities of R.  Here is how it worked.
+
+```
+library(tidyverse)
+setwd("content/post/") # Get to the root of posts
+Posts <- as.vector(as.character(dir())) # Create a vector listing files
+Post.List <- Posts %>% data.frame(Post=.) %>% filter(Post != "_index.md") %>% transmute(Post = as.character(Post))
+Dir.List <- Post.List %>% filter(str_ends(Post, ".Rmd")) %>% mutate(Dirs=str_remove(Post, ".Rmd"))
+Paste.List <- Dir.List %>% mutate(fileTO = paste0(Dirs,'/index.Rmd'))
+sapply(1:dim(Dir.List)[[1]], function(x) { dir.create(Dir.List$Dirs[x])} )
+file.copy(Paste.List$Post,Paste.List$fileTO)
+```
+
+
+Then it becomes a matter of cleaning up the remaining .Rmd files.  In *blogdown*, the next step is:
+
+```
+file.remove(Paste.List$Post)
+```
+
+You can then use the clean function in Build to get rid of the rest automagically.  I should point out that the same trick works for containerizing other content.
 
 ## The Logo and Icons
 
