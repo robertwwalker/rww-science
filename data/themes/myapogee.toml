@@ -2,7 +2,7 @@
 name = "myapogee"
 
 # Is theme light or dark?
-light = false
+light = true
 
 background_dark = "#312450"
 background = "#dfb8f5"
