@@ -1,12 +1,15 @@
-+++
-title = "Publications"
-date = 2019-10-01
-math = false
-highlight = false
+---
+title: Publications
 
-# Optional featured image (relative to `static/img/` folder).
-[header]
-image = "headers/bubbles-wide.jpg"
-caption = "Publications"
+# View.
+#   1 = List
+#   2 = Compact
+#   3 = Card
+#   4 = Citation
+view: 3
 
-+++
+# Optional header image (relative to `static/img/` folder).
+header:
+  caption: "Publications"
+  image: "headers/bubbles-wide.jpg"
+---

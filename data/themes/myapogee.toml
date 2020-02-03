@@ -5,7 +5,7 @@ name = "myapogee"
 light = false
 
 background_dark = "#312450"
-background = "#dfb8f5"
+background = "#f3e6fc"
 
 # Primary
 primary = "#EAF04E"
@@ -22,6 +22,6 @@ menu_title = "#E0A526"
 home_section_odd_dark = "#312450"
 home_section_even_dark = "#3d2c66"
 
-home_section_odd = "#dfb8f5"
-home_section_even = "#d4cce6"
+home_section_odd = "#f3e6fc"
+home_section_even = "#d7cfe9"
 

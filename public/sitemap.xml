@@ -53,12 +53,12 @@
   </url>
   
   <url>
-    <loc>/tags/tidyverse/</loc>
+    <loc>/categories/tidyverse/</loc>
     <lastmod>2020-02-02T16:37:37-08:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/tidyverse/</loc>
+    <loc>/tags/tidyverse/</loc>
     <lastmod>2020-02-02T16:37:37-08:00</lastmod>
   </url>
   
@@ -268,11 +268,6 @@
   </url>
   
   <url>
-    <loc>/publication/</loc>
-    <lastmod>2020-01-31T17:36:12-08:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/r/</loc>
     <lastmod>2020-01-31T00:02:25-08:00</lastmod>
   </url>
@@ -288,13 +283,13 @@
   </url>
   
   <url>
-    <loc>/categories/tidytext/</loc>
-    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
+    <loc>/tags/tidytext/</loc>
+    <lastmod>2020-02-02T16:37:37-08:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/tidytext/</loc>
-    <lastmod>2020-02-02T16:37:37-08:00</lastmod>
+    <loc>/categories/tidytext/</loc>
+    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
   </url>
   
   <url>
@@ -364,17 +359,17 @@
   
   <url>
     <loc>/publication_types/2/</loc>
-    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
+    <lastmod>2018-12-02T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/publication/publication/journal-article/techno/</loc>
-    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
+    <loc>/publication/journal-article/techno/</loc>
+    <lastmod>2018-12-02T00:00:00+00:00</lastmod>
   </url>
   
   <url>
     <loc>/publication_types/</loc>
-    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
+    <lastmod>2018-12-02T00:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -398,8 +393,8 @@
   </url>
   
   <url>
-    <loc>/publication/publication/journal-article/ppm/</loc>
-    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
+    <loc>/publication/journal-article/ppm/</loc>
+    <lastmod>2018-06-05T00:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -428,12 +423,12 @@
   </url>
   
   <url>
-    <loc>/tags/reticulate/</loc>
+    <loc>/categories/reticulate/</loc>
     <lastmod>2020-02-02T16:37:37-08:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/reticulate/</loc>
+    <loc>/tags/reticulate/</loc>
     <lastmod>2020-02-02T16:37:37-08:00</lastmod>
   </url>
   
@@ -493,8 +488,8 @@
   </url>
   
   <url>
-    <loc>/publication/publication/journal-article/geon-ord-logit/</loc>
-    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
+    <loc>/publication/journal-article/geon-ord-logit/</loc>
+    <lastmod>2016-11-05T00:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -528,63 +523,63 @@
   </url>
   
   <url>
-    <loc>/publication/publication/journal-article/cjpp/</loc>
-    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
+    <loc>/publication/journal-article/cjpp/</loc>
+    <lastmod>2016-01-01T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/publication/publication/journal-article/mc2/</loc>
-    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
+    <loc>/publication/journal-article/mc2/</loc>
+    <lastmod>2014-06-01T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/publication/publication/journal-article/proptax/</loc>
-    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
+    <loc>/publication/journal-article/proptax/</loc>
+    <lastmod>2013-09-02T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/publication/publication/journal-article/publius/</loc>
-    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
+    <loc>/publication/journal-article/publius/</loc>
+    <lastmod>2012-09-01T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/publication/publication/journal-article/ratingsmgmt/</loc>
-    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
+    <loc>/publication/journal-article/ratingsmgmt/</loc>
+    <lastmod>2010-12-02T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/publication/publication/journal-article/boosterism/</loc>
-    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
+    <loc>/publication/journal-article/boosterism/</loc>
+    <lastmod>2010-09-01T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/publication/publication/journal-article/midclas/</loc>
-    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
+    <loc>/publication/journal-article/midclas/</loc>
+    <lastmod>2010-09-01T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/publication/publication/journal-article/civicpart/</loc>
-    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
+    <loc>/publication/journal-article/civicpart/</loc>
+    <lastmod>2009-12-02T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/publication/publication/journal-article/splits/</loc>
-    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
+    <loc>/publication/journal-article/splits/</loc>
+    <lastmod>2009-09-02T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/publication/publication/journal-article/divgovpt/</loc>
-    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
+    <loc>/publication/journal-article/divgovpt/</loc>
+    <lastmod>2007-10-15T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/publication/publication/journal-article/sbi/</loc>
-    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
+    <loc>/publication/journal-article/sbi/</loc>
+    <lastmod>2007-10-15T00:00:00+00:00</lastmod>
   </url>
   
   <url>
-    <loc>/publication/publication/journal-article/longmem/</loc>
-    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
+    <loc>/publication/journal-article/longmem/</loc>
+    <lastmod>1999-12-02T00:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -609,6 +604,11 @@
   <url>
     <loc>/project/</loc>
     <lastmod>2020-01-31T00:02:25-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/publication/</loc>
+    <lastmod>2020-01-31T17:36:12-08:00</lastmod>
   </url>
   
 </urlset>
