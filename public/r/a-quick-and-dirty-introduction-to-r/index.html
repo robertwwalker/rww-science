@@ -266,10 +266,10 @@ library(tidyverse); library(skimr); Support.Times &lt;- structure(list(Screened 
       "palette": {
         "popup": {
           "background": "#EAF04E",
-          "text": "#5e42a6"
+          "text": "#dfb8f5"
         },
         "button": {
-          "background": "#5e42a6",
+          "background": "#dfb8f5",
           "text": "#EAF04E"
         }
       },
@@ -838,7 +838,7 @@ SSTimes %&gt;% group_by(Self.Screen) %&gt;% skim()</code></pre>
 <p>It is worth noting that R stores a bunch of stuff. For example, it stores the standard error of the difference and that is worth looking at in this case; the standard error that describes the difference in the averages is 0.8065242.</p>
 <pre class="r"><code>Resample.Times &lt;- ResampleProps::ResampleDiffMeans(Support.Times$Screened,Support.Times$Not.Screened)
 sd(Resample.Times)</code></pre>
-<pre><code>## [1] 0.7985964</code></pre>
+<pre><code>## [1] 0.7688217</code></pre>
 </div>
 
     </div>

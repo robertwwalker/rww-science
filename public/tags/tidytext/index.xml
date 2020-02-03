@@ -907,7 +907,7 @@ gpl&lt;/code&gt;&lt;/pre&gt;
 ## 9           ArterHarry Arter    M  30
 ## 10             IbeJordon Ibe    F  24
 ## 11            CookLewis Cook    M  22
-## 12        GoslingDan Gosling    M  29
+## 12        GoslingDan Gosling    M  30
 ## 13           SmithAdam Smith    D  28
 ## 14         FraserRyan Fraser    F  25
 ## 15    DanielsCharlie Daniels    D  33
@@ -926,7 +926,7 @@ gpl&lt;/code&gt;&lt;/pre&gt;
 ## 28          KellyLloyd Kelly    D  21
 ## 29         StaceyJack Stacey    D  23
 ## 30       TraversMark Travers   GK  20
-## 31     DanjumaArnaut Danjuma    F  22
+## 31     DanjumaArnaut Danjuma    F  23
 ##                                                             Contract Terms
 ## 1  16140000\n\t\t\t\t\t\t\t\t\t\t\t3 yr\n\t\t\t\t\t\t\t\t\t\t\t£16,140,000
 ## 2  14560000\n\t\t\t\t\t\t\t\t\t\t\t4 yr\n\t\t\t\t\t\t\t\t\t\t\t£14,560,000
@@ -1029,7 +1029,7 @@ EPL.Contracts[[1]]&lt;/code&gt;&lt;/pre&gt;
 ## 9           ArterHarry Arter        M  30
 ## 10             IbeJordon Ibe        F  24
 ## 11            CookLewis Cook        M  22
-## 12        GoslingDan Gosling        M  29
+## 12        GoslingDan Gosling        M  30
 ## 13           SmithAdam Smith        D  28
 ## 14         FraserRyan Fraser        F  25
 ## 15    DanielsCharlie Daniels        D  33
@@ -1048,7 +1048,7 @@ EPL.Contracts[[1]]&lt;/code&gt;&lt;/pre&gt;
 ## 28          KellyLloyd Kelly        D  21
 ## 29         StaceyJack Stacey        D  23
 ## 30       TraversMark Travers       GK  20
-## 31     DanjumaArnaut Danjuma        F  22
+## 31     DanjumaArnaut Danjuma        F  23
 ##                                                             Contract.Terms
 ## 1  16140000\n\t\t\t\t\t\t\t\t\t\t\t3 yr\n\t\t\t\t\t\t\t\t\t\t\t£16,140,000
 ## 2  14560000\n\t\t\t\t\t\t\t\t\t\t\t4 yr\n\t\t\t\t\t\t\t\t\t\t\t£14,560,000

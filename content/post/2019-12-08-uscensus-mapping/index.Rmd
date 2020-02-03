@@ -68,7 +68,9 @@ A plotly
 
 ```{r}
 library(plotly)
-ggplotly(PlotlyMe)
+PLM <- ggplotly(PlotlyMe)
+library(widgetframe)
+frameWidget(PLM)
 ```
 
 To get rid of some of the messiness because LA is a huge outlier, perhaps it should be binned.

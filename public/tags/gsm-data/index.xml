@@ -156,7 +156,7 @@ SSTimes %&amp;gt;% group_by(Self.Screen) %&amp;gt;% skim()&lt;/code&gt;&lt;/pre&
 &lt;p&gt;It is worth noting that R stores a bunch of stuff. For example, it stores the standard error of the difference and that is worth looking at in this case; the standard error that describes the difference in the averages is 0.8065242.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Resample.Times &amp;lt;- ResampleProps::ResampleDiffMeans(Support.Times$Screened,Support.Times$Not.Screened)
 sd(Resample.Times)&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## [1] 0.7985964&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] 0.7688217&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 </description>
     </item>
