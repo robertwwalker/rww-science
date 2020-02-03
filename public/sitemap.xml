@@ -43,22 +43,22 @@
   </url>
   
   <url>
-    <loc>/categories/tidytuesday/</loc>
-    <lastmod>2020-01-31T21:58:39-08:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/tags/tidytuesday/</loc>
     <lastmod>2020-02-02T16:37:37-08:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/tidyverse/</loc>
-    <lastmod>2020-02-02T16:37:37-08:00</lastmod>
+    <loc>/categories/tidytuesday/</loc>
+    <lastmod>2020-01-31T21:58:39-08:00</lastmod>
   </url>
   
   <url>
     <loc>/categories/tidyverse/</loc>
+    <lastmod>2020-02-02T16:37:37-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/tidyverse/</loc>
     <lastmod>2020-02-02T16:37:37-08:00</lastmod>
   </url>
   
@@ -283,13 +283,13 @@
   </url>
   
   <url>
-    <loc>/tags/tidytext/</loc>
-    <lastmod>2020-02-02T16:37:37-08:00</lastmod>
+    <loc>/categories/tidytext/</loc>
+    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/tidytext/</loc>
-    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
+    <loc>/tags/tidytext/</loc>
+    <lastmod>2020-02-02T16:37:37-08:00</lastmod>
   </url>
   
   <url>

@@ -8,8 +8,8 @@ background = "#f3e6fc"
 background_dark = "#312450"
 
 # Primary
-primary_light = "#d8e013"
-primary = "#F4FC2B"
+primary_light = "#EAF04E"
+primary = "#F3FC2B"
 primary_dark = "#D7DE26"
 
 # Menu

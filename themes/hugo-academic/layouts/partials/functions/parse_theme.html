@@ -30,6 +30,8 @@
 
 {{- $scr.Set "light" ($theme.light | default true) -}}
 
+{{- $scr.Set "primary" $theme.primary -}}
+
 {{ if $theme.light }}
   {{- $scr.Set "background" ($theme.background | default "#fff") -}}
   {{- $scr.Set "dark_background" ($theme.background_dark | default "rgb(40, 42, 54)") -}}
@@ -37,6 +39,7 @@
   {{- $scr.Set "home_section_even" $theme.home_section_even -}}
   {{- $scr.Set "dark_home_section_odd" $theme.home_section_odd_dark -}}
   {{- $scr.Set "dark_home_section_even" $theme.home_section_even_dark -}}
+  {{- $scr.Set "primary" $theme.primary_light -}}
 {{ else }}
   {{- $scr.Set "background" ($theme.background | default "#fff") -}}
   {{- $scr.Set "dark_background" ($theme.background_dark | default "rgb(40, 42, 54)") -}}
@@ -44,12 +47,12 @@
   {{- $scr.Set "home_section_even" $theme.home_section_even -}}
   {{- $scr.Set "dark_home_section_odd" $theme.home_section_odd_dark -}}
   {{- $scr.Set "dark_home_section_even" $theme.home_section_even_dark -}}
+  {{- $scr.Set "primary" $theme.primary_dark -}}
 {{ end }}
 
 {{- $scr.Set "link" ($theme.link | default $theme.primary) -}}
 {{- $scr.Set "link_hover" ($theme.link_hover | default $theme.primary) -}}
 
-{{- $scr.Set "primary" $theme.primary -}}
 
 {{- $scr.Set "menu_primary" $theme.menu_primary -}}
 {{- $scr.Set "menu_text" $theme.menu_text -}}
