@@ -20,19 +20,109 @@ image:
 projects: []
 ---
 
-# Updating Hugo: It's Changed Alot...
+# Updating Hugo: 
+## It's Changed Alot...
 
-Many key features of hugo have been in a state of flux since I began this *blogdown* a few years ago.  It was time to update hugo and the academic theme that I have built around and customized and a number of things broke.  [Page bundles](https://alison.rbind.io/post/2019-02-21-hugo-page-bundles/) are pretty amazing for keeping things in order and all of the elements of a post together in the same directory.  So far, I think it is a definite across the board improvement.  But some things seem to simply not work.
+Many key features of hugo have been in a state of flux since I began this *blogdown* a few years ago.  It was time to update hugo and the academic theme that I have built around and customized.  A number of things broke.  
+
+# The config.toml and the like
+
+In my original website, there was only one configuation file.  Now it has split into four parts; for blogdown, config.toml stays in root but three new files are created, languages, params, and menus.  I do not know of a way to handle this automatically or automagically.
+
+# The Logo and Icons
+
+This was the last issue and it took a bit of time to find in the docs.  They are extensive but I never mastered finding things in them.  You have to create `assets/images` and then include the `logo.png` and the `icon.png` in that directory.  Then the websites icon on the browser bar and the logo on the navigation bar are, or should be sorted out.
+
+# A Tool I Never Noticed
+
+Figuring out color themes inside a theme depends critically on the ability to find what is fixed and parsed in the theme.  I never really knew how this was configured but discovered a partial layout -- `themes/academic/layouts/partials/` -- function in `functions/parse_themes.html` that parses the theme.  It appears as though the implementation is a work in progress.  Here's why.  Here is the parsing of the theme.
+
+```
+{{/* Load Theme. */}}
+
+{{ $theme := index site.Data.themes $theme_index }}
+
+{{- $scr.Set "light" ($theme.light | default true) -}}
+
+{{ if $theme.light }}
+  {{- $scr.Set "background" ($theme.background | default "#fff") -}}
+  {{- $scr.Set "dark_background" "rgb(40, 42, 54)" -}}
+  {{- $scr.Set "home_section_odd" $theme.home_section_odd -}}
+  {{- $scr.Set "home_section_even" $theme.home_section_even -}}
+  {{- $scr.Set "dark_home_section_odd" "hsla(231, 15%, 18%, 1)" -}}
+  {{- $scr.Set "dark_home_section_even" "hsla(231, 15%, 16%, 1)" -}}
+{{ else }}
+  {{- $scr.Set "background" ($theme.background | default "#fff") -}}
+  {{- $scr.Set "dark_background" ($theme.dark.background | default "rgb(40, 42, 54)") -}}
+  {{- $scr.Set "home_section_odd" "rgb(255, 255, 255)" -}}
+  {{- $scr.Set "home_section_even" "rgb(247, 247, 247)" -}}
+  {{- $scr.Set "dark_home_section_odd" $theme.home_section_odd -}}
+  {{- $scr.Set "dark_home_section_even" $theme.home_section_even -}}
+{{ end }}
+
+{{- $scr.Set "link" ($theme.link | default $theme.primary) -}}
+{{- $scr.Set "link_hover" ($theme.link_hover | default $theme.primary) -}}
+
+{{- $scr.Set "primary" $theme.primary -}}
+
+{{- $scr.Set "menu_primary" $theme.menu_primary -}}
+{{- $scr.Set "menu_text" $theme.menu_text -}}
+{{- $scr.Set "menu_text_active" $theme.menu_text_active -}}
+{{- $scr.Set "menu_title" $theme.menu_title -}}
+```
+
+What you can customize is, then, quite limited.  I began adapting this so that I can pass a complete set of colors for a light and a dark theme together.  There is a flag in `params.toml` for enabling day/night but it doesn't seem as though this flag interacts with the parsing of the theme.  After all, the color of the theme could even be split, and probably should be, from the fonts deployed because they parse different files.
+
+I began adapting this for complete themes though I did it in a messy way.  Instead of using an if-fork on `day_night`, I just re-parameterized.  There is a more elegant solution that I may pull request if it can work.  It also seems to work with themes that do not explicitly define day/night settings.  You can see what I did on the github.
+
+```
+{{/* Load Theme. */}}
+
+{{ $theme := index site.Data.themes $theme_index }}
+
+{{- $scr.Set "light" ($theme.light | default true) -}}
+
+{{- $scr.Set "primary" $theme.primary -}}
+
+{{ if $theme.light }}
+  {{- $scr.Set "background" ($theme.background | default "#fff") -}}
+  {{- $scr.Set "dark_background" ($theme.background_dark | default "rgb(40, 42, 54)") -}}
+  {{- $scr.Set "home_section_odd" $theme.home_section_odd -}}
+  {{- $scr.Set "home_section_even" $theme.home_section_even -}}
+  {{- $scr.Set "dark_home_section_odd" $theme.home_section_odd_dark -}}
+  {{- $scr.Set "dark_home_section_even" $theme.home_section_even_dark -}}
+  {{- $scr.Set "primary" $theme.primary_light -}}
+{{ else }}
+  {{- $scr.Set "background" ($theme.background | default "#fff") -}}
+  {{- $scr.Set "dark_background" ($theme.background_dark | default "rgb(40, 42, 54)") -}}
+  {{- $scr.Set "home_section_odd" $theme.home_section_odd -}}
+  {{- $scr.Set "home_section_even" $theme.home_section_even -}}
+  {{- $scr.Set "dark_home_section_odd" $theme.home_section_odd_dark -}}
+  {{- $scr.Set "dark_home_section_even" $theme.home_section_even_dark -}}
+  {{- $scr.Set "primary" $theme.primary_dark -}}
+{{ end }}
+
+{{- $scr.Set "link" ($theme.link | default $theme.primary) -}}
+{{- $scr.Set "link_hover" ($theme.link_hover | default $theme.primary) -}}
+
+
+{{- $scr.Set "menu_primary" $theme.menu_primary -}}
+{{- $scr.Set "menu_text" $theme.menu_text -}}
+{{- $scr.Set "menu_text_active" $theme.menu_text_active -}}
+{{- $scr.Set "menu_title" $theme.menu_title -}}
+```
+
+# Page Bundles
+
+[Page bundles](https://alison.rbind.io/post/2019-02-21-hugo-page-bundles/) are pretty amazing for keeping things in order and all of the elements of a post together in the same directory.  So far, I think it is a definite across the board improvement.  But some things took time.
 
 ## Describing the migration
 
 R was key to doing this.  Turning every .Rmd file to a page bundle would have been quite hard if I had not had the ability to use R's internal abilities to create directories and copy and move files to pull the original file name from the .Rmd, create a directory from that, and then copy that file to the needed directory and give it the name index.Rmd.  Awesome!
 
-## The config.toml and the like
 
-In my original website, there was only one configuation file.  Now it has split into four parts; for blogdown, config.toml stays in root but three new files are created, languages, params, and menus.  I do not know of a way to handle this automatically or automagically.
 
-## The Posts
+### Converting Posts
 
 One innovation over the range of versions between my original build and the present is the use of containerized posts.  You can now put everything relevant to a particular post in post's own directory.  The previous need for separate data folders and the extensive use of `here()` was something of a pain.  This is much improved.  But the transition was less than simple.
 
@@ -40,6 +130,7 @@ My favorite tools for doing this became the system capabilities of R.  Here is h
 
 ```
 library(tidyverse)
+ODir <- getwd() # Start from the base of the website
 setwd("content/post/") # Get to the root of posts
 Posts <- as.vector(as.character(dir())) # Create a vector listing files
 Post.List <- Posts %>% data.frame(Post=.) %>% filter(Post != "_index.md") %>% transmute(Post = as.character(Post))
@@ -47,6 +138,7 @@ Dir.List <- Post.List %>% filter(str_ends(Post, ".Rmd")) %>% mutate(Dirs=str_rem
 Paste.List <- Dir.List %>% mutate(fileTO = paste0(Dirs,'/index.Rmd'))
 sapply(1:dim(Dir.List)[[1]], function(x) { dir.create(Dir.List$Dirs[x])} )
 file.copy(Paste.List$Post,Paste.List$fileTO)
+setwd(ODir)
 ```
 
 
@@ -57,8 +149,3 @@ file.remove(Paste.List$Post)
 ```
 
 You can then use the clean function in Build to get rid of the rest automagically.  I should point out that the same trick works for containerizing other content.
-
-## The Logo and Icons
-
-This was the last issue and it took a bit of time to find in the docs.  They are extensive but I never mastered finding things in them.  You have to create `assets/images` and then include the `logo.png` and the `icon.png` in that directory.  Then the websites icon on the browser bar and the logo on the navigation bar are, or should be sorted out.
-

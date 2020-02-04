@@ -22,35 +22,115 @@ projects: []
 
 
 
-<div id="updating-hugo-its-changed-alot" class="section level1">
-<h1>Updating Hugo: It’s Changed Alot…</h1>
-<p>Many key features of hugo have been in a state of flux since I began this <em>blogdown</em> a few years ago. It was time to update hugo and the academic theme that I have built around and customized and a number of things broke. <a href="https://alison.rbind.io/post/2019-02-21-hugo-page-bundles/">Page bundles</a> are pretty amazing for keeping things in order and all of the elements of a post together in the same directory. So far, I think it is a definite across the board improvement. But some things seem to simply not work.</p>
+<div id="updating-hugo" class="section level1">
+<h1>Updating Hugo:</h1>
+<div id="its-changed-alot" class="section level2">
+<h2>It’s Changed Alot…</h2>
+<p>Many key features of hugo have been in a state of flux since I began this <em>blogdown</em> a few years ago. It was time to update hugo and the academic theme that I have built around and customized. A number of things broke.</p>
+</div>
+</div>
+<div id="the-config.toml-and-the-like" class="section level1">
+<h1>The config.toml and the like</h1>
+<p>In my original website, there was only one configuation file. Now it has split into four parts; for blogdown, config.toml stays in root but three new files are created, languages, params, and menus. I do not know of a way to handle this automatically or automagically.</p>
+</div>
+<div id="the-logo-and-icons" class="section level1">
+<h1>The Logo and Icons</h1>
+<p>This was the last issue and it took a bit of time to find in the docs. They are extensive but I never mastered finding things in them. You have to create <code>assets/images</code> and then include the <code>logo.png</code> and the <code>icon.png</code> in that directory. Then the websites icon on the browser bar and the logo on the navigation bar are, or should be sorted out.</p>
+</div>
+<div id="a-tool-i-never-noticed" class="section level1">
+<h1>A Tool I Never Noticed</h1>
+<p>Figuring out color themes inside a theme depends critically on the ability to find what is fixed and parsed in the theme. I never really knew how this was configured but discovered a partial layout – <code>themes/academic/layouts/partials/</code> – function in <code>functions/parse_themes.html</code> that parses the theme. It appears as though the implementation is a work in progress. Here’s why. Here is the parsing of the theme.</p>
+<pre><code>{{/* Load Theme. */}}
+
+{{ $theme := index site.Data.themes $theme_index }}
+
+{{- $scr.Set &quot;light&quot; ($theme.light | default true) -}}
+
+{{ if $theme.light }}
+  {{- $scr.Set &quot;background&quot; ($theme.background | default &quot;#fff&quot;) -}}
+  {{- $scr.Set &quot;dark_background&quot; &quot;rgb(40, 42, 54)&quot; -}}
+  {{- $scr.Set &quot;home_section_odd&quot; $theme.home_section_odd -}}
+  {{- $scr.Set &quot;home_section_even&quot; $theme.home_section_even -}}
+  {{- $scr.Set &quot;dark_home_section_odd&quot; &quot;hsla(231, 15%, 18%, 1)&quot; -}}
+  {{- $scr.Set &quot;dark_home_section_even&quot; &quot;hsla(231, 15%, 16%, 1)&quot; -}}
+{{ else }}
+  {{- $scr.Set &quot;background&quot; ($theme.background | default &quot;#fff&quot;) -}}
+  {{- $scr.Set &quot;dark_background&quot; ($theme.dark.background | default &quot;rgb(40, 42, 54)&quot;) -}}
+  {{- $scr.Set &quot;home_section_odd&quot; &quot;rgb(255, 255, 255)&quot; -}}
+  {{- $scr.Set &quot;home_section_even&quot; &quot;rgb(247, 247, 247)&quot; -}}
+  {{- $scr.Set &quot;dark_home_section_odd&quot; $theme.home_section_odd -}}
+  {{- $scr.Set &quot;dark_home_section_even&quot; $theme.home_section_even -}}
+{{ end }}
+
+{{- $scr.Set &quot;link&quot; ($theme.link | default $theme.primary) -}}
+{{- $scr.Set &quot;link_hover&quot; ($theme.link_hover | default $theme.primary) -}}
+
+{{- $scr.Set &quot;primary&quot; $theme.primary -}}
+
+{{- $scr.Set &quot;menu_primary&quot; $theme.menu_primary -}}
+{{- $scr.Set &quot;menu_text&quot; $theme.menu_text -}}
+{{- $scr.Set &quot;menu_text_active&quot; $theme.menu_text_active -}}
+{{- $scr.Set &quot;menu_title&quot; $theme.menu_title -}}</code></pre>
+<p>What you can customize is, then, quite limited. I began adapting this so that I can pass a complete set of colors for a light and a dark theme together. There is a flag in <code>params.toml</code> for enabling day/night but it doesn’t seem as though this flag interacts with the parsing of the theme. After all, the color of the theme could even be split, and probably should be, from the fonts deployed because they parse different files.</p>
+<p>I began adapting this for complete themes though I did it in a messy way. Instead of using an if-fork on <code>day_night</code>, I just re-parameterized. There is a more elegant solution that I may pull request if it can work. It also seems to work with themes that do not explicitly define day/night settings. You can see what I did on the github.</p>
+<pre><code>{{/* Load Theme. */}}
+
+{{ $theme := index site.Data.themes $theme_index }}
+
+{{- $scr.Set &quot;light&quot; ($theme.light | default true) -}}
+
+{{- $scr.Set &quot;primary&quot; $theme.primary -}}
+
+{{ if $theme.light }}
+  {{- $scr.Set &quot;background&quot; ($theme.background | default &quot;#fff&quot;) -}}
+  {{- $scr.Set &quot;dark_background&quot; ($theme.background_dark | default &quot;rgb(40, 42, 54)&quot;) -}}
+  {{- $scr.Set &quot;home_section_odd&quot; $theme.home_section_odd -}}
+  {{- $scr.Set &quot;home_section_even&quot; $theme.home_section_even -}}
+  {{- $scr.Set &quot;dark_home_section_odd&quot; $theme.home_section_odd_dark -}}
+  {{- $scr.Set &quot;dark_home_section_even&quot; $theme.home_section_even_dark -}}
+  {{- $scr.Set &quot;primary&quot; $theme.primary_light -}}
+{{ else }}
+  {{- $scr.Set &quot;background&quot; ($theme.background | default &quot;#fff&quot;) -}}
+  {{- $scr.Set &quot;dark_background&quot; ($theme.background_dark | default &quot;rgb(40, 42, 54)&quot;) -}}
+  {{- $scr.Set &quot;home_section_odd&quot; $theme.home_section_odd -}}
+  {{- $scr.Set &quot;home_section_even&quot; $theme.home_section_even -}}
+  {{- $scr.Set &quot;dark_home_section_odd&quot; $theme.home_section_odd_dark -}}
+  {{- $scr.Set &quot;dark_home_section_even&quot; $theme.home_section_even_dark -}}
+  {{- $scr.Set &quot;primary&quot; $theme.primary_dark -}}
+{{ end }}
+
+{{- $scr.Set &quot;link&quot; ($theme.link | default $theme.primary) -}}
+{{- $scr.Set &quot;link_hover&quot; ($theme.link_hover | default $theme.primary) -}}
+
+
+{{- $scr.Set &quot;menu_primary&quot; $theme.menu_primary -}}
+{{- $scr.Set &quot;menu_text&quot; $theme.menu_text -}}
+{{- $scr.Set &quot;menu_text_active&quot; $theme.menu_text_active -}}
+{{- $scr.Set &quot;menu_title&quot; $theme.menu_title -}}</code></pre>
+</div>
+<div id="page-bundles" class="section level1">
+<h1>Page Bundles</h1>
+<p><a href="https://alison.rbind.io/post/2019-02-21-hugo-page-bundles/">Page bundles</a> are pretty amazing for keeping things in order and all of the elements of a post together in the same directory. So far, I think it is a definite across the board improvement. But some things took time.</p>
 <div id="describing-the-migration" class="section level2">
 <h2>Describing the migration</h2>
 <p>R was key to doing this. Turning every .Rmd file to a page bundle would have been quite hard if I had not had the ability to use R’s internal abilities to create directories and copy and move files to pull the original file name from the .Rmd, create a directory from that, and then copy that file to the needed directory and give it the name index.Rmd. Awesome!</p>
-</div>
-<div id="the-config.toml-and-the-like" class="section level2">
-<h2>The config.toml and the like</h2>
-<p>In my original website, there was only one configuation file. Now it has split into four parts; for blogdown, config.toml stays in root but three new files are created, languages, params, and menus. I do not know of a way to handle this automatically or automagically.</p>
-</div>
-<div id="the-posts" class="section level2">
-<h2>The Posts</h2>
+<div id="converting-posts" class="section level3">
+<h3>Converting Posts</h3>
 <p>One innovation over the range of versions between my original build and the present is the use of containerized posts. You can now put everything relevant to a particular post in post’s own directory. The previous need for separate data folders and the extensive use of <code>here()</code> was something of a pain. This is much improved. But the transition was less than simple.</p>
 <p>My favorite tools for doing this became the system capabilities of R. Here is how it worked.</p>
 <pre><code>library(tidyverse)
+ODir &lt;- getwd() # Start from the base of the website
 setwd(&quot;content/post/&quot;) # Get to the root of posts
 Posts &lt;- as.vector(as.character(dir())) # Create a vector listing files
 Post.List &lt;- Posts %&gt;% data.frame(Post=.) %&gt;% filter(Post != &quot;_index.md&quot;) %&gt;% transmute(Post = as.character(Post))
 Dir.List &lt;- Post.List %&gt;% filter(str_ends(Post, &quot;.Rmd&quot;)) %&gt;% mutate(Dirs=str_remove(Post, &quot;.Rmd&quot;))
 Paste.List &lt;- Dir.List %&gt;% mutate(fileTO = paste0(Dirs,&#39;/index.Rmd&#39;))
 sapply(1:dim(Dir.List)[[1]], function(x) { dir.create(Dir.List$Dirs[x])} )
-file.copy(Paste.List$Post,Paste.List$fileTO)</code></pre>
+file.copy(Paste.List$Post,Paste.List$fileTO)
+setwd(ODir)</code></pre>
 <p>Then it becomes a matter of cleaning up the remaining .Rmd files. In <em>blogdown</em>, the next step is:</p>
 <pre><code>file.remove(Paste.List$Post)</code></pre>
 <p>You can then use the clean function in Build to get rid of the rest automagically. I should point out that the same trick works for containerizing other content.</p>
 </div>
-<div id="the-logo-and-icons" class="section level2">
-<h2>The Logo and Icons</h2>
-<p>This was the last issue and it took a bit of time to find in the docs. They are extensive but I never mastered finding things in them. You have to create <code>assets/images</code> and then include the <code>logo.png</code> and the <code>icon.png</code> in that directory. Then the websites icon on the browser bar and the logo on the navigation bar are, or should be sorted out.</p>
 </div>
 </div>
