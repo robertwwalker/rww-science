@@ -198,10 +198,18 @@ What matters in group decision making is probably as much the beliefs [subjectiv
 
 How should we reflect this in strategies of argumentation/persuasion?
 
-```{r, eval=FALSE}
+---
+class: inverse
+
+```{r, eval=TRUE}
 # RUN ME
+# may need to install.packages("countdown")
 library(countdown)
-countdown(minutes = 5, seconds = 0)
+countdown_fullscreen(
+  minutes = 5, seconds = 0,
+  margin = "5%",
+  font_size = "8em",
+)
 ```
 
 ---

@@ -7,6 +7,8 @@
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link href="libs/remark-css/metropolis.css" rel="stylesheet" />
     <link href="libs/remark-css/metropolis-fonts.css" rel="stylesheet" />
+    <link href="libs/countdown/countdown.css" rel="stylesheet" />
+    <script src="libs/countdown/countdown.js"></script>
   </head>
   <body>
     <textarea id="source">
@@ -257,12 +259,24 @@ What matters in group decision making is probably as much the beliefs [subjectiv
 
 How should we reflect this in strategies of argumentation/persuasion?
 
+---
+class: inverse
+
 
 ```r
 # RUN ME
+# may need to install.packages("countdown")
 library(countdown)
-countdown(minutes = 5, seconds = 0)
+countdown_fullscreen(
+  minutes = 5, seconds = 0,
+  margin = "5%",
+  font_size = "8em",
+)
 ```
+
+<div class="countdown" id="timer_5e3b41ac" style="top:0;right:0;bottom:0;left:0;margin:5%;padding:0;font-size:8em;" data-warnwhen="0">
+<code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
+</div>
 
 ---
 # Three Concepts from Set Theory
