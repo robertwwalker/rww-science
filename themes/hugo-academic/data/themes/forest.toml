@@ -6,6 +6,7 @@ light = true
 
 # Primary
 primary = "#4caf50"
+primary_dark = "#4caf50"
 
 # Menu
 menu_primary = "#4caf50"
@@ -16,3 +17,4 @@ menu_title = "#fff"
 # Home sections
 home_section_odd = "rgb(255, 255, 255)"
 home_section_even = "rgb(247, 247, 247)"
+

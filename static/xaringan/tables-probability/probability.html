@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Probability and Tables</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Robert W. Walker" />
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/rladies.css" rel="stylesheet" />
+    <link href="libs/remark-css/rladies-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Probability and Tables
+## The Core of Statistical Thinking
+### Robert W. Walker
+### Atkinson Graduate School of Management
+### 2020/02/01 (updated: 2020-02-05)
+
+---
+
+class: center, middle, inverse
+
+
+
+# Probability and Tables
+
+
+---
+class: inverse, center
+
+# Probability
+
+![](probability_files/figure-html/unnamed-chunk-1-1.png)&lt;!-- --&gt;
+
+
+---
+class: inverse
+
+# Where does Probability Come From?
+
+There are three common sources of probabilities:
+
+--
+
+- Known formula [Dice, Coins, etc.]
+
+--
+
+- Empirical frequency
+
+--
+
+- Subjective belief
+
+
+---
+class: inverse
+
+# A priori probability
+
+The probability of a given integer on a k-sided die: `\(\frac{1}{k}\)`.
+
+The probability of `heads` with a fair coin: `\(\frac{1}{2}\)`.
+
+The probability of a Queen?  `\(\frac{4}{52}\)`
+
+The probability of a Diamond?  `\(\frac{13}{52}\)`
+
+The Queen of Diamonds? `\(\frac{1}{52}\)` or   `\((\frac{4}{52}\times\frac{13}{52})\)`
+
+`Quasirandom numbers`
+
+---
+class: inverse
+
+# Empirical probability: frequency
+
+How often does something happen?
+
+&lt;iframe width="560" height="315" src="https://www.youtube.com/embed/tgC-vZp07YM"&gt;&lt;/iframe&gt;
+
+
+---
+class: inverse
+
+# This is Historical Statistics
+
+How likely am I to be admitted? *Consult the admissions rate*
+
+How fast do I drive? *Likelihood of law enforcement and need for speed*
+
+In data: this is tables.
+
+---
+# Berkeley
+
+
+```r
+load(url("https://github.com/robertwwalker/DADMStuff/raw/master/UCBLong.RData"))
+```
+
+
+.pull-left[
+
+```
+##         
+##          Admitted Rejected
+##   Male       1198     1493
+##   Female      557     1278
+```
+
+```
+##  Gender Admitted Rejected
+##    Male     1198     1493
+##  Female      557     1278
+```
+]
+
+.pull-right[
+
+```r
+library(tidyverse)
+library(janitor)
+table(UCB.Micro$Gender,UCB.Micro$Admit)
+UCB.Micro %&gt;% tabyl(Gender, Admit)
+```
+]
+
+---
+class:inverse
+
+# Three Versions
+
+.pull-left[
+
+```r
+prop.table(table(UCB.Micro$Gender,UCB.Micro$Admit), 1)
+```
+
+```
+##         
+##           Admitted  Rejected
+##   Male   0.4451877 0.5548123
+##   Female 0.3035422 0.6964578
+```
+
+```r
+prop.table(table(UCB.Micro$Gender,UCB.Micro$Admit), 2)
+```
+
+```
+##         
+##           Admitted  Rejected
+##   Male   0.6826211 0.5387947
+##   Female 0.3173789 0.4612053
+```
+
+```r
+prop.table(table(UCB.Micro$Gender,UCB.Micro$Admit))
+```
+
+```
+##         
+##           Admitted  Rejected
+##   Male   0.2646929 0.3298719
+##   Female 0.1230667 0.2823685
+```
+]
+
+.pull-right[
+
+```r
+UCB.Micro %&gt;% tabyl(Gender, Admit) %&gt;% adorn_percentages("row")
+```
+
+```
+##  Gender  Admitted  Rejected
+##    Male 0.4451877 0.5548123
+##  Female 0.3035422 0.6964578
+```
+
+```r
+UCB.Micro %&gt;% tabyl(Gender, Admit) %&gt;% adorn_percentages("col")
+```
+
+```
+##  Gender  Admitted  Rejected
+##    Male 0.6826211 0.5387947
+##  Female 0.3173789 0.4612053
+```
+
+```r
+UCB.Micro %&gt;% tabyl(Gender, Admit) %&gt;% adorn_percentages("all")
+```
+
+```
+##  Gender  Admitted  Rejected
+##    Male 0.2646929 0.3298719
+##  Female 0.1230667 0.2823685
+```
+]
+
+
+
+---
+background-image: url("UCBM.png")
+background-size: contain
+class: bottom
+
+# Plot It
+
+
+```r
+( UCBM &lt;- ggplot(UCB.Micro) + aes(x=Gender, fill=Admit) + geom_bar(position="dodge") + scale_fill_viridis_d() )
+```
+
+More on this later.
+
+---
+class: inverse
+
+# Subjective Probability
+
+How likely **do we believe** something is?
+
+---
+class: inverse
+
+# The Great Divide
+
+Empirical frequency vs. subjective belief
+
+---
+class: inverse
+
+# Empirical Frequency: She's Right
+
+--
+
+# Physics Disagrees: We Goin Nova.....
+
+--
+
+## Annie's a liar.
+
+What matters in group decision making is probably as much the beliefs [subjective] as the evidence [frequency].
+
+How should we reflect this in strategies of argumentation/persuasion?
+
+
+```r
+# RUN ME
+library(countdown)
+countdown(minutes = 5, seconds = 0)
+```
+
+---
+# Three Concepts from Set Theory
+
+- Intersection [and]
+- Union [or] **avoid double counting the intersection**
+- Complement [not]
+
+---
+
+# Three Distinct Probabilities
+
+- Joint: Pr(x=x and y=y)
+- Marginal: Pr(x=x) or Pr(y=y)
+- Conditional: Pr(x=x | y=y) or Pr(y =y | x = x)
+
+---
+
+# Joint Probability
+
+**The table sums to one**.  
+
+For Berkeley:
+
+
+```r
+UCB.Micro %&gt;% tabyl(Gender, Admit) %&gt;% adorn_percentages("all")
+```
+
+```
+##  Gender  Admitted  Rejected
+##    Male 0.2646929 0.3298719
+##  Female 0.1230667 0.2823685
+```
+
+```r
+prop.table(table(UCB.Micro$Gender,UCB.Micro$Admit))
+```
+
+```
+##         
+##           Admitted  Rejected
+##   Male   0.2646929 0.3298719
+##   Female 0.1230667 0.2823685
+```
+
+---
+# Marginal Probability
+
+**The row/column sums to one**.  We collapse the table to a single margin.  Here, two can be identified.  The probability of Admit and the probability of Gender.  
+
+.pull-left[
+
+```r
+UCB.Micro %&gt;% tabyl(Gender)
+```
+
+```
+##  Gender    n   percent
+##    Male 2691 0.5945647
+##  Female 1835 0.4054353
+```
+
+```r
+UCB.Micro %&gt;% tabyl(Admit)
+```
+
+```
+##     Admit    n   percent
+##  Admitted 1755 0.3877596
+##  Rejected 2771 0.6122404
+```
+
+]
+
+.pull-right[
+
+```r
+prop.table(table(UCB.Micro$Gender))
+```
+
+```
+## 
+##      Male    Female 
+## 0.5945647 0.4054353
+```
+
+```r
+prop.table(table(UCB.Micro$Admit))
+```
+
+```
+## 
+##  Admitted  Rejected 
+## 0.3877596 0.6122404
+```
+]
+
+---
+# Conditional Probability
+
+How does one margin of the table break down given values of another?  **Each row or column sums to one**  
+
+Four can be identified, the probability of admission/rejection for Male, for Female; the probability of male or female for admits/rejects.
+
+For Berkeley:
+
+.pull-left[
+
+```r
+UCB.Micro %&gt;% tabyl(Gender, Admit) %&gt;% adorn_percentages("row")
+```
+
+```
+##  Gender  Admitted  Rejected
+##    Male 0.4451877 0.5548123
+##  Female 0.3035422 0.6964578
+```
+
+```r
+prop.table(table(UCB.Micro$Gender,UCB.Micro$Admit), 1)
+```
+
+```
+##         
+##           Admitted  Rejected
+##   Male   0.4451877 0.5548123
+##   Female 0.3035422 0.6964578
+```
+]
+
+.pull-right[
+
+```r
+UCB.Micro %&gt;% tabyl(Gender, Admit) %&gt;% adorn_percentages("col")
+```
+
+```
+##  Gender  Admitted  Rejected
+##    Male 0.6826211 0.5387947
+##  Female 0.3173789 0.4612053
+```
+
+```r
+prop.table(table(UCB.Micro$Gender,UCB.Micro$Admit), 2)
+```
+
+```
+##         
+##           Admitted  Rejected
+##   Male   0.6826211 0.5387947
+##   Female 0.3173789 0.4612053
+```
+]
+
+---
+# Law of Total Probability
+
+Is a combination of the distributive property of multiplication and the fact that probabilities sum to one.
+
+For example, the probability of Admitted and Male is the probability of admission for males times the probability of male.
+
+$$ Pr(x=x, y=y) = Pr(y | x)Pr(x) $$
+
+Or it is the probability of being admitted times the probabilty of being male among admits.
+
+$$ Pr(x=x, y=y) = Pr(x | y)Pr(y) $$
+
+---
+
+# Now the Substance
+
+.pull-left[
+The `ggplot` fill aesthetic is great for displaying these things.   For example, are males and females equally likely to be admitted to Berkeley?
+
+**Plaintiffs say no.**
+
+
+```r
+ggplot(UCB.Micro) + aes(x=Gender, fill=Admit) + geom_bar() + scale_fill_viridis_d()
+```
+]
+
+.pull-right[
+![](probability_files/figure-html/unnamed-chunk-11-1.png)&lt;!-- --&gt;
+]
+
+
+
+---
+
+# Is that an Adequate Comparison?
+
+
+.pull-left[
+The University says no.  Why?  The most important factor in the probability of admission is likely to be the department.  This has a huge impact on what we see.
+
+
+
+```r
+ggplot(UCB.Micro) + 
+  aes(x=Gender, fill=Admit) + 
+  geom_bar(position="fill") + 
+  scale_fill_viridis_d() + 
+  facet_wrap(vars(Dept))
+```
+]
+
+.pull-right[
+![](probability_files/figure-html/unnamed-chunk-13-1.png)&lt;!-- --&gt;
+
+]
+
+
+
+---
+
+# The Magic of Bayes Rule
+
+To find the joint probability [the intersection] of x and y, we can use either of the aforementioned methods.  To turn this into a conditional probability, we simply take it is a proportion of the relevant margin.
+
+$$ Pr(x | y) = \frac{Pr(y | x) Pr(x)}{Pr(y)} $$
+
+By itself, this is algebra.  It is magic in an application.
+
+$$ Pr(User | +) = \frac{Pr(+ | User) Pr(User)}{Pr(+)} $$
+
+This poses the question: what does a positive test mean?
+
+---
+# Working an Example
+
+Suppose a test is 99% accurate for Users and 95% accurate for non-Users.  Moreover, suppose that Users make up 10% of the population.  So given some population to which this applies, we have:
+
+`\(Pr(User, +) = Pr(+ | User)*Pr(User)\)`
+
+`\(Pr(User, -) = Pr(- | User)*Pr(User)\)`
+
+`\(Pr(\overline{User}, +) = Pr(+ | \overline{User})*Pr(\overline{User})\)`
+
+and
+
+`\(Pr(\overline{User}, -) = Pr(- | \overline{User})*Pr(\overline{User})\)`
+
+
+
+---
+## The Table
+
+
+ Status  |  Positive | Negative | Total
+---------|-----------|----------|------
+ User    | 0.099     | 0.001    | 0.1
+non-User | 0.045     | 0.855    | 0.9
+---------|-----------|----------|------
+Total    | 0.144     | 0.856    | 1.0
+
+`\(Pr(User | +) = \frac{Pr(+ | User) Pr(User)}{Pr(+)}\)`
+
+yields:
+
+`\(Pr(User | +) = \frac{0.099}{0.144} = 0.6875\)`
+
+
+---
+# The Ultimate Problem is in Going Backward
+
+As Jaynes suggests, probability is the extension of Aristotellian logic, but we are trying to go back to binary.
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false,
+"ratio": "4x3"
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

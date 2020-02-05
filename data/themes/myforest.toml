@@ -1,0 +1,22 @@
+# Theme metadata
+name = "myforest"
+
+# Is theme light or dark?
+light = true
+
+# Primary
+primary = "#4caf50"
+primary_dark = "#4caf50"
+
+# Menu
+menu_primary = "#4caf50"
+menu_text = "#fff"
+menu_text_active = "#1b5e20"
+menu_title = "#fff"
+
+# Home sections
+home_section_odd = "rgb(255, 255, 255)"
+home_section_even = "rgb(237, 237, 237)"
+
+home_section_odd_dark = "rgb(0, 0, 0)"
+home_section_even_dark = "rgb(18, 18, 18)"

@@ -152,24 +152,24 @@ EPL.Result %&gt;% group_by(Position) %&gt;% summarise(Mean.Base.Salary=mean(Base
 <pre><code>## # A tibble: 4 x 3
 ##   Position Mean.Base.Salary  sdBS
 ##   &lt;fct&gt;               &lt;dbl&gt; &lt;dbl&gt;
-## 1 D                    25.9  3.73
-## 2 F                    24.7  3.75
-## 3 GK                   28.8  4.66
-## 4 M                    24.8  5.25</code></pre>
+## 1 D                    25.8  3.77
+## 2 F                    24.6  3.80
+## 3 GK                   28.9  4.63
+## 4 M                    24.8  5.21</code></pre>
 <pre class="r"><code>EPL.Result %&gt;% group_by(Position,Team) %&gt;% summarise(Mean.Base.Salary=mean(Base.Num, na.rm=TRUE),sdBS=sd(Base.Num, na.rm = TRUE))</code></pre>
 <pre><code>## # A tibble: 80 x 4
 ## # Groups:   Position [4]
 ##    Position Team                                         Mean.Base.Salary  sdBS
 ##    &lt;fct&gt;    &lt;fct&gt;                                                   &lt;dbl&gt; &lt;dbl&gt;
-##  1 D        Https:www.spotrac.comeplAFC Bournemouth                  25    4.38
-##  2 D        Https:www.spotrac.comeplarsenal                          24.8  3.63
-##  3 D        Https:www.spotrac.comeplaston Villa                      24.8  2.87
-##  4 D        Https:www.spotrac.comeplbrighton Hove Albion             27.7  2.14
-##  5 D        Https:www.spotrac.comeplburnley                          28.1  2.75
-##  6 D        Https:www.spotrac.comeplchelsea                          25.4  2.44
+##  1 D        Https:www.spotrac.comeplAFC Bournemouth                  25.1  4.30
+##  2 D        Https:www.spotrac.comeplarsenal                          24.9  3.59
+##  3 D        Https:www.spotrac.comeplaston Villa                      24.9  3.09
+##  4 D        Https:www.spotrac.comeplbrighton Hove Albion             26.5  3.96
+##  5 D        Https:www.spotrac.comeplburnley                          28.2  2.60
+##  6 D        Https:www.spotrac.comeplchelsea                          25.3  2.66
 ##  7 D        Https:www.spotrac.comeplcrystal Palace                   27.8  3.19
-##  8 D        Https:www.spotrac.comepleverton                          26.9  3.87
-##  9 D        Https:www.spotrac.comeplleicester City                   25.9  5.59
+##  8 D        Https:www.spotrac.comepleverton                          27    3.82
+##  9 D        Https:www.spotrac.comeplleicester City                   26    5.81
 ## 10 D        Https:www.spotrac.comeplliverpool                        25    3.42
 ## # … with 70 more rows</code></pre>
 <p>Finally, a little picture to describe spending on the active roster.</p>
@@ -198,7 +198,7 @@ gpl</code></pre>
 ## 8        SurmanAndrew Surman    M  33
 ## 9           ArterHarry Arter    M  30
 ## 10             IbeJordon Ibe    F  24
-## 11            CookLewis Cook    M  22
+## 11            CookLewis Cook    M  23
 ## 12        GoslingDan Gosling    M  30
 ## 13           SmithAdam Smith    D  28
 ## 14         FraserRyan Fraser    F  25
@@ -320,7 +320,7 @@ EPL.Contracts[[1]]</code></pre>
 ## 8        SurmanAndrew Surman        M  33
 ## 9           ArterHarry Arter        M  30
 ## 10             IbeJordon Ibe        F  24
-## 11            CookLewis Cook        M  22
+## 11            CookLewis Cook        M  23
 ## 12        GoslingDan Gosling        M  30
 ## 13           SmithAdam Smith        D  28
 ## 14         FraserRyan Fraser        F  25

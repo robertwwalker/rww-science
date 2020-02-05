@@ -5187,7 +5187,7 @@ IND
 <p>That’s all the regular season games in the 2018 season. They suggest that it is straightforward to grab an entire season of play by play data and it is. 👏.</p>
 <pre><code>full_season_2018 &lt;- scrape_season_play_by_play(2018, &quot;reg&quot;)
 saveRDS(full_season_2018, file=&quot;../../../data/2018NFLSeason.rds&quot;)</code></pre>
-<p>That gets the data though it took over an hour to acquire it all and it threw two error messages. I do not yet know if they are conseequential. My goal here is to use this package and the ability to plot the win probability charts to try to summarise an entire Dallas Cowboys season – the team I grew up with along with the former Houston Oilers and I was never really okay about them moving. 🔽</p>
+<p>That gets the data though it took over an hour to acquire it all and it threw two error messages. I do not yet know if they are conseequential. My goal here is to use this package and the ability to plot the win probability charts to try to summarise an entire Dallas Cowboys season – the team I grew up with along with the former Houston Oilers and I was never really okay about them moving. ⏬</p>
 <pre class="r"><code>full_season_2018 &lt;- readRDS(url(&quot;https://github.com/robertwwalker/academic-mymod/raw/master/data/2018NFLSeason.rds&quot;))  # Downloaded it once.  It sits in rww.science/data</code></pre>
 <p>Let me skim the data for an idea of what it looks like. I will also pull in three packages that I am deploying or will.</p>
 <pre class="r"><code>library(skimr)

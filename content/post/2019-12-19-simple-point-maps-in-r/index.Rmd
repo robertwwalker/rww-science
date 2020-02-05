@@ -35,7 +35,7 @@ From there, it is pretty easy to get fancy using ggplotly to put relevant text h
 There are a few map sources that R can access.  Google has now made most features pay to access with generous free allocations.  It is worth it to sign up if one plans to use it frequently.  I have never actually paid for use but I do not use it much.  There are nice instructions in a post by [littlemissdata](https://www.littlemissdata.com/blog/maps).  The other issue is the type of map.  The coordinates are crucial and I will need a map that is bounded on latitude and longitude.  For that purpose, I think I will use `ggmap`.  The `register_google` line invokes my Google API key.
 
 
-```{r cars}
+```{r}
 library(tidyverse)
 library(ggmap)
 library(osmdata)
@@ -65,7 +65,7 @@ ggmap(pdx_map) + geom_point(data=Portland.Center, aes(x=lon, y=lat), size=3, col
 
 First, an open source map.
 
-```{r PDXMap, cache=TRUE}
+```{r PDXMap}
 pdx.map <- get_stamenmap(getbb("portland oregon"), 
                          zoom = 14)
 ggmap(pdx.map)
