@@ -1,14 +1,14 @@
 +++
 date = 2019-04-20T15:00:00  # Schedule page publish date.
 
-title = "Archigos meets Grammar of Graphics"
-time_start = 2019-04-20T15:00:00
-time_end = 2019-04-20T16:00:00
-abstract = "Exploring the grammar of graphics using Archigos, the database of leaders."
-abstract_short = "Leaders with Grammars of Graphics"
-event = "AGSM Welcome"
+title = "Tables and Probability"
+time_start = 2020-02-05T18:00:00
+time_end = 2020-02-05T19:00:00
+abstract = "Probability and Tables"
+abstract_short = ""
+event = "MBAP"
 event_url = "https://agsm.willamette.edu"
-location = "Salem, OR USA"
+location = "Portland, OR USA"
 
 # Is this a selected talk? (true/false)
 selected = false
@@ -20,7 +20,7 @@ projects = []
 
 # Links (optional).
 url_pdf = ""
-url_slides = "https://rww.science/xaringan/ggsc/"
+url_slides = "https://rww.science/xaringan/table-probability/probability.html"
 url_video = ""
 url_code = ""
 
@@ -38,5 +38,5 @@ caption = ":smile:"
 
 +++
 
-Slides in [xaringan](https://rww.science/xaringan/ggsc/) :smile:
+Slides in [xaringan](https://rww.science/xaringan/table-probability/probability.html) :smile:
 
