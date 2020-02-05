@@ -6,7 +6,7 @@ institute: "Atkinson Graduate School of Management"
 date: "2020/02/01 (updated: `r Sys.Date()`)"
 output:
   xaringan::moon_reader:
-    css: ["default", "rladies", "rladies-fonts"]
+    css: ["default", "metropolis", "metropolis-fonts"]
     lib_dir: libs
     nature:
       highlightStyle: github
@@ -39,6 +39,16 @@ grid::grid.raster(Prob.Def)
 ---
 class: inverse
 
+# Probability
+
+.font150[
+Two rules:
+1. Probabilities sum to one.
+2. The probability of any event is greater than or equal to zero.
+]
+---
+class: inverse
+
 # Where does Probability Come From?
 
 There are three common sources of probabilities:
@@ -63,7 +73,7 @@ class: inverse
 
 The probability of a given integer on a k-sided die: $\frac{1}{k}$.
 
-The probability of `heads` with a fair coin: $\frac{1}{2}$.
+The probability of **heads** with a fair coin: $\frac{1}{2}$.
 
 The probability of a Queen?  $\frac{4}{52}$
 
@@ -71,7 +81,7 @@ The probability of a Diamond?  $\frac{13}{52}$
 
 The Queen of Diamonds? $\frac{1}{52}$ or   $(\frac{4}{52}\times\frac{13}{52})$
 
-`Quasirandom numbers`
+**Quasirandom numbers**
 
 ---
 class: inverse
@@ -176,11 +186,9 @@ Empirical frequency vs. subjective belief
 ---
 class: inverse
 
-# Empirical Frequency: She's Right
+# Empirical Frequency: She's Right  
 
---
-
-# Physics Disagrees: We Goin Nova.....
+## Physics Disagrees: We Goin Nova.....
 
 --
 
