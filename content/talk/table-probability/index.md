@@ -20,7 +20,7 @@ projects = []
 
 # Links (optional).
 url_pdf = ""
-url_slides = "https://rww.science/xaringan/table-probability/probability.html"
+url_slides = "https://rww.science/xaringan/tables-probability/probability.html"
 url_video = ""
 url_code = ""
 
@@ -38,5 +38,5 @@ caption = ":smile:"
 
 +++
 
-Slides in [xaringan](https://rww.science/xaringan/table-probability/probability.html) :smile:
+Slides in [xaringan](https://rww.science/xaringan/tables-probability/probability.html) :smile:
 
