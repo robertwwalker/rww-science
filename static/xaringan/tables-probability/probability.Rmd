@@ -12,7 +12,6 @@ output:
       highlightStyle: github
       highlightLines: true
       countIncrementalSlides: false
-      ratio: "4x3"
 
 ---
 class: center, middle, inverse
