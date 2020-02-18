@@ -1,0 +1,133 @@
+---
+title: The Carbon Footprint of Food Produced for Consumption
+author: Robert W. Walker
+date: '2020-02-18'
+slug: the-carbon-footprint-of-food-produced-for-consumption
+categories:
+  - R
+  - Maps
+  - tidyTuesday
+  - tidyverse
+tags:
+  - tidyverse
+  - tidyTuesday
+  - R
+  - Maps
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2020-02-18T13:49:15-08:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+# `tidyTuesday` on the Carbon Footprint of Feeding the Planet
+
+The tidyTuesday for this week relies on data scraped from the Food and Agricultural Organization of the United Nations.  The blog post for obtaining the data can be found on [r-tastic](https://r-tastic.co.uk/post/from-messy-to-tidy/).  The scraping exercise is nice and easy to follow and explored a case of cleaning up a very messy data structure.  I took this exercise as practice for using `pivot_wider` and `pivot_longer`.  The data are by country so a map seems appropriate.  
+
+```{r}
+library(tidyverse)
+food_consumption <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-02-18/food_consumption.csv')
+names(food_consumption)
+```
+
+As you can see, the variables are already tidy.  What categories of food are available?
+
+```{r}
+table(food_consumption$food_category)
+```
+
+I want to map the totals which were removed from the posted data set.  Let me recreate those.  I will first do the co2 column.  I need to drop consumption, pivot them to wide, and sum up the numeric variables.  Then I want to pivot it back to long with the total as a food category.
+
+```{r}
+FCCO2W <- food_consumption %>% 
+  select(-consumption) %>% 
+  pivot_wider(.,names_from = food_category, values_from = co2_emmission, names_prefix = "CO2_")  %>% 
+  mutate(CO2_Total = rowSums(select(., contains("CO2_")))) 
+FCCO2L <- FCCO2W %>% 
+  pivot_longer(., cols = names(FCCO2W)[2:13], values_to = "CO2") %>% 
+  mutate(food_category = str_remove(name, "CO2_")) %>% 
+  select(-name)
+```
+
+Now there are long and wide versions of CO2.  Same process for food production.
+
+```{r}
+FCConsumeW <- food_consumption %>% 
+  select(-co2_emmission) %>% 
+  pivot_wider(.,names_from = food_category, values_from = consumption, names_prefix = "Consumption_") %>% 
+  mutate(Consumption_Total = rowSums(select(., contains("Consumption_")))) 
+FCConsumeL <- FCConsumeW %>% 
+  pivot_longer(., cols = names(FCConsumeW)[2:13], values_to = "Consumption") %>% 
+  mutate(food_category = str_remove(name, "Consumption_")) %>% 
+  select(-name)
+```
+
+Finally, let me merge them back together.  One version of Rejoinder is long [L] and the other is wide [W].
+
+```{r}
+RejoinderL <- left_join(FCCO2L,FCConsumeL, by = c("country","food_category"))
+RejoinderW <- left_join(FCCO2W,FCConsumeW, by = "country")
+```
+
+With that manipulation and cleaning complete, it is time to map it.
+
+```{r, message=FALSE, warning=FALSE}
+require(maps)
+require(viridis)
+theme_set(
+  theme_void()
+)
+# A Base Map
+world_map <- map_data("world")
+world_map <- world_map %>% mutate(country = region) 
+WM <- ggplot(world_map, aes(x = long, y = lat, group = group)) +
+  geom_polygon(fill="lightgray", colour = "white")
+WM
+```
+
+That's a map to work with.  Now let me join the data and plot the CO2 production.
+
+```{r}
+FCWM <- world_map %>% left_join(., RejoinderW)
+WMCO2 <- ggplot(FCWM, aes(x = long, y = lat, group = group, fill=CO2_Total)) +
+  geom_polygon(colour = "white") + 
+  scale_fill_viridis_c(option = "C") +
+  labs(fill = "Total CO2", title="Total CO2 from Food Produced for Consumption [kg/person/year]", caption="a #tidyTuesday by @PieRatio")
+WMCO2
+```
+
+Now let me plot the food produced for consumption.
+
+```{r}
+WMFood <- ggplot(FCWM, aes(x = long, y = lat, group = group, fill=Consumption_Total)) +
+  geom_polygon(colour = "white") + 
+  scale_fill_viridis_c(option = "C") +
+  labs(fill = "Total", title="Total Food Produced for Consumption [kg/person/year]", caption="a #tidyTuesday by @PieRatio")
+WMFood
+```
+
+I wanted to combine them but that did not work with patchwork.
+
+```{r, echo=TRUE, eval=FALSE}
+WMCO2 + WMFood
+# Doesn't work.
+```
+
+Now let me do them with facets.  That will require taking the merged wide data and pivoting it to longer.  First, I will select the columns that are critical to the map and the two series that I need.  I also want to change the names up a bit to make the facets well labeled.  After that, pivot to longer so that I can map the two categories separately.  One thing that went wrong along the way is the guide.  The facets are given a common guide while food in kg has a vastly different scale than CO2.  The easiest way to show them is to use a z-score for each and to show how the various countries compare to the average [keep in mind they are already normalized by population].
+
+```{r}
+Map.Me <- FCWM %>% select(long, lat, group, order, region, CO2_Total, Consumption_Total) %>% mutate(CO2_Total = scale(CO2_Total), `Food Supplied_Total` = scale(Consumption_Total)) %>% select(-Consumption_Total)
+Map.Me <- pivot_longer(Map.Me, cols = c(CO2_Total, `Food Supplied_Total`)) %>% mutate(name = str_remove(name, "_Total"))
+ggplot(Map.Me, aes(x = long, y = lat, group = group, fill=value)) +
+  geom_polygon(colour = "white") + 
+  scale_fill_viridis_c(option = "C") +
+  labs(fill = "kg/person/year", caption="a #tidyTuesday by @PieRatio", title="Food Produced for Consumption and the CO2 Impact", subtitle = "Z-scored for comparability; greys are missing.") +
+  facet_wrap(vars(name))
+```
+
+Cool.  It works.

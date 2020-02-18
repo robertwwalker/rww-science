@@ -5,12 +5,120 @@
     <link>/categories/tidytuesday/</link>
       <atom:link href="/categories/tidytuesday/index.xml" rel="self" type="application/rss+xml" />
     <description>tidyTuesday</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© 2018</copyright><lastBuildDate>Fri, 31 Jan 2020 00:00:00 +0000</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© 2018</copyright><lastBuildDate>Tue, 18 Feb 2020 00:00:00 +0000</lastBuildDate>
     <image>
       <url>/img/portrait.jpg</url>
       <title>tidyTuesday</title>
       <link>/categories/tidytuesday/</link>
     </image>
+    
+    <item>
+      <title>The Carbon Footprint of Food Produced for Consumption</title>
+      <link>/2020/02/18/the-carbon-footprint-of-food-produced-for-consumption/</link>
+      <pubDate>Tue, 18 Feb 2020 00:00:00 +0000</pubDate>
+      <guid>/2020/02/18/the-carbon-footprint-of-food-produced-for-consumption/</guid>
+      <description>
+
+
+&lt;div id=&#34;tidytuesday-on-the-carbon-footprint-of-feeding-the-planet&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;&lt;code&gt;tidyTuesday&lt;/code&gt; on the Carbon Footprint of Feeding the Planet&lt;/h1&gt;
+&lt;p&gt;The tidyTuesday for this week relies on data scraped from the Food and Agricultural Organization of the United Nations. The blog post for obtaining the data can be found on &lt;a href=&#34;https://r-tastic.co.uk/post/from-messy-to-tidy/&#34;&gt;r-tastic&lt;/a&gt;. The scraping exercise is nice and easy to follow and explored a case of cleaning up a very messy data structure. I took this exercise as practice for using &lt;code&gt;pivot_wider&lt;/code&gt; and &lt;code&gt;pivot_longer&lt;/code&gt;. The data are by country so a map seems appropriate.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(tidyverse)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## ── Attaching packages ──────────────────────────────────────────────────────────── tidyverse 1.3.0 ──&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## ✓ ggplot2 3.2.1     ✓ purrr   0.3.3
+## ✓ tibble  2.1.3     ✓ dplyr   0.8.4
+## ✓ tidyr   1.0.2     ✓ stringr 1.4.0
+## ✓ readr   1.3.1     ✓ forcats 0.4.0&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## ── Conflicts ─────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;food_consumption &amp;lt;- readr::read_csv(&amp;#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-02-18/food_consumption.csv&amp;#39;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Parsed with column specification:
+## cols(
+##   country = col_character(),
+##   food_category = col_character(),
+##   consumption = col_double(),
+##   co2_emmission = col_double()
+## )&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;names(food_consumption)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## [1] &amp;quot;country&amp;quot;       &amp;quot;food_category&amp;quot; &amp;quot;consumption&amp;quot;   &amp;quot;co2_emmission&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;As you can see, the variables are already tidy. What categories of food are available?&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;table(food_consumption$food_category)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## 
+##                     Beef                     Eggs                     Fish 
+##                      130                      130                      130 
+##              Lamb &amp;amp; Goat       Milk - inc. cheese  Nuts inc. Peanut Butter 
+##                      130                      130                      130 
+##                     Pork                  Poultry                     Rice 
+##                      130                      130                      130 
+##                 Soybeans Wheat and Wheat Products 
+##                      130                      130&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;I want to map the totals which were removed from the posted data set. Let me recreate those. I will first do the co2 column. I need to drop consumption, pivot them to wide, and sum up the numeric variables. Then I want to pivot it back to long with the total as a food category.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;FCCO2W &amp;lt;- food_consumption %&amp;gt;% 
+  select(-consumption) %&amp;gt;% 
+  pivot_wider(.,names_from = food_category, values_from = co2_emmission, names_prefix = &amp;quot;CO2_&amp;quot;)  %&amp;gt;% 
+  mutate(CO2_Total = rowSums(select(., contains(&amp;quot;CO2_&amp;quot;)))) 
+FCCO2L &amp;lt;- FCCO2W %&amp;gt;% 
+  pivot_longer(., cols = names(FCCO2W)[2:13], values_to = &amp;quot;CO2&amp;quot;) %&amp;gt;% 
+  mutate(food_category = str_remove(name, &amp;quot;CO2_&amp;quot;)) %&amp;gt;% 
+  select(-name)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now there are long and wide versions of CO2. Same process for food production.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;FCConsumeW &amp;lt;- food_consumption %&amp;gt;% 
+  select(-co2_emmission) %&amp;gt;% 
+  pivot_wider(.,names_from = food_category, values_from = consumption, names_prefix = &amp;quot;Consumption_&amp;quot;) %&amp;gt;% 
+  mutate(Consumption_Total = rowSums(select(., contains(&amp;quot;Consumption_&amp;quot;)))) 
+FCConsumeL &amp;lt;- FCConsumeW %&amp;gt;% 
+  pivot_longer(., cols = names(FCConsumeW)[2:13], values_to = &amp;quot;Consumption&amp;quot;) %&amp;gt;% 
+  mutate(food_category = str_remove(name, &amp;quot;Consumption_&amp;quot;)) %&amp;gt;% 
+  select(-name)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Finally, let me merge them back together. One version of Rejoinder is long [L] and the other is wide [W].&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;RejoinderL &amp;lt;- left_join(FCCO2L,FCConsumeL, by = c(&amp;quot;country&amp;quot;,&amp;quot;food_category&amp;quot;))
+RejoinderW &amp;lt;- left_join(FCCO2W,FCConsumeW, by = &amp;quot;country&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;With that manipulation and cleaning complete, it is time to map it.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;require(maps)
+require(viridis)
+theme_set(
+  theme_void()
+)
+# A Base Map
+world_map &amp;lt;- map_data(&amp;quot;world&amp;quot;)
+world_map &amp;lt;- world_map %&amp;gt;% mutate(country = region) 
+WM &amp;lt;- ggplot(world_map, aes(x = long, y = lat, group = group)) +
+  geom_polygon(fill=&amp;quot;lightgray&amp;quot;, colour = &amp;quot;white&amp;quot;)
+WM&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-02-18-the-carbon-footprint-of-food-produced-for-consumption/index_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;That’s a map to work with. Now let me join the data and plot the CO2 production.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;FCWM &amp;lt;- world_map %&amp;gt;% left_join(., RejoinderW)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Joining, by = &amp;quot;country&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;WMCO2 &amp;lt;- ggplot(FCWM, aes(x = long, y = lat, group = group, fill=CO2_Total)) +
+  geom_polygon(colour = &amp;quot;white&amp;quot;) + 
+  scale_fill_viridis_c(option = &amp;quot;C&amp;quot;) +
+  labs(fill = &amp;quot;Total CO2&amp;quot;, title=&amp;quot;Total CO2 from Food Produced for Consumption [kg/person/year]&amp;quot;, caption=&amp;quot;a #tidyTuesday by @PieRatio&amp;quot;)
+WMCO2&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-02-18-the-carbon-footprint-of-food-produced-for-consumption/index_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Now let me plot the food produced for consumption.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;WMFood &amp;lt;- ggplot(FCWM, aes(x = long, y = lat, group = group, fill=Consumption_Total)) +
+  geom_polygon(colour = &amp;quot;white&amp;quot;) + 
+  scale_fill_viridis_c(option = &amp;quot;C&amp;quot;) +
+  labs(fill = &amp;quot;Total&amp;quot;, title=&amp;quot;Total Food Produced for Consumption [kg/person/year]&amp;quot;, caption=&amp;quot;a #tidyTuesday by @PieRatio&amp;quot;)
+WMFood&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-02-18-the-carbon-footprint-of-food-produced-for-consumption/index_files/figure-html/unnamed-chunk-8-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;I wanted to combine them but that did not work with patchwork.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;WMCO2 + WMFood
+# Doesn&amp;#39;t work.&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now let me do them with facets. That will require taking the merged wide data and pivoting it to longer. First, I will select the columns that are critical to the map and the two series that I need. I also want to change the names up a bit to make the facets well labeled. After that, pivot to longer so that I can map the two categories separately. One thing that went wrong along the way is the guide. The facets are given a common guide while food in kg has a vastly different scale than CO2. The easiest way to show them is to use a z-score for each and to show how the various countries compare to the average [keep in mind they are already normalized by population].&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Map.Me &amp;lt;- FCWM %&amp;gt;% select(long, lat, group, order, region, CO2_Total, Consumption_Total) %&amp;gt;% mutate(CO2_Total = scale(CO2_Total), `Food Supplied_Total` = scale(Consumption_Total)) %&amp;gt;% select(-Consumption_Total)
+Map.Me &amp;lt;- pivot_longer(Map.Me, cols = c(CO2_Total, `Food Supplied_Total`)) %&amp;gt;% mutate(name = str_remove(name, &amp;quot;_Total&amp;quot;))
+ggplot(Map.Me, aes(x = long, y = lat, group = group, fill=value)) +
+  geom_polygon(colour = &amp;quot;white&amp;quot;) + 
+  scale_fill_viridis_c(option = &amp;quot;C&amp;quot;) +
+  labs(fill = &amp;quot;kg/person/year&amp;quot;, caption=&amp;quot;a #tidyTuesday by @PieRatio&amp;quot;, title=&amp;quot;Food Produced for Consumption and the CO2 Impact&amp;quot;, subtitle = &amp;quot;Z-scored for comparability; greys are missing.&amp;quot;) +
+  facet_wrap(vars(name))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-02-18-the-carbon-footprint-of-food-produced-for-consumption/index_files/figure-html/unnamed-chunk-10-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Cool. It works.&lt;/p&gt;
+&lt;/div&gt;
+</description>
+    </item>
     
     <item>
       <title>Mapping San Francisco Trees</title>
