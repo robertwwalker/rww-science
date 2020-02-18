@@ -11,28 +11,33 @@ output:
 knitr::opts_chunk$set(message = FALSE, warning=FALSE)
 ```
 
-### Probability: The Logic of Science
+
+## Probability: The Logic of Science
 
 Jaynes presents a few core ideas and requirements for his rational system.  Probability emerges as the representation of circumstances in which any given realization of a process is either TRUE or FALSE but both are possible and expressable by probabilities
 
 - that sum to one for all events
 - are greater than or equal to zero for any given event
 
+***
 
-### General Representation of Probability
+## General Representation of Probability
 
 Is of necessity two-dimensional,
 
 - We have $x$ and 
 - we have $Pr(X=x)$ in one of two forms (Pr or f).
 
+
 ***
+
 ```{r P1, echo=FALSE}
 plot(x=NA, y=NA, xlab="x", ylab="Pr(X=x)", xlim=c(-5,5), ylim=c(0,1), bty="n", main="A General Probability Distribution")
 ```
 
+***
 
-### Probability Distributions of Two Forms
+## Probability Distributions of Two Forms
 
 Our core concept is a probability distribution just as above.  These come in two forms for two types [discrete (qualitative)] and continuous (quantitative)]:
 
@@ -40,20 +45,25 @@ Our core concept is a probability distribution just as above.  These come in two
 - Assumed
 - Derived
 
+***
 
-### [The Poster](https://github.com/robertwwalker/DADMStuff/raw/master/Distribution-Poster.pdf) and Examples
+## [The Poster](https://github.com/robertwwalker/DADMStuff/raw/master/Distribution-Poster.pdf) and Examples
 
 Distributions are nouns.  Sentences are incomplete without verbs -- parameters.  We need both; it is for this reason that the former slide is true.  We do not always have a grounding for either the name or the parameter.
 
-### Continuous vs. Discrete Distributions
+***
 
-The differences are sums versus integrals.  Why?
-- Histograms or
-- Density Plots
+## Continuous vs. Discrete Distributions
+
+The differences are sums versus integrals.  Why?  
+
+- Histograms or  
+- Density Plots  
 
 The probability of exactly any given value is zero on a true continuum.
 
 ***
+
 Expectation
 
 $$E(X) = \sum_{x \in X} x \cdot Pr(X=x)$$
@@ -65,25 +75,35 @@ $$E[(X-\mu)^2] = \sum_{x \in X} (x-\mu)^2 \cdot Pr(X=x)$$
 $$E((X-\mu)^2) = \int_{x \in X} (x-\mu)^2 \cdot f(x)dx$$
 
 
-### The z-transform
+# The z-transform
 
 The generic z-transformation applied to a variable $x$ centers [mean$\approx$ 0] and scales [std. dev. $\approx$ variance $\approx$ 1] to $z_{x}$ for population parameters.  $\approx$ is approximately equal to.
 
 $$ z = \frac{x - \mu}{\sigma} $$
 
+***
+
 In samples, the 0 and 1 are exact; these are features of the mean and *degrees of freedom* from last time.
 
 $$ z = \frac{x - \overline{x}}{s_{x}} $$.
 
-where $\overline{x}$ is the sample mean of $x$ and $s_{x}$ is the sample standard deviation of $x$.  Take the example of earnings.  Suppose earnings in a community have mean 55,000 and standard deviation 10,000.  This is in dollars.  Suppose I earn 75,000 dollars.  First, if we take the top part of the fraction in the $z$ equation, we see that I earn 20,000 dollars more than the average (75000 - 55000).  Finishing the calculation of z, I would divide that 20,000 dollars by 10,000 dollars per standard deviation.  Let's show that.
+where $\overline{x}$ is the sample mean of $x$ and $s_{x}$ is the sample standard deviation of $x$.  Take the example of earnings.  
+
+***
+
+Suppose earnings in a community have mean 55,000 and standard deviation 10,000.  This is in dollars.  Suppose I earn 75,000 dollars.  First, if we take the top part of the fraction in the $z$ equation, we see that I earn 20,000 dollars more than the average (75000 - 55000).  Finishing the calculation of z, I would divide that 20,000 dollars by 10,000 dollars per standard deviation.  Let's show that.
 
 $$ z = \frac{75000 dollars - 55000 dollars}{\frac{10000 dollars}{SD}} = +2 SD $$.
 
 I am 2 standard deviations above the average (the +) earnings.  All $z$ does is re-scale the original data to standard deviations with zero as the mean.  
 
+***
+
 Suppose I earn 35,000.  That makes me 20,000 below the average and gives me a z score of -2.  I am 2 standard deviations below average (the -) earnings.
 
 $z$ is an easy way to assess symmetry.  The mean of z is always zero but the distribution of z to the left and right of zero is informative.  If they are roughly even, then symmetry is likely.  If the signs are uneven, then symmetry is unlikely.  In R, $z$ is automated with the *scale()* command.  The last line uses a table and the *sign* command to show me the positive and negative z.
+
+***
 
 ```{r SimD1}
 # Generate random normal income
@@ -109,7 +129,7 @@ Distributions in R are defined by four core parts:
 - q, for quantile (given p): x such that $Pr(X\leq q)=p$
 
 
-### A Grape Escape?
+## A Grape Escape?
 
 A filling process is supposed to fill jars with 16 ounces of grape jelly, according to the label, and regulations require that each jar contain between 15.95 and 16.05 ounces.
 
@@ -136,6 +156,8 @@ table(Jars < 15.95 | Jars > 16.05) # | captures or
 summary(scale(Jars))
 sd(scale(Jars))
 ```
+
+***
 
 2.	*The mean of the normal random process of filling is known to be 16.004 ounces with standard deviation 0.028 ounces.*
 + What is the probability that a random jar is outside of requirements?  NB: *norm* is the noun with mean (default 0) and sd (default 1).
@@ -177,7 +199,7 @@ qnorm(0.75, 16.004, 0.028)
 ```
 
 
-### Scottish Pounds
+## Scottish Pounds
 
 *Informal surveys suggest that 15% of Essex shopkeepers will not accept Scottish pounds.  There are approximately 200 shops in the general High Street square.*
 
@@ -219,7 +241,7 @@ plot(seq(0,60), pgeom(seq(0,60), 0.15))
 ```
 
 
-### The Median is a Binomial with p=0.5
+## The Median is a Binomial with p=0.5
 
 Interestingly, any given observation has a 50-50 chance of being *over* or *under* the median.  Suppose that I have five datum.  
 1. What is the probability that all are under?

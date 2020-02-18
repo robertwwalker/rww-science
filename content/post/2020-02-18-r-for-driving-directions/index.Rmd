@@ -1,0 +1,80 @@
+---
+title: R for Driving Directions?
+author: Robert W. Walker
+date: '2020-02-18'
+slug: r-for-driving-directions
+categories:
+  - R
+  - Maps
+tags:
+  - Maps
+  - plot
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2020-02-18T09:48:57-08:00'
+featured: no
+image: 
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+## Driving Directions from R
+
+There is no reason that maps with driving directions cannot be produced in R.  Given the `directions` api from Google, it should be doable.  As it happens, I was surprised how easy it was.  Let me try to map a simple A to B location.  First, to the locations; I will specify two.  It is possible to geolocate addresses for this also, I happened to have the GPS coordinates in hand.
+
+```{r LocData}
+InNOut <- data.frame(lat = 45.01182, lng=-123.01566, popup = "In-N-Out, Keizer")
+WU <- data.frame(lat = 44.9366627941527, lng = -123.030147262156, popup = "Willamette University")
+```
+
+With these coordinates in mind, I need to acquire the directions, and routes based on those directions.  The `mapsapi` package interacts with the various google maps APIs.  I have yet to figure out how to effectively hide the key in these API calls so I am copying the code chunk but will work with the data that I obtained from the following code.  The first step is to request directions.  `mp_directions` requires an origin and a destination in one of a few forms.  You can feed a character string [vector of length 1], a numeric vector of length 2 [lon, lat], a matrix with one row and two columns, same as above, or an sf/sfc point layer with only one feature.  While I have not specified them, we can also require waypoints, choose a mode other than the default (driving), and get multiple alternatives or only a single set of directions.  Here, I will ask for alternatives.
+
+```
+library(mapsapi)
+doc <- mp_directions(
+  origin = c(WU$lng,WU$lat),
+  destination = c(InNOut$lng,InNOut$lat),
+  alternatives = TRUE, key=key, quiet=TRUE)
+route <- mp_get_routes(doc)
+```
+
+What does the output of this look like?
+
+```{r}
+load("data/doc.RData")
+doc
+```
+
+`mp_directions` returns xml from the `Directions` API consisting of a status report, the routes, and the beginning and endpoints.
+
+```{r}
+route
+```
+
+`mp_get_route` extracts the routes from the directions that we previously obtained as an `sf`.  The routes themselves are `LINESTRING` geometries.  The last setup step involves figuring out how to center the map.  This is not completely general as the zoom needs adjustment depending upon the distance between the beginning and endpoints.  My solution is to simply average the latitude and longitude.
+
+```{r}
+Mean.Lat <- mean(c(WU$lat,InNOut$lat))
+Mean.Lon <- mean(c(WU$lng,InNOut$lng))
+```
+
+Now I have a center to view the map.  Let's build a map using Leaflet.  First, call the library.  Second, initiate a new Leaflet.  Add tiles to it.  Define the view using my average coordinates.  Add a marker for Willamette and for In-N-Out with popup text.  Finally, add the routes.
+
+```{r}
+library(leaflet)
+m <- leaflet() %>% 
+  addTiles() %>% 
+  setView(lat=Mean.Lat,lng=Mean.Lon, zoom = 12) %>% 
+  addMarkers(lat=WU$lat, lng=WU$lng, popup = WU$popup) %>% 
+  addMarkers(lat=InNOut$lat, lng=InNOut$lng, popup = InNOut$popup) %>%  
+  addPolylines(data = route)
+```
+
+What does it look like?
+
+```{r}
+m
+```

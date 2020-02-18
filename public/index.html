@@ -239,7 +239,7 @@
   <meta property="og:description" content="Associate Professor of Quantitative Methods"><meta property="og:image" content="/img/portrait.jpg">
   <meta property="twitter:image" content="/img/portrait.jpg"><meta property="og:locale" content="en-us">
   
-    <meta property="og:updated_time" content="2020-02-12T00:00:00&#43;00:00">
+    <meta property="og:updated_time" content="2020-02-18T00:00:00&#43;00:00">
   
 
   
@@ -1159,6 +1159,87 @@
           Last updated on
       
     
+    Feb 18, 2020
+  </span>
+  
+
+  
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    7 min read
+  </span>
+  
+
+  
+  
+  
+
+  
+  
+  <span class="middot-divider"></span>
+  <span class="article-categories">
+    <i class="fas fa-folder mr-1"></i><a href="/categories/r/">R</a>, <a href="/categories/maps/">Maps</a></span>
+  
+
+</div>
+
+  
+
+  
+  
+  
+
+  <h3 class="article-title mb-1 mt-3">
+    <a href="/2020/02/18/r-for-driving-directions/">R for Driving Directions?</a>
+  </h3>
+
+  
+  <div class="article-style">
+    <p>Driving Directions from R There is no reason that maps with driving directions cannot be produced in R. Given the directions api from Google, it should be doable. As it happens, I was surprised how easy it was. Let me try to map a simple A to B location. First, to the locations; I will specify two. It is possible to geolocate addresses for this also, I happened to have the GPS coordinates in hand.</p>
+  </div>
+  
+
+  
+
+</div>
+
+      
+    
+      
+        
+
+
+
+
+
+
+
+
+
+  
+
+
+<div class="card-simple">
+
+  
+    
+
+
+<div class="article-metadata">
+
+  
+  
+
+  
+  <span class="article-date">
+    
+    
+      
+          Last updated on
+      
+    
     Jan 31, 2020
   </span>
   
@@ -1447,88 +1528,6 @@ library(tidyverse) Letter.Freq &lt;- data.frame(stringsAsFactors=FALSE, Letter =
 Get a map.
  Geocode the addresses into latitude and longitude.
  Combine the the two with a first map layer and a second layer on top that contains the points.  From there, it is pretty easy to get fancy using ggplotly to put relevant text hovers into place.</p>
-  </div>
-  
-
-  
-
-</div>
-
-      
-    
-      
-        
-
-
-
-
-
-
-
-
-
-  
-
-
-<div class="card-simple">
-
-  
-    
-
-
-<div class="article-metadata">
-
-  
-  
-
-  
-  <span class="article-date">
-    
-    
-      
-          Last updated on
-      
-    
-    Jan 31, 2020
-  </span>
-  
-
-  
-
-  
-  <span class="middot-divider"></span>
-  <span class="article-reading-time">
-    35 min read
-  </span>
-  
-
-  
-  
-  
-
-  
-  
-  <span class="middot-divider"></span>
-  <span class="article-categories">
-    <i class="fas fa-folder mr-1"></i><a href="/categories/tidyverse/">tidyverse</a>, <a href="/categories/tidytuesday/">tidyTuesday</a></span>
-  
-
-</div>
-
-  
-
-  
-  
-  
-
-  <h3 class="article-title mb-1 mt-3">
-    <a href="/2019/12/17/dog-movements-a-tidytuesday/">Dog Movements: a tidyTuesday</a>
-  </h3>
-
-  
-  <div class="article-style">
-    <p>Adoptable Dogs # devtools::install_github(&quot;thebioengineer/tidytuesdayR&quot;, force=TRUE) tuesdata51 &lt;- tidytuesdayR::tt_load(2019, week = 51) dog_moves &lt;- tuesdata51$dog_moves dog_des &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-12-17/dog_descriptions.csv&#39;) library(tidyverse); library(scatterpie) library(rgeos) library(maptools) library(rgdal); library(usmap); library(ggthemes)  The Base Map My.Map &lt;- us_map(regions = &quot;states&quot;) Base.Plot &lt;- ggplot() + geom_polygon(data=My.Map, aes(x=x, y=y, group=group), fill=&quot;white&quot;, color=&quot;black&quot;) + theme_map() Base.Plot A fifty state map to plot this information on.
-New.Dat &lt;- left_join(My.Map, dog_moves, by= c(&quot;full&quot; = &quot;location&quot;)) ggplot() + geom_polygon(data=New.</p>
   </div>
   
 
@@ -2660,7 +2659,7 @@ New.Dat &lt;- left_join(My.Map, dog_moves, by= c(&quot;full&quot; = &quot;locati
           
           
           
-          <a href="/tags/maps/" style="font-size:1.5572078759916508rem">Maps</a>
+          <a href="/tags/maps/" style="font-size:1.5983123970187747rem">Maps</a>
         
           
           
@@ -2675,7 +2674,7 @@ New.Dat &lt;- left_join(My.Map, dog_moves, by= c(&quot;full&quot; = &quot;locati
           
           
           
-          <a href="/tags/plot/" style="font-size:1.3990229149752875rem">plot</a>
+          <a href="/tags/plot/" style="font-size:1.4591620460410755rem">plot</a>
         
           
           

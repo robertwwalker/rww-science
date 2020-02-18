@@ -9,16 +9,17 @@ output:
 
 
 
-<div id="probability-the-logic-of-science" class="section level3">
-<h3>Probability: The Logic of Science</h3>
+<div id="probability-the-logic-of-science" class="section level2">
+<h2>Probability: The Logic of Science</h2>
 <p>Jaynes presents a few core ideas and requirements for his rational system. Probability emerges as the representation of circumstances in which any given realization of a process is either TRUE or FALSE but both are possible and expressable by probabilities</p>
 <ul>
 <li>that sum to one for all events</li>
 <li>are greater than or equal to zero for any given event</li>
 </ul>
+<hr />
 </div>
-<div id="general-representation-of-probability" class="section level3">
-<h3>General Representation of Probability</h3>
+<div id="general-representation-of-probability" class="section level2">
+<h2>General Representation of Probability</h2>
 <p>Is of necessity two-dimensional,</p>
 <ul>
 <li>We have <span class="math inline">\(x\)</span> and</li>
@@ -26,24 +27,30 @@ output:
 </ul>
 <hr />
 <p><img src="/courses/GSMPR622/Distributions/Distributions_files/figure-html/P1-1.png" width="672" /></p>
+<hr />
 </div>
-<div id="probability-distributions-of-two-forms" class="section level3">
-<h3>Probability Distributions of Two Forms</h3>
+<div id="probability-distributions-of-two-forms" class="section level2">
+<h2>Probability Distributions of Two Forms</h2>
 <p>Our core concept is a probability distribution just as above. These come in two forms for two types [discrete (qualitative)] and continuous (quantitative)]:</p>
 <ul>
 <li>Assumed</li>
 <li>Derived</li>
 </ul>
+<hr />
 </div>
-<div id="the-poster-and-examples" class="section level3">
-<h3><a href="https://github.com/robertwwalker/DADMStuff/raw/master/Distribution-Poster.pdf">The Poster</a> and Examples</h3>
+<div id="the-poster-and-examples" class="section level2">
+<h2><a href="https://github.com/robertwwalker/DADMStuff/raw/master/Distribution-Poster.pdf">The Poster</a> and Examples</h2>
 <p>Distributions are nouns. Sentences are incomplete without verbs – parameters. We need both; it is for this reason that the former slide is true. We do not always have a grounding for either the name or the parameter.</p>
+<hr />
 </div>
-<div id="continuous-vs.discrete-distributions" class="section level3">
-<h3>Continuous vs. Discrete Distributions</h3>
-<p>The differences are sums versus integrals. Why?
-- Histograms or
-- Density Plots</p>
+<div id="continuous-vs.discrete-distributions" class="section level2">
+<h2>Continuous vs. Discrete Distributions</h2>
+<p>The differences are sums versus integrals. Why?</p>
+<ul>
+<li>Histograms or<br />
+</li>
+<li>Density Plots</li>
+</ul>
 <p>The probability of exactly any given value is zero on a true continuum.</p>
 <hr />
 <p>Expectation</p>
@@ -53,17 +60,22 @@ output:
 <p><span class="math display">\[E[(X-\mu)^2] = \sum_{x \in X} (x-\mu)^2 \cdot Pr(X=x)\]</span>
 <span class="math display">\[E((X-\mu)^2) = \int_{x \in X} (x-\mu)^2 \cdot f(x)dx\]</span></p>
 </div>
-<div id="the-z-transform" class="section level3">
-<h3>The z-transform</h3>
+<div id="the-z-transform" class="section level1">
+<h1>The z-transform</h1>
 <p>The generic z-transformation applied to a variable <span class="math inline">\(x\)</span> centers [mean<span class="math inline">\(\approx\)</span> 0] and scales [std. dev. <span class="math inline">\(\approx\)</span> variance <span class="math inline">\(\approx\)</span> 1] to <span class="math inline">\(z_{x}\)</span> for population parameters. <span class="math inline">\(\approx\)</span> is approximately equal to.</p>
 <p><span class="math display">\[ z = \frac{x - \mu}{\sigma} \]</span></p>
+<hr />
 <p>In samples, the 0 and 1 are exact; these are features of the mean and <em>degrees of freedom</em> from last time.</p>
 <p><span class="math display">\[ z = \frac{x - \overline{x}}{s_{x}} \]</span>.</p>
-<p>where <span class="math inline">\(\overline{x}\)</span> is the sample mean of <span class="math inline">\(x\)</span> and <span class="math inline">\(s_{x}\)</span> is the sample standard deviation of <span class="math inline">\(x\)</span>. Take the example of earnings. Suppose earnings in a community have mean 55,000 and standard deviation 10,000. This is in dollars. Suppose I earn 75,000 dollars. First, if we take the top part of the fraction in the <span class="math inline">\(z\)</span> equation, we see that I earn 20,000 dollars more than the average (75000 - 55000). Finishing the calculation of z, I would divide that 20,000 dollars by 10,000 dollars per standard deviation. Let’s show that.</p>
+<p>where <span class="math inline">\(\overline{x}\)</span> is the sample mean of <span class="math inline">\(x\)</span> and <span class="math inline">\(s_{x}\)</span> is the sample standard deviation of <span class="math inline">\(x\)</span>. Take the example of earnings.</p>
+<hr />
+<p>Suppose earnings in a community have mean 55,000 and standard deviation 10,000. This is in dollars. Suppose I earn 75,000 dollars. First, if we take the top part of the fraction in the <span class="math inline">\(z\)</span> equation, we see that I earn 20,000 dollars more than the average (75000 - 55000). Finishing the calculation of z, I would divide that 20,000 dollars by 10,000 dollars per standard deviation. Let’s show that.</p>
 <p><span class="math display">\[ z = \frac{75000 dollars - 55000 dollars}{\frac{10000 dollars}{SD}} = +2 SD \]</span>.</p>
 <p>I am 2 standard deviations above the average (the +) earnings. All <span class="math inline">\(z\)</span> does is re-scale the original data to standard deviations with zero as the mean.</p>
+<hr />
 <p>Suppose I earn 35,000. That makes me 20,000 below the average and gives me a z score of -2. I am 2 standard deviations below average (the -) earnings.</p>
 <p><span class="math inline">\(z\)</span> is an easy way to assess symmetry. The mean of z is always zero but the distribution of z to the left and right of zero is informative. If they are roughly even, then symmetry is likely. If the signs are uneven, then symmetry is unlikely. In R, <span class="math inline">\(z\)</span> is automated with the <em>scale()</em> command. The last line uses a table and the <em>sign</em> command to show me the positive and negative z.</p>
+<hr />
 <pre class="r"><code># Generate random normal income
 Hypo.Income &lt;- rnorm(1000, 55000, 10000)
 # z-transform income [mean 55000ish, std. dev. 10000ish]
@@ -72,17 +84,17 @@ z.Income &lt;- scale(Hypo.Income)
 Income &lt;- data.frame(Hypo.Income,z.Income)
 # Show the data.frame
 head(Income)</code></pre>
-<pre><code>##   Hypo.Income    z.Income
-## 1    56744.68  0.12600698
-## 2    54679.65 -0.07613963
-## 3    68395.78  1.26653862
-## 4    62700.21  0.70899714
-## 5    61452.36  0.58684378
-## 6    46817.52 -0.84576647</code></pre>
+<pre><code>##   Hypo.Income   z.Income
+## 1    52901.44 -0.1780434
+## 2    44384.24 -1.0221609
+## 3    62630.10  0.7861387
+## 4    45605.06 -0.9011689
+## 5    61297.75  0.6540931
+## 6    49865.06 -0.4789708</code></pre>
 <pre class="r"><code>table(sign(z.Income))</code></pre>
 <pre><code>## 
 ##  -1   1 
-## 502 498</code></pre>
+## 516 484</code></pre>
 </div>
 <div id="probability-distributions" class="section level1">
 <h1>Probability Distributions</h1>
@@ -93,8 +105,8 @@ head(Income)</code></pre>
 <li>d, for density/probability that <span class="math inline">\(Pr(X=x)\)</span> or <span class="math inline">\(f(x)\)</span></li>
 <li>q, for quantile (given p): x such that <span class="math inline">\(Pr(X\leq q)=p\)</span></li>
 </ul>
-<div id="a-grape-escape" class="section level3">
-<h3>A Grape Escape?</h3>
+<div id="a-grape-escape" class="section level2">
+<h2>A Grape Escape?</h2>
 <p>A filling process is supposed to fill jars with 16 ounces of grape jelly, according to the label, and regulations require that each jar contain between 15.95 and 16.05 ounces.</p>
 <ol style="list-style-type: decimal">
 <li><em>Suppose that the uniform random process of filling in known to fill between 15.9 and 16.1 ounces uniformly.</em></li>
@@ -112,20 +124,21 @@ hist(Jars)</code></pre>
 <pre class="r"><code>table(Jars &lt; 15.95 | Jars &gt; 16.05) # | captures or</code></pre>
 <pre><code>## 
 ## FALSE  TRUE 
-##   517   483</code></pre>
+##   518   482</code></pre>
 <ul>
 <li>Scale (z) the jars and summarise them.</li>
 </ul>
 <pre class="r"><code>summary(scale(Jars))</code></pre>
-<pre><code>##        V1          
-##  Min.   :-1.75474  
-##  1st Qu.:-0.84124  
-##  Median :-0.01044  
-##  Mean   : 0.00000  
-##  3rd Qu.: 0.85770  
-##  Max.   : 1.76724</code></pre>
+<pre><code>##        V1           
+##  Min.   :-1.800914  
+##  1st Qu.:-0.841868  
+##  Median : 0.002659  
+##  Mean   : 0.000000  
+##  3rd Qu.: 0.838466  
+##  Max.   : 1.707781</code></pre>
 <pre class="r"><code>sd(scale(Jars))</code></pre>
 <pre><code>## [1] 1</code></pre>
+<hr />
 <ol start="2" style="list-style-type: decimal">
 <li><em>The mean of the normal random process of filling is known to be 16.004 ounces with standard deviation 0.028 ounces.</em></li>
 </ol>
@@ -160,8 +173,8 @@ hist(Jars)</code></pre>
 <pre class="r"><code>qnorm(0.75, 16.004, 0.028)</code></pre>
 <pre><code>## [1] 16.02289</code></pre>
 </div>
-<div id="scottish-pounds" class="section level3">
-<h3>Scottish Pounds</h3>
+<div id="scottish-pounds" class="section level2">
+<h2>Scottish Pounds</h2>
 <p><em>Informal surveys suggest that 15% of Essex shopkeepers will not accept Scottish pounds. There are approximately 200 shops in the general High Street square.</em></p>
 <ol style="list-style-type: decimal">
 <li>Draw a plot of the distribution and the cumulative distribution of shopkeepers that do not accept Scottish pounds.</li>
@@ -192,8 +205,8 @@ hist(Jars)</code></pre>
 <pre class="r"><code>plot(seq(0,60), pgeom(seq(0,60), 0.15))</code></pre>
 <p><img src="/courses/GSMPR622/Distributions/Distributions_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 </div>
-<div id="the-median-is-a-binomial-with-p0.5" class="section level3">
-<h3>The Median is a Binomial with p=0.5</h3>
+<div id="the-median-is-a-binomial-with-p0.5" class="section level2">
+<h2>The Median is a Binomial with p=0.5</h2>
 <p>Interestingly, any given observation has a 50-50 chance of being <em>over</em> or <em>under</em> the median. Suppose that I have five datum.<br />
 1. What is the probability that all are under?</p>
 <pre class="r"><code>pbinom(0,size=5, p=0.5)</code></pre>
@@ -208,7 +221,6 @@ hist(Jars)</code></pre>
 </ol>
 <p><strong>Everything else</strong>.</p>
 <p>This <em>Rule of Five</em> often credited to Hubbard is handy.</p>
-</div>
 <div id="air-traffic-controllers" class="section level3">
 <h3>Air Traffic Controllers</h3>
 <p>FAA Decision: Expend or do not expend scarce resources investigating claimed staffing shortages at the Cleveland Air Route Traffic Control Center.</p>
@@ -249,5 +261,6 @@ Profits.U &lt;- sapply(c(1:1000), function(x) { sum(runif(Purchasers[[x]], 1000,
 Profits.N &lt;- sapply(c(1:1000), function(x) { sum(rnorm(Purchasers[[x]], 1500, 500))} )
 plot(density(Profits.N))</code></pre>
 <p><img src="/courses/GSMPR622/Distributions/Distributions_files/figure-html/MC1-1.png" width="672" /></p>
+</div>
 </div>
 </div>

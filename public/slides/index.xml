@@ -144,5 +144,264 @@ Three
 </description>
     </item>
     
+    <item>
+      <title></title>
+      <link>/slides/distributions/distributions-mbap/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      <guid>/slides/distributions/distributions-mbap/</guid>
+      <description>&lt;h1 id=&#34;probability-distributions&#34;&gt;Probability Distributions&lt;/h1&gt;
+&lt;p&gt;author: Robert W. Walker
+date: Wed Feb 12 13:02:05 2020
+autosize: true&lt;/p&gt;
+&lt;h1 id=&#34;probability-the-logic-of-science&#34;&gt;Probability: The Logic of Science&lt;/h1&gt;
+&lt;p&gt;Jaynes presents a few core ideas and requirements for his rational system.  Probability emerges as the representation of circumstances in which any given realization of a process is either TRUE or FALSE but both are possible and expressable by probabilities&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;that sum to one for all events&lt;/li&gt;
+&lt;li&gt;are greater than or equal to zero for any given event&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;general-representation-of-probability&#34;&gt;General Representation of Probability&lt;/h1&gt;
+&lt;p&gt;Is of necessity two-dimensional,&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;We have $x$ and&lt;/li&gt;
+&lt;li&gt;we have $Pr(X=x)$ in one of two forms (Pr or f).&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;p&gt;&lt;img src=&#34;Distributions-MBAP-figure/P1-1.png&#34; alt=&#34;plot of chunk P1&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;probability-distributions-of-two-forms&#34;&gt;Probability Distributions of Two Forms&lt;/h1&gt;
+&lt;p&gt;Our core concept is a probability distribution just as above.  These come in two forms for two types [discrete (qualitative)] and continuous (quantitative)]:&lt;/p&gt;
+&lt;hr&gt;
+&lt;ul&gt;
+&lt;li&gt;Assumed&lt;/li&gt;
+&lt;li&gt;Derived&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;the-poster-and-examples&#34;&gt;The Poster and Examples&lt;/h1&gt;
+&lt;p&gt;Distributions are nouns.  Sentences are incomplete without verbs &amp;ndash; parameters.  We need both; it is for this reason that the former slide is true.  We do not always have a grounding for either the name or the parameter.&lt;/p&gt;
+&lt;h1 id=&#34;continuous-vs-discrete-distributions&#34;&gt;Continuous vs. Discrete Distributions&lt;/h1&gt;
+&lt;p&gt;The differences are sums versus integrals.  Why?&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Histograms or&lt;/li&gt;
+&lt;li&gt;Density Plots&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The probability of exactly any given value is zero on a true continuum.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;Expectation&lt;/p&gt;
+&lt;p&gt;$$E(X) = \sum_{x \in X} x \cdot Pr(X=x)$$
+$$E(X) = \int_{x \in X} x \cdot f(x)dx$$&lt;/p&gt;
+&lt;p&gt;Variance&lt;/p&gt;
+&lt;p&gt;$$E[(X-\mu)^2] = \sum_{x \in X} (x-\mu)^2 \cdot Pr(X=x)$$
+$$E((X-\mu)^2) = \int_{x \in X} (x-\mu)^2 \cdot f(x)dx$$&lt;/p&gt;
+&lt;h1 id=&#34;distributions-in-r&#34;&gt;Distributions in R&lt;/h1&gt;
+&lt;p&gt;Are defined by four core parts:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;r, for random variables&lt;/li&gt;
+&lt;li&gt;p, for cumulative probability [counting from left]&lt;/li&gt;
+&lt;li&gt;d, for density/probability that $X=x$&lt;/li&gt;
+&lt;li&gt;q, for quantile&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;distributions-we-deploy&#34;&gt;Distributions We Deploy&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;Normal [and functions of it] [C]&lt;/li&gt;
+&lt;li&gt;Bernoulli and Binomial [D]&lt;/li&gt;
+&lt;li&gt;Geometric [D]&lt;/li&gt;
+&lt;li&gt;Poisson/Negative Binomial [D]&lt;/li&gt;
+&lt;li&gt;Uniform [C]&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;the-normal-distribution-gaussian&#34;&gt;The Normal Distribution [Gaussian]&lt;/h1&gt;
+&lt;p&gt;$$f(x|\mu,\sigma^2 ) = \frac{1}{\sqrt{2\pi\sigma^{2}}} \exp \left[ -\frac{1}{2} \left(\frac{x - \mu}{\sigma}\right)^{2}\right]&lt;br&gt;
+$$
+Is the workhorse of statistics.  Key features:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Is self-replicating: sums of normals are normal.&lt;/li&gt;
+&lt;li&gt;If $X$ is normal, then $$ Z = \frac{(X - \mu)}{\sigma} $$ is normal.&lt;/li&gt;
+&lt;li&gt;Aside, $$ z_{x} = \frac{(x - \overline{x})}{s_{x}} $$ has mean 0 and variance/std. dev. 1.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;the-canonical-normal-z&#34;&gt;The Canonical Normal: Z&lt;/h1&gt;
+&lt;p&gt;&lt;img src=&#34;Distributions-MBAP-figure/unnamed-chunk-1-1.png&#34; alt=&#34;plot of chunk unnamed-chunk-1&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;why-normals&#34;&gt;Why Normals?&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;The Central Limit Theorem&lt;/li&gt;
+&lt;li&gt;They Dominate Ops [$6\sigma$]&lt;/li&gt;
+&lt;li&gt;Normal Approximations Abound&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;an-example-tire-lifetimes&#34;&gt;An Example: Tire Lifetimes&lt;/h1&gt;
+&lt;p&gt;A brand of steel belted radial tire has a lifetime expressed in miles that is normal with mean 96000 and standard deviation 12000.  Two questions:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;If a warranty is set for 60,000 miles, what proportion of tires should require warranty service?&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;What mileage requires only a 1% replacement rate?&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;hr&gt;
+&lt;p&gt;&lt;img src=&#34;Distributions-MBAP-figure/unnamed-chunk-2-1.png&#34; alt=&#34;plot of chunk unnamed-chunk-2&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;tire-lifetimes&#34;&gt;Tire Lifetimes&lt;/h1&gt;
+&lt;p&gt;A brand of steel belted radial tire has a lifetime expressed in miles that is normal with mean 96000 and standard deviation 12000.  Two questions: &lt;em&gt;Normal(96000,12000)&lt;/em&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;If a warranty is set for 60,000 miles, what proportion of tires should require warranty service?&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;pnorm(60000,96000,12000)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;[1] 0.001349898
+&lt;/code&gt;&lt;/pre&gt;
+&lt;hr&gt;
+&lt;p&gt;&lt;img src=&#34;Distributions-MBAP-figure/unnamed-chunk-4-1.png&#34; alt=&#34;plot of chunk unnamed-chunk-4&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;an-example-tires-and-warranties&#34;&gt;An Example: Tires and Warranties&lt;/h1&gt;
+&lt;p&gt;A brand of steel belted radial tire has a lifetime expressed in miles that is normal with mean 96000 and standard deviation 12000.  Two questions: &lt;em&gt;Normal(96000,12000)&lt;/em&gt;&lt;/p&gt;
+&lt;ol start=&#34;2&#34;&gt;
+&lt;li&gt;What mileage requires only a 1% replacement rate?&lt;/li&gt;
+&lt;/ol&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;qnorm(0.01,96000,12000)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;[1] 68083.83
+&lt;/code&gt;&lt;/pre&gt;
+&lt;hr&gt;
+&lt;p&gt;&lt;img src=&#34;Distributions-MBAP-figure/unnamed-chunk-6-1.png&#34; alt=&#34;plot of chunk unnamed-chunk-6&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;bernoulli-trials-and-the-binomial&#34;&gt;Bernoulli Trials and the Binomial&lt;/h1&gt;
+&lt;p&gt;Suppose the variable of interest is discrete and takes only two values: yes and no.  For example, is a customer satisfied with the outcomes of a given service visit?&lt;/p&gt;
+&lt;p&gt;For each individual, because the probability of yes ($\pi$) and no must sum to one, we can write:&lt;/p&gt;
+&lt;p&gt;$$f(x|\pi) = \pi^{x}(1-\pi)^{1-x}$$&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;For multiple identical trials, we have the Binomial:&lt;/p&gt;
+&lt;p&gt;$$f(x=k|n,\pi) = {n \choose k} \pi^{k}(1-\pi)^{n-k}$$
+where $${n \choose k} = \frac{n!}{(n-k)!}$$&lt;/p&gt;
+&lt;h1 id=&#34;the-binomial&#34;&gt;The Binomial&lt;/h1&gt;
+&lt;p&gt;&lt;img src=&#34;https://github.com/robertwwalker/DADMStuff/raw/master/BinomialR.PNG&#34; alt=&#34;BinomialR&#34;&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;$$ p(X = k|Binomial(n,\pi)) = $$
+$$ { n \choose k } \pi^{k}(1-\pi)^{n-k} $$ for k = 0, 1, 2, $\ldots$, n, where&lt;/p&gt;
+&lt;p&gt;$$ {{n} \choose {k}}={\frac {n!}{k!(n-k)!}} $$&lt;/p&gt;
+&lt;p&gt;$R$ can calculate it with &lt;code&gt;choose(n,k)&lt;/code&gt;.&lt;/p&gt;
+&lt;h1 id=&#34;example-05&#34;&gt;Example: 0.5?&lt;/h1&gt;
+&lt;p&gt;Post service, 100 customers were surveyed and asked one question: Satisfied?  &lt;em&gt;47 said yes&lt;/em&gt;  Does this mean we are awful?&lt;/p&gt;
+&lt;h1 id=&#34;example-05-1&#34;&gt;Example: 0.5?&lt;/h1&gt;
+&lt;p&gt;Post service, 100 customers were surveyed and asked one question: Satisfied?  &lt;em&gt;47 said yes&lt;/em&gt;  Does this mean we are awful? &lt;em&gt;Binomial(0.5,n=100)&lt;/em&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;&lt;img src=&#34;Distributions-MBAP-figure/BPlot2-1.png&#34; alt=&#34;plot of chunk BPlot2&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;example-05-2&#34;&gt;Example: 0.5?&lt;/h1&gt;
+&lt;p&gt;Post service, 100 customers were surveyed and asked one question: Satisfied?  &lt;em&gt;47 said yes&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;Does this mean we are awful? &lt;em&gt;Binomial(0.5,n=100)&lt;/em&gt;&lt;/p&gt;
+&lt;p&gt;No.  If customers were indifferent [p=0.5], we should see only 47 satisfied about 30% of the time.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;pbinom(47,100,0.5)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;[1] 0.3086497
+&lt;/code&gt;&lt;/pre&gt;
+&lt;hr&gt;
+&lt;p&gt;&lt;img src=&#34;Distributions-MBAP-figure/BPlot-1.png&#34; alt=&#34;plot of chunk BPlot&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;geometric-distributions&#34;&gt;Geometric Distributions&lt;/h1&gt;
+&lt;p&gt;How many failures before the first success?  Now defined exclusively by $p$.  In each case, (1-p) happens $k$ times.  Then, on the $k+1^{th}$ try, p.  Note 0 failures can happen&amp;hellip;&lt;/p&gt;
+&lt;p&gt;$$Pr(y=k) = (1-p)^{k}p$$&lt;/p&gt;
+&lt;h1 id=&#34;example-entrepreneurs&#34;&gt;Example: Entrepreneurs&lt;/h1&gt;
+&lt;p&gt;Suppose any startup has a $p=0.1$ chance of success.  How many failures?&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;&lt;img src=&#34;Distributions-MBAP-figure/GP1-1.png&#34; alt=&#34;plot of chunk GP1&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;example-entrepreneurs-1&#34;&gt;Example: Entrepreneurs&lt;/h1&gt;
+&lt;p&gt;Suppose any startup has a $p=0.1$ chance of success.  How many failures for the average/median person?&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;qgeom(0.5,0.1)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;[1] 6
+&lt;/code&gt;&lt;/pre&gt;
+&lt;hr&gt;
+&lt;p&gt;&lt;img src=&#34;Distributions-MBAP-figure/GP2-1.png&#34; alt=&#34;plot of chunk GP2&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;events-the-poisson&#34;&gt;Events: The Poisson&lt;/h1&gt;
+&lt;p&gt;&lt;img src=&#34;https://github.com/robertwwalker/DADMStuff/raw/master/Poisson.jpg&#34; alt=&#34;Poisson&#34;&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;Take a binomial with $p$ very small and let $n \rightarrow \infty$.  We get the Poisson distribution ($y$) given an arrival rate $\lambda$ specified in events per period.&lt;/p&gt;
+&lt;p&gt;$$f(y|\lambda) = \frac{\lambda^{y}e^{-\lambda}}{y!}$$&lt;/p&gt;
+&lt;h1 id=&#34;examples-the-poisson&#34;&gt;Examples: The Poisson&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;Walk in customers&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;Emergency Room Arrivals&lt;/em&gt;&lt;/li&gt;
+&lt;li&gt;Births, deaths, marriages&lt;/li&gt;
+&lt;li&gt;&lt;em&gt;Prussian Cavalry Deaths by Horse Kick&lt;/em&gt;&lt;/li&gt;
+&lt;li&gt;Fish?&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h1 id=&#34;emergency-room-arrivals&#34;&gt;Emergency Room Arrivals&lt;/h1&gt;
+&lt;p&gt;Suppose trauma victims arrive at a rate of 12 per hour.  You schedule ER teams that can see 2 patients per hour and you want enough teams so that 95% of hours are properly staffed.&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;&lt;img src=&#34;Distributions-MBAP-figure/PP1-1.png&#34; alt=&#34;plot of chunk PP1&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;emergency-room-arrivals-1&#34;&gt;Emergency Room Arrivals&lt;/h1&gt;
+&lt;p&gt;Suppose trauma victims arrive at a rate of 12 per hour.  You schedule ER teams that can see 3 patients per hour and you want enough teams so that 95% of hours are properly staffed.&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;qpois(0.95, 12)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;[1] 18
+&lt;/code&gt;&lt;/pre&gt;
+&lt;hr&gt;
+&lt;p&gt;&lt;img src=&#34;Distributions-MBAP-figure/PP2-1.png&#34; alt=&#34;plot of chunk PP2&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;deaths-by-horse-kick&#34;&gt;Deaths by Horse Kick&lt;/h1&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;library(vcd)
+data(VonBort)
+head(VonBort)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;  deaths year corps fisher
+1      0 1875     G     no
+2      0 1875     I     no
+3      0 1875    II    yes
+4      0 1875   III    yes
+5      0 1875    IV    yes
+6      0 1875     V    yes
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;mean(VonBort$deaths)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;[1] 0.7
+&lt;/code&gt;&lt;/pre&gt;
+&lt;hr&gt;
+&lt;h1 id=&#34;the-exponential-distribution&#34;&gt;&lt;img src=&#34;Distributions-MBAP-figure/VBG1-1.png&#34; alt=&#34;plot of chunk VBG1&#34;&gt;
+The Exponential Distribution&lt;/h1&gt;
+&lt;p&gt;Describes the time between Poisson arrivals with rate $\lambda$.  Of course, if the expected number of arrivals is large, this is certain to be less than one as a fraction of whatever units the &lt;em&gt;rate&lt;/em&gt; is defined over.  For example, how long should a Prussian cavalry unit expect to wait between deaths by horsekick?&lt;/p&gt;
+&lt;p&gt;=================================================&lt;/p&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;plot(density(rexp(10000, 0.7)), main=&amp;quot;Interval Between DbHKs&amp;quot;, xlab=&amp;quot;Years&amp;quot;)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;Distributions-MBAP-figure/unnamed-chunk-9-1.png&#34; alt=&#34;plot of chunk unnamed-chunk-9&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;the-uniform-distribution&#34;&gt;The Uniform Distribution&lt;/h1&gt;
+&lt;ul&gt;
+&lt;li&gt;Is flat, each value is equally likely.&lt;/li&gt;
+&lt;li&gt;Defined on 0 to 1 gives a random cumulative probability $X \leq x$.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;hr&gt;
+&lt;p&gt;&lt;img src=&#34;Distributions-MBAP-figure/UP1-1.png&#34; alt=&#34;plot of chunk UP1&#34;&gt;&lt;/p&gt;
+&lt;h1 id=&#34;monte-carlo-simulation&#34;&gt;Monte Carlo Simulation&lt;/h1&gt;
+&lt;p&gt;Putting it together.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Customers arriving at a car dealership at a rate of 6 per hour.&lt;/li&gt;
+&lt;li&gt;Each customer has a 15% probability of making a purchase.&lt;/li&gt;
+&lt;li&gt;Purchases have
+a.	uniform profits over the interval $1000-$3000.
+b.	Normal profits that average 1500 with standard deviation 500&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Let&amp;rsquo;s produce and graph the solution.&lt;/p&gt;
+&lt;h1 id=&#34;monte-carlo-simulation-1&#34;&gt;Monte Carlo Simulation&lt;/h1&gt;
+&lt;p&gt;Putting it together. &lt;em&gt;r&lt;/em&gt;, let&amp;rsquo;s try 1000.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Customers arriving at a car dealership at a rate of 6 per hour.&lt;/li&gt;
+&lt;li&gt;Each customer has a 15% probability of making a purchase.&lt;/li&gt;
+&lt;li&gt;Purchases have&lt;/li&gt;
+&lt;/ol&gt;
+&lt;ul&gt;
+&lt;li&gt;Uniform profits over the interval $1000-$3000.&lt;/li&gt;
+&lt;li&gt;Normal profits that average $1500 with standard deviation $500&lt;/li&gt;
+&lt;/ul&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;Let&amp;rsquo;s produce and graph the solution.&lt;/p&gt;
+&lt;hr&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;library(tidyverse)
+Customers &amp;lt;- rpois(1000, 6) # Customers ~ Poisson(6)
+Purchasers &amp;lt;- rbinom(1000, size=Customers, prob=0.15) # P ~ Binomial(Customers,0.15)
+# Next part needs a coding trick.  For each row [of 1000], I want sum the Profits given Purchasers random draws.
+Profits.U &amp;lt;- 1:1000 %&amp;gt;% map_dbl(~ sum(runif(Purchasers[[.]], 1000, 3000)))
+Profits.N &amp;lt;- 1:1000 %&amp;gt;% map_dbl(~ sum(rnorm(Purchasers[[.]], 1500, 500)))
+&lt;/code&gt;&lt;/pre&gt;
+&lt;h1 id=&#34;solutions&#34;&gt;Solutions&lt;/h1&gt;
+&lt;pre&gt;&lt;code class=&#34;language-r&#34;&gt;par(mfrow=c(1,1))
+plot(x=Customers, y=Purchasers)
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;Distributions-MBAP-figure/unnamed-chunk-10-1.png&#34; alt=&#34;plot of chunk unnamed-chunk-10&#34;&gt;&lt;/p&gt;
+&lt;hr&gt;
+&lt;p&gt;&lt;img src=&#34;Distributions-MBAP-figure/MC2-1.png&#34; alt=&#34;plot of chunk MC2&#34;&gt;&lt;/p&gt;
+</description>
+    </item>
+    
   </channel>
 </rss>
