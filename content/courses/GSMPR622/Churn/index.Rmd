@@ -1,0 +1,137 @@
+---
+title: "telco"
+author: "Robert W. Walker"
+date: "2020-02-19"
+output:
+   html_document:
+     self_contained: true
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# telco Churn
+
+The loss of customers is known as churn.  Here is some data on telephone companies that gives us a number of features of the customer and the billing history relevant to this.
+
+```{r, message=FALSE, warning=FALSE}
+library(radiant)
+library(tidyverse)
+library(readr)
+library(skimr)
+telco <- read_csv("https://github.com/robertwwalker/DADMStuff/raw/master/WA_Fn-UseC_-Telco-Customer-Churn.csv")
+skim(telco)
+telco <- telco[complete.cases(telco),] # Keep only rows with complete cases
+telco.analyse <- subset(telco, select = -customerID) # Drop customer ID
+telco.F <- mutate_if(telco.analyse, is.character, as.factor)
+```
+
+
+```
+install.packages("DataExplorer")
+library(DataExplorer)
+# Run separately
+create_report(telco.F)
+```
+
+Remove the missing data.  The outcome of interest is Churn.  Let's look at it and take on a few examples from proportions.  Because it is Yes and No, everything will be about the probability of No unless we turn them to factors and order them backwards.  I will just describe this as the probability of *retention*.
+
+```{r}
+( Tab.PaperlessY <- xtabs(~PaperlessBilling+Churn, data=telco.analyse, subset=telco.analyse$PaperlessBilling=="Yes") )
+prop.table(Tab.PaperlessY, 1)
+prop.test(Tab.PaperlessY)
+```
+
+For the paperless customers, the probability of retention is 0.65 to 0.68 with 95% confidence.  For the paper customers, we have...
+
+```{r}
+( Tab.PaperlessN <- xtabs(~PaperlessBilling+Churn, data=telco.analyse, subset=telco.analyse$PaperlessBilling=="No") )
+prop.table(Tab.PaperlessN, 1)
+prop.test(Tab.PaperlessN)
+```
+
+The probability of retention ranges from 0.82 to 0.85 with 95% confidence.  Because they do not overlap, there must be a difference and paperless customers churn more.
+
+## Comparisons
+
+```{r}
+( Tab.Paperless <- xtabs(~PaperlessBilling+Churn, data=telco.analyse) )
+prop.table(Tab.Paperless, 1)
+prop.test(Tab.Paperless)
+```
+
+Paperless clients have a probability of churning that is 0.152 to 0.192 higher than non-paperless clients.
+
+## Phone Service?
+
+Is there a difference in Churn between those with and without phone service?
+
+```{r}
+( Tab.PS <- xtabs(~PhoneService+Churn, data=telco.analyse) )
+prop.table(Tab.PS, 1)
+prop.test(Tab.PS)
+```
+
+It seems not.  Those without phone service could be 0.017 less likely or 0.053 more likely to be retained; no difference is likely.  Now, let's turn to regression models.  The character variable will cause problems in this case so we will have to analyse it.
+
+```{r}
+library(rpart)
+split.me <- function(data, prop1=0.7) {
+  train <- data[sample(1:nrow(data), size=prop1*nrow(data)),]
+  test <- anti_join(data,train)
+  return(list(train=train,test=test))
+}
+split.data <- split.me(telco.analyse, prop1=0.666)
+train <- split.data$train
+test <- split.data$test
+Tree1 <- rpart(as.factor(Churn)~., data = telco.F)
+library(partykit)
+plot(as.party(Tree1))
+```
+
+## A sankey
+
+```{r}
+library(sankeytreeR); library(pipeR)
+sankeytree(Tree1, tooltip="all")
+```
+
+
+# How does it perform?
+
+A predict function...  Every model has one.
+
+```{r}
+# What does predict do?
+head(predict(Tree1))
+# Predict the Test set using the Training model
+test$pred1 <- predict(Tree1, test, "class")
+table(test$Churn,test$pred1)
+# Conditional Probabilities
+prop.table(table(test$Churn,test$pred1), 1)
+# The Overall Comparison
+prop.table(table(telco.F$Churn))
+prop.table(table(test$Churn,test$pred1))
+```
+
+
+# A GLM Regression
+
+```{r}
+result <- logistic(
+  telco.F, 
+  rvar = "Churn", 
+  evar = c("tenure", "Contract"), 
+  lev = "Yes"
+)
+summary(result, sum_check = c("vif", "confint", "odds"))
+plot(result, plots = "fit", custom = FALSE)
+```
+
+Predict a few rows in the original data.
+
+```{r}
+head(predict(result, telco.F))
+```
+

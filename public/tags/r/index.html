@@ -239,7 +239,7 @@
   <meta property="og:description" content="Associate Professor of Quantitative Methods"><meta property="og:image" content="/img/portrait.jpg">
   <meta property="twitter:image" content="/img/portrait.jpg"><meta property="og:locale" content="en-us">
   
-    <meta property="og:updated_time" content="2020-02-18T00:00:00&#43;00:00">
+    <meta property="og:updated_time" content="2020-02-19T00:00:00&#43;00:00">
   
 
   
@@ -654,6 +654,20 @@
     
     
     <div>
+      <h2><a href="/2020/02/19/trying-to-figure-out-the-new-xbrl/" >Trying to Figure Out the New XBRL</a></h2>
+      <div class="article-style">
+        
+          XBRL Changed XBRL has undergone and is undergoing some changes. Some filers have already needed to change their filings and others will have to soon. Here is the excerpt.
+XBRL Change
+ This has broken many of the existing parsers for new filings. It is time to find a way around this. I have seen links for scraping them from Yahoo! Finance but that is not really what I want.
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
       <h2><a href="/2020/02/18/the-carbon-footprint-of-food-produced-for-consumption/" >The Carbon Footprint of Food Produced for Consumption</a></h2>
       <div class="article-style">
         
@@ -765,19 +779,6 @@ load(&quot;FarissHRData.RData&quot;) skimr::skim(HR.Data)  Table 1: Data summary
           mathart A cool package for math generated art that I just discovered. Here is the install code for it
 install.packages(c(&quot;devtools&quot;, &quot;mapproj&quot;, &quot;tidyverse&quot;, &quot;ggforce&quot;, &quot;Rcpp&quot;)) devtools::install_github(&quot;marcusvolz/mathart&quot;) devtools::install_github(&quot;marcusvolz/ggart&quot;) devtools::install_github(&quot;gsimchoni/kandinsky&quot;) Load some libraries library(mathart) library(ggart) library(ggforce) library(Rcpp) library(tidyverse)  Generate some Art? This is quite fun to do.
 set.seed(12341) terminals &lt;- data.frame(x = runif(10, 0, 10000), y = runif(10, 0, 10000)) df &lt;- 1:10000 %&gt;% map_df(~weiszfeld(terminals, c(points$x[.], points$y[.])), .id = &quot;id&quot;) p &lt;- ggplot() + geom_point(aes(x, y), points, size = 1, alpha = 0.
-        
-      </div>
-    </div>
-  
-    
-    
-    
-    <div>
-      <h2><a href="/2019/10/09/simple-oregon-county-mapping/" >Simple Oregon County Mapping</a></h2>
-      <div class="article-style">
-        
-          Some Data for the Map I want to get some data to place on the map. I found a website with population and population change data for Oregon in .csv format. I cannot direct download it from R, instead I have to button download it and import it.
-library(tidyverse) ## ── Attaching packages ────────────────────────── tidyverse 1.3.0 ── ## ✓ ggplot2 3.2.1 ✓ purrr 0.3.3 ## ✓ tibble 2.1.3 ✓ dplyr 0.
         
       </div>
     </div>

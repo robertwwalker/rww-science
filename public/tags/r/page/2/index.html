@@ -239,7 +239,7 @@
   <meta property="og:description" content="Associate Professor of Quantitative Methods"><meta property="og:image" content="/img/portrait.jpg">
   <meta property="twitter:image" content="/img/portrait.jpg"><meta property="og:locale" content="en-us">
   
-    <meta property="og:updated_time" content="2020-02-18T00:00:00&#43;00:00">
+    <meta property="og:updated_time" content="2020-02-19T00:00:00&#43;00:00">
   
 
   
@@ -654,6 +654,19 @@
     
     
     <div>
+      <h2><a href="/2019/10/09/simple-oregon-county-mapping/" >Simple Oregon County Mapping</a></h2>
+      <div class="article-style">
+        
+          Some Data for the Map I want to get some data to place on the map. I found a website with population and population change data for Oregon in .csv format. I cannot direct download it from R, instead I have to button download it and import it.
+library(tidyverse) ## ── Attaching packages ────────────────────────── tidyverse 1.3.0 ── ## ✓ ggplot2 3.2.1 ✓ purrr 0.3.3 ## ✓ tibble 2.1.3 ✓ dplyr 0.
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
       <h2><a href="/2019/10/09/the-economist-s-visualization-errors/" >The Economist&#39;s Visualization Errors</a></h2>
       <div class="article-style">
         
@@ -767,19 +780,6 @@ library(tidyverse) library(tidytext) library(SnowballC) library(tm) library(syuz
           The tidyTuesday for this week is coffee chain locations For this week: 1. The basic link to the #tidyTuesday shows an original article for Week 6.
 First, let’s import the data; it is a single Excel spreadsheet. The page notes that starbucks, Tim Horton, and Dunkin Donuts have raw data available.
 library(readxl) library(tidyverse) ## ── Attaching packages ────────────────────────── tidyverse 1.3.0 ── ## ✓ ggplot2 3.2.1 ✓ purrr 0.3.3 ## ✓ tibble 2.
-        
-      </div>
-    </div>
-  
-    
-    
-    
-    <div>
-      <h2><a href="/2018/04/08/scraping-epl-salary-data/" >Scraping EPL Salary Data</a></h2>
-      <div class="article-style">
-        
-          EPL Scraping In a previous post, I scraped some NFL data and learned the structure of Sportrac. Now, I want to scrape the available data on the EPL. The EPL data is organized in a few distinct but potentially linked tables. The basic structure is organized around team folders. Let me begin by isolating those URLs.
-library(rvest) library(tidyverse) base_url &lt;- &quot;http://www.spotrac.com/epl/&quot; read.base &lt;- read_html(base_url) team.URL &lt;- read.base %&gt;% html_nodes(&quot;.team-name&quot;) %&gt;% html_attr(&#39;href&#39;) team.
         
       </div>
     </div>

@@ -1,0 +1,39 @@
+---
+title: Trying to Figure Out the New XBRL
+author: Robert W. Walker
+date: '2020-02-19'
+slug: trying-to-figure-out-the-new-xbrl
+categories:
+  - R
+  - reticulate
+  - python
+tags:
+  - reticulate
+  - R
+  - python
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2020-02-19T01:16:56-08:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+# XBRL Changed
+
+XBRL has undergone and is undergoing some changes.  Some filers have already needed to change their filings and others will have to soon.  Here is the excerpt.
+
+![XBRL Change](data/XBRLNote.png)
+
+This has broken many of the existing parsers for new filings.  It is time to find a way around this.  I have seen links for scraping them from [Yahoo! Finance](https://towardsdatascience.com/web-scraping-for-accounting-analysis-using-python-part-1-b5fc016a1c9a) but that is not really what I want.
+
+
+
+```{r}
+
+```
+
