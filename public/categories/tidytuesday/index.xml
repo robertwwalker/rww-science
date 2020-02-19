@@ -109,13 +109,172 @@ WMFood&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;Now let me do them with facets. That will require taking the merged wide data and pivoting it to longer. First, I will select the columns that are critical to the map and the two series that I need. I also want to change the names up a bit to make the facets well labeled. After that, pivot to longer so that I can map the two categories separately. One thing that went wrong along the way is the guide. The facets are given a common guide while food in kg has a vastly different scale than CO2. The easiest way to show them is to use a z-score for each and to show how the various countries compare to the average [keep in mind they are already normalized by population].&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Map.Me &amp;lt;- FCWM %&amp;gt;% select(long, lat, group, order, region, CO2_Total, Consumption_Total) %&amp;gt;% mutate(CO2_Total = scale(CO2_Total), `Food Supplied_Total` = scale(Consumption_Total)) %&amp;gt;% select(-Consumption_Total)
 Map.Me &amp;lt;- pivot_longer(Map.Me, cols = c(CO2_Total, `Food Supplied_Total`)) %&amp;gt;% mutate(name = str_remove(name, &amp;quot;_Total&amp;quot;))
-ggplot(Map.Me, aes(x = long, y = lat, group = group, fill=value)) +
+Facet.Map &amp;lt;- ggplot(Map.Me, aes(x = long, y = lat, group = group, fill=value)) +
   geom_polygon(colour = &amp;quot;white&amp;quot;) + 
   scale_fill_viridis_c(option = &amp;quot;C&amp;quot;) +
   labs(fill = &amp;quot;kg/person/year&amp;quot;, caption=&amp;quot;a #tidyTuesday by @PieRatio&amp;quot;, title=&amp;quot;Food Produced for Consumption and the CO2 Impact&amp;quot;, subtitle = &amp;quot;Z-scored for comparability; greys are missing.&amp;quot;) +
-  facet_wrap(vars(name))&lt;/code&gt;&lt;/pre&gt;
+  facet_wrap(vars(name))
+Facet.Map&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2020-02-18-the-carbon-footprint-of-food-produced-for-consumption/index_files/figure-html/unnamed-chunk-10-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;p&gt;Cool. It works.&lt;/p&gt;
+&lt;p&gt;Cool. It works. Now I want to go back to the original data and the blog post. That is fundamentally concerned with a differential.&lt;/p&gt;
+&lt;div class=&#34;figure&#34;&gt;
+&lt;img src=&#34;data/tidyTuesdayFood.png&#34; alt=&#34;ScreenShot&#34; /&gt;
+&lt;p class=&#34;caption&#34;&gt;ScreenShot&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;animal-vs.non-animal-co2&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Animal vs. Non-Animal CO2&lt;/h1&gt;
+&lt;p&gt;These data will require some recreation; that’s the reason for keeping and creating the wide data above. The pivots. I don’t really care so much about the actual food production here; this is about the carbon footprint. There is a color coding key to the above spreadsheet and I just need to pull it out. The oranges are animal and the greens are not. Just pick out the right columns to sum up and we are ready to go. Above, that is the FCC02W data.frame. As an aside, this is yet another criticism of spreadsheets; you can encode data in the colors that isn’t recoverable in any interesting way.&lt;/p&gt;
+&lt;p&gt;First, the reason they are missing is that that part of the scraping is a bit kludgy; the original author was seeking comment on it. Perhaps you can skip columns that are sums of those that precede it. The tidyTuesday has the cleaning script. I just have to remove the filter.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(tidyverse)
+library(janitor)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## 
+## Attaching package: &amp;#39;janitor&amp;#39;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## The following objects are masked from &amp;#39;package:stats&amp;#39;:
+## 
+##     chisq.test, fisher.test&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(rvest)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Loading required package: xml2&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## 
+## Attaching package: &amp;#39;rvest&amp;#39;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## The following object is masked from &amp;#39;package:purrr&amp;#39;:
+## 
+##     pluck&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## The following object is masked from &amp;#39;package:readr&amp;#39;:
+## 
+##     guess_encoding&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Credit to Kasia and minorly edited to create output file and test plot
+# Blog post at https://r-tastic.co.uk/post/from-messy-to-tidy/
+
+url &amp;lt;- &amp;quot;https://www.nu3.de/blogs/nutrition/food-carbon-footprint-index-2018&amp;quot;
+
+# scrape the website
+url_html &amp;lt;- read_html(url)
+
+# extract the HTML table
+whole_table &amp;lt;- url_html %&amp;gt;% 
+  html_nodes(&amp;#39;table&amp;#39;) %&amp;gt;%
+  html_table(fill = TRUE) %&amp;gt;%
+  .[[1]]
+
+table_content &amp;lt;- whole_table %&amp;gt;%
+  select(-X1) %&amp;gt;% # remove redundant column
+  filter(!dplyr::row_number() %in% 1:3) # remove redundant rows
+
+raw_headers &amp;lt;- url_html %&amp;gt;%
+  html_nodes(&amp;quot;.thead-icon&amp;quot;) %&amp;gt;%
+  html_attr(&amp;#39;title&amp;#39;)
+
+tidy_bottom_header &amp;lt;- raw_headers[28:length(raw_headers)]
+tidy_bottom_header[1:10]&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##  [1] &amp;quot;Supplied for Consumption (kg/person/year)&amp;quot;
+##  [2] &amp;quot;Kg CO2/person/year&amp;quot;                       
+##  [3] &amp;quot;Supplied for Consumption (kg/person/year)&amp;quot;
+##  [4] &amp;quot;Kg CO2/person/year&amp;quot;                       
+##  [5] &amp;quot;Supplied for Consumption (kg/person/year)&amp;quot;
+##  [6] &amp;quot;Kg CO2/person/year&amp;quot;                       
+##  [7] &amp;quot;Supplied for Consumption (kg/person/year)&amp;quot;
+##  [8] &amp;quot;Kg CO2/person/year&amp;quot;                       
+##  [9] &amp;quot;Supplied for Consumption (kg/person/year)&amp;quot;
+## [10] &amp;quot;Kg CO2/person/year&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;raw_middle_header &amp;lt;- raw_headers[17:27]
+raw_middle_header&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##  [1] &amp;quot;Pork&amp;quot;                     &amp;quot;Poultry&amp;quot;                 
+##  [3] &amp;quot;Beef&amp;quot;                     &amp;quot;Lamb &amp;amp; Goat&amp;quot;             
+##  [5] &amp;quot;Fish&amp;quot;                     &amp;quot;Eggs&amp;quot;                    
+##  [7] &amp;quot;Milk - inc. cheese&amp;quot;       &amp;quot;Wheat and Wheat Products&amp;quot;
+##  [9] &amp;quot;Rice&amp;quot;                     &amp;quot;Soybeans&amp;quot;                
+## [11] &amp;quot;Nuts inc. Peanut Butter&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;tidy_headers &amp;lt;- c(
+  rep(raw_middle_header[1:7], each = 2),
+  &amp;quot;animal_total&amp;quot;,
+  rep(raw_middle_header[8:length(raw_middle_header)], each = 2),
+  &amp;quot;non_animal_total&amp;quot;,
+  &amp;quot;country_total&amp;quot;)
+
+tidy_headers&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##  [1] &amp;quot;Pork&amp;quot;                     &amp;quot;Pork&amp;quot;                    
+##  [3] &amp;quot;Poultry&amp;quot;                  &amp;quot;Poultry&amp;quot;                 
+##  [5] &amp;quot;Beef&amp;quot;                     &amp;quot;Beef&amp;quot;                    
+##  [7] &amp;quot;Lamb &amp;amp; Goat&amp;quot;              &amp;quot;Lamb &amp;amp; Goat&amp;quot;             
+##  [9] &amp;quot;Fish&amp;quot;                     &amp;quot;Fish&amp;quot;                    
+## [11] &amp;quot;Eggs&amp;quot;                     &amp;quot;Eggs&amp;quot;                    
+## [13] &amp;quot;Milk - inc. cheese&amp;quot;       &amp;quot;Milk - inc. cheese&amp;quot;      
+## [15] &amp;quot;animal_total&amp;quot;             &amp;quot;Wheat and Wheat Products&amp;quot;
+## [17] &amp;quot;Wheat and Wheat Products&amp;quot; &amp;quot;Rice&amp;quot;                    
+## [19] &amp;quot;Rice&amp;quot;                     &amp;quot;Soybeans&amp;quot;                
+## [21] &amp;quot;Soybeans&amp;quot;                 &amp;quot;Nuts inc. Peanut Butter&amp;quot; 
+## [23] &amp;quot;Nuts inc. Peanut Butter&amp;quot;  &amp;quot;non_animal_total&amp;quot;        
+## [25] &amp;quot;country_total&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;combined_colnames &amp;lt;- paste(tidy_headers, tidy_bottom_header, sep = &amp;#39;;&amp;#39;)
+colnames(table_content) &amp;lt;- c(&amp;quot;Country&amp;quot;, combined_colnames)
+glimpse(table_content[, 1:10])&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Observations: 130
+## Variables: 10
+## $ Country                                                 &amp;lt;chr&amp;gt; &amp;quot;Argentina&amp;quot;, …
+## $ `Pork;Supplied for Consumption (kg/person/year)`        &amp;lt;chr&amp;gt; &amp;quot;10.51&amp;quot;, &amp;quot;24.…
+## $ `Pork;Kg CO2/person/year`                               &amp;lt;chr&amp;gt; &amp;quot;37.20&amp;quot;, &amp;quot;85.…
+## $ `Poultry;Supplied for Consumption (kg/person/year)`     &amp;lt;chr&amp;gt; &amp;quot;38.66&amp;quot;, &amp;quot;46.…
+## $ `Poultry;Kg CO2/person/year`                            &amp;lt;chr&amp;gt; &amp;quot;41.53&amp;quot;, &amp;quot;49.…
+## $ `Beef;Supplied for Consumption (kg/person/year)`        &amp;lt;chr&amp;gt; &amp;quot;55.48&amp;quot;, &amp;quot;33.…
+## $ `Beef;Kg CO2/person/year`                               &amp;lt;chr&amp;gt; &amp;quot;1712.00&amp;quot;, &amp;quot;1…
+## $ `Lamb &amp;amp; Goat;Supplied for Consumption (kg/person/year)` &amp;lt;chr&amp;gt; &amp;quot;1.56&amp;quot;, &amp;quot;9.87…
+## $ `Lamb &amp;amp; Goat;Kg CO2/person/year`                        &amp;lt;chr&amp;gt; &amp;quot;54.63&amp;quot;, &amp;quot;345…
+## $ `Fish;Supplied for Consumption (kg/person/year)`        &amp;lt;chr&amp;gt; &amp;quot;4.36&amp;quot;, &amp;quot;17.6…&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;long_table &amp;lt;- table_content %&amp;gt;%
+  # make column names observations of Category variable
+  tidyr::pivot_longer(cols = -Country, names_to = &amp;quot;Category&amp;quot;, values_to = &amp;quot;Values&amp;quot;) %&amp;gt;%
+  # separate food-related information from the metric
+  tidyr::separate(col = Category, into = c(&amp;quot;Food Category&amp;quot;, &amp;quot;Metric&amp;quot;), sep = &amp;#39;;&amp;#39;)
+
+glimpse(long_table)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Observations: 3,250
+## Variables: 4
+## $ Country         &amp;lt;chr&amp;gt; &amp;quot;Argentina&amp;quot;, &amp;quot;Argentina&amp;quot;, &amp;quot;Argentina&amp;quot;, &amp;quot;Argentina&amp;quot;, &amp;quot;…
+## $ `Food Category` &amp;lt;chr&amp;gt; &amp;quot;Pork&amp;quot;, &amp;quot;Pork&amp;quot;, &amp;quot;Poultry&amp;quot;, &amp;quot;Poultry&amp;quot;, &amp;quot;Beef&amp;quot;, &amp;quot;Beef&amp;quot;,…
+## $ Metric          &amp;lt;chr&amp;gt; &amp;quot;Supplied for Consumption (kg/person/year)&amp;quot;, &amp;quot;Kg CO2/…
+## $ Values          &amp;lt;chr&amp;gt; &amp;quot;10.51&amp;quot;, &amp;quot;37.20&amp;quot;, &amp;quot;38.66&amp;quot;, &amp;quot;41.53&amp;quot;, &amp;quot;55.48&amp;quot;, &amp;quot;1712.00…&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;tidy_table &amp;lt;- long_table %&amp;gt;%
+  tidyr::pivot_wider(names_from = Metric, values_from = Values) %&amp;gt;%
+  janitor::clean_names(&amp;#39;snake&amp;#39;)
+
+glimpse(tidy_table)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Observations: 1,820
+## Variables: 4
+## $ country                                 &amp;lt;chr&amp;gt; &amp;quot;Argentina&amp;quot;, &amp;quot;Argentina&amp;quot;, &amp;quot;Ar…
+## $ food_category                           &amp;lt;chr&amp;gt; &amp;quot;Pork&amp;quot;, &amp;quot;Poultry&amp;quot;, &amp;quot;Beef&amp;quot;, &amp;quot;L…
+## $ supplied_for_consumption_kg_person_year &amp;lt;chr&amp;gt; &amp;quot;10.51&amp;quot;, &amp;quot;38.66&amp;quot;, &amp;quot;55.48&amp;quot;, &amp;quot;1…
+## $ kg_co2_person_year                      &amp;lt;chr&amp;gt; &amp;quot;37.20&amp;quot;, &amp;quot;41.53&amp;quot;, &amp;quot;1712.00&amp;quot;, …&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;final_table &amp;lt;- tidy_table %&amp;gt;%
+  rename(consumption = 3,
+         co2_emission = 4)
+
+clean_table &amp;lt;- final_table %&amp;gt;% 
+    mutate_at(vars(consumption, co2_emission), parse_number)&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;an-alternative&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;An Alternative&lt;/h2&gt;
+&lt;p&gt;Quick and dirty base R.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;names(FCCO2W)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##  [1] &amp;quot;country&amp;quot;                      &amp;quot;CO2_Pork&amp;quot;                    
+##  [3] &amp;quot;CO2_Poultry&amp;quot;                  &amp;quot;CO2_Beef&amp;quot;                    
+##  [5] &amp;quot;CO2_Lamb &amp;amp; Goat&amp;quot;              &amp;quot;CO2_Fish&amp;quot;                    
+##  [7] &amp;quot;CO2_Eggs&amp;quot;                     &amp;quot;CO2_Milk - inc. cheese&amp;quot;      
+##  [9] &amp;quot;CO2_Wheat and Wheat Products&amp;quot; &amp;quot;CO2_Rice&amp;quot;                    
+## [11] &amp;quot;CO2_Soybeans&amp;quot;                 &amp;quot;CO2_Nuts inc. Peanut Butter&amp;quot; 
+## [13] &amp;quot;CO2_Total&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;FCCO2W$Animal.CO2 &amp;lt;- rowSums(FCCO2W[,c(2:8)])
+FCCO2W$Non.Animal.CO2 &amp;lt;- rowSums(FCCO2W[,c(9:12)])
+FCC02W &amp;lt;- FCCO2W %&amp;gt;% mutate(CO2.Footprint.Difference = Animal.CO2 - Non.Animal.CO2)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;And plot it.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;FCWM &amp;lt;- world_map %&amp;gt;% left_join(., FCC02W)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Joining, by = &amp;quot;country&amp;quot;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;WMCO2 &amp;lt;- ggplot(FCWM, aes(x = long, y = lat, group = group, fill=CO2_Total)) +
+  geom_polygon(colour = &amp;quot;white&amp;quot;) + 
+  scale_fill_viridis_c(option = &amp;quot;B&amp;quot;) +
+  labs(fill = &amp;quot;CO2 kg/person/yr&amp;quot;, title=&amp;quot;CO2 Difference (Animal - Non-Animal)&amp;quot;, subtitle =&amp;quot;from Food Produced for Consumption&amp;quot;, caption=&amp;quot;a #tidyTuesday by @PieRatio&amp;quot;)
+WMCO2&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-02-18-the-carbon-footprint-of-food-produced-for-consumption/index_files/figure-html/unnamed-chunk-13-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
 &lt;/div&gt;
 </description>
     </item>
