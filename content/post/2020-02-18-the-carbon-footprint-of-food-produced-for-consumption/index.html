@@ -60,6 +60,13 @@ projects: []
 ##                      130                      130                      130 
 ##                 Soybeans Wheat and Wheat Products 
 ##                      130                      130</code></pre>
+<p>NB: There are five names of countries that do not reconcile with the world map that I will use. The <code>United Kingdom</code> is <code>UK</code>. <code>Taiwan. ROC</code> is <code>Taiwan</code>. Trinidad and Tobago are separate on the map but together in the data. Hong Kong is not differentiated from China on the map. <code>Congo</code> is ambiguous because it could refer to the DRC or Rep. of Congo. I will ignore the error on Hong Kong and skip Congo.</p>
+<pre class="r"><code>food_consumption$country[food_consumption$country==&quot;United Kingdom&quot;] &lt;- &quot;UK&quot;
+TNT &lt;- food_consumption %&gt;% filter(country==&quot;Trinidad and Tobago&quot;)
+food_consumption$country[food_consumption$country==&quot;Trinidad and Tobago&quot;] &lt;- &quot;Trinidad&quot;
+food_consumption &lt;- rbind(food_consumption,TNT)
+food_consumption$country[food_consumption$country==&quot;Trinidad and Tobago&quot;] &lt;- &quot;Tobago&quot;
+food_consumption$country[food_consumption$country==&quot;Taiwan. ROC&quot;] &lt;- &quot;Taiwan&quot;</code></pre>
 <p>I want to map the totals which were removed from the posted data set. Let me recreate those. I will first do the co2 column. I need to drop consumption, pivot them to wide, and sum up the numeric variables. Then I want to pivot it back to long with the total as a food category.</p>
 <pre class="r"><code>FCCO2W &lt;- food_consumption %&gt;% 
   select(-consumption) %&gt;% 
@@ -93,8 +100,24 @@ world_map &lt;- world_map %&gt;% mutate(country = region)
 WM &lt;- ggplot(world_map, aes(x = long, y = lat, group = group)) +
   geom_polygon(fill=&quot;lightgray&quot;, colour = &quot;white&quot;)
 WM</code></pre>
-<p><img src="/post/2020-02-18-the-carbon-footprint-of-food-produced-for-consumption/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
-<p>That’s a map to work with. Now let me join the data and plot the CO2 production.</p>
+<p><img src="/post/2020-02-18-the-carbon-footprint-of-food-produced-for-consumption/index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p>That’s a map to work with. Now let me join the data and plot the CO2 production. There is a check before to make sure that all the matches are mapped.</p>
+<pre class="r"><code>anti_join(RejoinderW, world_map)</code></pre>
+<pre><code>## Joining, by = &quot;country&quot;</code></pre>
+<pre><code>## # A tibble: 2 x 25
+##   country CO2_Pork CO2_Poultry CO2_Beef `CO2_Lamb &amp; Goa… CO2_Fish CO2_Eggs
+##   &lt;chr&gt;      &lt;dbl&gt;       &lt;dbl&gt;    &lt;dbl&gt;            &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+## 1 Hong K…   238.          58.9     797.             77.7     67.8    13.3 
+## 2 Congo       8.46        14.0     134.             14.0     41.9     0.55
+## # … with 18 more variables: `CO2_Milk - inc. cheese` &lt;dbl&gt;, `CO2_Wheat and
+## #   Wheat Products` &lt;dbl&gt;, CO2_Rice &lt;dbl&gt;, CO2_Soybeans &lt;dbl&gt;, `CO2_Nuts inc.
+## #   Peanut Butter` &lt;dbl&gt;, CO2_Total &lt;dbl&gt;, Consumption_Pork &lt;dbl&gt;,
+## #   Consumption_Poultry &lt;dbl&gt;, Consumption_Beef &lt;dbl&gt;, `Consumption_Lamb &amp;
+## #   Goat` &lt;dbl&gt;, Consumption_Fish &lt;dbl&gt;, Consumption_Eggs &lt;dbl&gt;,
+## #   `Consumption_Milk - inc. cheese` &lt;dbl&gt;, `Consumption_Wheat and Wheat
+## #   Products` &lt;dbl&gt;, Consumption_Rice &lt;dbl&gt;, Consumption_Soybeans &lt;dbl&gt;,
+## #   `Consumption_Nuts inc. Peanut Butter` &lt;dbl&gt;, Consumption_Total &lt;dbl&gt;</code></pre>
+<p>I fixed the original entries that exist above; some failures can’t be fixed.</p>
 <pre class="r"><code>FCWM &lt;- world_map %&gt;% left_join(., RejoinderW)</code></pre>
 <pre><code>## Joining, by = &quot;country&quot;</code></pre>
 <pre class="r"><code>WMCO2 &lt;- ggplot(FCWM, aes(x = long, y = lat, group = group, fill=CO2_Total)) +
@@ -102,14 +125,14 @@ WM</code></pre>
   scale_fill_viridis_c(option = &quot;C&quot;) +
   labs(fill = &quot;Total CO2&quot;, title=&quot;Total CO2 from Food Produced for Consumption [kg/person/year]&quot;, caption=&quot;a #tidyTuesday by @PieRatio&quot;)
 WMCO2</code></pre>
-<p><img src="/post/2020-02-18-the-carbon-footprint-of-food-produced-for-consumption/index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="/post/2020-02-18-the-carbon-footprint-of-food-produced-for-consumption/index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <p>Now let me plot the food produced for consumption.</p>
 <pre class="r"><code>WMFood &lt;- ggplot(FCWM, aes(x = long, y = lat, group = group, fill=Consumption_Total)) +
   geom_polygon(colour = &quot;white&quot;) + 
   scale_fill_viridis_c(option = &quot;C&quot;) +
   labs(fill = &quot;Total&quot;, title=&quot;Total Food Produced for Consumption [kg/person/year]&quot;, caption=&quot;a #tidyTuesday by @PieRatio&quot;)
 WMFood</code></pre>
-<p><img src="/post/2020-02-18-the-carbon-footprint-of-food-produced-for-consumption/index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p><img src="/post/2020-02-18-the-carbon-footprint-of-food-produced-for-consumption/index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 <p>I wanted to combine them but that did not work with patchwork.</p>
 <pre class="r"><code>WMCO2 + WMFood
 # Doesn&#39;t work.</code></pre>
@@ -122,7 +145,7 @@ Facet.Map &lt;- ggplot(Map.Me, aes(x = long, y = lat, group = group, fill=value)
   labs(fill = &quot;kg/person/year&quot;, caption=&quot;a #tidyTuesday by @PieRatio&quot;, title=&quot;Food Produced for Consumption and the CO2 Impact&quot;, subtitle = &quot;Z-scored for comparability; greys are missing.&quot;) +
   facet_wrap(vars(name))
 Facet.Map</code></pre>
-<p><img src="/post/2020-02-18-the-carbon-footprint-of-food-produced-for-consumption/index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p><img src="/post/2020-02-18-the-carbon-footprint-of-food-produced-for-consumption/index_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 <p>Cool. It works. Now I want to go back to the original data and the blog post. That is fundamentally concerned with a differential.</p>
 <div class="figure">
 <img src="data/tidyTuesdayFood.png" alt="ScreenShot" />
@@ -280,6 +303,6 @@ FCC02W &lt;- FCCO2W %&gt;% mutate(CO2.Footprint.Difference = Animal.CO2 - Non.An
   scale_fill_viridis_c(option = &quot;B&quot;) +
   labs(fill = &quot;CO2 kg/person/yr&quot;, title=&quot;CO2 Difference (Animal - Non-Animal)&quot;, subtitle =&quot;from Food Produced for Consumption&quot;, caption=&quot;a #tidyTuesday by @PieRatio&quot;)
 WMCO2</code></pre>
-<p><img src="/post/2020-02-18-the-carbon-footprint-of-food-produced-for-consumption/index_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p><img src="/post/2020-02-18-the-carbon-footprint-of-food-produced-for-consumption/index_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 </div>
 </div>

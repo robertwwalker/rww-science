@@ -41,6 +41,18 @@ As you can see, the variables are already tidy.  What categories of food are ava
 table(food_consumption$food_category)
 ```
 
+NB: There are five names of countries that do not reconcile with the world map that I will use.  The `United Kingdom` is `UK`.  `Taiwan. ROC` is `Taiwan`.  Trinidad and Tobago are separate on the map but together in the data.  Hong Kong is not differentiated from China on the map.  `Congo` is ambiguous because it could refer to the DRC or Rep. of Congo.  I will ignore the error on Hong Kong and skip Congo.
+
+```{r}
+food_consumption$country[food_consumption$country=="United Kingdom"] <- "UK"
+TNT <- food_consumption %>% filter(country=="Trinidad and Tobago")
+food_consumption$country[food_consumption$country=="Trinidad and Tobago"] <- "Trinidad"
+food_consumption <- rbind(food_consumption,TNT)
+food_consumption$country[food_consumption$country=="Trinidad and Tobago"] <- "Tobago"
+food_consumption$country[food_consumption$country=="Taiwan. ROC"] <- "Taiwan"
+```
+
+
 I want to map the totals which were removed from the posted data set.  Let me recreate those.  I will first do the co2 column.  I need to drop consumption, pivot them to wide, and sum up the numeric variables.  Then I want to pivot it back to long with the total as a food category.
 
 ```{r}
@@ -90,7 +102,13 @@ WM <- ggplot(world_map, aes(x = long, y = lat, group = group)) +
 WM
 ```
 
-That's a map to work with.  Now let me join the data and plot the CO2 production.
+That's a map to work with.  Now let me join the data and plot the CO2 production.  There is a check before to make sure that all the matches are mapped.
+
+```{r}
+anti_join(RejoinderW, world_map)
+```
+
+I fixed the original entries that exist above; some failures can't be fixed.
 
 ```{r}
 FCWM <- world_map %>% left_join(., RejoinderW)
