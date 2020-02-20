@@ -94,8 +94,8 @@ pizzaData <- pizzaData %>% mutate(name = str_remove(name, "['``]"))
 # Build the barplot
 gg1 <- ggplot(pizzaData, aes(x=reorder(name,PriceAvg), fill=PriceAvg)) +
   geom_bar_interactive(aes(x = name, tooltip = name, data_id = name))  + 
-  coord_flip() + scale_fill_viridis_c() +
-  labs(x="Pizza Restaurant", y="Count", caption = "data from #tidyTuesday; sorted by Average Price") 
+  coord_flip() + scale_fill_viridis_c() + theme(axis.text=element_text(size=8)) +
+  labs(x="Pizza Restaurant", y="Count", caption = "data from #tidyTuesday", sub="sorted by Average Price") 
 # Build the map
 gg2 <- ggplot(data = OR.df, mapping = aes(x = long, y = lat, group = group)) +
   geom_polygon(fill=gray(0.95)) + 
@@ -103,11 +103,16 @@ gg2 <- ggplot(data = OR.df, mapping = aes(x = long, y = lat, group = group)) +
   scale_color_viridis_c(guide=FALSE) +
   theme_nothing()
 # Bind them together with girafe
-girafe( code = print(gg1 + gg2 + plot_annotation(title="Pizza in Oregon")), width_svg = 8, height_svg = 4)
+a <- girafe( code = print(gg1 / gg2 + plot_annotation(title="Pizza in Oregon")))
+library(widgetframe)
+frameWidget(a, width = "100%", height = "100%")
 ```
 
 
-## Rayshader
+The formatting of this is quite off.  For some reason, the frame doesn't control scroll and overplots.
+
+
+# Rayshader
 
 And a mini-rayshader.  This is a complete lift and replace of the vignette after calculating the Price Midpoint.
 
