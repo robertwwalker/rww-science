@@ -242,7 +242,7 @@ pizza_jared &lt;- readr::read_csv(&quot;https://raw.githubusercontent.com/rforda
     
       <meta property="article:published_time" content="2019-10-09T00:00:00&#43;00:00">
     
-    <meta property="article:modified_time" content="2020-02-05T13:19:17-08:00">
+    <meta property="article:modified_time" content="2020-02-20T14:20:40-08:00">
   
 
   
@@ -273,7 +273,7 @@ pizza_jared &lt;- readr::read_csv(&quot;https://raw.githubusercontent.com/rforda
   "headline": "tidyTuesday does Pizza",
   
   "datePublished": "2019-10-09T00:00:00Z",
-  "dateModified": "2020-02-05T13:19:17-08:00",
+  "dateModified": "2020-02-20T14:20:40-08:00",
   
   "author": {
     "@type": "Person",
@@ -707,7 +707,7 @@ pizza_jared &lt;- readr::read_csv(&quot;https://raw.githubusercontent.com/rforda
           Last updated on
       
     
-    Feb 5, 2020
+    Feb 20, 2020
   </span>
   
 
@@ -958,7 +958,7 @@ OR.Pizza</code></pre>
 <p>Combine them into one picture</p>
 <pre class="r"><code>grid.arrange(p,OR.Pizza, ncol=2)</code></pre>
 <p><img src="/post/2019-10-09-tidytuesday-does-pizza/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
-<p>Now to try out cowplot.</p>
+<p>Now to use a girafe to put this together interactively.</p>
 <pre class="r"><code>theme_set(theme_minimal())
 pizzaData &lt;- pizzaData %&gt;% mutate(name = str_remove(name, &quot;[&#39;``]&quot;))
 # Build the barplot

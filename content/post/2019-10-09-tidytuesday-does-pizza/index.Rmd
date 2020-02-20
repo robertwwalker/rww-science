@@ -86,7 +86,7 @@ Combine them into one picture
 grid.arrange(p,OR.Pizza, ncol=2)
 ```
 
-Now to try out cowplot.
+Now to use a girafe to put this together interactively.
 
 ```{r}
 theme_set(theme_minimal())

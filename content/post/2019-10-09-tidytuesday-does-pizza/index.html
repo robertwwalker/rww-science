@@ -218,7 +218,7 @@ OR.Pizza</code></pre>
 <p>Combine them into one picture</p>
 <pre class="r"><code>grid.arrange(p,OR.Pizza, ncol=2)</code></pre>
 <p><img src="/post/2019-10-09-tidytuesday-does-pizza/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
-<p>Now to try out cowplot.</p>
+<p>Now to use a girafe to put this together interactively.</p>
 <pre class="r"><code>theme_set(theme_minimal())
 pizzaData &lt;- pizzaData %&gt;% mutate(name = str_remove(name, &quot;[&#39;``]&quot;))
 # Build the barplot

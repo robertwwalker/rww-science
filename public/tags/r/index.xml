@@ -2919,7 +2919,7 @@ OR.Pizza&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;Combine them into one picture&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;grid.arrange(p,OR.Pizza, ncol=2)&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2019-10-09-tidytuesday-does-pizza/index_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;p&gt;Now to try out cowplot.&lt;/p&gt;
+&lt;p&gt;Now to use a girafe to put this together interactively.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;theme_set(theme_minimal())
 pizzaData &amp;lt;- pizzaData %&amp;gt;% mutate(name = str_remove(name, &amp;quot;[&amp;#39;``]&amp;quot;))
 # Build the barplot
