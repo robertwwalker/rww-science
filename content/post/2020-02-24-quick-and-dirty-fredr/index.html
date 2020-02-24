@@ -25,21 +25,43 @@ projects: []
 
 <div id="some-data-from-fredr" class="section level2">
 <h2>Some Data from FREDr</h2>
-<p>Downloading the FRED data on</p>
+<p>Downloading the FRED data on national debt as a percentage of GDP. I first want to examine the US data and will then turn to some comparisons. <code>fredr</code> makes it markable asy to do! I will use two core tools from <code>fredr</code>. First, <code>fredr_series_search</code> allows one to enter search text and retrieve the responsive series given that search text. They can be sorted in particular ways, two such options are shown below. In the first chunk, I will download the “national debt” data and show the top 6 responsive series.</p>
 <pre class="r"><code>library(fredr);library(ggthemes)
 Debt.Search &lt;- fredr_series_search_text(
   search_text = &quot;national debt&quot;,
   order_by = &quot;popularity&quot;,
   sort_order = &quot;desc&quot;)
 Debt.Search &lt;- Debt.Search %&gt;% top_n(6)
-Debt.Data &lt;- map_dfr(Debt.Search$id, fredr) %&gt;% left_join(Debt.Search, by=c(&quot;series_id&quot; = &quot;id&quot;))
-US.Debt &lt;- dplyr::filter(Debt.Data, grepl(&#39;to GDP for United States&#39;, title))
+Debt.Search %&gt;% select(id, title)</code></pre>
+<pre><code>## # A tibble: 16 x 2
+##    id             title                                                         
+##    &lt;chr&gt;          &lt;chr&gt;                                                         
+##  1 DDDM04CNA156N… Outstanding Domestic Public Debt Securities to GDP for China  
+##  2 WLSFAL         Liabilities: Deposits with F.R. Banks, Other Than Reserve Bal…
+##  3 DDDM04USA156N… Outstanding Domestic Public Debt Securities to GDP for United…
+##  4 DDDM04JPA156N… Outstanding Domestic Public Debt Securities to GDP for Japan  
+##  5 DDDM04ARA156N… Outstanding Domestic Public Debt Securities to GDP for Argent…
+##  6 DDDM04AUA156N… Outstanding Domestic Public Debt Securities to GDP for Austra…
+##  7 DDDM04MXA156N… Outstanding Domestic Public Debt Securities to GDP for Mexico 
+##  8 DDDM04INA156N… Outstanding Domestic Public Debt Securities to GDP for India  
+##  9 DDDM04BRA156N… Outstanding Domestic Public Debt Securities to GDP for Brazil 
+## 10 DDDM04DEA156N… Outstanding Domestic Public Debt Securities to GDP for Germany
+## 11 DDDM04TRA156N… Outstanding Domestic Public Debt Securities to GDP for Turkey 
+## 12 DDDM04RUA156N… Outstanding Domestic Public Debt Securities to GDP for Russia…
+## 13 DDDM04ITA156N… Outstanding Domestic Public Debt Securities to GDP for Italy  
+## 14 DDDM04THA156N… Outstanding Domestic Public Debt Securities to GDP for Thaila…
+## 15 DDDM04PLA156N… Outstanding Domestic Public Debt Securities to GDP for Poland 
+## 16 DDDM04FRA156N… Outstanding Domestic Public Debt Securities to GDP for France</code></pre>
+<p>Next, I need to acquire the data that I want. I probably should have reversed the order of some of the operations here. For example, I don’t really want the non-domestic public debt but I am not going to filter them before downloading. That’s not great but it isn’t all that much data either. The command <code>fredr</code> aliases the <code>fredr_series_observations</code> command that obtains data directly from <strong>FRED</strong>. I will use a variant of <em>map</em> to grab the relevant series <code>id</code> above and then join them back to the Search results.</p>
+<pre class="r"><code>Debt.Data &lt;- map_dfr(Debt.Search$id, fredr) %&gt;% left_join(Debt.Search, by=c(&quot;series_id&quot; = &quot;id&quot;))</code></pre>
+<p>Now let me splice off the United States and plot it.</p>
+<pre class="r"><code>US.Debt &lt;- dplyr::filter(Debt.Data, grepl(&#39;to GDP for United States&#39;, title))
 ggplot(US.Debt, aes(x=date, y=value)) + geom_line(size=3) + theme_economist() + theme(plot.title = element_text(color=&quot;red&quot;, size=11, face=&quot;bold.italic&quot;)) + labs(title=US.Debt$title[1])</code></pre>
-<p><img src="/post/2020-02-24-quick-and-dirty-fredr/index_files/figure-html/cars-1.png" width="672" /></p>
-<p>And because I ended up with a bunch of them; multiple time series plots.</p>
+<p><img src="/post/2020-02-24-quick-and-dirty-fredr/index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p>And because I ended up with a bunch of them; multiple time series plots. To automate this, I will first remove everything that represents liabilities above in the FRB system. Then I need to use the series title to select everything that I want and separate off the country names for labels. The only hard-coding hacks for the final plot are the title. Here’s what we get, with color encoding the country names.</p>
 <pre class="r"><code>library(stringr)
 Ctry.DD &lt;- Debt.Data %&gt;% filter(!grepl(&#39;Liabilities: Deposits&#39;, title))
 Ctry.DD &lt;- Ctry.DD %&gt;% mutate(Country = str_remove(title, str_remove(US.Debt$title[1], &quot;United States&quot;)))
 ggplot(Ctry.DD, aes(x=date, y=value, color=Country)) + geom_line(size=1) + scale_color_viridis_d() + labs(title=&quot;Public Debt to GDP&quot;)</code></pre>
-<p><img src="/post/2020-02-24-quick-and-dirty-fredr/index_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<p><img src="/post/2020-02-24-quick-and-dirty-fredr/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 </div>

@@ -1168,7 +1168,7 @@
   
   <span class="middot-divider"></span>
   <span class="article-reading-time">
-    1 min read
+    3 min read
   </span>
   
 
@@ -1197,8 +1197,7 @@
 
   
   <div class="article-style">
-    <p>Some Data from FREDr Downloading the FRED data on
-library(fredr);library(ggthemes) Debt.Search &lt;- fredr_series_search_text( search_text = &quot;national debt&quot;, order_by = &quot;popularity&quot;, sort_order = &quot;desc&quot;) Debt.Search &lt;- Debt.Search %&gt;% top_n(6) Debt.Data &lt;- map_dfr(Debt.Search$id, fredr) %&gt;% left_join(Debt.Search, by=c(&quot;series_id&quot; = &quot;id&quot;)) US.Debt &lt;- dplyr::filter(Debt.Data, grepl(&#39;to GDP for United States&#39;, title)) ggplot(US.Debt, aes(x=date, y=value)) + geom_line(size=3) + theme_economist() + theme(plot.title = element_text(color=&quot;red&quot;, size=11, face=&quot;bold.italic&quot;)) + labs(title=US.Debt$title[1]) And because I ended up with a bunch of them; multiple time series plots.</p>
+    <p>Some Data from FREDr Downloading the FRED data on national debt as a percentage of GDP. I first want to examine the US data and will then turn to some comparisons. fredr makes it markable asy to do! I will use two core tools from fredr. First, fredr_series_search allows one to enter search text and retrieve the responsive series given that search text. They can be sorted in particular ways, two such options are shown below.</p>
   </div>
   
 
@@ -1241,7 +1240,7 @@ library(fredr);library(ggthemes) Debt.Search &lt;- fredr_series_search_text( sea
           Last updated on
       
     
-    Feb 19, 2020
+    Feb 24, 2020
   </span>
   
 
