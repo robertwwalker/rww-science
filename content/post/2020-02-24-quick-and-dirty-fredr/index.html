@@ -1,0 +1,45 @@
+---
+title: Quick and Dirty Fredr
+author: Robert W. Walker
+date: '2020-02-24'
+slug: quick-and-dirty-fredr
+categories:
+  - tidyverse
+tags:
+  - R
+  - panel data
+  - plot
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2020-02-24T00:08:03-08:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+
+
+<div id="some-data-from-fredr" class="section level2">
+<h2>Some Data from FREDr</h2>
+<p>Downloading the FRED data on</p>
+<pre class="r"><code>library(fredr);library(ggthemes)
+Debt.Search &lt;- fredr_series_search_text(
+  search_text = &quot;national debt&quot;,
+  order_by = &quot;popularity&quot;,
+  sort_order = &quot;desc&quot;)
+Debt.Search &lt;- Debt.Search %&gt;% top_n(6)
+Debt.Data &lt;- map_dfr(Debt.Search$id, fredr) %&gt;% left_join(Debt.Search, by=c(&quot;series_id&quot; = &quot;id&quot;))
+US.Debt &lt;- dplyr::filter(Debt.Data, grepl(&#39;to GDP for United States&#39;, title))
+ggplot(US.Debt, aes(x=date, y=value)) + geom_line(size=3) + theme_economist() + theme(plot.title = element_text(color=&quot;red&quot;, size=11, face=&quot;bold.italic&quot;)) + labs(title=US.Debt$title[1])</code></pre>
+<p><img src="/post/2020-02-24-quick-and-dirty-fredr/index_files/figure-html/cars-1.png" width="672" /></p>
+<p>And because I ended up with a bunch of them; multiple time series plots.</p>
+<pre class="r"><code>library(stringr)
+Ctry.DD &lt;- Debt.Data %&gt;% filter(!grepl(&#39;Liabilities: Deposits&#39;, title))
+Ctry.DD &lt;- Ctry.DD %&gt;% mutate(Country = str_remove(title, str_remove(US.Debt$title[1], &quot;United States&quot;)))
+ggplot(Ctry.DD, aes(x=date, y=value, color=Country)) + geom_line(size=1) + scale_color_viridis_d() + labs(title=&quot;Public Debt to GDP&quot;)</code></pre>
+<p><img src="/post/2020-02-24-quick-and-dirty-fredr/index_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+</div>

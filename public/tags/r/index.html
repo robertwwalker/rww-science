@@ -239,7 +239,7 @@
   <meta property="og:description" content="Associate Professor of Quantitative Methods"><meta property="og:image" content="/img/portrait.jpg">
   <meta property="twitter:image" content="/img/portrait.jpg"><meta property="og:locale" content="en-us">
   
-    <meta property="og:updated_time" content="2020-02-19T00:00:00&#43;00:00">
+    <meta property="og:updated_time" content="2020-02-24T00:00:00&#43;00:00">
   
 
   
@@ -654,6 +654,19 @@
     
     
     <div>
+      <h2><a href="/2020/02/24/quick-and-dirty-fredr/" >Quick and Dirty Fredr</a></h2>
+      <div class="article-style">
+        
+          Some Data from FREDr Downloading the FRED data on
+library(fredr);library(ggthemes) Debt.Search &lt;- fredr_series_search_text( search_text = &quot;national debt&quot;, order_by = &quot;popularity&quot;, sort_order = &quot;desc&quot;) Debt.Search &lt;- Debt.Search %&gt;% top_n(6) Debt.Data &lt;- map_dfr(Debt.Search$id, fredr) %&gt;% left_join(Debt.Search, by=c(&quot;series_id&quot; = &quot;id&quot;)) US.Debt &lt;- dplyr::filter(Debt.Data, grepl(&#39;to GDP for United States&#39;, title)) ggplot(US.Debt, aes(x=date, y=value)) + geom_line(size=3) + theme_economist() + theme(plot.title = element_text(color=&quot;red&quot;, size=11, face=&quot;bold.italic&quot;)) + labs(title=US.Debt$title[1]) And because I ended up with a bunch of them; multiple time series plots.
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
       <h2><a href="/2020/02/19/trying-to-figure-out-the-new-xbrl/" >Trying to Figure Out the New XBRL</a></h2>
       <div class="article-style">
         
@@ -765,20 +778,6 @@ library(tidycensus); library(kableExtra) library(tidyverse); library(stringr) v1
           Fariss Data Is neat and complete.
 load(&quot;FarissHRData.RData&quot;) skimr::skim(HR.Data)  Table 1: Data summary  Name HR.Data  Number of rows 11717  Number of columns 27  _______________________   Column type frequency:   factor 1  numeric 26  ________________________   Group variables None    Variable type: factor
   skim_variable n_missing complete_rate ordered n_unique top_counts    COW_YEAR 0 1 FALSE 11717 100: 1, 100: 1, 100: 1, 100: 1    Variable type: numeric
-        
-      </div>
-    </div>
-  
-    
-    
-    
-    <div>
-      <h2><a href="/2019/10/10/generative-art/" >Generative aRt</a></h2>
-      <div class="article-style">
-        
-          mathart A cool package for math generated art that I just discovered. Here is the install code for it
-install.packages(c(&quot;devtools&quot;, &quot;mapproj&quot;, &quot;tidyverse&quot;, &quot;ggforce&quot;, &quot;Rcpp&quot;)) devtools::install_github(&quot;marcusvolz/mathart&quot;) devtools::install_github(&quot;marcusvolz/ggart&quot;) devtools::install_github(&quot;gsimchoni/kandinsky&quot;) Load some libraries library(mathart) library(ggart) library(ggforce) library(Rcpp) library(tidyverse)  Generate some Art? This is quite fun to do.
-set.seed(12341) terminals &lt;- data.frame(x = runif(10, 0, 10000), y = runif(10, 0, 10000)) df &lt;- 1:10000 %&gt;% map_df(~weiszfeld(terminals, c(points$x[.], points$y[.])), .id = &quot;id&quot;) p &lt;- ggplot() + geom_point(aes(x, y), points, size = 1, alpha = 0.
         
       </div>
     </div>

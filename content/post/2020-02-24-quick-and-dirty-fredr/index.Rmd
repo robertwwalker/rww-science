@@ -1,0 +1,53 @@
+---
+title: Quick and Dirty Fredr
+author: Robert W. Walker
+date: '2020-02-24'
+slug: quick-and-dirty-fredr
+categories:
+  - tidyverse
+tags:
+  - R
+  - panel data
+  - plot
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2020-02-24T00:08:03-08:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
+library(tidyverse)
+```
+
+## Some Data from FREDr
+
+Downloading the FRED data on 
+
+```{r cars}
+library(fredr);library(ggthemes)
+Debt.Search <- fredr_series_search_text(
+  search_text = "national debt",
+  order_by = "popularity",
+  sort_order = "desc")
+Debt.Search <- Debt.Search %>% top_n(6)
+Debt.Data <- map_dfr(Debt.Search$id, fredr) %>% left_join(Debt.Search, by=c("series_id" = "id"))
+US.Debt <- dplyr::filter(Debt.Data, grepl('to GDP for United States', title))
+ggplot(US.Debt, aes(x=date, y=value)) + geom_line(size=3) + theme_economist() + theme(plot.title = element_text(color="red", size=11, face="bold.italic")) + labs(title=US.Debt$title[1])
+```
+
+And because I ended up with a bunch of them; multiple time series plots.
+
+```{r}
+library(stringr)
+Ctry.DD <- Debt.Data %>% filter(!grepl('Liabilities: Deposits', title))
+Ctry.DD <- Ctry.DD %>% mutate(Country = str_remove(title, str_remove(US.Debt$title[1], "United States")))
+ggplot(Ctry.DD, aes(x=date, y=value, color=Country)) + geom_line(size=1) + scale_color_viridis_d() + labs(title="Public Debt to GDP")
+```
+

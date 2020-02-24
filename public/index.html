@@ -239,7 +239,7 @@
   <meta property="og:description" content="Associate Professor of Quantitative Methods"><meta property="og:image" content="/img/portrait.jpg">
   <meta property="twitter:image" content="/img/portrait.jpg"><meta property="og:locale" content="en-us">
   
-    <meta property="og:updated_time" content="2020-02-19T00:00:00&#43;00:00">
+    <meta property="og:updated_time" content="2020-02-24T00:00:00&#43;00:00">
   
 
   
@@ -1159,6 +1159,88 @@
           Last updated on
       
     
+    Feb 24, 2020
+  </span>
+  
+
+  
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    1 min read
+  </span>
+  
+
+  
+  
+  
+
+  
+  
+  <span class="middot-divider"></span>
+  <span class="article-categories">
+    <i class="fas fa-folder mr-1"></i><a href="/categories/tidyverse/">tidyverse</a></span>
+  
+
+</div>
+
+  
+
+  
+  
+  
+
+  <h3 class="article-title mb-1 mt-3">
+    <a href="/2020/02/24/quick-and-dirty-fredr/">Quick and Dirty Fredr</a>
+  </h3>
+
+  
+  <div class="article-style">
+    <p>Some Data from FREDr Downloading the FRED data on
+library(fredr);library(ggthemes) Debt.Search &lt;- fredr_series_search_text( search_text = &quot;national debt&quot;, order_by = &quot;popularity&quot;, sort_order = &quot;desc&quot;) Debt.Search &lt;- Debt.Search %&gt;% top_n(6) Debt.Data &lt;- map_dfr(Debt.Search$id, fredr) %&gt;% left_join(Debt.Search, by=c(&quot;series_id&quot; = &quot;id&quot;)) US.Debt &lt;- dplyr::filter(Debt.Data, grepl(&#39;to GDP for United States&#39;, title)) ggplot(US.Debt, aes(x=date, y=value)) + geom_line(size=3) + theme_economist() + theme(plot.title = element_text(color=&quot;red&quot;, size=11, face=&quot;bold.italic&quot;)) + labs(title=US.Debt$title[1]) And because I ended up with a bunch of them; multiple time series plots.</p>
+  </div>
+  
+
+  
+
+</div>
+
+      
+    
+      
+        
+
+
+
+
+
+
+
+
+
+  
+
+
+<div class="card-simple">
+
+  
+    
+
+
+<div class="article-metadata">
+
+  
+  
+
+  
+  <span class="article-date">
+    
+    
+      
+          Last updated on
+      
+    
     Feb 19, 2020
   </span>
   
@@ -1444,88 +1526,6 @@ XBRL Change
   <div class="article-style">
     <p>Trees in San Francisco This week’s data cover trees in San Francisco.
 sf_trees &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-01-28/sf_trees.csv&#39;) library(tidyverse); library(ggmap); library(skimr) skim(sf_trees)  Table 1: Data summary  Name sf_trees  Number of rows 192987  Number of columns 12  _______________________   Column type frequency:   character 6  Date 1  numeric 5  ________________________   Group variables None    Variable type: character</p>
-  </div>
-  
-
-  
-
-</div>
-
-      
-    
-      
-        
-
-
-
-
-
-
-
-
-
-  
-
-
-<div class="card-simple">
-
-  
-    
-
-
-<div class="article-metadata">
-
-  
-  
-
-  
-  <span class="article-date">
-    
-    
-      
-          Last updated on
-      
-    
-    Feb 4, 2020
-  </span>
-  
-
-  
-
-  
-  <span class="middot-divider"></span>
-  <span class="article-reading-time">
-    5 min read
-  </span>
-  
-
-  
-  
-  
-
-  
-  
-  <span class="middot-divider"></span>
-  <span class="article-categories">
-    <i class="fas fa-folder mr-1"></i><a href="/categories/blogdown/">blogdown</a></span>
-  
-
-</div>
-
-  
-
-  
-  
-  
-
-  <h3 class="article-title mb-1 mt-3">
-    <a href="/2020/01/31/updating-hugo-and-academic/">Updating Hugo and Academic</a>
-  </h3>
-
-  
-  <div class="article-style">
-    <p>Updating Hugo: It’s Changed Alot… Many key features of hugo have been in a state of flux since I began this blogdown a few years ago. It was time to update hugo and the academic theme that I have built around and customized. A number of things broke.
-  The config.toml and the like In my original website, there was only one configuation file. Now it has split into four parts; for blogdown, config.</p>
   </div>
   
 
@@ -2632,7 +2632,7 @@ sf_trees &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatasc
           
           
           
-          <a href="/tags/essex/" style="font-size:0.9649335612176579rem">Essex</a>
+          <a href="/tags/essex/" style="font-size:0.9624038125567298rem">Essex</a>
         
           
           
@@ -2642,7 +2642,7 @@ sf_trees &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatasc
           
           
           
-          <a href="/tags/gganimate/" style="font-size:1.1199097597125007rem">gganimate</a>
+          <a href="/tags/gganimate/" style="font-size:1.11590020294868rem">gganimate</a>
         
           
           
@@ -2657,7 +2657,7 @@ sf_trees &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatasc
           
           
           
-          <a href="/tags/maps/" style="font-size:1.616519538514546rem">Maps</a>
+          <a href="/tags/maps/" style="font-size:1.607768046009726rem">Maps</a>
         
           
           
@@ -2667,12 +2667,12 @@ sf_trees &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatasc
           
           
           
-          <a href="/tags/panel-data/" style="font-size:1.1199097597125007rem">panel data</a>
+          <a href="/tags/panel-data/" style="font-size:1.2248076251134596rem">panel data</a>
         
           
           
           
-          <a href="/tags/plot/" style="font-size:1.443762537102642rem">plot</a>
+          <a href="/tags/plot/" style="font-size:1.4872114376701893rem">plot</a>
         
           
           
@@ -2682,37 +2682,37 @@ sf_trees &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatasc
           
           
           
-          <a href="/tags/python/" style="font-size:0.9649335612176579rem">python</a>
+          <a href="/tags/python/" style="font-size:0.9624038125567298rem">python</a>
         
           
           
           
-          <a href="/tags/r/" style="font-size:1.98704220536685rem">R</a>
+          <a href="/tags/r/" style="font-size:1.9875868000864378rem">R</a>
         
           
           
           
-          <a href="/tags/r-markdown/" style="font-size:1.6803706725983862rem">R Markdown</a>
+          <a href="/tags/r-markdown/" style="font-size:1.6710094901765733rem">R Markdown</a>
         
           
           
           
-          <a href="/tags/reticulate/" style="font-size:0.9649335612176579rem">reticulate</a>
+          <a href="/tags/reticulate/" style="font-size:0.9624038125567298rem">reticulate</a>
         
           
           
           
-          <a href="/tags/tidytext/" style="font-size:1.315156679069841rem">tidytext</a>
+          <a href="/tags/tidytext/" style="font-size:1.3092827845810282rem">tidytext</a>
         
           
           
           
-          <a href="/tags/tidytuesday/" style="font-size:1.7086960983203rem">tidyTuesday</a>
+          <a href="/tags/tidytuesday/" style="font-size:1.6990644473045462rem">tidyTuesday</a>
         
           
           
           
-          <a href="/tags/tidyverse/" style="font-size:1.7597342448706321rem">tidyverse</a>
+          <a href="/tags/tidyverse/" style="font-size:1.7496152502269193rem">tidyverse</a>
         
       </div>
     

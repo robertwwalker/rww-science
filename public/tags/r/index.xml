@@ -5,12 +5,43 @@
     <link>/tags/r/</link>
       <atom:link href="/tags/r/index.xml" rel="self" type="application/rss+xml" />
     <description>R</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© 2018</copyright><lastBuildDate>Wed, 19 Feb 2020 00:00:00 +0000</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© 2018</copyright><lastBuildDate>Mon, 24 Feb 2020 00:00:00 +0000</lastBuildDate>
     <image>
       <url>/img/portrait.jpg</url>
       <title>R</title>
       <link>/tags/r/</link>
     </image>
+    
+    <item>
+      <title>Quick and Dirty Fredr</title>
+      <link>/2020/02/24/quick-and-dirty-fredr/</link>
+      <pubDate>Mon, 24 Feb 2020 00:00:00 +0000</pubDate>
+      <guid>/2020/02/24/quick-and-dirty-fredr/</guid>
+      <description>
+
+
+&lt;div id=&#34;some-data-from-fredr&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Some Data from FREDr&lt;/h2&gt;
+&lt;p&gt;Downloading the FRED data on&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(fredr);library(ggthemes)
+Debt.Search &amp;lt;- fredr_series_search_text(
+  search_text = &amp;quot;national debt&amp;quot;,
+  order_by = &amp;quot;popularity&amp;quot;,
+  sort_order = &amp;quot;desc&amp;quot;)
+Debt.Search &amp;lt;- Debt.Search %&amp;gt;% top_n(6)
+Debt.Data &amp;lt;- map_dfr(Debt.Search$id, fredr) %&amp;gt;% left_join(Debt.Search, by=c(&amp;quot;series_id&amp;quot; = &amp;quot;id&amp;quot;))
+US.Debt &amp;lt;- dplyr::filter(Debt.Data, grepl(&amp;#39;to GDP for United States&amp;#39;, title))
+ggplot(US.Debt, aes(x=date, y=value)) + geom_line(size=3) + theme_economist() + theme(plot.title = element_text(color=&amp;quot;red&amp;quot;, size=11, face=&amp;quot;bold.italic&amp;quot;)) + labs(title=US.Debt$title[1])&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-02-24-quick-and-dirty-fredr/index_files/figure-html/cars-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;And because I ended up with a bunch of them; multiple time series plots.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(stringr)
+Ctry.DD &amp;lt;- Debt.Data %&amp;gt;% filter(!grepl(&amp;#39;Liabilities: Deposits&amp;#39;, title))
+Ctry.DD &amp;lt;- Ctry.DD %&amp;gt;% mutate(Country = str_remove(title, str_remove(US.Debt$title[1], &amp;quot;United States&amp;quot;)))
+ggplot(Ctry.DD, aes(x=date, y=value, color=Country)) + geom_line(size=1) + scale_color_viridis_d() + labs(title=&amp;quot;Public Debt to GDP&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-02-24-quick-and-dirty-fredr/index_files/figure-html/unnamed-chunk-1-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+</description>
+    </item>
     
     <item>
       <title>Trying to Figure Out the New XBRL</title>
