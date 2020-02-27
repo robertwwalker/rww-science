@@ -1,0 +1,25 @@
+---
+title: "Natural Gas dashboard"
+output: flexdashboard::flex_dashboard
+---
+
+
+
+<div id="column-1" class="section level2">
+<h2>Column 1</h2>
+<div id="newspapers" class="section level3">
+<h3>Newspapers</h3>
+<pre class="r"><code>ggplot(Newspapers, aes(x=Price, fill=Location)) + geom_density(alpha=0.2)</code></pre>
+<p><img src="/courses/GSMPR622/flexdashboard/index_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+</div>
+<div id="experts" class="section level3">
+<h3>Experts</h3>
+<pre class="r"><code>ggplot(Experts, aes(x=Build, fill=Location)) + geom_bar()</code></pre>
+<p><img src="/courses/GSMPR622/flexdashboard/index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+</div>
+<div id="forecast" class="section level3">
+<h3>Forecast</h3>
+<pre class="r"><code>ggplot(Forecast, aes(x=Period, y=Forecast, color=Location)) + geom_line() + geom_point()</code></pre>
+<p><img src="/courses/GSMPR622/flexdashboard/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+</div>
+</div>
