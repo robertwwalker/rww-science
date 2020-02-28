@@ -2,7 +2,7 @@
 title: "Natural Gas dashboard"
 output: 
   flexdashboard::flex_dashboard:
-    storyboard: true
+    storyboard: true            
     theme: yeti
 ---
 
@@ -21,6 +21,7 @@ library(plotly)
 ggplot(Newspapers, aes(x=Price, fill=Location)) + geom_density(alpha=0.2) + scale_fill_viridis_d()
 ```
 
+
 *** 
 
 Two key features are of note:  
@@ -28,6 +29,19 @@ Two key features are of note:
 1. The average price is clearly lower at Henry Hub  
 2. The amount of variation at Henry Hub is considerably larger than at Tianjin in spite of the fact that the average is lower.
 
+
+### Newspapers: Summary
+
+```{r}
+skimr::skim(Newspapers)
+```
+
+*** 
+
+Two key features are of note:  
+
+1. The average price is clearly lower at Henry Hub  
+2. The amount of variation at Henry Hub is considerably larger than at Tianjin in spite of the fact that the average is lower.
 
 
 
@@ -44,6 +58,19 @@ Almost everything that we wish to know can be discerned from this.
 1. Because we can see 100 on the y-axis, we can get a sense of the missing responses; there are far more for Tianjin than Henry Hub.  
 2. Experts clearly favor Henry Hub; the split in Build/No is nearly even for Tianjin but overwhelmingly favors Build for Henry Hub.
 
+### Experts: Tables
+
+```{r}
+Experts %>% janitor::tabyl(Location,Build) %>% janitor::adorn_totals(c("row","col"))
+Experts %>% janitor::tabyl(Location,Build) %>% janitor::adorn_percentages()
+```
+
+
+*** 
+
+1. Henry Hub has far more responses and more favorable responses than Tianjin.
+2. Experts clearly favor Henry Hub; the split in Build/No is nearly even for Tianjin but overwhelmingly favors Build for Henry Hub.
+
 
 ### Forecast
 
@@ -57,3 +84,15 @@ ggplotly(ggplot(Forecast, aes(x=Period, y=Forecast, color=Location)) + geom_line
 Two things are of note:  
 1. The data are paired by period; that is the point of the calibration exercise.  
 2. *Henry Hub* is almost always forecast higher than Tianjin.  Choose a period and you can hover over the associated values to convince yourself of this.  Compare the two forecasts for any given period; they are almost always higher for Henry Hub.  
+
+
+### Forecast: Data
+
+```{r}
+Forecast %>% mutate(Difference = HenryHubForecast - TianjinForecast) %>% select(Period, HenryHubForecast, TianjinForecast, Difference) %>% tidyr::drop_na(Difference) %>% DT::datatable(.)
+```
+
+
+*** 
+
+*Henry Hub* is almost always forecast higher than Tianjin.  The difference column captures this perfectly and shows that it always favors Henry Hub.
