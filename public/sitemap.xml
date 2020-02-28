@@ -3,8 +3,28 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>/2020/02/27/a-look-at-vix/</loc>
+    <lastmod>2020-02-27T22:17:50-08:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/categories/</loc>
-    <lastmod>2020-02-24T14:14:02-08:00</lastmod>
+    <lastmod>2020-02-27T22:17:50-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/r/</loc>
+    <lastmod>2020-02-27T22:17:50-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/</loc>
+    <lastmod>2020-02-27T22:17:50-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/tidyquant/</loc>
+    <lastmod>2020-02-27T22:17:50-08:00</lastmod>
   </url>
   
   <url>
@@ -28,11 +48,6 @@
   </url>
   
   <url>
-    <loc>/</loc>
-    <lastmod>2020-02-27T14:02:02-08:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/tags/</loc>
     <lastmod>2020-02-24T14:14:02-08:00</lastmod>
   </url>
@@ -48,17 +63,12 @@
   </url>
   
   <url>
-    <loc>/categories/python/</loc>
-    <lastmod>2020-02-24T00:09:44-08:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/tags/python/</loc>
     <lastmod>2020-02-24T00:09:44-08:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/r/</loc>
+    <loc>/categories/python/</loc>
     <lastmod>2020-02-24T00:09:44-08:00</lastmod>
   </url>
   
@@ -103,13 +113,13 @@
   </url>
   
   <url>
-    <loc>/categories/tidytuesday/</loc>
-    <lastmod>2020-02-20T13:21:48-08:00</lastmod>
+    <loc>/tags/tidytuesday/</loc>
+    <lastmod>2020-02-20T14:31:17-08:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/tidytuesday/</loc>
-    <lastmod>2020-02-20T14:31:17-08:00</lastmod>
+    <loc>/categories/tidytuesday/</loc>
+    <lastmod>2020-02-20T13:21:48-08:00</lastmod>
   </url>
   
   <url>
@@ -123,12 +133,12 @@
   </url>
   
   <url>
-    <loc>/tags/blogdown/</loc>
+    <loc>/categories/blogdown/</loc>
     <lastmod>2020-02-04T14:46:56-08:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/blogdown/</loc>
+    <loc>/tags/blogdown/</loc>
     <lastmod>2020-02-04T14:46:56-08:00</lastmod>
   </url>
   
@@ -343,13 +353,13 @@
   </url>
   
   <url>
-    <loc>/tags/tidytext/</loc>
-    <lastmod>2020-02-05T13:19:17-08:00</lastmod>
+    <loc>/categories/tidytext/</loc>
+    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/tidytext/</loc>
-    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
+    <loc>/tags/tidytext/</loc>
+    <lastmod>2020-02-05T13:19:17-08:00</lastmod>
   </url>
   
   <url>
@@ -643,7 +653,7 @@
   
   <url>
     <loc>/courses/gsmpr622/flexdashboard/</loc>
-    <lastmod>2020-02-27T14:02:02-08:00</lastmod>
+    <lastmod>2020-02-27T22:09:12-08:00</lastmod>
   </url>
   
   <url>

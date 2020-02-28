@@ -1,0 +1,51 @@
+---
+title: A Look at VIX
+author: Robert W. Walker
+date: '2020-02-27'
+slug: a-look-at-vix
+categories:
+  - R
+  - tidyquant
+tags: []
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2020-02-27T22:17:50-08:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+<script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
+<script src="/rmarkdown-libs/pymjs/pym.v1.js"></script>
+<script src="/rmarkdown-libs/widgetframe-binding/widgetframe.js"></script>
+
+
+<div id="get-some-vix-data" class="section level1">
+<h1>Get Some VIX data</h1>
+<pre class="r"><code>VIX &lt;- read.csv(url(&quot;http://www.cboe.com/publish/scheduledtask/mktdata/datahouse/vixcurrent.csv&quot;), skip = 1)
+VIX$Dates &lt;- as.Date(VIX$Date,
+  format = &quot;%m/%d/%Y&quot;)</code></pre>
+<p>The data was straightforward to get a hold of. Now let me plot it.</p>
+<pre class="r"><code>library(plotly)
+fig &lt;- VIX  %&gt;% plot_ly(x = ~Dates, type=&quot;candlestick&quot;,
+          open = ~VIX.Open, close = ~VIX.Close,
+          high = ~VIX.High, low = ~VIX.Low) 
+fig &lt;- fig %&gt;% layout(title = &quot;A Historical Look at VIX&quot;)
+library(widgetframe)
+frameWidget(fig, width = 1000)</code></pre>
+<div id="htmlwidget-1" style="width:1000px;height:480px;" class="widgetframe html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/post/2020-02-27-a-look-at-vix/index_files/figure-html//widgets/widget_unnamed-chunk-2.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+<p>As an overall it has been worse, but keep in mind, that big blip happened TODAY! What does it look like in perspective [keeping in mind that the futures are currently just under 40] since 2012?</p>
+<pre class="r"><code>fig2 &lt;- VIX %&gt;% filter(Dates &gt; as.Date(&quot;01/01/2012&quot;, format = &quot;%m/%d/%Y&quot;)) %&gt;% plot_ly(x = ~Dates, type=&quot;candlestick&quot;,
+          open = ~VIX.Open, close = ~VIX.Close,
+          high = ~VIX.High, low = ~VIX.Low) 
+fig2 &lt;- fig2 %&gt;% layout(title = &quot;VIX Since 2012&quot;)
+frameWidget(fig2, width = 1000)</code></pre>
+<div id="htmlwidget-2" style="width:1000px;height:480px;" class="widgetframe html-widget"></div>
+<script type="application/json" data-for="htmlwidget-2">{"x":{"url":"/post/2020-02-27-a-look-at-vix/index_files/figure-html//widgets/widget_unnamed-chunk-3.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+<p>This doesn’t look good.</p>
+</div>

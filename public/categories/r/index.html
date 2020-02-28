@@ -239,7 +239,7 @@
   <meta property="og:description" content="Associate Professor of Quantitative Methods"><meta property="og:image" content="/img/portrait.jpg">
   <meta property="twitter:image" content="/img/portrait.jpg"><meta property="og:locale" content="en-us">
   
-    <meta property="og:updated_time" content="2020-02-19T00:00:00&#43;00:00">
+    <meta property="og:updated_time" content="2020-02-27T00:00:00&#43;00:00">
   
 
   
@@ -654,6 +654,19 @@
     
     
     <div>
+      <h2><a href="/2020/02/27/a-look-at-vix/" >A Look at VIX</a></h2>
+      <div class="article-style">
+        
+          Get Some VIX data VIX &lt;- read.csv(url(&quot;http://www.cboe.com/publish/scheduledtask/mktdata/datahouse/vixcurrent.csv&quot;), skip = 1) VIX$Dates &lt;- as.Date(VIX$Date, format = &quot;%m/%d/%Y&quot;) The data was straightforward to get a hold of. Now let me plot it.
+library(plotly) fig &lt;- VIX %&gt;% plot_ly(x = ~Dates, type=&quot;candlestick&quot;, open = ~VIX.Open, close = ~VIX.Close, high = ~VIX.High, low = ~VIX.Low) fig &lt;- fig %&gt;% layout(title = &quot;A Historical Look at VIX&quot;) library(widgetframe) frameWidget(fig, width = 1000)  {"
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
       <h2><a href="/2020/02/19/trying-to-figure-out-the-new-xbrl/" >Trying to Figure Out the New XBRL</a></h2>
       <div class="article-style">
         
@@ -764,20 +777,6 @@ library(tidycensus); library(kableExtra) library(tidyverse); library(stringr) v1
       <div class="article-style">
         
           Hashtag OKBoomer The generational banter that has followed the use of #OKBoomer reminded me of an interesting feature of US population data. I believe it to be true that Generation X has never and will never be the largest generation of Americans. There are tons of Millenials and Baby Boomers alike, though the rate of decline in the latter means that the former are about to surpass them. Or perhaps they have.
-        
-      </div>
-    </div>
-  
-    
-    
-    
-    <div>
-      <h2><a href="/r/finreportr-is-awesome/" >Financial Analysis of SEC Reports in R</a></h2>
-      <div class="article-style">
-        
-          The Package: finreport The key tool to facilitate the financial analysis of companies that file regular SEC reports of certain forms is finreportr. To make use of it, we must first have R install it and dependencies. To install it, install.packages(&quot;finreportr&quot;, dependencies=TRUE).
- The Commands The first command is CompanyInfo().
-library(finreportr) CompanyInfo(&quot;JPM&quot;) ## company CIK SIC state state.inc FY.end street.address ## 1 JPMORGAN CHASE &amp; CO 0000019617 6021 NY DE 1231 383 MADISON AVENUE ## city.
         
       </div>
     </div>

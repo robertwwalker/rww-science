@@ -1,0 +1,54 @@
+---
+title: A Look at VIX
+author: Robert W. Walker
+date: '2020-02-27'
+slug: a-look-at-vix
+categories:
+  - R
+  - tidyquant
+tags: []
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2020-02-27T22:17:50-08:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+# Get Some VIX data
+
+```{r}
+VIX <- read.csv(url("http://www.cboe.com/publish/scheduledtask/mktdata/datahouse/vixcurrent.csv"), skip = 1)
+VIX$Dates <- as.Date(VIX$Date,
+  format = "%m/%d/%Y")
+```
+
+The data was straightforward to get a hold of.  Now let me plot it.
+
+```{r, message=FALSE, warning=FALSE}
+library(plotly)
+fig <- VIX  %>% plot_ly(x = ~Dates, type="candlestick",
+          open = ~VIX.Open, close = ~VIX.Close,
+          high = ~VIX.High, low = ~VIX.Low) 
+fig <- fig %>% layout(title = "A Historical Look at VIX")
+library(widgetframe)
+frameWidget(fig, width = 1000)
+```
+
+As an overall it has been worse, but keep in mind, that big blip happened TODAY!  What does it look like in perspective [keeping in mind that the futures are currently just under 40] since 2012?
+
+```{r}
+fig2 <- VIX %>% filter(Dates > as.Date("01/01/2012", format = "%m/%d/%Y")) %>% plot_ly(x = ~Dates, type="candlestick",
+          open = ~VIX.Open, close = ~VIX.Close,
+          high = ~VIX.High, low = ~VIX.Low) 
+fig2 <- fig2 %>% layout(title = "VIX Since 2012")
+frameWidget(fig2, width = 1000)
+```
+
+
+
+This doesn't look good.

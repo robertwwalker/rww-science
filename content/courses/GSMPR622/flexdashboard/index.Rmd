@@ -7,4 +7,4 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-There is wonderful documentation to the `flexdashboard` package.  Furthermore, because it is built on underlying scripting, things like plotly just work.  [Here is an example](https://rww.science/flexdashboard/).
+There is wonderful documentation to the `flexdashboard` package.  Furthermore, because it is built on underlying scripting, things like plotly just work.  [Here is an example](https://rww.science/flexdashboard/flexdashboard.html).

@@ -239,7 +239,7 @@
   <meta property="og:description" content="Associate Professor of Quantitative Methods"><meta property="og:image" content="/img/portrait.jpg">
   <meta property="twitter:image" content="/img/portrait.jpg"><meta property="og:locale" content="en-us">
   
-    <meta property="og:updated_time" content="2020-02-24T00:00:00&#43;00:00">
+    <meta property="og:updated_time" content="2020-02-27T00:00:00&#43;00:00">
   
 
   
@@ -1159,6 +1159,88 @@
           Last updated on
       
     
+    Feb 27, 2020
+  </span>
+  
+
+  
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    1 min read
+  </span>
+  
+
+  
+  
+  
+
+  
+  
+  <span class="middot-divider"></span>
+  <span class="article-categories">
+    <i class="fas fa-folder mr-1"></i><a href="/categories/r/">R</a>, <a href="/categories/tidyquant/">tidyquant</a></span>
+  
+
+</div>
+
+  
+
+  
+  
+  
+
+  <h3 class="article-title mb-1 mt-3">
+    <a href="/2020/02/27/a-look-at-vix/">A Look at VIX</a>
+  </h3>
+
+  
+  <div class="article-style">
+    <p>Get Some VIX data VIX &lt;- read.csv(url(&quot;http://www.cboe.com/publish/scheduledtask/mktdata/datahouse/vixcurrent.csv&quot;), skip = 1) VIX$Dates &lt;- as.Date(VIX$Date, format = &quot;%m/%d/%Y&quot;) The data was straightforward to get a hold of. Now let me plot it.
+library(plotly) fig &lt;- VIX %&gt;% plot_ly(x = ~Dates, type=&quot;candlestick&quot;, open = ~VIX.Open, close = ~VIX.Close, high = ~VIX.High, low = ~VIX.Low) fig &lt;- fig %&gt;% layout(title = &quot;A Historical Look at VIX&quot;) library(widgetframe) frameWidget(fig, width = 1000)  {"</p>
+  </div>
+  
+
+  
+
+</div>
+
+      
+    
+      
+        
+
+
+
+
+
+
+
+
+
+  
+
+
+<div class="card-simple">
+
+  
+    
+
+
+<div class="article-metadata">
+
+  
+  
+
+  
+  <span class="article-date">
+    
+    
+      
+          Last updated on
+      
+    
     Feb 24, 2020
   </span>
   
@@ -1443,88 +1525,6 @@ XBRL Change
   
   <div class="article-style">
     <p>tidyTuesday on the Carbon Footprint of Feeding the Planet The tidyTuesday for this week relies on data scraped from the Food and Agricultural Organization of the United Nations. The blog post for obtaining the data can be found on r-tastic. The scraping exercise is nice and easy to follow and explored a case of cleaning up a very messy data structure. I took this exercise as practice for using pivot_wider and pivot_longer.</p>
-  </div>
-  
-
-  
-
-</div>
-
-      
-    
-      
-        
-
-
-
-
-
-
-
-
-
-  
-
-
-<div class="card-simple">
-
-  
-    
-
-
-<div class="article-metadata">
-
-  
-  
-
-  
-  <span class="article-date">
-    
-    
-      
-          Last updated on
-      
-    
-    Jan 31, 2020
-  </span>
-  
-
-  
-
-  
-  <span class="middot-divider"></span>
-  <span class="article-reading-time">
-    2 min read
-  </span>
-  
-
-  
-  
-  
-
-  
-  
-  <span class="middot-divider"></span>
-  <span class="article-categories">
-    <i class="fas fa-folder mr-1"></i><a href="/categories/tidytuesday/">tidyTuesday</a>, <a href="/categories/tidyverse/">tidyverse</a></span>
-  
-
-</div>
-
-  
-
-  
-  
-  
-
-  <h3 class="article-title mb-1 mt-3">
-    <a href="/2020/01/31/mapping-san-francisco-trees/">Mapping San Francisco Trees</a>
-  </h3>
-
-  
-  <div class="article-style">
-    <p>Trees in San Francisco This week’s data cover trees in San Francisco.
-sf_trees &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-01-28/sf_trees.csv&#39;) library(tidyverse); library(ggmap); library(skimr) skim(sf_trees)  Table 1: Data summary  Name sf_trees  Number of rows 192987  Number of columns 12  _______________________   Column type frequency:   character 6  Date 1  numeric 5  ________________________   Group variables None    Variable type: character</p>
   </div>
   
 
