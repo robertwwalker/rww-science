@@ -60,11 +60,22 @@ Almost everything that we wish to know can be discerned from this.
 
 ### Experts: Tables
 
+
+The Raw Table
+
+<center>
 ```{r}
 Experts %>% janitor::tabyl(Location,Build) %>% janitor::adorn_totals(c("row","col"))
+```
+</center>
+
+A Percentage Table
+
+<center>
+```{r}
 Experts %>% janitor::tabyl(Location,Build) %>% janitor::adorn_percentages()
 ```
-
+</center>
 
 *** 
 
