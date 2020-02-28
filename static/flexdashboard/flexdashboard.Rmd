@@ -1,0 +1,59 @@
+---
+title: "Natural Gas dashboard"
+output: 
+  flexdashboard::flex_dashboard:
+    storyboard: true
+    theme: yeti
+---
+
+```{r setup, include = FALSE}
+library(ggplot2); library(ggthemes)
+library(dplyr)
+knitr::opts_chunk$set(fig.asp = 1/3) # It is a 2 column with 3 graphics and one table; the table is rendered for scrolling using DT::datatable()
+load(url("https://github.com/robertwwalker/DADMStuff/raw/master/NaturalGas2019.RData"))
+library(plotly)
+```
+
+
+### Newspapers
+
+```{r}
+ggplot(Newspapers, aes(x=Price, fill=Location)) + geom_density(alpha=0.2) + scale_fill_viridis_d()
+```
+
+*** 
+
+Two key features are of note:  
+
+1. The average price is clearly lower at Henry Hub  
+2. The amount of variation at Henry Hub is considerably larger than at Tianjin in spite of the fact that the average is lower.
+
+
+
+
+### Experts
+
+```{r}
+ggplot(Experts, aes(x=Location, fill=Build)) + geom_bar() + expand_limits(y=100) + scale_fill_viridis_d()
+```
+
+*** 
+
+Almost everything that we wish to know can be discerned from this.  
+
+1. Because we can see 100 on the y-axis, we can get a sense of the missing responses; there are far more for Tianjin than Henry Hub.  
+2. Experts clearly favor Henry Hub; the split in Build/No is nearly even for Tianjin but overwhelmingly favors Build for Henry Hub.
+
+
+### Forecast
+
+```{r}
+options(scipen=10)
+ggplotly(ggplot(Forecast, aes(x=Period, y=Forecast, color=Location)) + geom_line() + geom_point() + scale_color_viridis_d())
+```
+
+*** 
+
+Two things are of note:  
+1. The data are paired by period; that is the point of the calibration exercise.  
+2. *Henry Hub* is almost always forecast higher than Tianjin.  Choose a period and you can hover over the associated values to convince yourself of this.  Compare the two forecasts for any given period; they are almost always higher for Henry Hub.  

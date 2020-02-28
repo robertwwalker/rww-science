@@ -2158,31 +2158,14 @@ FFood$Chicken[FFood$restaurant==&amp;quot;Chick Fil-A&amp;quot;] &amp;lt;- TRUE&
     </item>
     
     <item>
-      <title>Natural Gas dashboard</title>
+      <title>FlexDashboard</title>
       <link>/courses/gsmpr622/flexdashboard/</link>
       <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
       <guid>/courses/gsmpr622/flexdashboard/</guid>
       <description>
 
 
-&lt;div id=&#34;column-1&#34; class=&#34;section level2&#34;&gt;
-&lt;h2&gt;Column 1&lt;/h2&gt;
-&lt;div id=&#34;newspapers&#34; class=&#34;section level3&#34;&gt;
-&lt;h3&gt;Newspapers&lt;/h3&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggplot(Newspapers, aes(x=Price, fill=Location)) + geom_density(alpha=0.2)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/courses/GSMPR622/flexdashboard/index_files/figure-html/unnamed-chunk-1-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;/div&gt;
-&lt;div id=&#34;experts&#34; class=&#34;section level3&#34;&gt;
-&lt;h3&gt;Experts&lt;/h3&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggplot(Experts, aes(x=Build, fill=Location)) + geom_bar()&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/courses/GSMPR622/flexdashboard/index_files/figure-html/unnamed-chunk-2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;/div&gt;
-&lt;div id=&#34;forecast&#34; class=&#34;section level3&#34;&gt;
-&lt;h3&gt;Forecast&lt;/h3&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggplot(Forecast, aes(x=Period, y=Forecast, color=Location)) + geom_line() + geom_point()&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/courses/GSMPR622/flexdashboard/index_files/figure-html/unnamed-chunk-3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
+&lt;p&gt;There is wonderful documentation to the &lt;code&gt;flexdashboard&lt;/code&gt; package. Furthermore, because it is built on underlying scripting, things like plotly just work. &lt;a href=&#34;https://rww.science/flexdashboard/&#34;&gt;Here is an example&lt;/a&gt;.&lt;/p&gt;
 </description>
     </item>
     

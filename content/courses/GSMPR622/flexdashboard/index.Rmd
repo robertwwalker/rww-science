@@ -1,32 +1,10 @@
 ---
-title: "Natural Gas dashboard"
-output: flexdashboard::flex_dashboard
+title: "FlexDashboard"
+output: html_document
 ---
 
-```{r setup, include = FALSE}
-library(ggplot2)
-library(dplyr)
-knitr::opts_chunk$set(fig.asp = 1/3) # It is a 2 column with 3 graphics and one table; the table is rendered for scrolling using DT::datatable()
-load(url("https://github.com/robertwwalker/DADMStuff/raw/master/NaturalGas2019.RData"))
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
 ```
 
-## Column 1
-
-### Newspapers
-
-```{r}
-ggplot(Newspapers, aes(x=Price, fill=Location)) + geom_density(alpha=0.2)
-```
-
-### Experts
-
-```{r}
-ggplot(Experts, aes(x=Build, fill=Location)) + geom_bar()
-```
-
-### Forecast
-
-```{r}
-ggplot(Forecast, aes(x=Period, y=Forecast, color=Location)) + geom_line() + geom_point()
-```
-
+There is wonderful documentation to the `flexdashboard` package.  Furthermore, because it is built on underlying scripting, things like plotly just work.  [Here is an example](https://rww.science/flexdashboard/).
