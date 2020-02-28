@@ -21,7 +21,8 @@ projects: []
 
 # Get Some VIX data
 
-```{r}
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse)
 VIX <- read.csv(url("http://www.cboe.com/publish/scheduledtask/mktdata/datahouse/vixcurrent.csv"), skip = 1)
 VIX$Dates <- as.Date(VIX$Date,
   format = "%m/%d/%Y")
@@ -48,6 +49,39 @@ fig2 <- VIX %>% filter(Dates > as.Date("01/01/2012", format = "%m/%d/%Y")) %>% p
 fig2 <- fig2 %>% layout(title = "VIX Since 2012")
 frameWidget(fig2, width = 1000)
 ```
+
+## Day to Day Changes?
+
+```{r, warning=FALSE}
+VIX <- VIX %>% mutate(Percent.Change = VIX.Close - lag(VIX.Close) / lag(VIX.Close)) 
+p <- ggplot(VIX, aes(x=Dates, y=Percent.Change)) + geom_line() + geom_vline(xintercept = as.Date("02/27/2020", format = "%m/%d/%Y"), color="red", alpha=0.2, linetype = "dotted") + geom_vline(xintercept = as.Date("09/12/2008", format = "%m/%d/%Y"), color="red", alpha=0.2) + ggthemes::theme_economist() + geom_label(data = data.frame(x = as.Date("2008-02-12"),
+y = 4,
+label = "Lehman Brothers"),
+mapping = aes(x = x,
+y = y,
+label = label),
+size = 3.86605783866058,
+angle = 0L,
+lineheight = 1L,
+hjust = 0.5,
+vjust = 0.5,
+colour = "red",
+family = "sans",
+fontface = "plain",
+label.padding = structure(0.25,
+class = "unit",
+valid.unit = 3L,
+unit = "lines"),
+label.size = 0.25,
+label.r = structure(0.15,
+class = "unit",
+valid.unit = 3L,
+unit = "lines"),
+inherit.aes = FALSE,
+show.legend = FALSE)
+p
+```
+
 
 
 

@@ -21,6 +21,9 @@ image:
 projects: []
 ---
 
+<script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
+<script src="/rmarkdown-libs/pymjs/pym.v1.js"></script>
+<script src="/rmarkdown-libs/widgetframe-binding/widgetframe.js"></script>
 
 
 <div id="some-data-from-fredr" class="section level2">
@@ -33,25 +36,27 @@ Debt.Search &lt;- fredr_series_search_text(
   sort_order = &quot;desc&quot;)
 Debt.Search &lt;- Debt.Search %&gt;% top_n(6)
 Debt.Search %&gt;% select(id, title)</code></pre>
-<pre><code>## # A tibble: 16 x 2
+<pre><code>## # A tibble: 18 x 2
 ##    id             title                                                         
 ##    &lt;chr&gt;          &lt;chr&gt;                                                         
-##  1 DDDM04CNA156N… Outstanding Domestic Public Debt Securities to GDP for China  
-##  2 WLSFAL         Liabilities: Deposits with F.R. Banks, Other Than Reserve Bal…
-##  3 DDDM04USA156N… Outstanding Domestic Public Debt Securities to GDP for United…
-##  4 DDDM04JPA156N… Outstanding Domestic Public Debt Securities to GDP for Japan  
-##  5 DDDM04ARA156N… Outstanding Domestic Public Debt Securities to GDP for Argent…
-##  6 DDDM04AUA156N… Outstanding Domestic Public Debt Securities to GDP for Austra…
-##  7 DDDM04MXA156N… Outstanding Domestic Public Debt Securities to GDP for Mexico 
-##  8 DDDM04INA156N… Outstanding Domestic Public Debt Securities to GDP for India  
-##  9 DDDM04BRA156N… Outstanding Domestic Public Debt Securities to GDP for Brazil 
-## 10 DDDM04DEA156N… Outstanding Domestic Public Debt Securities to GDP for Germany
-## 11 DDDM04TRA156N… Outstanding Domestic Public Debt Securities to GDP for Turkey 
-## 12 DDDM04RUA156N… Outstanding Domestic Public Debt Securities to GDP for Russia…
-## 13 DDDM04ITA156N… Outstanding Domestic Public Debt Securities to GDP for Italy  
-## 14 DDDM04THA156N… Outstanding Domestic Public Debt Securities to GDP for Thaila…
-## 15 DDDM04PLA156N… Outstanding Domestic Public Debt Securities to GDP for Poland 
-## 16 DDDM04FRA156N… Outstanding Domestic Public Debt Securities to GDP for France</code></pre>
+##  1 DDDM04USA156N… Outstanding Domestic Public Debt Securities to GDP for United…
+##  2 DDDM04CNA156N… Outstanding Domestic Public Debt Securities to GDP for China  
+##  3 DDDM04JPA156N… Outstanding Domestic Public Debt Securities to GDP for Japan  
+##  4 DDDM04DEA156N… Outstanding Domestic Public Debt Securities to GDP for Germany
+##  5 WLSFAL         Liabilities: Deposits with F.R. Banks, Other Than Reserve Bal…
+##  6 DDDM04ARA156N… Outstanding Domestic Public Debt Securities to GDP for Argent…
+##  7 DDDM04HKA156N… Outstanding Domestic Public Debt Securities to GDP for Hong K…
+##  8 DDDM04BRA156N… Outstanding Domestic Public Debt Securities to GDP for Brazil 
+##  9 DDDM04ITA156N… Outstanding Domestic Public Debt Securities to GDP for Italy  
+## 10 DDDM04MXA156N… Outstanding Domestic Public Debt Securities to GDP for Mexico 
+## 11 DDDM04CHA156N… Outstanding Domestic Public Debt Securities to GDP for Switze…
+## 12 DDDM04THA156N… Outstanding Domestic Public Debt Securities to GDP for Thaila…
+## 13 DDDM04AUA156N… Outstanding Domestic Public Debt Securities to GDP for Austra…
+## 14 DDDM04GRA156N… Outstanding Domestic Public Debt Securities to GDP for Greece 
+## 15 DDDM04INA156N… Outstanding Domestic Public Debt Securities to GDP for India  
+## 16 DDDM04NLA156N… Outstanding Domestic Public Debt Securities to GDP for Nether…
+## 17 DDDM04RUA156N… Outstanding Domestic Public Debt Securities to GDP for Russia…
+## 18 DDDM04TRA156N… Outstanding Domestic Public Debt Securities to GDP for Turkey</code></pre>
 <p>Next, I need to acquire the data that I want. I probably should have reversed the order of some of the operations here. For example, I don’t really want the non-domestic public debt but I am not going to filter them before downloading. That’s not great but it isn’t all that much data either. The command <code>fredr</code> aliases the <code>fredr_series_observations</code> command that obtains data directly from <strong>FRED</strong>. I will use a variant of <em>map</em> to grab the relevant series <code>id</code> above and then join them back to the Search results.</p>
 <pre class="r"><code>Debt.Data &lt;- map_dfr(Debt.Search$id, fredr) %&gt;% left_join(Debt.Search, by=c(&quot;series_id&quot; = &quot;id&quot;))</code></pre>
 <p>Now let me splice off the United States and plot it.</p>
@@ -62,6 +67,9 @@ ggplot(US.Debt, aes(x=date, y=value)) + geom_line(size=3) + theme_economist() + 
 <pre class="r"><code>library(stringr)
 Ctry.DD &lt;- Debt.Data %&gt;% filter(!grepl(&#39;Liabilities: Deposits&#39;, title))
 Ctry.DD &lt;- Ctry.DD %&gt;% mutate(Country = str_remove(title, str_remove(US.Debt$title[1], &quot;United States&quot;)))
-ggplot(Ctry.DD, aes(x=date, y=value, color=Country)) + geom_line(size=1) + scale_color_viridis_d() + labs(title=&quot;Public Debt to GDP&quot;)</code></pre>
-<p><img src="/post/2020-02-24-quick-and-dirty-fredr/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+plot1 &lt;- ggplot(Ctry.DD, aes(x=date, y=value, color=Country)) + geom_line(size=1) + scale_color_viridis_d() + labs(title=&quot;Public Debt to GDP&quot;, y=&quot;Public Debt to GDP&quot;)
+library(widgetframe)
+frameWidget(plotly::ggplotly(plot1))</code></pre>
+<div id="htmlwidget-1" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/post/2020-02-24-quick-and-dirty-fredr/index_files/figure-html//widgets/widget_unnamed-chunk-3.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 </div>

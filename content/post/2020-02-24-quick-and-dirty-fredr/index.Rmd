@@ -55,9 +55,11 @@ ggplot(US.Debt, aes(x=date, y=value)) + geom_line(size=3) + theme_economist() + 
 
 And because I ended up with a bunch of them; multiple time series plots.  To automate this, I will first remove everything that represents liabilities above in the FRB system.  Then I need to use the series title to select everything that I want and separate off the country names for labels.  The only hard-coding hacks for the final plot are the title.  Here's what we get, with color encoding the country names.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 library(stringr)
 Ctry.DD <- Debt.Data %>% filter(!grepl('Liabilities: Deposits', title))
 Ctry.DD <- Ctry.DD %>% mutate(Country = str_remove(title, str_remove(US.Debt$title[1], "United States")))
-ggplot(Ctry.DD, aes(x=date, y=value, color=Country)) + geom_line(size=1) + scale_color_viridis_d() + labs(title="Public Debt to GDP")
+plot1 <- ggplot(Ctry.DD, aes(x=date, y=value, color=Country)) + geom_line(size=1) + scale_color_viridis_d() + labs(title="Public Debt to GDP", y="Public Debt to GDP")
+library(widgetframe)
+frameWidget(plotly::ggplotly(plot1))
 ```

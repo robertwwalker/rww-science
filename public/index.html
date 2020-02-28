@@ -1168,7 +1168,7 @@
   
   <span class="middot-divider"></span>
   <span class="article-reading-time">
-    1 min read
+    2 min read
   </span>
   
 
@@ -1197,7 +1197,7 @@
 
   
   <div class="article-style">
-    <p>Get Some VIX data VIX &lt;- read.csv(url(&quot;http://www.cboe.com/publish/scheduledtask/mktdata/datahouse/vixcurrent.csv&quot;), skip = 1) VIX$Dates &lt;- as.Date(VIX$Date, format = &quot;%m/%d/%Y&quot;) The data was straightforward to get a hold of. Now let me plot it.
+    <p>Get Some VIX data library(tidyverse) VIX &lt;- read.csv(url(&quot;http://www.cboe.com/publish/scheduledtask/mktdata/datahouse/vixcurrent.csv&quot;), skip = 1) VIX$Dates &lt;- as.Date(VIX$Date, format = &quot;%m/%d/%Y&quot;) The data was straightforward to get a hold of. Now let me plot it.
 library(plotly) fig &lt;- VIX %&gt;% plot_ly(x = ~Dates, type=&quot;candlestick&quot;, open = ~VIX.Open, close = ~VIX.Close, high = ~VIX.High, low = ~VIX.Low) fig &lt;- fig %&gt;% layout(title = &quot;A Historical Look at VIX&quot;) library(widgetframe) frameWidget(fig, width = 1000)  {"</p>
   </div>
   

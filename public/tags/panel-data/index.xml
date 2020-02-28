@@ -18,6 +18,9 @@
       <pubDate>Mon, 24 Feb 2020 00:00:00 +0000</pubDate>
       <guid>/2020/02/24/quick-and-dirty-fredr/</guid>
       <description>
+&lt;script src=&#34;/rmarkdown-libs/htmlwidgets/htmlwidgets.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;/rmarkdown-libs/pymjs/pym.v1.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;/rmarkdown-libs/widgetframe-binding/widgetframe.js&#34;&gt;&lt;/script&gt;
 
 
 &lt;div id=&#34;some-data-from-fredr&#34; class=&#34;section level2&#34;&gt;
@@ -30,25 +33,27 @@ Debt.Search &amp;lt;- fredr_series_search_text(
   sort_order = &amp;quot;desc&amp;quot;)
 Debt.Search &amp;lt;- Debt.Search %&amp;gt;% top_n(6)
 Debt.Search %&amp;gt;% select(id, title)&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## # A tibble: 16 x 2
+&lt;pre&gt;&lt;code&gt;## # A tibble: 18 x 2
 ##    id             title                                                         
 ##    &amp;lt;chr&amp;gt;          &amp;lt;chr&amp;gt;                                                         
-##  1 DDDM04CNA156N… Outstanding Domestic Public Debt Securities to GDP for China  
-##  2 WLSFAL         Liabilities: Deposits with F.R. Banks, Other Than Reserve Bal…
-##  3 DDDM04USA156N… Outstanding Domestic Public Debt Securities to GDP for United…
-##  4 DDDM04JPA156N… Outstanding Domestic Public Debt Securities to GDP for Japan  
-##  5 DDDM04ARA156N… Outstanding Domestic Public Debt Securities to GDP for Argent…
-##  6 DDDM04AUA156N… Outstanding Domestic Public Debt Securities to GDP for Austra…
-##  7 DDDM04MXA156N… Outstanding Domestic Public Debt Securities to GDP for Mexico 
-##  8 DDDM04INA156N… Outstanding Domestic Public Debt Securities to GDP for India  
-##  9 DDDM04BRA156N… Outstanding Domestic Public Debt Securities to GDP for Brazil 
-## 10 DDDM04DEA156N… Outstanding Domestic Public Debt Securities to GDP for Germany
-## 11 DDDM04TRA156N… Outstanding Domestic Public Debt Securities to GDP for Turkey 
-## 12 DDDM04RUA156N… Outstanding Domestic Public Debt Securities to GDP for Russia…
-## 13 DDDM04ITA156N… Outstanding Domestic Public Debt Securities to GDP for Italy  
-## 14 DDDM04THA156N… Outstanding Domestic Public Debt Securities to GDP for Thaila…
-## 15 DDDM04PLA156N… Outstanding Domestic Public Debt Securities to GDP for Poland 
-## 16 DDDM04FRA156N… Outstanding Domestic Public Debt Securities to GDP for France&lt;/code&gt;&lt;/pre&gt;
+##  1 DDDM04USA156N… Outstanding Domestic Public Debt Securities to GDP for United…
+##  2 DDDM04CNA156N… Outstanding Domestic Public Debt Securities to GDP for China  
+##  3 DDDM04JPA156N… Outstanding Domestic Public Debt Securities to GDP for Japan  
+##  4 DDDM04DEA156N… Outstanding Domestic Public Debt Securities to GDP for Germany
+##  5 WLSFAL         Liabilities: Deposits with F.R. Banks, Other Than Reserve Bal…
+##  6 DDDM04ARA156N… Outstanding Domestic Public Debt Securities to GDP for Argent…
+##  7 DDDM04HKA156N… Outstanding Domestic Public Debt Securities to GDP for Hong K…
+##  8 DDDM04BRA156N… Outstanding Domestic Public Debt Securities to GDP for Brazil 
+##  9 DDDM04ITA156N… Outstanding Domestic Public Debt Securities to GDP for Italy  
+## 10 DDDM04MXA156N… Outstanding Domestic Public Debt Securities to GDP for Mexico 
+## 11 DDDM04CHA156N… Outstanding Domestic Public Debt Securities to GDP for Switze…
+## 12 DDDM04THA156N… Outstanding Domestic Public Debt Securities to GDP for Thaila…
+## 13 DDDM04AUA156N… Outstanding Domestic Public Debt Securities to GDP for Austra…
+## 14 DDDM04GRA156N… Outstanding Domestic Public Debt Securities to GDP for Greece 
+## 15 DDDM04INA156N… Outstanding Domestic Public Debt Securities to GDP for India  
+## 16 DDDM04NLA156N… Outstanding Domestic Public Debt Securities to GDP for Nether…
+## 17 DDDM04RUA156N… Outstanding Domestic Public Debt Securities to GDP for Russia…
+## 18 DDDM04TRA156N… Outstanding Domestic Public Debt Securities to GDP for Turkey&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;Next, I need to acquire the data that I want. I probably should have reversed the order of some of the operations here. For example, I don’t really want the non-domestic public debt but I am not going to filter them before downloading. That’s not great but it isn’t all that much data either. The command &lt;code&gt;fredr&lt;/code&gt; aliases the &lt;code&gt;fredr_series_observations&lt;/code&gt; command that obtains data directly from &lt;strong&gt;FRED&lt;/strong&gt;. I will use a variant of &lt;em&gt;map&lt;/em&gt; to grab the relevant series &lt;code&gt;id&lt;/code&gt; above and then join them back to the Search results.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Debt.Data &amp;lt;- map_dfr(Debt.Search$id, fredr) %&amp;gt;% left_join(Debt.Search, by=c(&amp;quot;series_id&amp;quot; = &amp;quot;id&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;Now let me splice off the United States and plot it.&lt;/p&gt;
@@ -59,8 +64,11 @@ ggplot(US.Debt, aes(x=date, y=value)) + geom_line(size=3) + theme_economist() + 
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(stringr)
 Ctry.DD &amp;lt;- Debt.Data %&amp;gt;% filter(!grepl(&amp;#39;Liabilities: Deposits&amp;#39;, title))
 Ctry.DD &amp;lt;- Ctry.DD %&amp;gt;% mutate(Country = str_remove(title, str_remove(US.Debt$title[1], &amp;quot;United States&amp;quot;)))
-ggplot(Ctry.DD, aes(x=date, y=value, color=Country)) + geom_line(size=1) + scale_color_viridis_d() + labs(title=&amp;quot;Public Debt to GDP&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2020-02-24-quick-and-dirty-fredr/index_files/figure-html/unnamed-chunk-3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+plot1 &amp;lt;- ggplot(Ctry.DD, aes(x=date, y=value, color=Country)) + geom_line(size=1) + scale_color_viridis_d() + labs(title=&amp;quot;Public Debt to GDP&amp;quot;, y=&amp;quot;Public Debt to GDP&amp;quot;)
+library(widgetframe)
+frameWidget(plotly::ggplotly(plot1))&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;htmlwidget-1&#34; style=&#34;width:100%;height:480px;&#34; class=&#34;widgetframe html-widget&#34;&gt;&lt;/div&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-1&#34;&gt;{&#34;x&#34;:{&#34;url&#34;:&#34;/post/2020-02-24-quick-and-dirty-fredr/index_files/figure-html//widgets/widget_unnamed-chunk-3.html&#34;,&#34;options&#34;:{&#34;xdomain&#34;:&#34;*&#34;,&#34;allowfullscreen&#34;:false,&#34;lazyload&#34;:false}},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
 &lt;/div&gt;
 </description>
     </item>

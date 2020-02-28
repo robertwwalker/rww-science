@@ -657,7 +657,7 @@
       <h2><a href="/2020/02/27/a-look-at-vix/" >A Look at VIX</a></h2>
       <div class="article-style">
         
-          Get Some VIX data VIX &lt;- read.csv(url(&quot;http://www.cboe.com/publish/scheduledtask/mktdata/datahouse/vixcurrent.csv&quot;), skip = 1) VIX$Dates &lt;- as.Date(VIX$Date, format = &quot;%m/%d/%Y&quot;) The data was straightforward to get a hold of. Now let me plot it.
+          Get Some VIX data library(tidyverse) VIX &lt;- read.csv(url(&quot;http://www.cboe.com/publish/scheduledtask/mktdata/datahouse/vixcurrent.csv&quot;), skip = 1) VIX$Dates &lt;- as.Date(VIX$Date, format = &quot;%m/%d/%Y&quot;) The data was straightforward to get a hold of. Now let me plot it.
 library(plotly) fig &lt;- VIX %&gt;% plot_ly(x = ~Dates, type=&quot;candlestick&quot;, open = ~VIX.Open, close = ~VIX.Close, high = ~VIX.High, low = ~VIX.Low) fig &lt;- fig %&gt;% layout(title = &quot;A Historical Look at VIX&quot;) library(widgetframe) frameWidget(fig, width = 1000)  {"
         
       </div>
