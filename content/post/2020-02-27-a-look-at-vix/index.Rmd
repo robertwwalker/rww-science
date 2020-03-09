@@ -53,9 +53,9 @@ frameWidget(fig2, width = 1000)
 ## Day to Day Changes?
 
 ```{r, warning=FALSE}
-VIX <- VIX %>% mutate(Percent.Change = VIX.Close - lag(VIX.Close) / lag(VIX.Close)) 
-p <- ggplot(VIX, aes(x=Dates, y=Percent.Change)) + geom_line() + geom_vline(xintercept = as.Date("02/27/2020", format = "%m/%d/%Y"), color="red", alpha=0.2, linetype = "dotted") + geom_vline(xintercept = as.Date("09/12/2008", format = "%m/%d/%Y"), color="red", alpha=0.2) + ggthemes::theme_economist() + geom_label(data = data.frame(x = as.Date("2008-02-12"),
-y = 4,
+VIX <- VIX %>% mutate(Percent.Change = (VIX.Close - lag(VIX.Close)) / lag(VIX.Close)) 
+p <- ggplot(VIX, aes(x=Dates, y=Percent.Change)) + geom_line() + geom_smooth(color="orange", method="loess", span=0.05, se=FALSE) + geom_vline(xintercept = as.Date("02/27/2020", format = "%m/%d/%Y"), color="red", alpha=0.2, linetype = "dotted") + geom_vline(xintercept = as.Date("09/12/2008", format = "%m/%d/%Y"), color="red", alpha=0.4) + ggthemes::theme_economist() + geom_label(data = data.frame(x = as.Date("2008-02-12"),
+y = 0.75,
 label = "Lehman Brothers"),
 mapping = aes(x = x,
 y = y,
