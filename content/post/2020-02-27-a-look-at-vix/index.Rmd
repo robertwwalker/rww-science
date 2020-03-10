@@ -1,5 +1,5 @@
 ---
-title: A Look at VIX
+title: "A Look at VIX :`r Sys.time()`"
 author: Robert W. Walker
 date: '2020-02-27'
 slug: a-look-at-vix
@@ -10,7 +10,7 @@ tags: []
 subtitle: ''
 summary: ''
 authors: []
-lastmod: '2020-02-27T22:17:50-08:00'
+lastmod: "`r Sys.time()`"
 featured: no
 image:
   caption: ''
@@ -52,6 +52,8 @@ frameWidget(fig2, width = 1000)
 
 ## Day to Day Changes?
 
+I originally wrote this on February 27, 2020.  I will touch the file about daily to track the evolution.
+
 ```{r, warning=FALSE}
 VIX <- VIX %>% mutate(Percent.Change = (VIX.Close - lag(VIX.Close)) / lag(VIX.Close)) 
 p <- ggplot(VIX, aes(x=Dates, y=Percent.Change)) + geom_line() + geom_smooth(color="orange", method="loess", span=0.05, se=FALSE) + geom_vline(xintercept = as.Date("02/27/2020", format = "%m/%d/%Y"), color="red", alpha=0.2, linetype = "dotted") + geom_vline(xintercept = as.Date("09/12/2008", format = "%m/%d/%Y"), color="red", alpha=0.4) + ggthemes::theme_economist() + geom_label(data = data.frame(x = as.Date("2008-02-12"),
@@ -79,10 +81,11 @@ valid.unit = 3L,
 unit = "lines"),
 inherit.aes = FALSE,
 show.legend = FALSE)
-p
+fig <- ggplotly(p)
+frameWidget(fig, width = 1000)
 ```
 
 
 
 
-This doesn't look good.
+This doesn't look good.  The smooth on a small span is uncomfortably headed upward and today will shock it like no previous day in a very long while.

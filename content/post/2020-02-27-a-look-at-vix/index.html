@@ -1,5 +1,5 @@
 ---
-title: A Look at VIX
+title: "A Look at VIX :2020-03-09 22:22:09"
 author: Robert W. Walker
 date: '2020-02-27'
 slug: a-look-at-vix
@@ -10,7 +10,7 @@ tags: []
 subtitle: ''
 summary: ''
 authors: []
-lastmod: '2020-02-27T22:17:50-08:00'
+lastmod: "2020-03-09 22:22:09"
 featured: no
 image:
   caption: ''
@@ -50,6 +50,7 @@ frameWidget(fig2, width = 1000)</code></pre>
 <script type="application/json" data-for="htmlwidget-2">{"x":{"url":"/post/2020-02-27-a-look-at-vix/index_files/figure-html//widgets/widget_unnamed-chunk-3.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 <div id="day-to-day-changes" class="section level2">
 <h2>Day to Day Changes?</h2>
+<p>I originally wrote this on February 27, 2020. I will touch the file about daily to track the evolution.</p>
 <pre class="r"><code>VIX &lt;- VIX %&gt;% mutate(Percent.Change = (VIX.Close - lag(VIX.Close)) / lag(VIX.Close)) 
 p &lt;- ggplot(VIX, aes(x=Dates, y=Percent.Change)) + geom_line() + geom_smooth(color=&quot;orange&quot;, method=&quot;loess&quot;, span=0.05, se=FALSE) + geom_vline(xintercept = as.Date(&quot;02/27/2020&quot;, format = &quot;%m/%d/%Y&quot;), color=&quot;red&quot;, alpha=0.2, linetype = &quot;dotted&quot;) + geom_vline(xintercept = as.Date(&quot;09/12/2008&quot;, format = &quot;%m/%d/%Y&quot;), color=&quot;red&quot;, alpha=0.4) + ggthemes::theme_economist() + geom_label(data = data.frame(x = as.Date(&quot;2008-02-12&quot;),
 y = 0.75,
@@ -76,8 +77,10 @@ valid.unit = 3L,
 unit = &quot;lines&quot;),
 inherit.aes = FALSE,
 show.legend = FALSE)
-p</code></pre>
-<p><img src="/post/2020-02-27-a-look-at-vix/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
-<p>This doesn’t look good.</p>
+fig &lt;- ggplotly(p)
+frameWidget(fig, width = 1000)</code></pre>
+<div id="htmlwidget-3" style="width:1000px;height:480px;" class="widgetframe html-widget"></div>
+<script type="application/json" data-for="htmlwidget-3">{"x":{"url":"/post/2020-02-27-a-look-at-vix/index_files/figure-html//widgets/widget_unnamed-chunk-4.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+<p>This doesn’t look good. The smooth on a small span is uncomfortably headed upward and today will shock it like no previous day in a very long while.</p>
 </div>
 </div>
