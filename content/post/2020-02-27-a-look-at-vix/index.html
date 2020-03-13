@@ -1,5 +1,5 @@
 ---
-title: "A Look at VIX :2020-03-09 22:22:09"
+title: "A Look at VIX :2020-03-12 20:34:29"
 author: Robert W. Walker
 date: '2020-02-27'
 slug: a-look-at-vix
@@ -10,7 +10,7 @@ tags: []
 subtitle: ''
 summary: ''
 authors: []
-lastmod: "2020-03-09 22:22:09"
+lastmod: "2020-03-12 20:34:29"
 featured: no
 image:
   caption: ''
@@ -26,11 +26,21 @@ projects: []
 
 <div id="get-some-vix-data" class="section level1">
 <h1>Get Some VIX data</h1>
+<p><strong>NB: I originally wrote this on February 27, 2020 so there is commentary surrounding that date. It was done on the quick for curiosity.</strong></p>
+<p>Chicago Board Of Exchange (CBOE) makes data available regularly. To judge the currency of the data, I have tailed it below after converting the dates to a valid date format.</p>
 <pre class="r"><code>library(tidyverse)
 VIX &lt;- read.csv(url(&quot;http://www.cboe.com/publish/scheduledtask/mktdata/datahouse/vixcurrent.csv&quot;), skip = 1)
 VIX$Dates &lt;- as.Date(VIX$Date,
-  format = &quot;%m/%d/%Y&quot;)</code></pre>
-<p>The data was straightforward to get a hold of. Now let me plot it.</p>
+  format = &quot;%m/%d/%Y&quot;)
+tail(VIX)</code></pre>
+<pre><code>##            Date VIX.Open VIX.High VIX.Low VIX.Close      Dates
+## 4071 03/05/2020    33.61    42.84   33.54     39.62 2020-03-05
+## 4072 03/06/2020    41.46    54.39   40.84     41.94 2020-03-06
+## 4073 03/09/2020    41.94    62.12   41.94     54.46 2020-03-09
+## 4074 03/10/2020    49.68    55.66   43.56     47.30 2020-03-10
+## 4075 03/11/2020    52.24    55.82   49.98     53.90 2020-03-11
+## 4076 03/12/2020    61.46    76.83   59.91     75.47 2020-03-12</code></pre>
+<p>The data was straightforward to get a hold of. Now let me plot it. I want to do this with a candlestick plot – a way of displaying intra-day volatility. There’s so much data that the views aren’t great.</p>
 <pre class="r"><code>library(plotly)
 fig &lt;- VIX  %&gt;% plot_ly(x = ~Dates, type=&quot;candlestick&quot;,
           open = ~VIX.Open, close = ~VIX.Close,
@@ -50,33 +60,21 @@ frameWidget(fig2, width = 1000)</code></pre>
 <script type="application/json" data-for="htmlwidget-2">{"x":{"url":"/post/2020-02-27-a-look-at-vix/index_files/figure-html//widgets/widget_unnamed-chunk-3.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 <div id="day-to-day-changes" class="section level2">
 <h2>Day to Day Changes?</h2>
-<p>I originally wrote this on February 27, 2020. I will touch the file about daily to track the evolution.</p>
-<pre class="r"><code>VIX &lt;- VIX %&gt;% mutate(Percent.Change = (VIX.Close - lag(VIX.Close)) / lag(VIX.Close)) 
-p &lt;- ggplot(VIX, aes(x=Dates, y=Percent.Change)) + geom_line() + geom_smooth(color=&quot;orange&quot;, method=&quot;loess&quot;, span=0.05, se=FALSE) + geom_vline(xintercept = as.Date(&quot;02/27/2020&quot;, format = &quot;%m/%d/%Y&quot;), color=&quot;red&quot;, alpha=0.2, linetype = &quot;dotted&quot;) + geom_vline(xintercept = as.Date(&quot;09/12/2008&quot;, format = &quot;%m/%d/%Y&quot;), color=&quot;red&quot;, alpha=0.4) + ggthemes::theme_economist() + geom_label(data = data.frame(x = as.Date(&quot;2008-02-12&quot;),
-y = 0.75,
-label = &quot;Lehman Brothers&quot;),
-mapping = aes(x = x,
-y = y,
-label = label),
-size = 3.86605783866058,
-angle = 0L,
-lineheight = 1L,
-hjust = 0.5,
-vjust = 0.5,
-colour = &quot;red&quot;,
-family = &quot;sans&quot;,
-fontface = &quot;plain&quot;,
-label.padding = structure(0.25,
-class = &quot;unit&quot;,
-valid.unit = 3L,
-unit = &quot;lines&quot;),
-label.size = 0.25,
-label.r = structure(0.15,
-class = &quot;unit&quot;,
-valid.unit = 3L,
-unit = &quot;lines&quot;),
-inherit.aes = FALSE,
-show.legend = FALSE)
+<p>I will touch the file about daily to track the evolution.</p>
+<pre class="r"><code>library(hrbrthemes); library(viridis)
+VIX &lt;- VIX %&gt;% mutate(Percent.Change = (VIX.Close - lag(VIX.Close)) / lag(VIX.Close)) 
+p &lt;- ggplot(VIX, aes(x=Dates, y=Percent.Change, size=Percent.Change/10, color=Percent.Change)) + 
+  geom_point(alpha=0.5, shape=21, inherit.aes = TRUE) +
+  scale_size_continuous(range=c(0.05,2), guide=FALSE) +
+  geom_line() + 
+  geom_smooth(color=&quot;orange&quot;, method=&quot;loess&quot;, span=0.05, se=FALSE) + 
+  geom_vline(xintercept = as.Date(&quot;02/27/2020&quot;, format = &quot;%m/%d/%Y&quot;), color=&quot;red&quot;, alpha=0.2, linetype = &quot;dotted&quot;) + 
+  geom_vline(xintercept = as.Date(&quot;09/12/2008&quot;, format = &quot;%m/%d/%Y&quot;), color=&quot;red&quot;, alpha=0.4) +
+  geom_label(data = data.frame(x = as.Date(&quot;2008-02-12&quot;),
+    y = 0.75, label = &quot;Lehman Brothers&quot;),mapping = aes(x = x, y = y, label = label), size = 3.86605783866058, angle = 0L, lineheight = 1L, hjust = 0.5, vjust = 0.5, colour = &quot;red&quot;, family = &quot;sans&quot;, fontface = &quot;plain&quot;, label.padding = structure(0.25, class = &quot;unit&quot;, valid.unit = 3L, unit = &quot;lines&quot;), label.size = 0.25, label.r = structure(0.15, class = &quot;unit&quot;, valid.unit = 3L, unit = &quot;lines&quot;), inherit.aes = FALSE, show.legend = FALSE) + 
+  scale_color_viridis_c(guide=FALSE) +
+  scale_fill_viridis_c(guide=FALSE) +
+    theme_ipsum()
 fig &lt;- ggplotly(p)
 frameWidget(fig, width = 1000)</code></pre>
 <div id="htmlwidget-3" style="width:1000px;height:480px;" class="widgetframe html-widget"></div>

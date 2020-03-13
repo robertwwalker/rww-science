@@ -1168,7 +1168,7 @@
   
   <span class="middot-divider"></span>
   <span class="article-reading-time">
-    2 min read
+    3 min read
   </span>
   
 
@@ -1192,13 +1192,14 @@
   
 
   <h3 class="article-title mb-1 mt-3">
-    <a href="/2020/02/27/a-look-at-vix/">A Look at VIX :2020-03-09 22:22:09</a>
+    <a href="/2020/02/27/a-look-at-vix/">A Look at VIX :2020-03-12 20:34:29</a>
   </h3>
 
   
   <div class="article-style">
-    <p>Get Some VIX data library(tidyverse) VIX &lt;- read.csv(url(&quot;http://www.cboe.com/publish/scheduledtask/mktdata/datahouse/vixcurrent.csv&quot;), skip = 1) VIX$Dates &lt;- as.Date(VIX$Date, format = &quot;%m/%d/%Y&quot;) The data was straightforward to get a hold of. Now let me plot it.
-library(plotly) fig &lt;- VIX %&gt;% plot_ly(x = ~Dates, type=&quot;candlestick&quot;, open = ~VIX.Open, close = ~VIX.Close, high = ~VIX.High, low = ~VIX.Low) fig &lt;- fig %&gt;% layout(title = &quot;A Historical Look at VIX&quot;) library(widgetframe) frameWidget(fig, width = 1000)  {"</p>
+    <p>Get Some VIX data NB: I originally wrote this on February 27, 2020 so there is commentary surrounding that date. It was done on the quick for curiosity.
+Chicago Board Of Exchange (CBOE) makes data available regularly. To judge the currency of the data, I have tailed it below after converting the dates to a valid date format.
+library(tidyverse) VIX &lt;- read.csv(url(&quot;http://www.cboe.com/publish/scheduledtask/mktdata/datahouse/vixcurrent.csv&quot;), skip = 1) VIX$Dates &lt;- as.</p>
   </div>
   
 

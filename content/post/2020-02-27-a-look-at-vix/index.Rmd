@@ -21,14 +21,19 @@ projects: []
 
 # Get Some VIX data
 
+**NB:  I originally wrote this on February 27, 2020 so there is commentary surrounding that date.  It was done on the quick for curiosity.**
+
+Chicago Board Of Exchange (CBOE) makes data available regularly. To judge the currency of the data, I have tailed it below after converting the dates to a valid date format.  
+
 ```{r, warning=FALSE, message=FALSE}
 library(tidyverse)
 VIX <- read.csv(url("http://www.cboe.com/publish/scheduledtask/mktdata/datahouse/vixcurrent.csv"), skip = 1)
 VIX$Dates <- as.Date(VIX$Date,
   format = "%m/%d/%Y")
+tail(VIX)
 ```
 
-The data was straightforward to get a hold of.  Now let me plot it.
+The data was straightforward to get a hold of.  Now let me plot it.  I want to do this with a candlestick plot -- a way of displaying intra-day volatility.  There's so much data that the views aren't great.
 
 ```{r, message=FALSE, warning=FALSE}
 library(plotly)
@@ -52,37 +57,26 @@ frameWidget(fig2, width = 1000)
 
 ## Day to Day Changes?
 
-I originally wrote this on February 27, 2020.  I will touch the file about daily to track the evolution.
+I will touch the file about daily to track the evolution.
 
-```{r, warning=FALSE}
+```{r, warning=FALSE, message=FALSE}
+library(hrbrthemes); library(viridis)
 VIX <- VIX %>% mutate(Percent.Change = (VIX.Close - lag(VIX.Close)) / lag(VIX.Close)) 
-p <- ggplot(VIX, aes(x=Dates, y=Percent.Change)) + geom_line() + geom_smooth(color="orange", method="loess", span=0.05, se=FALSE) + geom_vline(xintercept = as.Date("02/27/2020", format = "%m/%d/%Y"), color="red", alpha=0.2, linetype = "dotted") + geom_vline(xintercept = as.Date("09/12/2008", format = "%m/%d/%Y"), color="red", alpha=0.4) + ggthemes::theme_economist() + geom_label(data = data.frame(x = as.Date("2008-02-12"),
-y = 0.75,
-label = "Lehman Brothers"),
-mapping = aes(x = x,
-y = y,
-label = label),
-size = 3.86605783866058,
-angle = 0L,
-lineheight = 1L,
-hjust = 0.5,
-vjust = 0.5,
-colour = "red",
-family = "sans",
-fontface = "plain",
-label.padding = structure(0.25,
-class = "unit",
-valid.unit = 3L,
-unit = "lines"),
-label.size = 0.25,
-label.r = structure(0.15,
-class = "unit",
-valid.unit = 3L,
-unit = "lines"),
-inherit.aes = FALSE,
-show.legend = FALSE)
+p <- ggplot(VIX, aes(x=Dates, y=Percent.Change, size=Percent.Change/10, color=Percent.Change)) + 
+  geom_point(alpha=0.5, shape=21, inherit.aes = TRUE) +
+  scale_size_continuous(range=c(0.05,2), guide=FALSE) +
+  geom_line() + 
+  geom_smooth(color="orange", method="loess", span=0.05, se=FALSE) + 
+  geom_vline(xintercept = as.Date("02/27/2020", format = "%m/%d/%Y"), color="red", alpha=0.2, linetype = "dotted") + 
+  geom_vline(xintercept = as.Date("09/12/2008", format = "%m/%d/%Y"), color="red", alpha=0.4) +
+  geom_label(data = data.frame(x = as.Date("2008-02-12"),
+    y = 0.75, label = "Lehman Brothers"),mapping = aes(x = x, y = y, label = label), size = 3.86605783866058, angle = 0L, lineheight = 1L, hjust = 0.5, vjust = 0.5, colour = "red", family = "sans", fontface = "plain", label.padding = structure(0.25, class = "unit", valid.unit = 3L, unit = "lines"), label.size = 0.25, label.r = structure(0.15, class = "unit", valid.unit = 3L, unit = "lines"), inherit.aes = FALSE, show.legend = FALSE) + 
+  scale_color_viridis_c(guide=FALSE) +
+  scale_fill_viridis_c(guide=FALSE) +
+    theme_ipsum()
 fig <- ggplotly(p)
 frameWidget(fig, width = 1000)
+
 ```
 
 
