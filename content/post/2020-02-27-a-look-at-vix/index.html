@@ -1,5 +1,5 @@
 ---
-title: "A Look at VIX :2020-03-12 20:34:29"
+title: "A Look at VIX :2020-03-13 15:24:32"
 author: Robert W. Walker
 date: '2020-02-27'
 slug: a-look-at-vix
@@ -10,7 +10,7 @@ tags: []
 subtitle: ''
 summary: ''
 authors: []
-lastmod: "2020-03-12 20:34:29"
+lastmod: "2020-03-13 15:24:32"
 featured: no
 image:
   caption: ''
@@ -42,11 +42,13 @@ tail(VIX)</code></pre>
 ## 4076 03/12/2020    61.46    76.83   59.91     75.47 2020-03-12</code></pre>
 <p>The data was straightforward to get a hold of. Now let me plot it. I want to do this with a candlestick plot – a way of displaying intra-day volatility. There’s so much data that the views aren’t great.</p>
 <pre class="r"><code>library(plotly)
+# create the candlestick plot
 fig &lt;- VIX  %&gt;% plot_ly(x = ~Dates, type=&quot;candlestick&quot;,
           open = ~VIX.Open, close = ~VIX.Close,
           high = ~VIX.High, low = ~VIX.Low) 
 fig &lt;- fig %&gt;% layout(title = &quot;A Historical Look at VIX&quot;)
 library(widgetframe)
+# Need a frameWidget to render the underlying plotly object
 frameWidget(fig, width = 1000)</code></pre>
 <div id="htmlwidget-1" style="width:1000px;height:480px;" class="widgetframe html-widget"></div>
 <script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/post/2020-02-27-a-look-at-vix/index_files/figure-html//widgets/widget_unnamed-chunk-2.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>

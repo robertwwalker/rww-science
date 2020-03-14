@@ -37,11 +37,13 @@ The data was straightforward to get a hold of.  Now let me plot it.  I want to d
 
 ```{r, message=FALSE, warning=FALSE}
 library(plotly)
+# create the candlestick plot
 fig <- VIX  %>% plot_ly(x = ~Dates, type="candlestick",
           open = ~VIX.Open, close = ~VIX.Close,
           high = ~VIX.High, low = ~VIX.Low) 
 fig <- fig %>% layout(title = "A Historical Look at VIX")
 library(widgetframe)
+# Need a frameWidget to render the underlying plotly object
 frameWidget(fig, width = 1000)
 ```
 
@@ -76,7 +78,6 @@ p <- ggplot(VIX, aes(x=Dates, y=Percent.Change, size=Percent.Change/10, color=Pe
     theme_ipsum()
 fig <- ggplotly(p)
 frameWidget(fig, width = 1000)
-
 ```
 
 
