@@ -239,7 +239,7 @@
   <meta property="og:description" content="Associate Professor of Quantitative Methods"><meta property="og:image" content="/img/portrait.jpg">
   <meta property="twitter:image" content="/img/portrait.jpg"><meta property="og:locale" content="en-us">
   
-    <meta property="og:updated_time" content="2020-02-24T00:00:00&#43;00:00">
+    <meta property="og:updated_time" content="2020-03-19T00:00:00&#43;00:00">
   
 
   
@@ -654,6 +654,21 @@
     
     
     <div>
+      <h2><a href="/2018/12/19/trump-s-tweets-part-ii/" >Trump&#39;s Tweets, Part II</a></h2>
+      <div class="article-style">
+        
+          Trump’s Tone A cool post on sentiment analysis can be found here. I will now get at the time series characteristics of his tweets and the sentiment stuff.
+I start by loading the tmls object that I created in the previous post.
+Trump’s Overall Tweeting What does it look like?
+library(tidyverse) library(tidytext) library(SnowballC) library(tm) library(syuzhet) library(rtweet) load(url(&quot;https://github.com/robertwwalker/academic-mymod/raw/master/data/TMLS.RData&quot;)) names(tml.djt) ## [1] &quot;user_id&quot; &quot;status_id&quot; ## [3] &quot;created_at&quot; &quot;screen_name&quot; ## [5] &quot;text&quot; &quot;source&quot; ## [7] &quot;display_text_width&quot; &quot;reply_to_status_id&quot; ## [9] &quot;reply_to_user_id&quot; &quot;reply_to_screen_name&quot; ## [11] &quot;is_quote&quot; &quot;is_retweet&quot; ## [13] &quot;favorite_count&quot; &quot;retweet_count&quot; ## [15] &quot;hashtags&quot; &quot;symbols&quot; ## [17] &quot;urls_url&quot; &quot;urls_t.
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
       <h2><a href="/2018/05/09/tidytuesday-coffee-chains/" >tidyTuesday: coffee chains</a></h2>
       <div class="article-style">
         
@@ -763,20 +778,6 @@ What is Panel Data? Panel data are variously called longitudinal, panel, cross-s
       </div>
     </div>
   
-    
-    
-    
-    <div>
-      <h2><a href="/2018/02/21/tidytext-is-neat/" >tidytext is neat! White House Communications</a></h2>
-      <div class="article-style">
-        
-          Presidential Press The language of presidential communications is interesting and I know very little about text as data. I have a number of applications in mind for these tools but I have to learn how to use them. What does the website look like?
-White House News
-The site is split in four parts: all news, articles, presidential actions, and briefings and statements. The first one is a catch all and the second is news links.
-        
-      </div>
-    </div>
-  
 
   
 <nav>
@@ -784,6 +785,8 @@ The site is split in four parts: all news, articles, presidential actions, and b
     
     <li class="page-item"><a class="page-link" href="/tags/r/page/2/">&laquo;</a></li>
     
+    
+    <li class="page-item"><a class="page-link" href="/tags/r/page/4/">&raquo;</a></li>
     
   </ul>
 </nav>

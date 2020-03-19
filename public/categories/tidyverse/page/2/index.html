@@ -239,7 +239,7 @@
   <meta property="og:description" content="Associate Professor of Quantitative Methods"><meta property="og:image" content="/img/portrait.jpg">
   <meta property="twitter:image" content="/img/portrait.jpg"><meta property="og:locale" content="en-us">
   
-    <meta property="og:updated_time" content="2020-02-24T00:00:00&#43;00:00">
+    <meta property="og:updated_time" content="2020-03-19T00:00:00&#43;00:00">
   
 
   
@@ -654,6 +654,20 @@
     
     
     <div>
+      <h2><a href="/2019/10/10/fariss-human-rights-data-with-animation/" >Fariss Human Rights Data with Animation</a></h2>
+      <div class="article-style">
+        
+          Fariss Data Is neat and complete.
+load(&quot;FarissHRData.RData&quot;) skimr::skim(HR.Data)  Table 1: Data summary  Name HR.Data  Number of rows 11717  Number of columns 27  _______________________   Column type frequency:   factor 1  numeric 26  ________________________   Group variables None    Variable type: factor
+  skim_variable n_missing complete_rate ordered n_unique top_counts    COW_YEAR 0 1 FALSE 11717 100: 1, 100: 1, 100: 1, 100: 1    Variable type: numeric
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
       <h2><a href="/2019/10/09/simple-oregon-county-mapping/" >Simple Oregon County Mapping</a></h2>
       <div class="article-style">
         
@@ -763,18 +777,6 @@ library(lubridate) library(tidyverse) library(ggthemes) library(stringr) library
         
           tidyquant Automates a lot of equity research and calculation using tidy concepts. Here, I will first use it to get the components of the S and P 500 and pick out those with weights over 1.25 percent. In the next step, I download the data and finally calculate daily returns and a cumulative wealth index.
 library(tidyquant) library(tidyverse) tq_index(&quot;SP500&quot;) %&gt;% filter(weight &gt; 0.0125) %&gt;% select(symbol,company) -&gt; Tickers Tickers &lt;- Tickers %&gt;% filter(symbol!
-        
-      </div>
-    </div>
-  
-    
-    
-    
-    <div>
-      <h2><a href="/2018/12/18/trump-tweet-word-clouds/" >Trump Tweet Word Clouds</a></h2>
-      <div class="article-style">
-        
-          Mining Twitter Data Is rather easy. You have to arrange a developer account with Twitter and set up an app. After that, Twitter gives you access to a consumer key and secret and an access token and access secret. My tool of choice for this is rtweet because it automagically processes tweet elements and makes them easy to slice and dice. I also played with twitteR but it was harder to work with for what I wanted.
         
       </div>
     </div>

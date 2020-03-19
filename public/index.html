@@ -239,7 +239,7 @@
   <meta property="og:description" content="Associate Professor of Quantitative Methods"><meta property="og:image" content="/img/portrait.jpg">
   <meta property="twitter:image" content="/img/portrait.jpg"><meta property="og:locale" content="en-us">
   
-    <meta property="og:updated_time" content="2020-02-27T00:00:00&#43;00:00">
+    <meta property="og:updated_time" content="2020-03-19T00:00:00&#43;00:00">
   
 
   
@@ -1159,7 +1159,90 @@
           Last updated on
       
     
-    Mar 12, 2020
+    Mar 19, 2020
+  </span>
+  
+
+  
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    2 min read
+  </span>
+  
+
+  
+  
+  
+
+  
+  
+  <span class="middot-divider"></span>
+  <span class="article-categories">
+    <i class="fas fa-folder mr-1"></i><a href="/categories/r/">R</a>, <a href="/categories/tidytuesday/">tidyTuesday</a>, <a href="/categories/tidyverse/">tidyverse</a></span>
+  
+
+</div>
+
+  
+
+  
+  
+  
+
+  <h3 class="article-title mb-1 mt-3">
+    <a href="/2020/03/19/tidytuesday-on-the-office/">tidyTuesday on the Office</a>
+  </h3>
+
+  
+  <div class="article-style">
+    <p>The Office library(tidyverse) office_ratings &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-03-17/office_ratings.csv&#39;)  A First Plot The number of episodes for the Office by season.
+library(janitor) TableS &lt;- office_ratings %&gt;% tabyl(season) p1 &lt;- TableS %&gt;% ggplot(., aes(x=as.factor(season), y=n, fill=as.factor(season))) + geom_col() + labs(x=&quot;Season&quot;, y=&quot;Episodes&quot;, title=&quot;The Office: Episodes&quot;) + guides(fill=FALSE) p1  Ratings How are the various seasons and episodes rated?
+p2 &lt;- office_ratings %&gt;% ggplot(., aes(x=as.factor(season), y=imdb_rating, fill=as.factor(season), color=as.factor(season))) + geom_violin(alpha=0.3) + guides(fill=FALSE, color=FALSE) + labs(x=&quot;Season&quot;, y=&quot;IMDB Rating&quot;) + geom_point() p2  Patchwork Using patchwork, we can combine multiple plots.</p>
+  </div>
+  
+
+  
+
+</div>
+
+      
+    
+      
+        
+
+
+
+
+
+
+
+
+
+  
+
+
+<div class="card-simple">
+
+  
+    
+
+
+<div class="article-metadata">
+
+  
+  
+
+  
+  <span class="article-date">
+    
+    
+      
+          Last updated on
+      
+    
+    Mar 13, 2020
   </span>
   
 
@@ -1192,7 +1275,7 @@
   
 
   <h3 class="article-title mb-1 mt-3">
-    <a href="/2020/02/27/a-look-at-vix/">A Look at VIX :2020-03-13 15:24:32</a>
+    <a href="/2020/02/27/a-look-at-vix/">A Look at VIX :2020-03-17 20:11:37</a>
   </h3>
 
   
@@ -1445,87 +1528,6 @@ XBRL Change
   
   <div class="article-style">
     <p>Driving Directions from R There is no reason that maps with driving directions cannot be produced in R. Given the directions api from Google, it should be doable. As it happens, I was surprised how easy it was. Let me try to map a simple A to B location. First, to the locations; I will specify two. It is possible to geolocate addresses for this also, I happened to have the GPS coordinates in hand.</p>
-  </div>
-  
-
-  
-
-</div>
-
-      
-    
-      
-        
-
-
-
-
-
-
-
-
-
-  
-
-
-<div class="card-simple">
-
-  
-    
-
-
-<div class="article-metadata">
-
-  
-  
-
-  
-  <span class="article-date">
-    
-    
-      
-          Last updated on
-      
-    
-    Feb 20, 2020
-  </span>
-  
-
-  
-
-  
-  <span class="middot-divider"></span>
-  <span class="article-reading-time">
-    10 min read
-  </span>
-  
-
-  
-  
-  
-
-  
-  
-  <span class="middot-divider"></span>
-  <span class="article-categories">
-    <i class="fas fa-folder mr-1"></i><a href="/categories/r/">R</a>, <a href="/categories/maps/">Maps</a>, <a href="/categories/tidytuesday/">tidyTuesday</a>, <a href="/categories/tidyverse/">tidyverse</a></span>
-  
-
-</div>
-
-  
-
-  
-  
-  
-
-  <h3 class="article-title mb-1 mt-3">
-    <a href="/2020/02/18/the-carbon-footprint-of-food-produced-for-consumption/">The Carbon Footprint of Food Produced for Consumption</a>
-  </h3>
-
-  
-  <div class="article-style">
-    <p>tidyTuesday on the Carbon Footprint of Feeding the Planet The tidyTuesday for this week relies on data scraped from the Food and Agricultural Organization of the United Nations. The blog post for obtaining the data can be found on r-tastic. The scraping exercise is nice and easy to follow and explored a case of cleaning up a very messy data structure. I took this exercise as practice for using pivot_wider and pivot_longer.</p>
   </div>
   
 
@@ -2632,7 +2634,7 @@ XBRL Change
           
           
           
-          <a href="/tags/essex/" style="font-size:0.9624038125567298rem">Essex</a>
+          <a href="/tags/essex/" style="font-size:0.96rem">Essex</a>
         
           
           
@@ -2642,7 +2644,7 @@ XBRL Change
           
           
           
-          <a href="/tags/gganimate/" style="font-size:1.11590020294868rem">gganimate</a>
+          <a href="/tags/gganimate/" style="font-size:1.1120902501875005rem">gganimate</a>
         
           
           
@@ -2657,7 +2659,7 @@ XBRL Change
           
           
           
-          <a href="/tags/maps/" style="font-size:1.607768046009726rem">Maps</a>
+          <a href="/tags/maps/" style="font-size:1.5994522208456974rem">Maps</a>
         
           
           
@@ -2667,12 +2669,12 @@ XBRL Change
           
           
           
-          <a href="/tags/panel-data/" style="font-size:1.2248076251134596rem">panel data</a>
+          <a href="/tags/panel-data/" style="font-size:1.22rem">panel data</a>
         
           
           
           
-          <a href="/tags/plot/" style="font-size:1.4872114376701893rem">plot</a>
+          <a href="/tags/plot/" style="font-size:1.48rem">plot</a>
         
           
           
@@ -2682,37 +2684,37 @@ XBRL Change
           
           
           
-          <a href="/tags/python/" style="font-size:0.9624038125567298rem">python</a>
+          <a href="/tags/python/" style="font-size:0.96rem">python</a>
         
           
           
           
-          <a href="/tags/r/" style="font-size:1.9875868000864378rem">R</a>
+          <a href="/tags/r/" style="font-size:1.9880910407005876rem">R</a>
         
           
           
           
-          <a href="/tags/r-markdown/" style="font-size:1.6710094901765733rem">R Markdown</a>
+          <a href="/tags/r-markdown/" style="font-size:1.6621143267166838rem">R Markdown</a>
         
           
           
           
-          <a href="/tags/reticulate/" style="font-size:0.9624038125567298rem">reticulate</a>
+          <a href="/tags/reticulate/" style="font-size:0.96rem">reticulate</a>
         
           
           
           
-          <a href="/tags/tidytext/" style="font-size:1.3092827845810282rem">tidytext</a>
+          <a href="/tags/tidytext/" style="font-size:1.3037013046707142rem">tidytext</a>
         
           
           
           
-          <a href="/tags/tidytuesday/" style="font-size:1.6990644473045462rem">tidyTuesday</a>
+          <a href="/tags/tidytuesday/" style="font-size:1.7157915548582148rem">tidyTuesday</a>
         
           
           
           
-          <a href="/tags/tidyverse/" style="font-size:1.7496152502269193rem">tidyverse</a>
+          <a href="/tags/tidyverse/" style="font-size:1.74rem">tidyverse</a>
         
       </div>
     

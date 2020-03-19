@@ -5,12 +5,86 @@
     <link>/categories/tidytuesday/</link>
       <atom:link href="/categories/tidytuesday/index.xml" rel="self" type="application/rss+xml" />
     <description>tidyTuesday</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© 2018</copyright><lastBuildDate>Tue, 18 Feb 2020 00:00:00 +0000</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© 2018</copyright><lastBuildDate>Thu, 19 Mar 2020 00:00:00 +0000</lastBuildDate>
     <image>
       <url>/img/portrait.jpg</url>
       <title>tidyTuesday</title>
       <link>/categories/tidytuesday/</link>
     </image>
+    
+    <item>
+      <title>tidyTuesday on the Office</title>
+      <link>/2020/03/19/tidytuesday-on-the-office/</link>
+      <pubDate>Thu, 19 Mar 2020 00:00:00 +0000</pubDate>
+      <guid>/2020/03/19/tidytuesday-on-the-office/</guid>
+      <description>
+&lt;script src=&#34;/rmarkdown-libs/htmlwidgets/htmlwidgets.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;/rmarkdown-libs/pymjs/pym.v1.js&#34;&gt;&lt;/script&gt;
+&lt;script src=&#34;/rmarkdown-libs/widgetframe-binding/widgetframe.js&#34;&gt;&lt;/script&gt;
+
+
+&lt;div id=&#34;the-office&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;The Office&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(tidyverse)
+office_ratings &amp;lt;- readr::read_csv(&amp;#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-03-17/office_ratings.csv&amp;#39;)&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;a-first-plot&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;A First Plot&lt;/h2&gt;
+&lt;p&gt;The number of episodes for the Office by season.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(janitor)
+TableS &amp;lt;- office_ratings %&amp;gt;% tabyl(season)
+p1 &amp;lt;- TableS %&amp;gt;% ggplot(., aes(x=as.factor(season), y=n, fill=as.factor(season))) + geom_col() + labs(x=&amp;quot;Season&amp;quot;, y=&amp;quot;Episodes&amp;quot;, title=&amp;quot;The Office: Episodes&amp;quot;) + guides(fill=FALSE)
+p1&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-03-19-tidytuesday-on-the-office/index_files/figure-html/pressure-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ratings&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Ratings&lt;/h1&gt;
+&lt;p&gt;How are the various seasons and episodes rated?&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;p2 &amp;lt;- office_ratings %&amp;gt;% ggplot(., aes(x=as.factor(season), y=imdb_rating, fill=as.factor(season), color=as.factor(season))) + geom_violin(alpha=0.3) + guides(fill=FALSE, color=FALSE) + labs(x=&amp;quot;Season&amp;quot;, y=&amp;quot;IMDB Rating&amp;quot;) + geom_point()
+p2&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-03-19-tidytuesday-on-the-office/index_files/figure-html/unnamed-chunk-1-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;patchwork&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Patchwork&lt;/h1&gt;
+&lt;p&gt;Using &lt;code&gt;patchwork&lt;/code&gt;, we can combine multiple plots.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(patchwork)
+(p1) / p2&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-03-19-tidytuesday-on-the-office/index_files/figure-html/unnamed-chunk-2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ratings-part-ii&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Ratings Part II&lt;/h1&gt;
+&lt;p&gt;Let’s show the episode names. The tooltip doesn’t interact well with the violin plot. It needs points by themselves.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(widgetframe)
+p3 &amp;lt;- office_ratings %&amp;gt;% ggplot(., aes(x=as.factor(season), y=imdb_rating, fill=as.factor(season), color=as.factor(season), text=title)) + geom_point()  + guides(fill=FALSE, color=FALSE) + labs(x=&amp;quot;Season&amp;quot;, y=&amp;quot;IMDB Rating&amp;quot;) 
+# The violin was trashing the tooltip.  I have to get rid of it.
+library(plotly)
+# ggplotly(p3, tooltip = &amp;quot;text&amp;quot;)
+p3&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-03-19-tidytuesday-on-the-office/index_files/figure-html/unnamed-chunk-3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;something-i-like&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Something I Like&lt;/h1&gt;
+&lt;p&gt;A better and more customized version of the violin plot.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(hrbrthemes); library(ggthemes)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## NOTE: Either Arial Narrow or Roboto Condensed fonts are required to use these themes.&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##       Please use hrbrthemes::import_roboto_condensed() to install Roboto Condensed and&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##       if Arial Narrow is not on your system, please see http://bit.ly/arialnarrow&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggplot(office_ratings, aes(x=as.factor(season), y=imdb_rating, fill=as.factor(season), color=as.factor(season))) + geom_violin(alpha=0.3) + guides(fill=FALSE, color=FALSE) + labs(x=&amp;quot;Season&amp;quot;, y=&amp;quot;IMDB Rating&amp;quot;, title=&amp;quot;IMDB Ratings: The Office by Season&amp;quot;, caption=&amp;quot;a #tidyTuesday&amp;quot;) + theme_economist_white() + scale_fill_ipsum() + scale_color_ipsum() + geom_jitter()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-03-19-tidytuesday-on-the-office/index_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;a-plotly&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;A Plotly&lt;/h1&gt;
+&lt;p&gt;&lt;code&gt;ggplotly&lt;/code&gt; does not love multiple geoms. In this case, the lines are ignored but the tool tip works.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;p4 &amp;lt;- ggplot(office_ratings, aes(x=air_date, y=imdb_rating, color=as.factor(season), text=title)) + geom_point() + geom_smooth() +  guides(color=FALSE) + labs(x=&amp;quot;Date Aired&amp;quot;, y=&amp;quot;IMDB Rating&amp;quot;)
+# The tooltip kills the smooth.
+p5 &amp;lt;- ggplotly(p4)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## `geom_smooth()` using method = &amp;#39;loess&amp;#39; and formula &amp;#39;y ~ x&amp;#39;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;frameWidget(p5)&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;htmlwidget-1&#34; style=&#34;width:100%;height:480px;&#34; class=&#34;widgetframe html-widget&#34;&gt;&lt;/div&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-1&#34;&gt;{&#34;x&#34;:{&#34;url&#34;:&#34;/post/2020-03-19-tidytuesday-on-the-office/index_files/figure-html//widgets/widget_unnamed-chunk-5.html&#34;,&#34;options&#34;:{&#34;xdomain&#34;:&#34;*&#34;,&#34;allowfullscreen&#34;:false,&#34;lazyload&#34;:false}},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;/div&gt;
+</description>
+    </item>
     
     <item>
       <title>The Carbon Footprint of Food Produced for Consumption</title>

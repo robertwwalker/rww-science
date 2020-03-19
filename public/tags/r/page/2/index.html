@@ -239,7 +239,7 @@
   <meta property="og:description" content="Associate Professor of Quantitative Methods"><meta property="og:image" content="/img/portrait.jpg">
   <meta property="twitter:image" content="/img/portrait.jpg"><meta property="og:locale" content="en-us">
   
-    <meta property="og:updated_time" content="2020-02-24T00:00:00&#43;00:00">
+    <meta property="og:updated_time" content="2020-03-19T00:00:00&#43;00:00">
   
 
   
@@ -654,6 +654,20 @@
     
     
     <div>
+      <h2><a href="/2019/10/10/fariss-human-rights-data-with-animation/" >Fariss Human Rights Data with Animation</a></h2>
+      <div class="article-style">
+        
+          Fariss Data Is neat and complete.
+load(&quot;FarissHRData.RData&quot;) skimr::skim(HR.Data)  Table 1: Data summary  Name HR.Data  Number of rows 11717  Number of columns 27  _______________________   Column type frequency:   factor 1  numeric 26  ________________________   Group variables None    Variable type: factor
+  skim_variable n_missing complete_rate ordered n_unique top_counts    COW_YEAR 0 1 FALSE 11717 100: 1, 100: 1, 100: 1, 100: 1    Variable type: numeric
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
       <h2><a href="/2019/10/10/generative-art/" >Generative aRt</a></h2>
       <div class="article-style">
         
@@ -765,21 +779,6 @@ library(lubridate) library(tidyverse) library(ggthemes) library(stringr) library
       <div class="article-style">
         
           FRED via fredr The Federal Reserve Economic Database [FRED] is a wonderful public resource for data and the r api that connects to it is very easy to use for the things that I have previously needed. For example, one of my students was interested in commercial credit default data. I used the FRED search instructions from the following vignette to find that data. My first step was the vignette for using fredr.
-        
-      </div>
-    </div>
-  
-    
-    
-    
-    <div>
-      <h2><a href="/2018/12/19/trump-s-tweets-part-ii/" >Trump&#39;s Tweets, Part II</a></h2>
-      <div class="article-style">
-        
-          Trump’s Tone A cool post on sentiment analysis can be found here. I will now get at the time series characteristics of his tweets and the sentiment stuff.
-I start by loading the tmls object that I created in the previous post.
-Trump’s Overall Tweeting What does it look like?
-library(tidyverse) library(tidytext) library(SnowballC) library(tm) library(syuzhet) library(rtweet) load(url(&quot;https://github.com/robertwwalker/academic-mymod/raw/master/data/TMLS.RData&quot;)) names(tml.djt) ## [1] &quot;user_id&quot; &quot;status_id&quot; ## [3] &quot;created_at&quot; &quot;screen_name&quot; ## [5] &quot;text&quot; &quot;source&quot; ## [7] &quot;display_text_width&quot; &quot;reply_to_status_id&quot; ## [9] &quot;reply_to_user_id&quot; &quot;reply_to_screen_name&quot; ## [11] &quot;is_quote&quot; &quot;is_retweet&quot; ## [13] &quot;favorite_count&quot; &quot;retweet_count&quot; ## [15] &quot;hashtags&quot; &quot;symbols&quot; ## [17] &quot;urls_url&quot; &quot;urls_t.
         
       </div>
     </div>

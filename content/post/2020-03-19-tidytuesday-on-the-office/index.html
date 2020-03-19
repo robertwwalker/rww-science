@@ -1,0 +1,89 @@
+---
+title: tidyTuesday on the Office
+author: Robert W. Walker
+date: '2020-03-19'
+slug: tidytuesday-on-the-office
+categories:
+  - R
+  - tidyTuesday
+  - tidyverse
+tags:
+  - tidyTuesday
+  - R
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2020-03-19T14:46:04-07:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+<script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
+<script src="/rmarkdown-libs/pymjs/pym.v1.js"></script>
+<script src="/rmarkdown-libs/widgetframe-binding/widgetframe.js"></script>
+
+
+<div id="the-office" class="section level2">
+<h2>The Office</h2>
+<pre class="r"><code>library(tidyverse)
+office_ratings &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-03-17/office_ratings.csv&#39;)</code></pre>
+</div>
+<div id="a-first-plot" class="section level2">
+<h2>A First Plot</h2>
+<p>The number of episodes for the Office by season.</p>
+<pre class="r"><code>library(janitor)
+TableS &lt;- office_ratings %&gt;% tabyl(season)
+p1 &lt;- TableS %&gt;% ggplot(., aes(x=as.factor(season), y=n, fill=as.factor(season))) + geom_col() + labs(x=&quot;Season&quot;, y=&quot;Episodes&quot;, title=&quot;The Office: Episodes&quot;) + guides(fill=FALSE)
+p1</code></pre>
+<p><img src="/post/2020-03-19-tidytuesday-on-the-office/index_files/figure-html/pressure-1.png" width="672" /></p>
+</div>
+<div id="ratings" class="section level1">
+<h1>Ratings</h1>
+<p>How are the various seasons and episodes rated?</p>
+<pre class="r"><code>p2 &lt;- office_ratings %&gt;% ggplot(., aes(x=as.factor(season), y=imdb_rating, fill=as.factor(season), color=as.factor(season))) + geom_violin(alpha=0.3) + guides(fill=FALSE, color=FALSE) + labs(x=&quot;Season&quot;, y=&quot;IMDB Rating&quot;) + geom_point()
+p2</code></pre>
+<p><img src="/post/2020-03-19-tidytuesday-on-the-office/index_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+</div>
+<div id="patchwork" class="section level1">
+<h1>Patchwork</h1>
+<p>Using <code>patchwork</code>, we can combine multiple plots.</p>
+<pre class="r"><code>library(patchwork)
+(p1) / p2</code></pre>
+<p><img src="/post/2020-03-19-tidytuesday-on-the-office/index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+</div>
+<div id="ratings-part-ii" class="section level1">
+<h1>Ratings Part II</h1>
+<p>Let’s show the episode names. The tooltip doesn’t interact well with the violin plot. It needs points by themselves.</p>
+<pre class="r"><code>library(widgetframe)
+p3 &lt;- office_ratings %&gt;% ggplot(., aes(x=as.factor(season), y=imdb_rating, fill=as.factor(season), color=as.factor(season), text=title)) + geom_point()  + guides(fill=FALSE, color=FALSE) + labs(x=&quot;Season&quot;, y=&quot;IMDB Rating&quot;) 
+# The violin was trashing the tooltip.  I have to get rid of it.
+library(plotly)
+# ggplotly(p3, tooltip = &quot;text&quot;)
+p3</code></pre>
+<p><img src="/post/2020-03-19-tidytuesday-on-the-office/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+</div>
+<div id="something-i-like" class="section level1">
+<h1>Something I Like</h1>
+<p>A better and more customized version of the violin plot.</p>
+<pre class="r"><code>library(hrbrthemes); library(ggthemes)</code></pre>
+<pre><code>## NOTE: Either Arial Narrow or Roboto Condensed fonts are required to use these themes.</code></pre>
+<pre><code>##       Please use hrbrthemes::import_roboto_condensed() to install Roboto Condensed and</code></pre>
+<pre><code>##       if Arial Narrow is not on your system, please see http://bit.ly/arialnarrow</code></pre>
+<pre class="r"><code>ggplot(office_ratings, aes(x=as.factor(season), y=imdb_rating, fill=as.factor(season), color=as.factor(season))) + geom_violin(alpha=0.3) + guides(fill=FALSE, color=FALSE) + labs(x=&quot;Season&quot;, y=&quot;IMDB Rating&quot;, title=&quot;IMDB Ratings: The Office by Season&quot;, caption=&quot;a #tidyTuesday&quot;) + theme_economist_white() + scale_fill_ipsum() + scale_color_ipsum() + geom_jitter()</code></pre>
+<p><img src="/post/2020-03-19-tidytuesday-on-the-office/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
+<div id="a-plotly" class="section level1">
+<h1>A Plotly</h1>
+<p><code>ggplotly</code> does not love multiple geoms. In this case, the lines are ignored but the tool tip works.</p>
+<pre class="r"><code>p4 &lt;- ggplot(office_ratings, aes(x=air_date, y=imdb_rating, color=as.factor(season), text=title)) + geom_point() + geom_smooth() +  guides(color=FALSE) + labs(x=&quot;Date Aired&quot;, y=&quot;IMDB Rating&quot;)
+# The tooltip kills the smooth.
+p5 &lt;- ggplotly(p4)</code></pre>
+<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
+<pre class="r"><code>frameWidget(p5)</code></pre>
+<div id="htmlwidget-1" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/post/2020-03-19-tidytuesday-on-the-office/index_files/figure-html//widgets/widget_unnamed-chunk-5.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+</div>

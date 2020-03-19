@@ -5,7 +5,7 @@
     <link>/categories/</link>
       <atom:link href="/categories/index.xml" rel="self" type="application/rss+xml" />
     <description>Categories</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© 2018</copyright><lastBuildDate>Thu, 27 Feb 2020 00:00:00 +0000</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© 2018</copyright><lastBuildDate>Thu, 19 Mar 2020 00:00:00 +0000</lastBuildDate>
     <image>
       <url>/img/portrait.jpg</url>
       <title>Categories</title>
@@ -15,8 +15,24 @@
     <item>
       <title>R</title>
       <link>/categories/r/</link>
-      <pubDate>Thu, 27 Feb 2020 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 19 Mar 2020 00:00:00 +0000</pubDate>
       <guid>/categories/r/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>tidyTuesday</title>
+      <link>/categories/tidytuesday/</link>
+      <pubDate>Thu, 19 Mar 2020 00:00:00 +0000</pubDate>
+      <guid>/categories/tidytuesday/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>tidyverse</title>
+      <link>/categories/tidyverse/</link>
+      <pubDate>Thu, 19 Mar 2020 00:00:00 +0000</pubDate>
+      <guid>/categories/tidyverse/</guid>
       <description></description>
     </item>
     
@@ -25,14 +41,6 @@
       <link>/categories/tidyquant/</link>
       <pubDate>Thu, 27 Feb 2020 00:00:00 +0000</pubDate>
       <guid>/categories/tidyquant/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>tidyverse</title>
-      <link>/categories/tidyverse/</link>
-      <pubDate>Mon, 24 Feb 2020 00:00:00 +0000</pubDate>
-      <guid>/categories/tidyverse/</guid>
       <description></description>
     </item>
     
@@ -57,14 +65,6 @@
       <link>/categories/maps/</link>
       <pubDate>Tue, 18 Feb 2020 00:00:00 +0000</pubDate>
       <guid>/categories/maps/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>tidyTuesday</title>
-      <link>/categories/tidytuesday/</link>
-      <pubDate>Tue, 18 Feb 2020 00:00:00 +0000</pubDate>
-      <guid>/categories/tidytuesday/</guid>
       <description></description>
     </item>
     

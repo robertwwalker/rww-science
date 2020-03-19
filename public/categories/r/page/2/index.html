@@ -239,7 +239,7 @@
   <meta property="og:description" content="Associate Professor of Quantitative Methods"><meta property="og:image" content="/img/portrait.jpg">
   <meta property="twitter:image" content="/img/portrait.jpg"><meta property="og:locale" content="en-us">
   
-    <meta property="og:updated_time" content="2020-02-27T00:00:00&#43;00:00">
+    <meta property="og:updated_time" content="2020-03-19T00:00:00&#43;00:00">
   
 
   
@@ -654,6 +654,18 @@
     
     
     <div>
+      <h2><a href="/2019/11/16/the-generation-squeeze/" >The Generation Squeeze</a></h2>
+      <div class="article-style">
+        
+          Hashtag OKBoomer The generational banter that has followed the use of #OKBoomer reminded me of an interesting feature of US population data. I believe it to be true that Generation X has never and will never be the largest generation of Americans. There are tons of Millenials and Baby Boomers alike, though the rate of decline in the latter means that the former are about to surpass them. Or perhaps they have.
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
       <h2><a href="/r/finreportr-is-awesome/" >Financial Analysis of SEC Reports in R</a></h2>
       <div class="article-style">
         
@@ -763,21 +775,6 @@ library(lubridate) library(tidyverse) library(ggthemes) library(stringr) library
         
           tidyquant Automates a lot of equity research and calculation using tidy concepts. Here, I will first use it to get the components of the S and P 500 and pick out those with weights over 1.25 percent. In the next step, I download the data and finally calculate daily returns and a cumulative wealth index.
 library(tidyquant) library(tidyverse) tq_index(&quot;SP500&quot;) %&gt;% filter(weight &gt; 0.0125) %&gt;% select(symbol,company) -&gt; Tickers Tickers &lt;- Tickers %&gt;% filter(symbol!
-        
-      </div>
-    </div>
-  
-    
-    
-    
-    <div>
-      <h2><a href="/2018/12/19/trump-s-tweets-part-ii/" >Trump&#39;s Tweets, Part II</a></h2>
-      <div class="article-style">
-        
-          Trump’s Tone A cool post on sentiment analysis can be found here. I will now get at the time series characteristics of his tweets and the sentiment stuff.
-I start by loading the tmls object that I created in the previous post.
-Trump’s Overall Tweeting What does it look like?
-library(tidyverse) library(tidytext) library(SnowballC) library(tm) library(syuzhet) library(rtweet) load(url(&quot;https://github.com/robertwwalker/academic-mymod/raw/master/data/TMLS.RData&quot;)) names(tml.djt) ## [1] &quot;user_id&quot; &quot;status_id&quot; ## [3] &quot;created_at&quot; &quot;screen_name&quot; ## [5] &quot;text&quot; &quot;source&quot; ## [7] &quot;display_text_width&quot; &quot;reply_to_status_id&quot; ## [9] &quot;reply_to_user_id&quot; &quot;reply_to_screen_name&quot; ## [11] &quot;is_quote&quot; &quot;is_retweet&quot; ## [13] &quot;favorite_count&quot; &quot;retweet_count&quot; ## [15] &quot;hashtags&quot; &quot;symbols&quot; ## [17] &quot;urls_url&quot; &quot;urls_t.
         
       </div>
     </div>

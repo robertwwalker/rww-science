@@ -239,7 +239,7 @@
   <meta property="og:description" content="Associate Professor of Quantitative Methods"><meta property="og:image" content="/img/portrait.jpg">
   <meta property="twitter:image" content="/img/portrait.jpg"><meta property="og:locale" content="en-us">
   
-    <meta property="og:updated_time" content="2020-02-24T00:00:00&#43;00:00">
+    <meta property="og:updated_time" content="2020-03-19T00:00:00&#43;00:00">
   
 
   
@@ -654,6 +654,20 @@
     
     
     <div>
+      <h2><a href="/2020/03/19/tidytuesday-on-the-office/" >tidyTuesday on the Office</a></h2>
+      <div class="article-style">
+        
+          The Office library(tidyverse) office_ratings &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-03-17/office_ratings.csv&#39;)  A First Plot The number of episodes for the Office by season.
+library(janitor) TableS &lt;- office_ratings %&gt;% tabyl(season) p1 &lt;- TableS %&gt;% ggplot(., aes(x=as.factor(season), y=n, fill=as.factor(season))) + geom_col() + labs(x=&quot;Season&quot;, y=&quot;Episodes&quot;, title=&quot;The Office: Episodes&quot;) + guides(fill=FALSE) p1  Ratings How are the various seasons and episodes rated?
+p2 &lt;- office_ratings %&gt;% ggplot(., aes(x=as.factor(season), y=imdb_rating, fill=as.factor(season), color=as.factor(season))) + geom_violin(alpha=0.3) + guides(fill=FALSE, color=FALSE) + labs(x=&quot;Season&quot;, y=&quot;IMDB Rating&quot;) + geom_point() p2  Patchwork Using patchwork, we can combine multiple plots.
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
       <h2><a href="/2020/02/24/quick-and-dirty-fredr/" >Quick and Dirty Fredr</a></h2>
       <div class="article-style">
         
@@ -763,20 +777,6 @@ tickets &lt;- readr::read_csv(&quot;https://raw.githubusercontent.com/rfordatasc
         
           Searching and Mapping the Census  Searching for the Asian Population via the Census To use tidycensus, there are limitations imposed by the available tables. There is ACS – a survey of about 3 million people – and the two main decennial census files [SF1] and [SF2]. I will search SF1 for the Asian population.
 library(tidycensus); library(kableExtra) library(tidyverse); library(stringr) v10 &lt;- load_variables(2010, &quot;sf1&quot;, cache = TRUE) v10 %&gt;% filter(str_detect(concept, &quot;ASIAN&quot;)) %&gt;% filter(str_detect(label, &quot;Female&quot;)) %&gt;% kable() %&gt;% scroll_box(width = &quot;100%&quot;)    name  label  concept      P012D026  Total!
-        
-      </div>
-    </div>
-  
-    
-    
-    
-    <div>
-      <h2><a href="/2019/10/10/fariss-human-rights-data-with-animation/" >Fariss Human Rights Data with Animation</a></h2>
-      <div class="article-style">
-        
-          Fariss Data Is neat and complete.
-load(&quot;FarissHRData.RData&quot;) skimr::skim(HR.Data)  Table 1: Data summary  Name HR.Data  Number of rows 11717  Number of columns 27  _______________________   Column type frequency:   factor 1  numeric 26  ________________________   Group variables None    Variable type: factor
-  skim_variable n_missing complete_rate ordered n_unique top_counts    COW_YEAR 0 1 FALSE 11717 100: 1, 100: 1, 100: 1, 100: 1    Variable type: numeric
         
       </div>
     </div>

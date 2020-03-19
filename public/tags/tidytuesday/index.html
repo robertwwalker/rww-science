@@ -239,7 +239,7 @@
   <meta property="og:description" content="Associate Professor of Quantitative Methods"><meta property="og:image" content="/img/portrait.jpg">
   <meta property="twitter:image" content="/img/portrait.jpg"><meta property="og:locale" content="en-us">
   
-    <meta property="og:updated_time" content="2020-02-18T00:00:00&#43;00:00">
+    <meta property="og:updated_time" content="2020-03-19T00:00:00&#43;00:00">
   
 
   
@@ -654,6 +654,20 @@
     
     
     <div>
+      <h2><a href="/2020/03/19/tidytuesday-on-the-office/" >tidyTuesday on the Office</a></h2>
+      <div class="article-style">
+        
+          The Office library(tidyverse) office_ratings &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-03-17/office_ratings.csv&#39;)  A First Plot The number of episodes for the Office by season.
+library(janitor) TableS &lt;- office_ratings %&gt;% tabyl(season) p1 &lt;- TableS %&gt;% ggplot(., aes(x=as.factor(season), y=n, fill=as.factor(season))) + geom_col() + labs(x=&quot;Season&quot;, y=&quot;Episodes&quot;, title=&quot;The Office: Episodes&quot;) + guides(fill=FALSE) p1  Ratings How are the various seasons and episodes rated?
+p2 &lt;- office_ratings %&gt;% ggplot(., aes(x=as.factor(season), y=imdb_rating, fill=as.factor(season), color=as.factor(season))) + geom_violin(alpha=0.3) + guides(fill=FALSE, color=FALSE) + labs(x=&quot;Season&quot;, y=&quot;IMDB Rating&quot;) + geom_point() p2  Patchwork Using patchwork, we can combine multiple plots.
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
       <h2><a href="/2020/02/18/the-carbon-footprint-of-food-produced-for-consumption/" >The Carbon Footprint of Food Produced for Consumption</a></h2>
       <div class="article-style">
         
@@ -763,19 +777,6 @@ library(tidycensus); library(kableExtra) library(tidyverse); library(stringr) v1
         
           The Economist’s Errors and Credit Where Credit is Due The Economist is serious about their use of data visualization and they have occasionally owned up to errors in their visualizations. They can be deceptive, uninformative, confusing, excessively busy, and present a host of other barriers to clean communication. Their blog post on their errors is great.
 I have drawn the following example from a #tidyTuesday earlier this year that explores this.
-        
-      </div>
-    </div>
-  
-    
-    
-    
-    <div>
-      <h2><a href="/2019/10/09/tidytuesday-does-pizza/" >tidyTuesday does Pizza</a></h2>
-      <div class="article-style">
-        
-          Pizza Ratings The #tidyTuesday for this week involves pizza shop ratings data. Let’s see what we have.
-pizza_jared &lt;- readr::read_csv(&quot;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-10-01/pizza_jared.csv&quot;) ## Parsed with column specification: ## cols( ## polla_qid = col_double(), ## answer = col_character(), ## votes = col_double(), ## pollq_id = col_double(), ## question = col_character(), ## place = col_character(), ## time = col_double(), ## total_votes = col_double(), ## percent = col_double() ## ) pizza_barstool &lt;- readr::read_csv(&quot;https://raw.
         
       </div>
     </div>

@@ -1,0 +1,97 @@
+---
+title: tidyTuesday on the Office
+author: Robert W. Walker
+date: '2020-03-19'
+slug: tidytuesday-on-the-office
+categories:
+  - R
+  - tidyTuesday
+  - tidyverse
+tags:
+  - tidyTuesday
+  - R
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2020-03-19T14:46:04-07:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+
+## The Office
+
+
+
+```{r cars, message=FALSE, warning=FALSE}
+library(tidyverse)
+office_ratings <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-03-17/office_ratings.csv')
+```
+
+## A First Plot
+
+The number of episodes for the Office by season.
+
+```{r pressure, message=FALSE, warning=FALSE}
+library(janitor)
+TableS <- office_ratings %>% tabyl(season)
+p1 <- TableS %>% ggplot(., aes(x=as.factor(season), y=n, fill=as.factor(season))) + geom_col() + labs(x="Season", y="Episodes", title="The Office: Episodes") + guides(fill=FALSE)
+p1
+```
+
+# Ratings
+
+How are the various seasons and episodes rated?
+
+```{r, message=FALSE, warning=FALSE}
+p2 <- office_ratings %>% ggplot(., aes(x=as.factor(season), y=imdb_rating, fill=as.factor(season), color=as.factor(season))) + geom_violin(alpha=0.3) + guides(fill=FALSE, color=FALSE) + labs(x="Season", y="IMDB Rating") + geom_point()
+p2
+```
+
+
+# Patchwork
+
+Using `patchwork`, we can combine multiple plots.
+
+```{r}
+library(patchwork)
+(p1) / p2
+```
+
+# Ratings Part II
+
+Let's show the episode names.  The tooltip doesn't interact well with the violin plot.  It needs points by themselves.
+
+```{r, message=FALSE, warning=FALSE}
+library(widgetframe)
+p3 <- office_ratings %>% ggplot(., aes(x=as.factor(season), y=imdb_rating, fill=as.factor(season), color=as.factor(season), text=title)) + geom_point()  + guides(fill=FALSE, color=FALSE) + labs(x="Season", y="IMDB Rating") 
+# The violin was trashing the tooltip.  I have to get rid of it.
+library(plotly)
+# ggplotly(p3, tooltip = "text")
+p3
+```
+
+# Something I Like
+
+A better and more customized version of the violin plot.
+
+```{r}
+library(hrbrthemes); library(ggthemes)
+ggplot(office_ratings, aes(x=as.factor(season), y=imdb_rating, fill=as.factor(season), color=as.factor(season))) + geom_violin(alpha=0.3) + guides(fill=FALSE, color=FALSE) + labs(x="Season", y="IMDB Rating", title="IMDB Ratings: The Office by Season", caption="a #tidyTuesday") + theme_economist_white() + scale_fill_ipsum() + scale_color_ipsum() + geom_jitter()
+```
+
+# A Plotly
+
+`ggplotly` does not love multiple geoms.  In this case, the lines are ignored but the tool tip works.
+
+```{r}
+p4 <- ggplot(office_ratings, aes(x=air_date, y=imdb_rating, color=as.factor(season), text=title)) + geom_point() + geom_smooth() +  guides(color=FALSE) + labs(x="Date Aired", y="IMDB Rating")
+# The tooltip kills the smooth.
+p5 <- ggplotly(p4)
+frameWidget(p5)
+```
+
