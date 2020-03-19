@@ -1,0 +1,98 @@
+---
+title: "Tracking COVID-19 `r Sys.Date()`"
+author: Robert W. Walker
+date: '2020-03-19'
+slug: tracking-covid-19
+categories:
+  - tidyverse
+  - R
+  - animation
+tags:
+  - gganimate
+  - Maps
+  - tidyverse
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2020-03-19T14:52:12-07:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+```
+
+# R to Import COVID Data
+
+```{r}
+library(tidyverse)
+library(gganimate)
+COVID.states <- read.csv(url("http://covidtracking.com/api/states/daily.csv"))
+COVID.states <- COVID.states %>% mutate(Date = as.Date(as.character(date), format = "%Y%m%d"))
+```
+
+## The Raw Testing Incidence
+
+I want to use patchwork to show the testing rate by state in the United States.  Then I want to show where things currently stand.  In both cases, a base-10 log is used on the number of tests.
+
+```{r}
+library(patchwork)
+p1 <- ggplot(COVID.states) +
+ aes(x = Date, y = total, colour = state) +
+ geom_line(alpha=0.4) +
+ scale_color_hue() + labs(y="Total Tested", colour="", title="COVID Testing by State", caption="data from COVIDTRACKING.COM")+ theme_minimal() + scale_y_log10() + theme(legend.text=element_text(size=rel(0.75)))
+p2 <- COVID.states %>% filter(Date=="2020-03-19") %>% ggplot(., aes(x=reorder(state, total), y=total, fill=state)) + geom_col() + guides(fill=FALSE) + coord_flip() + labs(y="Total Tested log(base 10)", x="", caption="data from COVIDTRACKING.COM") + scale_y_log10() + theme(axis.text=element_text(size=rel(0.5)))
+p1 + p2
+```
+
+## A Map
+
+Now let me map, for the United States, the total number of tests as of today.
+
+```{r}
+library(ggthemes)
+library(urbnmapr)
+State.Map <- get_urbn_map("states", sf=TRUE)
+Today <- COVID.states %>% filter(Date=="2020-03-19")
+Plot.Me <- left_join(State.Map, Today, by = c("state_abbv" = "state"))
+ggplot(Plot.Me) +
+    aes(fill = total) +
+    geom_sf(size = 0.5, color="white") +
+    scale_fill_viridis_c() +
+    theme_minimal() + labs(title="COVID-19 Testing in the United States", subtitle="2020-03-19", caption="data from COVIDTRACKING.COM", fill="Total Tests")
+```
+
+## Animate the Map
+
+I will animate it with gganimate.
+
+```{r}
+library(gganimate)
+Plot.Me <- left_join(State.Map, COVID.states, by = c("state_abbv" = "state"))
+anim1 <- ggplot(Plot.Me) +
+    aes(fill = total) +
+    geom_sf(size = 0.5, color="white") +
+    scale_fill_viridis_c() +
+    theme_minimal() + labs(title="COVID-19 Testing in the United States", subtitle="{frame_time}", caption="data from COVIDTRACKING.COM", fill="Total Tests") + transition_time(Date)
+animate(anim1, renderer=gifski_renderer(), end_pause = 20)
+```
+
+## A bit more detail
+
+Total tests in black; positives in red and negatives in green.
+
+```{r}
+ggplot(COVID.states) +
+ aes(x = Date) +
+ geom_line(aes(y=total), color="black") +
+ geom_line(aes(y=positive), color="red") +
+ geom_line(aes(y=negative), color="green") +
+ theme_minimal() +
+ facet_wrap(vars(state), scales = "free_y")
+```
+

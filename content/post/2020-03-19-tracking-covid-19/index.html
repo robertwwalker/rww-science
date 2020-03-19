@@ -1,0 +1,86 @@
+---
+title: "Tracking COVID-19 2020-03-19"
+author: Robert W. Walker
+date: '2020-03-19'
+slug: tracking-covid-19
+categories:
+  - tidyverse
+  - R
+  - animation
+tags:
+  - gganimate
+  - Maps
+  - tidyverse
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2020-03-19T14:52:12-07:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+
+
+<div id="r-to-import-covid-data" class="section level1">
+<h1>R to Import COVID Data</h1>
+<pre class="r"><code>library(tidyverse)
+library(gganimate)
+COVID.states &lt;- read.csv(url(&quot;http://covidtracking.com/api/states/daily.csv&quot;))
+COVID.states &lt;- COVID.states %&gt;% mutate(Date = as.Date(as.character(date), format = &quot;%Y%m%d&quot;))</code></pre>
+<div id="the-raw-testing-incidence" class="section level2">
+<h2>The Raw Testing Incidence</h2>
+<p>I want to use patchwork to show the testing rate by state in the United States. Then I want to show where things currently stand. In both cases, a base-10 log is used on the number of tests.</p>
+<pre class="r"><code>library(patchwork)
+p1 &lt;- ggplot(COVID.states) +
+ aes(x = Date, y = total, colour = state) +
+ geom_line(alpha=0.4) +
+ scale_color_hue() + labs(y=&quot;Total Tested&quot;, colour=&quot;&quot;, title=&quot;COVID Testing by State&quot;, caption=&quot;data from COVIDTRACKING.COM&quot;)+ theme_minimal() + scale_y_log10() + theme(legend.text=element_text(size=rel(0.75)))
+p2 &lt;- COVID.states %&gt;% filter(Date==&quot;2020-03-19&quot;) %&gt;% ggplot(., aes(x=reorder(state, total), y=total, fill=state)) + geom_col() + guides(fill=FALSE) + coord_flip() + labs(y=&quot;Total Tested log(base 10)&quot;, x=&quot;&quot;, caption=&quot;data from COVIDTRACKING.COM&quot;) + scale_y_log10() + theme(axis.text=element_text(size=rel(0.5)))
+p1 + p2</code></pre>
+<p><img src="/post/2020-03-19-tracking-covid-19/index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+</div>
+<div id="a-map" class="section level2">
+<h2>A Map</h2>
+<p>Now let me map, for the United States, the total number of tests as of today.</p>
+<pre class="r"><code>library(ggthemes)
+library(urbnmapr)
+State.Map &lt;- get_urbn_map(&quot;states&quot;, sf=TRUE)
+Today &lt;- COVID.states %&gt;% filter(Date==&quot;2020-03-19&quot;)
+Plot.Me &lt;- left_join(State.Map, Today, by = c(&quot;state_abbv&quot; = &quot;state&quot;))
+ggplot(Plot.Me) +
+    aes(fill = total) +
+    geom_sf(size = 0.5, color=&quot;white&quot;) +
+    scale_fill_viridis_c() +
+    theme_minimal() + labs(title=&quot;COVID-19 Testing in the United States&quot;, subtitle=&quot;2020-03-19&quot;, caption=&quot;data from COVIDTRACKING.COM&quot;, fill=&quot;Total Tests&quot;)</code></pre>
+<p><img src="/post/2020-03-19-tracking-covid-19/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+</div>
+<div id="animate-the-map" class="section level2">
+<h2>Animate the Map</h2>
+<p>I will animate it with gganimate.</p>
+<pre class="r"><code>library(gganimate)
+Plot.Me &lt;- left_join(State.Map, COVID.states, by = c(&quot;state_abbv&quot; = &quot;state&quot;))
+anim1 &lt;- ggplot(Plot.Me) +
+    aes(fill = total) +
+    geom_sf(size = 0.5, color=&quot;white&quot;) +
+    scale_fill_viridis_c() +
+    theme_minimal() + labs(title=&quot;COVID-19 Testing in the United States&quot;, subtitle=&quot;{frame_time}&quot;, caption=&quot;data from COVIDTRACKING.COM&quot;, fill=&quot;Total Tests&quot;) + transition_time(Date)
+animate(anim1, renderer=gifski_renderer(), end_pause = 20)</code></pre>
+<p><img src="/post/2020-03-19-tracking-covid-19/index_files/figure-html/unnamed-chunk-4-1.gif" /><!-- --></p>
+</div>
+<div id="a-bit-more-detail" class="section level2">
+<h2>A bit more detail</h2>
+<p>Total tests in black; positives in red and negatives in green.</p>
+<pre class="r"><code>ggplot(COVID.states) +
+ aes(x = Date) +
+ geom_line(aes(y=total), color=&quot;black&quot;) +
+ geom_line(aes(y=positive), color=&quot;red&quot;) +
+ geom_line(aes(y=negative), color=&quot;green&quot;) +
+ theme_minimal() +
+ facet_wrap(vars(state), scales = &quot;free_y&quot;)</code></pre>
+<p><img src="/post/2020-03-19-tracking-covid-19/index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+</div>
+</div>

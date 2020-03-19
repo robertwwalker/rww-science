@@ -1180,6 +1180,88 @@
   
   <span class="middot-divider"></span>
   <span class="article-categories">
+    <i class="fas fa-folder mr-1"></i><a href="/categories/tidyverse/">tidyverse</a>, <a href="/categories/r/">R</a>, <a href="/categories/animation/">animation</a></span>
+  
+
+</div>
+
+  
+
+  
+  
+  
+
+  <h3 class="article-title mb-1 mt-3">
+    <a href="/2020/03/19/tracking-covid-19/">Tracking COVID-19 2020-03-19</a>
+  </h3>
+
+  
+  <div class="article-style">
+    <p>R to Import COVID Data library(tidyverse) library(gganimate) COVID.states &lt;- read.csv(url(&quot;http://covidtracking.com/api/states/daily.csv&quot;)) COVID.states &lt;- COVID.states %&gt;% mutate(Date = as.Date(as.character(date), format = &quot;%Y%m%d&quot;)) The Raw Testing Incidence I want to use patchwork to show the testing rate by state in the United States. Then I want to show where things currently stand. In both cases, a base-10 log is used on the number of tests.
+library(patchwork) p1 &lt;- ggplot(COVID.states) + aes(x = Date, y = total, colour = state) + geom_line(alpha=0.</p>
+  </div>
+  
+
+  
+
+</div>
+
+      
+    
+      
+        
+
+
+
+
+
+
+
+
+
+  
+
+
+<div class="card-simple">
+
+  
+    
+
+
+<div class="article-metadata">
+
+  
+  
+
+  
+  <span class="article-date">
+    
+    
+      
+          Last updated on
+      
+    
+    Mar 19, 2020
+  </span>
+  
+
+  
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    2 min read
+  </span>
+  
+
+  
+  
+  
+
+  
+  
+  <span class="middot-divider"></span>
+  <span class="article-categories">
     <i class="fas fa-folder mr-1"></i><a href="/categories/r/">R</a>, <a href="/categories/tidytuesday/">tidyTuesday</a>, <a href="/categories/tidyverse/">tidyverse</a></span>
   
 
@@ -1242,7 +1324,7 @@ p2 &lt;- office_ratings %&gt;% ggplot(., aes(x=as.factor(season), y=imdb_rating,
           Last updated on
       
     
-    Mar 13, 2020
+    Mar 19, 2020
   </span>
   
 
@@ -1447,87 +1529,6 @@ library(tidyverse) VIX &lt;- read.csv(url(&quot;http://www.cboe.com/publish/sche
     <p>XBRL Changed XBRL has undergone and is undergoing some changes. Some filers have already needed to change their filings and others will have to soon. Here is the excerpt.
 XBRL Change
  This has broken many of the existing parsers for new filings. It is time to find a way around this. I have seen links for scraping them from Yahoo! Finance but that is not really what I want.</p>
-  </div>
-  
-
-  
-
-</div>
-
-      
-    
-      
-        
-
-
-
-
-
-
-
-
-
-  
-
-
-<div class="card-simple">
-
-  
-    
-
-
-<div class="article-metadata">
-
-  
-  
-
-  
-  <span class="article-date">
-    
-    
-      
-          Last updated on
-      
-    
-    Feb 18, 2020
-  </span>
-  
-
-  
-
-  
-  <span class="middot-divider"></span>
-  <span class="article-reading-time">
-    7 min read
-  </span>
-  
-
-  
-  
-  
-
-  
-  
-  <span class="middot-divider"></span>
-  <span class="article-categories">
-    <i class="fas fa-folder mr-1"></i><a href="/categories/r/">R</a>, <a href="/categories/maps/">Maps</a></span>
-  
-
-</div>
-
-  
-
-  
-  
-  
-
-  <h3 class="article-title mb-1 mt-3">
-    <a href="/2020/02/18/r-for-driving-directions/">R for Driving Directions?</a>
-  </h3>
-
-  
-  <div class="article-style">
-    <p>Driving Directions from R There is no reason that maps with driving directions cannot be produced in R. Given the directions api from Google, it should be doable. As it happens, I was surprised how easy it was. Let me try to map a simple A to B location. First, to the locations; I will specify two. It is possible to geolocate addresses for this also, I happened to have the GPS coordinates in hand.</p>
   </div>
   
 
@@ -2644,7 +2645,7 @@ XBRL Change
           
           
           
-          <a href="/tags/gganimate/" style="font-size:1.1120902501875005rem">gganimate</a>
+          <a href="/tags/gganimate/" style="font-size:1.22rem">gganimate</a>
         
           
           
@@ -2659,7 +2660,7 @@ XBRL Change
           
           
           
-          <a href="/tags/maps/" style="font-size:1.5994522208456974rem">Maps</a>
+          <a href="/tags/maps/" style="font-size:1.6320902501875005rem">Maps</a>
         
           
           
@@ -2714,7 +2715,7 @@ XBRL Change
           
           
           
-          <a href="/tags/tidyverse/" style="font-size:1.74rem">tidyverse</a>
+          <a href="/tags/tidyverse/" style="font-size:1.7627403387250882rem">tidyverse</a>
         
       </div>
     

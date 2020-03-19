@@ -13,6 +13,22 @@
     </image>
     
     <item>
+      <title>gganimate</title>
+      <link>/tags/gganimate/</link>
+      <pubDate>Thu, 19 Mar 2020 00:00:00 +0000</pubDate>
+      <guid>/tags/gganimate/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Maps</title>
+      <link>/tags/maps/</link>
+      <pubDate>Thu, 19 Mar 2020 00:00:00 +0000</pubDate>
+      <guid>/tags/maps/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>R</title>
       <link>/tags/r/</link>
       <pubDate>Thu, 19 Mar 2020 00:00:00 +0000</pubDate>
@@ -25,6 +41,14 @@
       <link>/tags/tidytuesday/</link>
       <pubDate>Thu, 19 Mar 2020 00:00:00 +0000</pubDate>
       <guid>/tags/tidytuesday/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>tidyverse</title>
+      <link>/tags/tidyverse/</link>
+      <pubDate>Thu, 19 Mar 2020 00:00:00 +0000</pubDate>
+      <guid>/tags/tidyverse/</guid>
       <description></description>
     </item>
     
@@ -61,22 +85,6 @@
     </item>
     
     <item>
-      <title>Maps</title>
-      <link>/tags/maps/</link>
-      <pubDate>Tue, 18 Feb 2020 00:00:00 +0000</pubDate>
-      <guid>/tags/maps/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>tidyverse</title>
-      <link>/tags/tidyverse/</link>
-      <pubDate>Tue, 18 Feb 2020 00:00:00 +0000</pubDate>
-      <guid>/tags/tidyverse/</guid>
-      <description></description>
-    </item>
-    
-    <item>
       <title>blogdown</title>
       <link>/tags/blogdown/</link>
       <pubDate>Fri, 31 Jan 2020 00:00:00 +0000</pubDate>
@@ -97,14 +105,6 @@
       <link>/tags/r-markdown/</link>
       <pubDate>Tue, 17 Dec 2019 00:00:00 +0000</pubDate>
       <guid>/tags/r-markdown/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>gganimate</title>
-      <link>/tags/gganimate/</link>
-      <pubDate>Mon, 16 Dec 2019 00:00:00 +0000</pubDate>
-      <guid>/tags/gganimate/</guid>
       <description></description>
     </item>
     

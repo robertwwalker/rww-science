@@ -5,12 +5,82 @@
     <link>/categories/animation/</link>
       <atom:link href="/categories/animation/index.xml" rel="self" type="application/rss+xml" />
     <description>animation</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© 2018</copyright><lastBuildDate>Mon, 16 Dec 2019 00:00:00 +0000</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© 2018</copyright><lastBuildDate>Thu, 19 Mar 2020 00:00:00 +0000</lastBuildDate>
     <image>
       <url>/img/portrait.jpg</url>
       <title>animation</title>
       <link>/categories/animation/</link>
     </image>
+    
+    <item>
+      <title>Tracking COVID-19 2020-03-19</title>
+      <link>/2020/03/19/tracking-covid-19/</link>
+      <pubDate>Thu, 19 Mar 2020 00:00:00 +0000</pubDate>
+      <guid>/2020/03/19/tracking-covid-19/</guid>
+      <description>
+
+
+&lt;div id=&#34;r-to-import-covid-data&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;R to Import COVID Data&lt;/h1&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(tidyverse)
+library(gganimate)
+COVID.states &amp;lt;- read.csv(url(&amp;quot;http://covidtracking.com/api/states/daily.csv&amp;quot;))
+COVID.states &amp;lt;- COVID.states %&amp;gt;% mutate(Date = as.Date(as.character(date), format = &amp;quot;%Y%m%d&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;the-raw-testing-incidence&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;The Raw Testing Incidence&lt;/h2&gt;
+&lt;p&gt;I want to use patchwork to show the testing rate by state in the United States. Then I want to show where things currently stand. In both cases, a base-10 log is used on the number of tests.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(patchwork)
+p1 &amp;lt;- ggplot(COVID.states) +
+ aes(x = Date, y = total, colour = state) +
+ geom_line(alpha=0.4) +
+ scale_color_hue() + labs(y=&amp;quot;Total Tested&amp;quot;, colour=&amp;quot;&amp;quot;, title=&amp;quot;COVID Testing by State&amp;quot;, caption=&amp;quot;data from COVIDTRACKING.COM&amp;quot;)+ theme_minimal() + scale_y_log10() + theme(legend.text=element_text(size=rel(0.75)))
+p2 &amp;lt;- COVID.states %&amp;gt;% filter(Date==&amp;quot;2020-03-19&amp;quot;) %&amp;gt;% ggplot(., aes(x=reorder(state, total), y=total, fill=state)) + geom_col() + guides(fill=FALSE) + coord_flip() + labs(y=&amp;quot;Total Tested log(base 10)&amp;quot;, x=&amp;quot;&amp;quot;, caption=&amp;quot;data from COVIDTRACKING.COM&amp;quot;) + scale_y_log10() + theme(axis.text=element_text(size=rel(0.5)))
+p1 + p2&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-03-19-tracking-covid-19/index_files/figure-html/unnamed-chunk-2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;a-map&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;A Map&lt;/h2&gt;
+&lt;p&gt;Now let me map, for the United States, the total number of tests as of today.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(ggthemes)
+library(urbnmapr)
+State.Map &amp;lt;- get_urbn_map(&amp;quot;states&amp;quot;, sf=TRUE)
+Today &amp;lt;- COVID.states %&amp;gt;% filter(Date==&amp;quot;2020-03-19&amp;quot;)
+Plot.Me &amp;lt;- left_join(State.Map, Today, by = c(&amp;quot;state_abbv&amp;quot; = &amp;quot;state&amp;quot;))
+ggplot(Plot.Me) +
+    aes(fill = total) +
+    geom_sf(size = 0.5, color=&amp;quot;white&amp;quot;) +
+    scale_fill_viridis_c() +
+    theme_minimal() + labs(title=&amp;quot;COVID-19 Testing in the United States&amp;quot;, subtitle=&amp;quot;2020-03-19&amp;quot;, caption=&amp;quot;data from COVIDTRACKING.COM&amp;quot;, fill=&amp;quot;Total Tests&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-03-19-tracking-covid-19/index_files/figure-html/unnamed-chunk-3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;animate-the-map&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Animate the Map&lt;/h2&gt;
+&lt;p&gt;I will animate it with gganimate.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(gganimate)
+Plot.Me &amp;lt;- left_join(State.Map, COVID.states, by = c(&amp;quot;state_abbv&amp;quot; = &amp;quot;state&amp;quot;))
+anim1 &amp;lt;- ggplot(Plot.Me) +
+    aes(fill = total) +
+    geom_sf(size = 0.5, color=&amp;quot;white&amp;quot;) +
+    scale_fill_viridis_c() +
+    theme_minimal() + labs(title=&amp;quot;COVID-19 Testing in the United States&amp;quot;, subtitle=&amp;quot;{frame_time}&amp;quot;, caption=&amp;quot;data from COVIDTRACKING.COM&amp;quot;, fill=&amp;quot;Total Tests&amp;quot;) + transition_time(Date)
+animate(anim1, renderer=gifski_renderer(), end_pause = 20)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-03-19-tracking-covid-19/index_files/figure-html/unnamed-chunk-4-1.gif&#34; /&gt;&lt;!-- --&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;a-bit-more-detail&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;A bit more detail&lt;/h2&gt;
+&lt;p&gt;Total tests in black; positives in red and negatives in green.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggplot(COVID.states) +
+ aes(x = Date) +
+ geom_line(aes(y=total), color=&amp;quot;black&amp;quot;) +
+ geom_line(aes(y=positive), color=&amp;quot;red&amp;quot;) +
+ geom_line(aes(y=negative), color=&amp;quot;green&amp;quot;) +
+ theme_minimal() +
+ facet_wrap(vars(state), scales = &amp;quot;free_y&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-03-19-tracking-covid-19/index_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
     
     <item>
       <title>tidyTuesday Measles</title>
