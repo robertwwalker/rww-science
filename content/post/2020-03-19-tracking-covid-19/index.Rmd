@@ -151,7 +151,7 @@ Map.Me <- left_join(world, Totals, by=c("iso_a2" = "GeoId"))
 This obscures important spatial data about location by aggregating cases by countries.  That said, it gives a view of what is going on.
 
 ```{r}
-My.Map <- ggplot(Map.Me, aes(fill=Deaths.Total, geometry=geometry, text=name.y)) + geom_sf(size=0.1, color="white") + theme_map()
+My.Map <- ggplot(Map.Me, aes(fill=Deaths.Total, geometry=geometry, text=name.y)) + geom_sf(size=0.1, color="white") + scale_fill_viridis_c() + theme_map()
 plotly::ggplotly(My.Map)
 ```
 
