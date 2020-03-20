@@ -72,13 +72,14 @@ ggplot(Plot.Me) +
 I will animate it with gganimate.
 
 ```{r, cache=TRUE, eval=FALSE}
+library(gifski)
 library(gganimate)
 Plot.Me <- left_join(State.Map, COVID.states, by = c("state_abbv" = "state"))
 anim1 <- ggplot(Plot.Me, aes(fill = total, geometry=geometry)) +
     geom_sf(size = 0.5, color="white") +
     scale_fill_viridis_c() +
     theme_minimal() + labs(title="COVID-19 Testing in the United States", subtitle="{frame_time}", caption="data from COVIDTRACKING.COM", fill="Total Tests") + transition_time(Date)
-MyAnim <- animate(anim1, renderer=gifski_renderer(), end_pause = 20)
+MyAnim <- animate(anim1, renderer=gifski_renderer(), end_pause = 40)
 save_animation(MyAnim, file="/home/rob/Sandbox/awful/content/post/2020-03-19-tracking-covid-19/animate/covidmap.gif")
 ```
 ![](animate/covidmap.gif)

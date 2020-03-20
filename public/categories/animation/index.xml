@@ -59,13 +59,14 @@ ggplot(Plot.Me) +
 &lt;div id=&#34;animate-the-map&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Animate the Map&lt;/h2&gt;
 &lt;p&gt;I will animate it with gganimate.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(gganimate)
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(gifski)
+library(gganimate)
 Plot.Me &amp;lt;- left_join(State.Map, COVID.states, by = c(&amp;quot;state_abbv&amp;quot; = &amp;quot;state&amp;quot;))
 anim1 &amp;lt;- ggplot(Plot.Me, aes(fill = total, geometry=geometry)) +
     geom_sf(size = 0.5, color=&amp;quot;white&amp;quot;) +
     scale_fill_viridis_c() +
     theme_minimal() + labs(title=&amp;quot;COVID-19 Testing in the United States&amp;quot;, subtitle=&amp;quot;{frame_time}&amp;quot;, caption=&amp;quot;data from COVIDTRACKING.COM&amp;quot;, fill=&amp;quot;Total Tests&amp;quot;) + transition_time(Date)
-MyAnim &amp;lt;- animate(anim1, renderer=gifski_renderer(), end_pause = 20)
+MyAnim &amp;lt;- animate(anim1, renderer=gifski_renderer(), end_pause = 40)
 save_animation(MyAnim, file=&amp;quot;/home/rob/Sandbox/awful/content/post/2020-03-19-tracking-covid-19/animate/covidmap.gif&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;animate/covidmap.gif&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
