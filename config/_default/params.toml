@@ -109,7 +109,8 @@ contact_links = [
   {icon = "twitter", icon_pack = "fab", name = "DM Me", link = "https://twitter.com/PieRatio"},
   {icon = "skype", icon_pack = "fab", name = "Skype Me", link = "skype:beltedgalloways06?call"},
   {icon = "github", icon_pack = "fa", name = "GitHub", link = "https://github.com/robertwwalker/"},
-  {icon = "google-scholar", icon_pack = "ai", name = "Google Scholar", link = "https://scholar.google.com/citations?user=FU8pL7sAAAAJ&hl"}
+  {icon = "google-scholar", icon_pack = "ai", name = "Google Scholar", link = "https://scholar.google.com/citations?user=FU8pL7sAAAAJ&hl"},
+  {icon = "video", icon_pack = "fa", name = "Zoom", link = "https://zoom.us/j/5037992476"}
 # {icon = "telegram", icon_pack = "fab", name = "Telegram Me", link = "https://telegram.me/@Telegram"},
   ]
 
