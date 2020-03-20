@@ -23,6 +23,9 @@ image:
 projects: []
 ---
 
+<script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
+<script src="/rmarkdown-libs/pymjs/pym.v1.js"></script>
+<script src="/rmarkdown-libs/widgetframe-binding/widgetframe.js"></script>
 
 
 <div id="r-to-import-covid-data" class="section level1">
@@ -63,13 +66,13 @@ ggplot(Plot.Me) +
 <p>I will animate it with gganimate.</p>
 <pre class="r"><code>library(gganimate)
 Plot.Me &lt;- left_join(State.Map, COVID.states, by = c(&quot;state_abbv&quot; = &quot;state&quot;))
-anim1 &lt;- ggplot(Plot.Me) +
-    aes(fill = total) +
+anim1 &lt;- ggplot(Plot.Me, aes(fill = total, geometry=geometry)) +
     geom_sf(size = 0.5, color=&quot;white&quot;) +
     scale_fill_viridis_c() +
     theme_minimal() + labs(title=&quot;COVID-19 Testing in the United States&quot;, subtitle=&quot;{frame_time}&quot;, caption=&quot;data from COVIDTRACKING.COM&quot;, fill=&quot;Total Tests&quot;) + transition_time(Date)
-animate(anim1, renderer=gifski_renderer(), end_pause = 20)</code></pre>
-<p><img src="/post/2020-03-19-tracking-covid-19/index_files/figure-html/unnamed-chunk-4-1.gif" /><!-- --></p>
+MyAnim &lt;- animate(anim1, renderer=gifski_renderer(), end_pause = 20)
+save_animation(MyAnim, file=&quot;/home/rob/Sandbox/awful/content/post/2020-03-19-tracking-covid-19/animate/covidmap.gif&quot;)</code></pre>
+<p><img src="animate/covidmap.gif" /></p>
 </div>
 <div id="a-bit-more-detail" class="section level2">
 <h2>A bit more detail</h2>
@@ -82,5 +85,20 @@ animate(anim1, renderer=gifski_renderer(), end_pause = 20)</code></pre>
  theme_minimal() +
  facet_wrap(vars(state), scales = &quot;free_y&quot;)</code></pre>
 <p><img src="/post/2020-03-19-tracking-covid-19/index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+</div>
+<div id="a-plotly" class="section level2">
+<h2>A Plotly</h2>
+<p>Put the map into plotly with a tool tip that lists the various testing data.</p>
+<pre class="r"><code>Today &lt;- Today %&gt;% mutate(ttip = paste(&quot;Pos:&quot;, positive,&quot;&lt;br&gt; Neg:&quot;, negative,&quot;Total:&quot;, total))
+Plot.Me &lt;- left_join(State.Map, Today, by = c(&quot;state_abbv&quot; = &quot;state&quot;))
+pm &lt;- ggplot(Plot.Me, aes(fill = total, text=ttip)) +
+    geom_sf(size = 0.5, color=&quot;white&quot;) +
+    scale_fill_viridis_c() +
+    theme_minimal() + labs(title=&quot;COVID-19 Testing in the United States&quot;, subtitle=&quot;2020-03-19&quot;, caption=&quot;data from COVIDTRACKING.COM&quot;, fill=&quot;Total Tests&quot;)
+library(plotly)
+fw2 &lt;- ggplotly(pm, tooltip=&quot;text&quot;)
+widgetframe::frameWidget(fw2)</code></pre>
+<div id="htmlwidget-1" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/post/2020-03-19-tracking-covid-19/index_files/figure-html//widgets/widget_unnamed-chunk-6.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>

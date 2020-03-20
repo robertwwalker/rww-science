@@ -71,16 +71,17 @@ ggplot(Plot.Me) +
 
 I will animate it with gganimate.
 
-```{r}
+```{r, cache=TRUE, eval=FALSE}
 library(gganimate)
 Plot.Me <- left_join(State.Map, COVID.states, by = c("state_abbv" = "state"))
-anim1 <- ggplot(Plot.Me) +
-    aes(fill = total) +
+anim1 <- ggplot(Plot.Me, aes(fill = total, geometry=geometry)) +
     geom_sf(size = 0.5, color="white") +
     scale_fill_viridis_c() +
     theme_minimal() + labs(title="COVID-19 Testing in the United States", subtitle="{frame_time}", caption="data from COVIDTRACKING.COM", fill="Total Tests") + transition_time(Date)
-animate(anim1, renderer=gifski_renderer(), end_pause = 20)
+MyAnim <- animate(anim1, renderer=gifski_renderer(), end_pause = 20)
+save_animation(MyAnim, file="/home/rob/Sandbox/awful/content/post/2020-03-19-tracking-covid-19/animate/covidmap.gif")
 ```
+![](animate/covidmap.gif)
 
 ## A bit more detail
 
@@ -94,5 +95,21 @@ ggplot(COVID.states) +
  geom_line(aes(y=negative), color="green") +
  theme_minimal() +
  facet_wrap(vars(state), scales = "free_y")
+```
+
+## A Plotly
+
+Put the map into plotly with a tool tip that lists the various testing data.
+
+```{r}
+Today <- Today %>% mutate(ttip = paste("Pos:", positive,"<br> Neg:", negative,"Total:", total))
+Plot.Me <- left_join(State.Map, Today, by = c("state_abbv" = "state"))
+pm <- ggplot(Plot.Me, aes(fill = total, text=ttip)) +
+    geom_sf(size = 0.5, color="white") +
+    scale_fill_viridis_c() +
+    theme_minimal() + labs(title="COVID-19 Testing in the United States", subtitle="2020-03-19", caption="data from COVIDTRACKING.COM", fill="Total Tests")
+library(plotly)
+fw2 <- ggplotly(pm, tooltip="text")
+widgetframe::frameWidget(fw2)
 ```
 

@@ -1,5 +1,5 @@
 ---
-title: "A Look at VIX :2020-03-17 20:11:37"
+title: "A Look at VIX :2020-03-19"
 author: Robert W. Walker
 date: '2020-02-27'
 slug: a-look-at-vix
@@ -10,7 +10,7 @@ tags: []
 subtitle: ''
 summary: ''
 authors: []
-lastmod: "2020-03-17 20:11:37"
+lastmod: "2020-03-19 21:58:52"
 featured: no
 image:
   caption: ''
@@ -34,12 +34,12 @@ VIX$Dates &lt;- as.Date(VIX$Date,
   format = &quot;%m/%d/%Y&quot;)
 tail(VIX)</code></pre>
 <pre><code>##            Date VIX.Open VIX.High VIX.Low VIX.Close      Dates
-## 4074 03/10/2020    49.68    55.66   43.56     47.30 2020-03-10
-## 4075 03/11/2020    52.24    55.82   49.98     53.90 2020-03-11
 ## 4076 03/12/2020    61.46    76.83   59.91     75.47 2020-03-12
 ## 4077 03/13/2020    71.31    77.57   55.17     57.83 2020-03-13
 ## 4078 03/16/2020    57.83    83.56   57.83     82.69 2020-03-16
-## 4079 03/17/2020    82.69    84.83   70.37     75.91 2020-03-17</code></pre>
+## 4079 03/17/2020    82.69    84.83   70.37     75.91 2020-03-17
+## 4080 03/18/2020    69.37    85.47   69.37     76.45 2020-03-18
+## 4081 03/19/2020    80.62    84.26   68.57     72.00 2020-03-19</code></pre>
 <p>The data was straightforward to get a hold of. Now let me plot it. I want to do this with a candlestick plot – a way of displaying intra-day volatility. There’s so much data that the views aren’t great.</p>
 <pre class="r"><code>library(plotly)
 # create the candlestick plot

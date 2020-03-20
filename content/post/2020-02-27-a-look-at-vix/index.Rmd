@@ -1,5 +1,5 @@
 ---
-title: "A Look at VIX :`r Sys.time()`"
+title: "A Look at VIX :`r Sys.Date()`"
 author: Robert W. Walker
 date: '2020-02-27'
 slug: a-look-at-vix
