@@ -114,3 +114,44 @@ fw2 <- ggplotly(pm, tooltip="text")
 widgetframe::frameWidget(fw2)
 ```
 
+# World Data
+
+The [ECDC: European Center for Disease Prevention and Control](https://www.ecdc.europa.eu/en/publications-data/download-todays-data-geographic-distribution-covid-19-cases-worldwide) provides official global tracking data for COVID-19.  Their site even includes `R` code for downloading and importing the data.
+
+```{r}
+library(readxl); library(httr)
+url <- paste("https://www.ecdc.europa.eu/sites/default/files/documents/COVID-19-geographic-disbtribution-worldwide-",format(Sys.time(), "%Y-%m-%d"), ".xlsx", sep = "")
+#download the dataset from the website to a local temporary file
+GET(url, authenticate(":", ":", type="ntlm"), write_disk(tf <- tempfile(fileext = ".xlsx")))
+#read the Dataset sheet into “R”
+COVID.world <- read_excel(tf)
+str(COVID.world)
+```
+
+# Mapping Cases
+
+Start with a map from `rnaturalearth`.  I plot the map here.
+
+```{r}
+library(ggthemes)
+library(rnaturalearth)
+library(rnaturalearthdata)
+world <- ne_countries(scale = "medium", returnclass = "sf")
+ggplot(world) + geom_sf() + theme_map()
+```
+
+Next, join the data to the map.  
+
+```{r}
+Totals <- COVID.world %>% group_by(GeoId) %>% summarise(Deaths.Total = sum(Deaths), name=first(`Countries and territories`))
+Map.Me <- left_join(world, Totals, by=c("iso_a2" = "GeoId"))
+```
+
+
+This obscures important spatial data about location by aggregating cases by countries.  That said, it gives a view of what is going on.
+
+```{r}
+My.Map <- ggplot(Map.Me, aes(fill=Deaths.Total, geometry=geometry, text=name.y)) + geom_sf(size=0.1, color="white") + theme_map()
+plotly::ggplotly(My.Map)
+```
+
