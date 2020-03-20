@@ -70,6 +70,8 @@ diagram = true
 #   Anonymize IP in Google Analytics (if enabled)
 privacy_pack = true
 
+# plugins_css = ["codefolding.css"]
+
 # Enable visitors to edit pages?
 #   `repo` defines the repository URL. `editable` defines which page types can be edited.
 # edit_page = {repo_url = "https://github.com/gcushen/hugo-academic", content_dir = "", repo_branch = "master", editable = {docs = true, page = false, post = false}}

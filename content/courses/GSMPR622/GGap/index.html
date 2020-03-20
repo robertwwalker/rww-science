@@ -1,0 +1,166 @@
+---
+title: "Gender Gaps and Black Boxes"
+author: "Robert W. Walker"
+date: "3/11/2020"
+output: 
+   html_document:
+     self_conatined: true
+     code_folding: hide
+---
+
+
+
+<div id="variance-in-the-outcome-the-black-box" class="section level2">
+<h2>Variance in the Outcome: The Black Box</h2>
+<p>Regression models engage an exercise in variance accounting. How much of the outcome is explained by the inputs, individually (slope divided by standard error is t) and collectively (Average explained/Average unexplained with averaging over degrees of freedom is F). This, of course, assumes normal errors. This document provides a function for making use of the black box. Just as in common parlance, a black box is the unexplained. Let’s take an example.</p>
+<pre class="r"><code>options(scipen=10)
+OregonSalaries &lt;- structure(list(Obs = 1:32, Salary = c(41514.38701, 40964.06985, 
+39170.19178, 37936.57206, 33981.77752, 36077.27107, 39174.05733, 
+39037.372, 29131.74865, 36200.44592, 38561.3987, 33247.92306, 
+33609.4874, 33669.22275, 37805.83017, 35846.13454, 47342.65909, 
+46382.3851, 45812.91029, 46409.65664, 43796.05285, 43124.02135, 
+49443.81792, 44805.79217, 44440.32001, 46679.59218, 47337.09786, 
+47298.72531, 41461.0474, 43598.293, 43431.18499, 49266.41189), 
+    Gender = structure(c(1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 
+    1L, 1L, 1L, 1L, 1L, 1L, 1L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 
+    2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L), .Label = c(&quot;Female&quot;, &quot;Male&quot;
+    ), class = &quot;factor&quot;)), .Names = c(&quot;Obs&quot;, &quot;Salary&quot;, &quot;Gender&quot;
+), class = &quot;data.frame&quot;, row.names = c(NA, -32L))
+black.box.maker &lt;- function(mod1) {
+            d1 &lt;- dim(mod1$model)[[1]]
+            sumsq1 &lt;- var(mod1$model[,1], na.rm=TRUE)*(d1-1)
+            rt1 &lt;- sqrt(sumsq1)
+            sumsq2 &lt;- var(mod1$fitted.values, na.rm=TRUE)*(d1-1)
+            rsquare &lt;- round(sumsq2/sumsq1, digits=4)
+            rt2 &lt;- sqrt(sumsq2)
+            plot(x=NA, y=NA, xlim=c(0,rt1), ylim=c(0,rt1), main=paste(&quot;R-squared:&quot;,rsquare), xlab=&quot;&quot;, ylab=&quot;&quot;, bty=&quot;n&quot;, cex=0.5)
+            polygon(x=c(0,0,rt1,rt1), y=c(0,rt1,rt1,0), col=&quot;black&quot;)
+            polygon(x=c(0,0,rt2,rt2), y=c(0,rt2,rt2,0), col=&quot;green&quot;)
+            }</code></pre>
+<p>OregonSalaries contains 32 observations: 16 males and 16 females. The mean of all salaries is 41142.433; let me put that in a plot in blue. Represented in equation form, we have:</p>
+<p><span class="math display">\[ Salary_{i} = \alpha + \epsilon_{i}  \]</span></p>
+<p>I will use <span class="math inline">\(\alpha\)</span> in lieu of <span class="math inline">\(\mu\)</span> because this is the most common method for demarcating an intercept, a recurring concept for regression models, but the above says that the <span class="math inline">\(i^{th}\)</span> person’s salary is some average salary <span class="math inline">\(\alpha\)</span> [or perhaps <span class="math inline">\(\mu\)</span> to maintain conceptual continuity] (shown as a solid blue line) plus some idiosyncratic remainder or residual salary for individual <span class="math inline">\(i\)</span> denoted by <span class="math inline">\(\epsilon_{i}\)</span> (shown as a blue arrow). Everything here is measured in dollars.</p>
+<p><span class="math display">\[ Salary_{i}  = 41142.433 + \epsilon_{i}   \]</span></p>
+<pre class="r"><code>ORSalScale &lt;- scale(OregonSalaries$Salary, scale=FALSE)
+plot(y=OregonSalaries$Salary, x=c(1:32), ylab=&quot;Salary&quot;, col=as.factor(OregonSalaries$Gender), xlab=&quot;&quot;, pch=c(rep(&quot;F&quot;,16),rep(&quot;M&quot;,16)))
+abline(h=mean(OregonSalaries$Salary), col=&quot;blue&quot;)
+arrows(x0=c(1:32), x1=c(1:32), y1=OregonSalaries$Salary,y0=mean(OregonSalaries$Salary), col=&quot;blue&quot;, code=3, length=0.05)
+text(x=seq(1,16), y=rep(c(47000,48000,49000,50000),4), labels = paste(ceiling(ORSalScale[c(1:16)])), cex=0.7, col=&quot;blue&quot;)
+text(x=c(17:32), y=rep(c(30000,31000,32000,33000),4), labels = paste(ceiling(ORSalScale[c(17:32)])), cex=0.7, col=&quot;blue&quot;)</code></pre>
+<p><img src="/courses/GSMPR622/GGap/index_files/figure-html/PlotG-1.png" width="672" /></p>
+<p>The total sum of squares can be represented as the sum of all the squared distances to the blue line; each vertical distance is demarcated with an arrow below in blue. By definition, the vertical distances would/will sum to zero. <strong>This sum to zero constraint is what consumes a degree of freedom; it is why the standard deviation has N-1 degrees of freedom.</strong> The distance from the point to the line is also shown in blue; that is the observed residual salary. It shows how far that individual’s salary is from the overall average. The total sum of squares: the total area of the <code>black box</code> in the original metric (squared dollars) is: 892955385. The length of each side is the square root of that area, e.g. 892955384.31 in dollars.</p>
+<p>NB: If we recall that <code>scale</code> centers and scales data [z-score], we can see these calculations directly: The total sum of squares is:</p>
+<pre class="r"><code>sum(scale(OregonSalaries$Salary, scale = FALSE)^2)</code></pre>
+<pre><code>## [1] 892955384</code></pre>
+<p>and the length of each side is:</p>
+<pre class="r"><code>sqrt(sum(scale(OregonSalaries$Salary, scale = FALSE)^2))</code></pre>
+<pre><code>## [1] 29882.36</code></pre>
+</div>
+<div id="invoking-the-function" class="section level2">
+<h2>Invoking the Function</h2>
+<p>First, a regression. This is identical to a single sample t-test or radiant’s single mean.</p>
+<pre class="r"><code>mod1 &lt;- lm(Salary~1, data=OregonSalaries)
+summary(mod1)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = Salary ~ 1, data = OregonSalaries)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -12010.7  -3737.9    345.3   4812.8   8301.4 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  41142.4      948.8   43.36   &lt;2e-16 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 5367 on 31 degrees of freedom</code></pre>
+<p>The average is 41142.4 dollars with a standard error of the mean of 948.8 dollars. The <code>t value</code> shows that the estimated average (41142.4) is 43.36 standard errors of the mean from zero; the Pr(&gt;|t|) is the two-sided p-value. The standard deviation of all salaries (n-1=31) here is exactly the same as the residual standard error, 5367 dollars. There is a salary that is 12010.7 dollars smaller than the average and one that is 8301.4 dollars bigger than the average. The middle 50% of residual salaries are between 3737.9 dollars below and 4812.8 dollars above average.
+## A Graphic</p>
+<p>To represent the black box,let me draw it. The length of each side will be the square root of the black box; our total sum of squares is just under 900 million squared dollars so each side will be approximately 30000 dollars. The box appears below.</p>
+<pre class="r"><code>black.box.maker(mod1)</code></pre>
+<p><img src="/courses/GSMPR622/GGap/index_files/figure-html/BBBase-1.png" width="672" /></p>
+</div>
+<div id="a-regression-model" class="section level2">
+<h2>A Regression Model</h2>
+<p>I want to compare the constant mean for both groups that we labeled to be <span class="math inline">\(\alpha\)</span> with an alternative that includes some non-zero [probably positive given ubiquitous evidence of gender gaps in compensation] difference between the two averages – a difference in averages. First, a regression model. I will estimate the following regression:</p>
+<p><span class="math display">\[ Salary_{i} = \alpha + \beta_{1}*Gender_{i} + \epsilon_{i} \]</span></p>
+<p>This is related to what we had before; we had just implicitly assumed that the <span class="math inline">\(\beta_{1}\)</span> was zero. We want to measure that <span class="math inline">\(\beta\)</span>; in this case, the difference between Male and Female.</p>
+<p>What does the regression imply? That salary for each individual <span class="math inline">\(i\)</span> is a function of a constant and gender. Given the way that R works, <span class="math inline">\(\alpha\)</span> will represent the average for females and <span class="math inline">\(\beta\)</span> will represent the difference between male and female average salaries. The <span class="math inline">\(\epsilon\)</span> will capture the difference between the individual’s salary and the average of their group (the mean of males or females).</p>
+</div>
+<div id="a-new-residual-sum-of-squares" class="section level2">
+<h2>A New Residual Sum of Squares</h2>
+<p>The picture will now have a red line and a black line and the residual/leftover/unexplained salary is now the difference between the point and the respective vertical line (red arrows or black arrows). What is the relationship between the datum and the group mean? The answer is shown in black/red.</p>
+<pre class="r"><code>resids &lt;- residuals(lm(Salary~Gender, data=OregonSalaries))
+plot(y=OregonSalaries$Salary, x=c(1:32), ylab=&quot;Salary&quot;, col=as.factor(OregonSalaries$Gender), xlab=&quot;&quot;, pch=c(rep(&quot;F&quot;,16),rep(&quot;M&quot;,16)))
+abline(h=mean(OregonSalaries$Salary), col=&quot;blue&quot;)
+abline(h=mean(subset(OregonSalaries, Gender==&quot;Female&quot;)$Salary, na.rm=T), col=&quot;black&quot;)
+abline(h=mean(subset(OregonSalaries, Gender==&quot;Male&quot;)$Salary, na.rm=T), col=&quot;red&quot;)
+arrows(x0=c(1:32), x1=c(1:32), y1=OregonSalaries$Salary,y0=mean(OregonSalaries$Salary), col=&quot;blue&quot;, code=3, length=0.05)
+arrows(x0=c(1:16), x1=c(1:16), y1=OregonSalaries$Salary[c(1:16)],y0=mean(subset(OregonSalaries, Gender==&quot;Female&quot;)$Salary, na.rm=T), col=&quot;black&quot;, code=3, length=0.05)
+arrows(x0=c(17:32), x1=c(17:32), y1=OregonSalaries$Salary[c(17:32)],y0=mean(subset(OregonSalaries, Gender==&quot;Male&quot;)$Salary, na.rm=T), col=&quot;red&quot;, code=3, length=0.05)
+text(x=seq(1,16), y=rep(c(47000,48000,49000,50000),4), labels = paste(ceiling(ORSalScale[c(1:16)])), cex=0.7, col=&quot;blue&quot;)
+text(x=c(17:32), y=rep(c(30000,31000,32000,33000),4), labels = paste(ceiling(ORSalScale[c(17:32)])), cex=0.7, col=&quot;blue&quot;)
+text(x=seq(1,16), y=rep(c(42000,43000,44000,45000),4), labels = paste(ceiling(resids[c(1:16)])), cex=0.7, col=&quot;black&quot;)
+text(x=c(17:32), y=rep(c(36000,37000,38000,39000),4), labels = paste(ceiling(resids[c(17:32)])), cex=0.7, col=&quot;red&quot;)</code></pre>
+<p><img src="/courses/GSMPR622/GGap/index_files/figure-html/BasePlot-1.png" width="672" /></p>
+<p>The sum of the remaining squared vertical distances is 238621277 and is obtained by squaring each black/red number and summing them. The amount explained by gender [measured in squared dollars] is the difference between the sums of blue and black/red numbers, squared. It is important to notice that the highest paid females and the lowest paid males may have more residual salary given two averages but the different averages, overall, lead to far less residual salary than a single average for all salaries. Indeed, gender alone accounts for:</p>
+<pre class="r"><code>sum(scale(OregonSalaries$Salary, scale = FALSE)^2) - sum(lm(Salary~Gender, data=OregonSalaries)$residuals^2)</code></pre>
+<pre><code>## [1] 654334108</code></pre>
+<p>squared dollars. If we compare this to the total given above, we can calculate the amount <code>explained</code> or accounted for by knowing only the gender of the subject. This is known as <span class="math inline">\(r^{2}\)</span> or r-squared.</p>
+<pre class="r"><code>1 - sum(lm(Salary~Gender, data=OregonSalaries)$residuals^2)/sum(scale(OregonSalaries$Salary, scale = FALSE)^2)</code></pre>
+<pre><code>## [1] 0.7327736</code></pre>
+<p>Showing it graphically as squares.</p>
+<pre class="r"><code>mod2 &lt;- lm(Salary~Gender, data=OregonSalaries)
+black.box.maker(mod2)</code></pre>
+<p><img src="/courses/GSMPR622/GGap/index_files/figure-html/BBReg-1.png" width="672" /></p>
+<p>The details of the regression estimates and the analysis of variance – the sums of squares – completes the rendering.</p>
+<pre class="r"><code>summary(mod2)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = Salary ~ Gender, data = OregonSalaries)
+## 
+## Residuals:
+##     Min      1Q  Median      3Q     Max 
+## -7488.7 -2107.9   433.3  1743.9  4893.9 
+## 
+## Coefficients:
+##             Estimate Std. Error t value       Pr(&gt;|t|)    
+## (Intercept)  36620.5      705.1   51.94        &lt; 2e-16 ***
+## GenderMale    9043.9      997.1    9.07 0.000000000422 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 2820 on 30 degrees of freedom
+## Multiple R-squared:  0.7328, Adjusted R-squared:  0.7239 
+## F-statistic: 82.26 on 1 and 30 DF,  p-value: 0.0000000004223</code></pre>
+<p>The average salary for Female is 36620.5 with a standard error of 705.1 [both in dollars]. The t-statistic shows that the probability that average Female salary is zero is tiny [t-value is almost 52]. The difference between Female and Male average salaries is 9043.9 dollars with a standard error of 997.1 dollars. The t-value of 9.07 suggests that the likelihood of no difference in average salaries [between male and female] is 0.000000000422. Males are almost certainly larger. In the summary of residuals, the extremes of residual salary are -7488.7 dollars (below) their Gender average and 4893.9 dollars above their Gender average. The residual standard error – the average residual given two estimates – is 2820 dollars, much smaller than the 5367 dollars with a common salary. Two further important elements to be considered from a regression.</p>
+<pre class="r"><code>confint(mod2)</code></pre>
+<pre><code>##                 2.5 %   97.5 %
+## (Intercept) 35180.542 38060.44
+## GenderMale   7007.482 11080.28</code></pre>
+<pre class="r"><code>anova(mod1,mod2)</code></pre>
+<pre><code>## Analysis of Variance Table
+## 
+## Model 1: Salary ~ 1
+## Model 2: Salary ~ Gender
+##   Res.Df       RSS Df Sum of Sq      F          Pr(&gt;F)    
+## 1     31 892955384                                        
+## 2     30 238621277  1 654334108 82.264 0.0000000004223 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>First, what is the 95% confidence interval for female salaries? That is a confidence interval from a regression: 35180.542 to 38060.44 dollars. What is the difference between males and females? Males are 7007.482 to 11080.28 dollars higher with 95% confidence.</p>
+<p>The last result is an ANOVA – analysis of variance – table. The RSS is the residual sum of squares – my black box. Each number in that table is explained above. The amount explained by gender is the Sum of Sq [Sum of Squares for the one degree of freedom]; the second RSS is the sum of squared residual salaries when averages differ by gender – the part that remains in black even after knowning Gender.</p>
+</div>
+<div id="the-f-ratio" class="section level1">
+<h1>The F-Ratio</h1>
+<p>Under the null hypothesis that the predictor(s) explain no variation or that Gender is associated with no more than random variation can either use the t-statistic or F. The proper way is to say that mean salaries are independent of Gender and we can use sums of squares to examine this. Here is how. The average amount explained, per degree of freedom, is 654334108 squared dollars with one degree of freedom consumed. The average amount unexplained is 238621277 on 30 degrees of freedom [32 - 1 to start -1 for Gender] or 7954042.57. The ratio of average explained to average unexplained has an F distribution with two parameters, degrees of freedom 1 and 2. In this case, the F looks like:</p>
+<pre class="r"><code>library(tidyverse)
+my.df &lt;- data.frame(x=seq(0,30, by=0.01), y=pf(seq(0,30, by=0.01), 1, 30))
+ggplot(my.df, aes(x=x, y=y)) + geom_line() + labs(y=&quot;Pr(&lt;F)&quot;, x=&quot;F(1,30)&quot;) + geom_hline(yintercept=0.95, color=&quot;purple&quot;)</code></pre>
+<p><img src="/courses/GSMPR622/GGap/index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>As the purple line shows, 95% of these F should be less than 4.17 [the purple line]. Put in English, once the average explained squares [averaging by degrees of freedom] to unexplained squares [averaging by degrees of freedom] is bigger than 4.17, it is unlikely that such a large quantity of squares could occur by chance and we are left to conclude that the average depends on gender. In our case, the F is</p>
+<p><span class="math display">\[ \frac{654334108}{7954042.57} = 82.26\]</span>
+The F that we have, 82.26 is literally off the charts; it is near certain that average salary depends on gender.</p>
+</div>
