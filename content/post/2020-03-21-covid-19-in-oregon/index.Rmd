@@ -1,0 +1,147 @@
+---
+title: COVID-19 in Oregon
+author: Robert W. Walker
+date: '2020-03-21'
+slug: covid-19-in-oregon
+categories:
+  - R
+  - tidyverse
+tags:
+  - Maps
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2020-03-21T16:50:16-07:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning = FALSE)
+library(tidyverse)
+library(urbnmapr)
+```
+
+## Oregon COVID data
+
+The Oregon data are available from OHA but not in an easy form.  The URL that I found is up to date as of 3/21/2020, 8:00 a.m: [here](https://govstatus.egov.com/OR-OHA-COVID-19).  `datapasta` makes it easy to cut and paste them though I will figure out how to automate that shortly.
+
+```{r}
+Oregon.COVID <- data.frame(
+       stringsAsFactors = FALSE,
+                 County = c("Baker","Benton",
+                            "Clackamas","Clatsop","Columbia","Coos","Crook",
+                            "Curry","Deschutes","Douglas","Gilliam","Grant",
+                            "Harney","Hood River","Jackson","Jefferson",
+                            "Josephine","Klamath","Lake","Lane","Lincoln",
+                            "Linn","Malheur","Marion","Morrow","Multnomah",
+                            "Polk","Sherman","Tillamook","Umatilla","Union",
+                            "Wallowa","Wasco","Washington","Wheeler","Yamhill",
+                            "Total"),
+        Number.of.cases = c(0L,2L,11L,0L,0L,
+                            0L,0L,0L,9L,1L,0L,1L,0L,0L,2L,0L,1L,1L,
+                            0L,3L,0L,19L,0L,19L,0L,18L,1L,0L,0L,2L,
+                            1L,0L,0L,42L,0L,4L,137L),
+                 Deaths = c(0L,0L,0L,0L,0L,
+                            0L,0L,0L,0L,0L,0L,0L,0L,0L,0L,0L,0L,0L,
+                            0L,1L,0L,0L,0L,1L,0L,1L,0L,0L,0L,0L,0L,
+                            0L,0L,1L,0L,0L,4L),
+  Negative.test.results = c(1L,67L,256L,30L,
+                            32L,30L,5L,11L,66L,37L,1L,0L,1L,15L,124L,
+                            5L,20L,26L,0L,145L,19L,265L,13L,160L,4L,
+                            498L,33L,0L,8L,19L,11L,3L,8L,330L,1L,94L,
+                            2338L)
+)
+Oregon.COVID <- Oregon.COVID %>% mutate(PTT = paste("Cases:",Number.of.cases,"<br> Deaths:",Deaths,"<br>Negative Tests:",Negative.test.results, sep=""))
+Oregon.Total <- Oregon.COVID %>% filter(County=="Total")
+Oregon.COVID <- Oregon.COVID %>% filter(County!="Total")
+```
+
+## `urbnmapr`
+
+The Urban Institute has an excellent state and county mapping package.  I want to make use of the county-level data and plot the starter map.
+
+```
+devtools::install_github("UrbanInstitute/urbnmapr")
+```
+
+```{r}
+library(urbnmapr)
+Counties.SF <- get_urbn_map("counties", sf=TRUE)
+ggplot(Counties.SF) + geom_sf()
+```
+
+
+I want to use it to map Oregon counties.  First, I need to identify Oregon counties and the case for `Oregon`.  Filter those and plot them.
+
+```{r}
+library(janitor)
+Counties.SF %>% tabyl(state_name)
+Oregon.SF <- Counties.SF %>% filter(state_name=="Oregon")
+ggplot(Oregon.SF) + geom_sf()
+```
+
+Interesting that Oregon never actually looks the way it should because of projections.  Mercator is more common.
+
+```{r}
+library(ggthemes); library(ggrepel)
+Oregon.SF <- Oregon.SF %>% mutate(County = str_remove(county_name, " County"))
+ggplot(Oregon.SF, aes(geometry=geometry)) + geom_sf() + coord_sf(crs=3785, datum=NA) + geom_sf_text(aes(label = County)) + theme(text = element_text(size = 1))
+```
+
+```{r}
+ggplot(Oregon.SF, aes(geometry=geometry)) + 
+  geom_sf() + 
+  coord_sf(crs=3785, datum=NA) + 
+#  geom_sf_text(aes(label = County)) + 
+#  theme(text = element_text(size = 1))
+  ggrepel::geom_text_repel(aes(label = County), stat = "sf_coordinates",
+    min.segment.length = 0,
+    colour = "red",
+    segment.colour = "red",
+    size = 3,
+    box.padding = unit(0.05, "lines")) + theme_map()
+```
+
+
+To join the data together, we are going to need an appropriate merge column.  The named counties in Oregon from the map are:
+
+```{r}
+Oregon.SF %>% tabyl(county_name)
+```
+
+The data have named counties also, they look like this:
+
+```{r}
+Oregon.COVID %>% tabyl(County)
+```
+
+To match them up, I will add to the existing names in `Oregon.COVID` with the missing verbiage.  After reconciling the names, combine the data and the map using a `left_join` with the map as the base and attaching matching data so that all the counties that we wish to map are available even if some are missing data in the merge.
+
+# COVID-19 in Oregon
+
+```{r}
+Oregon.COVID <- Oregon.COVID %>% mutate(county_name = paste(County,"County", sep=" "))
+Map.Me <- left_join(Oregon.SF,Oregon.COVID, by="county_name")
+ggplot(Map.Me, aes(geometry=geometry, fill=Number.of.cases)) + geom_sf() + coord_sf(crs=3785, datum=NA) + scale_fill_viridis_c() + theme_minimal() + labs(title="COVID-19 in Oregon")
+```
+
+Or even better
+
+```{r}
+library(ggrepel)
+ggplot(Map.Me, aes(geometry=geometry, fill=Number.of.cases, label=County.x)) + 
+  geom_sf() +
+  coord_sf(crs=3785, datum=NA) + 
+  geom_label_repel(stat = "sf_coordinates",
+    min.segment.length = 0,
+    colour = "white",
+    segment.colour = "white",
+    size = 3,
+    box.padding = unit(0.05, "lines"))  + scale_fill_continuous_tableau("Red") + theme_minimal() + labs(title="COVID-19 in Oregon", x="", y="", caption="https://govstatus.egov.com/OR-OHA-COVID-19")
+```
+

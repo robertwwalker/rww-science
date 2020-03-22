@@ -239,7 +239,7 @@
   <meta property="og:description" content="Associate Professor of Quantitative Methods"><meta property="og:image" content="/img/portrait.jpg">
   <meta property="twitter:image" content="/img/portrait.jpg"><meta property="og:locale" content="en-us">
   
-    <meta property="og:updated_time" content="2020-03-19T00:00:00&#43;00:00">
+    <meta property="og:updated_time" content="2020-03-21T00:00:00&#43;00:00">
   
 
   
@@ -654,6 +654,19 @@
     
     
     <div>
+      <h2><a href="/2019/12/09/uscensus-mapping/" >US Census Mapping</a></h2>
+      <div class="article-style">
+        
+          Searching and Mapping the Census  Searching for the Asian Population via the Census To use tidycensus, there are limitations imposed by the available tables. There is ACS – a survey of about 3 million people – and the two main decennial census files [SF1] and [SF2]. I will search SF1 for the Asian population.
+library(tidycensus); library(kableExtra) library(tidyverse); library(stringr) v10 &lt;- load_variables(2010, &quot;sf1&quot;, cache = TRUE) v10 %&gt;% filter(str_detect(concept, &quot;ASIAN&quot;)) %&gt;% filter(str_detect(label, &quot;Female&quot;)) %&gt;% kable() %&gt;% scroll_box(width = &quot;100%&quot;)    name  label  concept      P012D026  Total!
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
       <h2><a href="/r/a-quick-and-dirty-introduction-to-r/" >A Quick and Dirty Introduction to R</a></h2>
       <div class="article-style">
         
@@ -765,18 +778,6 @@ Getting Some Data Following the guide to the package on GitHub, let me try their
         
           Archigos Is an amazing collaboration that produced a comprehensive dataset of world leaders going pretty far back; see Archigos on the web. For thinking about leadership, it is quite natural. In this post, I want to do some reshaping into country year and leader year datasets and explore the basic confines of Archigos. I also want to use gganimate for a few things. So what do we know?
 library(lubridate) library(tidyverse) library(ggthemes) library(stringr) library(gganimate) library(emoGG) library(emojifont) library(haven) Archigos &lt;- read_dta(url(&quot;http://www.
-        
-      </div>
-    </div>
-  
-    
-    
-    
-    <div>
-      <h2><a href="/2019/04/11/fredr-is-very-neat/" >fredr is very neat</a></h2>
-      <div class="article-style">
-        
-          FRED via fredr The Federal Reserve Economic Database [FRED] is a wonderful public resource for data and the r api that connects to it is very easy to use for the things that I have previously needed. For example, one of my students was interested in commercial credit default data. I used the FRED search instructions from the following vignette to find that data. My first step was the vignette for using fredr.
         
       </div>
     </div>

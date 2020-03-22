@@ -239,7 +239,7 @@
   <meta property="og:description" content="Associate Professor of Quantitative Methods"><meta property="og:image" content="/img/portrait.jpg">
   <meta property="twitter:image" content="/img/portrait.jpg"><meta property="og:locale" content="en-us">
   
-    <meta property="og:updated_time" content="2020-03-19T00:00:00&#43;00:00">
+    <meta property="og:updated_time" content="2020-03-21T00:00:00&#43;00:00">
   
 
   
@@ -654,6 +654,19 @@
     
     
     <div>
+      <h2><a href="/2020/03/21/covid-19-in-oregon/" >COVID-19 in Oregon</a></h2>
+      <div class="article-style">
+        
+          Oregon COVID data The Oregon data are available from OHA but not in an easy form. The URL that I found is up to date as of 3/21/2020, 8:00 a.m: here. datapasta makes it easy to cut and paste them though I will figure out how to automate that shortly.
+ urbnmapr The Urban Institute has an excellent state and county mapping package. I want to make use of the county-level data and plot the starter map.
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
       <h2><a href="/2020/03/19/tidytuesday-on-the-office/" >tidyTuesday on the Office</a></h2>
       <div class="article-style">
         
@@ -765,20 +778,6 @@ devtools::install_github(&quot;thebioengineer/tidytuesdayR&quot;) devtools::inst
         
           International Murders Are among the data for analysis in the tidyTuesday for December 10, 2019. These are made for a map.
 library(tidyverse) library(leaflet) library(stringr) library(sf) library(here) library(widgetframe) library(htmlwidgets) library(htmltools) options(digits = 3) set.seed(1234) theme_set(theme_minimal()) library(tidytuesdayR) tuesdata &lt;- tt_load(2019, week = 50) murders &lt;- tuesdata$gun_murders There isn’t much data so it should make this a bit easier. Now for some data. As it happens, the best way I currently know how to do this is going to involve acquiring a spatial frame.
-        
-      </div>
-    </div>
-  
-    
-    
-    
-    <div>
-      <h2><a href="/2019/12/09/philadelphia-parking-tickets-a-tidytuesday/" >Philadelphia Parking Tickets: a tidyTuesday</a></h2>
-      <div class="article-style">
-        
-          Philadelphia Map Use ggmap for the base layer.
-library(ggmap); library(osmdata); library(tidyverse) PHI &lt;- get_map(getbb(&quot;Philadelphia, PA&quot;), maptype = &quot;stamen&quot;, zoom=12)  Get the Tickets Data TidyTuesday covers 1.26 million parking tickets in Philadelphia.
-tickets &lt;- readr::read_csv(&quot;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-12-03/tickets.csv&quot;) ## Parsed with column specification: ## cols( ## violation_desc = col_character(), ## issue_datetime = col_datetime(format = &quot;&quot;), ## fine = col_double(), ## issuing_agency = col_character(), ## lat = col_double(), ## lon = col_double(), ## zip_code = col_double() ## )  Two Lines of Code Left library(lubridate); library(ggthemes) tickets &lt;- tickets %&gt;% mutate(Day = wday(issue_datetime, label=TRUE)) # use lubridate to extract the day of the month.
         
       </div>
     </div>

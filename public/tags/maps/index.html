@@ -239,7 +239,7 @@
   <meta property="og:description" content="Associate Professor of Quantitative Methods"><meta property="og:image" content="/img/portrait.jpg">
   <meta property="twitter:image" content="/img/portrait.jpg"><meta property="og:locale" content="en-us">
   
-    <meta property="og:updated_time" content="2020-03-19T00:00:00&#43;00:00">
+    <meta property="og:updated_time" content="2020-03-21T00:00:00&#43;00:00">
   
 
   
@@ -654,6 +654,19 @@
     
     
     <div>
+      <h2><a href="/2020/03/21/covid-19-in-oregon/" >COVID-19 in Oregon</a></h2>
+      <div class="article-style">
+        
+          Oregon COVID data The Oregon data are available from OHA but not in an easy form. The URL that I found is up to date as of 3/21/2020, 8:00 a.m: here. datapasta makes it easy to cut and paste them though I will figure out how to automate that shortly.
+ urbnmapr The Urban Institute has an excellent state and county mapping package. I want to make use of the county-level data and plot the starter map.
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
       <h2><a href="/2020/03/19/tracking-covid-19/" >Tracking COVID-19 2020-03-20</a></h2>
       <div class="article-style">
         
@@ -763,19 +776,6 @@ library(tidycensus); library(kableExtra) library(tidyverse); library(stringr) v1
         
           Some Data for the Map I want to get some data to place on the map. I found a website with population and population change data for Oregon in .csv format. I cannot direct download it from R, instead I have to button download it and import it.
 library(tidyverse) ## ── Attaching packages ────────────────────────── tidyverse 1.3.0 ── ## ✓ ggplot2 3.2.1 ✓ purrr 0.3.3 ## ✓ tibble 2.1.3 ✓ dplyr 0.
-        
-      </div>
-    </div>
-  
-    
-    
-    
-    <div>
-      <h2><a href="/2019/10/09/tidytuesday-does-pizza/" >tidyTuesday does Pizza</a></h2>
-      <div class="article-style">
-        
-          Pizza Ratings The #tidyTuesday for this week involves pizza shop ratings data. Let’s see what we have.
-pizza_jared &lt;- readr::read_csv(&quot;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-10-01/pizza_jared.csv&quot;) ## Parsed with column specification: ## cols( ## polla_qid = col_double(), ## answer = col_character(), ## votes = col_double(), ## pollq_id = col_double(), ## question = col_character(), ## place = col_character(), ## time = col_double(), ## total_votes = col_double(), ## percent = col_double() ## ) pizza_barstool &lt;- readr::read_csv(&quot;https://raw.
         
       </div>
     </div>

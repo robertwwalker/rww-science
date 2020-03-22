@@ -239,7 +239,7 @@
   <meta property="og:description" content="Associate Professor of Quantitative Methods"><meta property="og:image" content="/img/portrait.jpg">
   <meta property="twitter:image" content="/img/portrait.jpg"><meta property="og:locale" content="en-us">
   
-    <meta property="og:updated_time" content="2020-03-19T00:00:00&#43;00:00">
+    <meta property="og:updated_time" content="2020-03-21T00:00:00&#43;00:00">
   
 
   
@@ -654,6 +654,20 @@
     
     
     <div>
+      <h2><a href="/2019/12/09/philadelphia-parking-tickets-a-tidytuesday/" >Philadelphia Parking Tickets: a tidyTuesday</a></h2>
+      <div class="article-style">
+        
+          Philadelphia Map Use ggmap for the base layer.
+library(ggmap); library(osmdata); library(tidyverse) PHI &lt;- get_map(getbb(&quot;Philadelphia, PA&quot;), maptype = &quot;stamen&quot;, zoom=12)  Get the Tickets Data TidyTuesday covers 1.26 million parking tickets in Philadelphia.
+tickets &lt;- readr::read_csv(&quot;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-12-03/tickets.csv&quot;) ## Parsed with column specification: ## cols( ## violation_desc = col_character(), ## issue_datetime = col_datetime(format = &quot;&quot;), ## fine = col_double(), ## issuing_agency = col_character(), ## lat = col_double(), ## lon = col_double(), ## zip_code = col_double() ## )  Two Lines of Code Left library(lubridate); library(ggthemes) tickets &lt;- tickets %&gt;% mutate(Day = wday(issue_datetime, label=TRUE)) # use lubridate to extract the day of the month.
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
       <h2><a href="/2019/12/09/uscensus-mapping/" >US Census Mapping</a></h2>
       <div class="article-style">
         
@@ -763,18 +777,6 @@ Getting Some Data Following the guide to the package on GitHub, let me try their
         
           Archigos Is an amazing collaboration that produced a comprehensive dataset of world leaders going pretty far back; see Archigos on the web. For thinking about leadership, it is quite natural. In this post, I want to do some reshaping into country year and leader year datasets and explore the basic confines of Archigos. I also want to use gganimate for a few things. So what do we know?
 library(lubridate) library(tidyverse) library(ggthemes) library(stringr) library(gganimate) library(emoGG) library(emojifont) library(haven) Archigos &lt;- read_dta(url(&quot;http://www.
-        
-      </div>
-    </div>
-  
-    
-    
-    
-    <div>
-      <h2><a href="/2019/04/11/fredr-is-very-neat/" >fredr is very neat</a></h2>
-      <div class="article-style">
-        
-          FRED via fredr The Federal Reserve Economic Database [FRED] is a wonderful public resource for data and the r api that connects to it is very easy to use for the things that I have previously needed. For example, one of my students was interested in commercial credit default data. I used the FRED search instructions from the following vignette to find that data. My first step was the vignette for using fredr.
         
       </div>
     </div>

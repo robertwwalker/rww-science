@@ -239,7 +239,7 @@
   <meta property="og:description" content="Associate Professor of Quantitative Methods"><meta property="og:image" content="/img/portrait.jpg">
   <meta property="twitter:image" content="/img/portrait.jpg"><meta property="og:locale" content="en-us">
   
-    <meta property="og:updated_time" content="2020-03-19T00:00:00&#43;00:00">
+    <meta property="og:updated_time" content="2020-03-21T00:00:00&#43;00:00">
   
 
   
@@ -1159,7 +1159,7 @@
           Last updated on
       
     
-    Mar 20, 2020
+    Mar 21, 2020
   </span>
   
 
@@ -1168,7 +1168,7 @@
   
   <span class="middot-divider"></span>
   <span class="article-reading-time">
-    625 min read
+    4 min read
   </span>
   
 
@@ -1180,7 +1180,7 @@
   
   <span class="middot-divider"></span>
   <span class="article-categories">
-    <i class="fas fa-folder mr-1"></i><a href="/categories/tidyverse/">tidyverse</a>, <a href="/categories/r/">R</a>, <a href="/categories/animation/">animation</a></span>
+    <i class="fas fa-folder mr-1"></i><a href="/categories/r/">R</a>, <a href="/categories/tidyverse/">tidyverse</a></span>
   
 
 </div>
@@ -1192,12 +1192,13 @@
   
 
   <h3 class="article-title mb-1 mt-3">
-    <a href="/2020/03/19/tracking-covid-19/">Tracking COVID-19 2020-03-20</a>
+    <a href="/2020/03/21/covid-19-in-oregon/">COVID-19 in Oregon</a>
   </h3>
 
   
   <div class="article-style">
-    <p>R to Import COVID Data library(tidyverse) library(gganimate) COVID.states &lt;- read.csv(url(&quot;http://covidtracking.com/api/states/daily.csv&quot;)) COVID.states &lt;- COVID.states %&gt;% mutate(Date = as.Date(as.character(date), format = &quot;%Y%m%d&quot;)) The Raw Testing Incidence I want to use patchwork to show the testing rate by state in the United States. Then I want to show where things currently stand. In both cases, a base-10 log is used on the number of tests.</p>
+    <p>Oregon COVID data The Oregon data are available from OHA but not in an easy form. The URL that I found is up to date as of 3/21/2020, 8:00 a.m: here. datapasta makes it easy to cut and paste them though I will figure out how to automate that shortly.
+ urbnmapr The Urban Institute has an excellent state and county mapping package. I want to make use of the county-level data and plot the starter map.</p>
   </div>
   
 
@@ -1281,6 +1282,87 @@
     <p>The Office library(tidyverse) office_ratings &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-03-17/office_ratings.csv&#39;)  A First Plot The number of episodes for the Office by season.
 library(janitor) TableS &lt;- office_ratings %&gt;% tabyl(season) p1 &lt;- TableS %&gt;% ggplot(., aes(x=as.factor(season), y=n, fill=as.factor(season))) + geom_col() + labs(x=&quot;Season&quot;, y=&quot;Episodes&quot;, title=&quot;The Office: Episodes&quot;) + guides(fill=FALSE) p1  Ratings How are the various seasons and episodes rated?
 p2 &lt;- office_ratings %&gt;% ggplot(., aes(x=as.factor(season), y=imdb_rating, fill=as.factor(season), color=as.factor(season))) + geom_violin(alpha=0.3) + guides(fill=FALSE, color=FALSE) + labs(x=&quot;Season&quot;, y=&quot;IMDB Rating&quot;) + geom_point() p2  Patchwork Using patchwork, we can combine multiple plots.</p>
+  </div>
+  
+
+  
+
+</div>
+
+      
+    
+      
+        
+
+
+
+
+
+
+
+
+
+  
+
+
+<div class="card-simple">
+
+  
+    
+
+
+<div class="article-metadata">
+
+  
+  
+
+  
+  <span class="article-date">
+    
+    
+      
+          Last updated on
+      
+    
+    Mar 20, 2020
+  </span>
+  
+
+  
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    625 min read
+  </span>
+  
+
+  
+  
+  
+
+  
+  
+  <span class="middot-divider"></span>
+  <span class="article-categories">
+    <i class="fas fa-folder mr-1"></i><a href="/categories/tidyverse/">tidyverse</a>, <a href="/categories/r/">R</a>, <a href="/categories/animation/">animation</a></span>
+  
+
+</div>
+
+  
+
+  
+  
+  
+
+  <h3 class="article-title mb-1 mt-3">
+    <a href="/2020/03/19/tracking-covid-19/">Tracking COVID-19 2020-03-20</a>
+  </h3>
+
+  
+  <div class="article-style">
+    <p>R to Import COVID Data library(tidyverse) library(gganimate) COVID.states &lt;- read.csv(url(&quot;http://covidtracking.com/api/states/daily.csv&quot;)) COVID.states &lt;- COVID.states %&gt;% mutate(Date = as.Date(as.character(date), format = &quot;%Y%m%d&quot;)) The Raw Testing Incidence I want to use patchwork to show the testing rate by state in the United States. Then I want to show where things currently stand. In both cases, a base-10 log is used on the number of tests.</p>
   </div>
   
 
@@ -1445,89 +1527,6 @@ library(tidyverse) VIX &lt;- read.csv(url(&quot;http://www.cboe.com/publish/sche
   
   <div class="article-style">
     <p>Some Data from FREDr Downloading the FRED data on national debt as a percentage of GDP. I first want to examine the US data and will then turn to some comparisons. fredr makes it markable asy to do! I will use two core tools from fredr. First, fredr_series_search allows one to enter search text and retrieve the responsive series given that search text. They can be sorted in particular ways, two such options are shown below.</p>
-  </div>
-  
-
-  
-
-</div>
-
-      
-    
-      
-        
-
-
-
-
-
-
-
-
-
-  
-
-
-<div class="card-simple">
-
-  
-    
-
-
-<div class="article-metadata">
-
-  
-  
-
-  
-  <span class="article-date">
-    
-    
-      
-          Last updated on
-      
-    
-    Feb 24, 2020
-  </span>
-  
-
-  
-
-  
-  <span class="middot-divider"></span>
-  <span class="article-reading-time">
-    1 min read
-  </span>
-  
-
-  
-  
-  
-
-  
-  
-  <span class="middot-divider"></span>
-  <span class="article-categories">
-    <i class="fas fa-folder mr-1"></i><a href="/categories/r/">R</a>, <a href="/categories/reticulate/">reticulate</a>, <a href="/categories/python/">python</a></span>
-  
-
-</div>
-
-  
-
-  
-  
-  
-
-  <h3 class="article-title mb-1 mt-3">
-    <a href="/2020/02/19/trying-to-figure-out-the-new-xbrl/">Trying to Figure Out the New XBRL</a>
-  </h3>
-
-  
-  <div class="article-style">
-    <p>XBRL Changed XBRL has undergone and is undergoing some changes. Some filers have already needed to change their filings and others will have to soon. Here is the excerpt.
-XBRL Change
- This has broken many of the existing parsers for new filings. It is time to find a way around this. I have seen links for scraping them from Yahoo! Finance but that is not really what I want.</p>
   </div>
   
 
@@ -2659,7 +2658,7 @@ XBRL Change
           
           
           
-          <a href="/tags/maps/" style="font-size:1.6320902501875005rem">Maps</a>
+          <a href="/tags/maps/" style="font-size:1.6621143267166838rem">Maps</a>
         
           
           

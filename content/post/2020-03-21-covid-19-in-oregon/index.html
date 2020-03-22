@@ -1,0 +1,174 @@
+---
+title: COVID-19 in Oregon
+author: Robert W. Walker
+date: '2020-03-21'
+slug: covid-19-in-oregon
+categories:
+  - R
+  - tidyverse
+tags:
+  - Maps
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2020-03-21T16:50:16-07:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+
+
+<div id="oregon-covid-data" class="section level2">
+<h2>Oregon COVID data</h2>
+<p>The Oregon data are available from OHA but not in an easy form. The URL that I found is up to date as of 3/21/2020, 8:00 a.m: <a href="https://govstatus.egov.com/OR-OHA-COVID-19">here</a>. <code>datapasta</code> makes it easy to cut and paste them though I will figure out how to automate that shortly.</p>
+</div>
+<div id="urbnmapr" class="section level2">
+<h2><code>urbnmapr</code></h2>
+<p>The Urban Institute has an excellent state and county mapping package. I want to make use of the county-level data and plot the starter map.</p>
+<pre><code>devtools::install_github(&quot;UrbanInstitute/urbnmapr&quot;)</code></pre>
+<p><img src="/post/2020-03-21-covid-19-in-oregon/index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p>I want to use it to map Oregon counties. First, I need to identify Oregon counties and the case for <code>Oregon</code>. Filter those and plot them.</p>
+<pre><code>##    state_namegeometry   n      percent
+##               Alabama  67 0.0213239975
+##                Alaska  29 0.0092297899
+##               Arizona  15 0.0047740293
+##              Arkansas  75 0.0238701464
+##            California  58 0.0184595799
+##              Colorado  64 0.0203691916
+##           Connecticut   8 0.0025461489
+##              Delaware   3 0.0009548059
+##  District of Columbia   1 0.0003182686
+##               Florida  67 0.0213239975
+##               Georgia 159 0.0506047104
+##                Hawaii   5 0.0015913431
+##                 Idaho  44 0.0140038192
+##              Illinois 102 0.0324633991
+##               Indiana  92 0.0292807129
+##                  Iowa  99 0.0315085933
+##                Kansas 105 0.0334182050
+##              Kentucky 120 0.0381922342
+##             Louisiana  64 0.0203691916
+##                 Maine  16 0.0050922979
+##              Maryland  24 0.0076384468
+##         Massachusetts  14 0.0044557607
+##              Michigan  83 0.0264162954
+##             Minnesota  87 0.0276893698
+##           Mississippi  82 0.0260980267
+##              Missouri 115 0.0366008912
+##               Montana  56 0.0178230426
+##              Nebraska  93 0.0295989815
+##                Nevada  17 0.0054105665
+##         New Hampshire  10 0.0031826862
+##            New Jersey  21 0.0066836410
+##            New Mexico  33 0.0105028644
+##              New York  62 0.0197326544
+##        North Carolina 100 0.0318268619
+##          North Dakota  53 0.0168682368
+##                  Ohio  88 0.0280076384
+##              Oklahoma  77 0.0245066836
+##                Oregon  36 0.0114576703
+##          Pennsylvania  67 0.0213239975
+##          Rhode Island   5 0.0015913431
+##        South Carolina  46 0.0146403565
+##          South Dakota  66 0.0210057288
+##             Tennessee  95 0.0302355188
+##                 Texas 254 0.0808402292
+##                  Utah  29 0.0092297899
+##               Vermont  14 0.0044557607
+##              Virginia 133 0.0423297263
+##            Washington  39 0.0124124761
+##         West Virginia  55 0.0175047740
+##             Wisconsin  72 0.0229153405
+##               Wyoming  23 0.0073201782</code></pre>
+<p><img src="/post/2020-03-21-covid-19-in-oregon/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>Interesting that Oregon never actually looks the way it should because of projections. Mercator is more common.</p>
+<p><img src="/post/2020-03-21-covid-19-in-oregon/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="/post/2020-03-21-covid-19-in-oregon/index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>To join the data together, we are going to need an appropriate merge column. The named counties in Oregon from the map are:</p>
+<pre><code>##  county_namegeometry n    percent
+##         Baker County 1 0.02777778
+##        Benton County 1 0.02777778
+##     Clackamas County 1 0.02777778
+##       Clatsop County 1 0.02777778
+##      Columbia County 1 0.02777778
+##          Coos County 1 0.02777778
+##         Crook County 1 0.02777778
+##         Curry County 1 0.02777778
+##     Deschutes County 1 0.02777778
+##       Douglas County 1 0.02777778
+##       Gilliam County 1 0.02777778
+##         Grant County 1 0.02777778
+##        Harney County 1 0.02777778
+##    Hood River County 1 0.02777778
+##       Jackson County 1 0.02777778
+##     Jefferson County 1 0.02777778
+##     Josephine County 1 0.02777778
+##       Klamath County 1 0.02777778
+##          Lake County 1 0.02777778
+##          Lane County 1 0.02777778
+##       Lincoln County 1 0.02777778
+##          Linn County 1 0.02777778
+##       Malheur County 1 0.02777778
+##        Marion County 1 0.02777778
+##        Morrow County 1 0.02777778
+##     Multnomah County 1 0.02777778
+##          Polk County 1 0.02777778
+##       Sherman County 1 0.02777778
+##     Tillamook County 1 0.02777778
+##      Umatilla County 1 0.02777778
+##         Union County 1 0.02777778
+##       Wallowa County 1 0.02777778
+##         Wasco County 1 0.02777778
+##    Washington County 1 0.02777778
+##       Wheeler County 1 0.02777778
+##       Yamhill County 1 0.02777778</code></pre>
+<p>The data have named counties also, they look like this:</p>
+<pre><code>##      County n    percent
+##       Baker 1 0.02777778
+##      Benton 1 0.02777778
+##   Clackamas 1 0.02777778
+##     Clatsop 1 0.02777778
+##    Columbia 1 0.02777778
+##        Coos 1 0.02777778
+##       Crook 1 0.02777778
+##       Curry 1 0.02777778
+##   Deschutes 1 0.02777778
+##     Douglas 1 0.02777778
+##     Gilliam 1 0.02777778
+##       Grant 1 0.02777778
+##      Harney 1 0.02777778
+##  Hood River 1 0.02777778
+##     Jackson 1 0.02777778
+##   Jefferson 1 0.02777778
+##   Josephine 1 0.02777778
+##     Klamath 1 0.02777778
+##        Lake 1 0.02777778
+##        Lane 1 0.02777778
+##     Lincoln 1 0.02777778
+##        Linn 1 0.02777778
+##     Malheur 1 0.02777778
+##      Marion 1 0.02777778
+##      Morrow 1 0.02777778
+##   Multnomah 1 0.02777778
+##        Polk 1 0.02777778
+##     Sherman 1 0.02777778
+##   Tillamook 1 0.02777778
+##    Umatilla 1 0.02777778
+##       Union 1 0.02777778
+##     Wallowa 1 0.02777778
+##       Wasco 1 0.02777778
+##  Washington 1 0.02777778
+##     Wheeler 1 0.02777778
+##     Yamhill 1 0.02777778</code></pre>
+<p>To match them up, I will add to the existing names in <code>Oregon.COVID</code> with the missing verbiage. After reconciling the names, combine the data and the map using a <code>left_join</code> with the map as the base and attaching matching data so that all the counties that we wish to map are available even if some are missing data in the merge.</p>
+</div>
+<div id="covid-19-in-oregon" class="section level1">
+<h1>COVID-19 in Oregon</h1>
+<p><img src="/post/2020-03-21-covid-19-in-oregon/index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>Or even better</p>
+<p><img src="/post/2020-03-21-covid-19-in-oregon/index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+</div>
