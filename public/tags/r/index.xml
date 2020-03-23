@@ -24,7 +24,6 @@
 &lt;h2&gt;Oregon COVID data&lt;/h2&gt;
 &lt;p&gt;I now have a few days of data. The scraping script appears at the bottom of the post; I am only using the county level data. These data are current as of March 22, 2020.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;load(url(&amp;quot;https://github.com/robertwwalker/rww-science/raw/master/content/post/2020-03-22-covid-19-county-maps-for-oregon/OregonCOVID2020-03-22.RData&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;load(&amp;quot;OregonCOVID2020-03-22.RData&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 &lt;div id=&#34;a-base-map&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;A base map&lt;/h2&gt;
@@ -49,7 +48,7 @@ Anim1 &amp;lt;- Map.Me %&amp;gt;%
     size = 3,
     box.padding = unit(0.05, &amp;quot;lines&amp;quot;))  + scale_fill_continuous_tableau(&amp;quot;Red&amp;quot;) + theme_minimal() + labs(title=&amp;quot;COVID-19 in Oregon&amp;quot;, subtitle=&amp;quot;{frame_time}&amp;quot;, x=&amp;quot;&amp;quot;, y=&amp;quot;&amp;quot;, caption=&amp;quot;Made with R, ggplot2, and ggrepel by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19&amp;quot;) + transition_time(date)
 animate(Anim1, end_pause=100, nframes=200)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-4-1.gif&#34; /&gt;&lt;!-- --&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-3-1.gif&#34; /&gt;&lt;!-- --&gt;&lt;/p&gt;
 &lt;div id=&#34;a-mapping-function&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;A Mapping Function&lt;/h2&gt;
 &lt;p&gt;To save time later, I turned the plots into a function so that I can use to reproduce each frame. Two inputs to the function, the dataset that is always the merged data from above and the date that I want to plot located in &lt;code&gt;date1&lt;/code&gt; in a &lt;code&gt;YYYY-MM-DD&lt;/code&gt; format.&lt;/p&gt;
@@ -70,27 +69,27 @@ data %&amp;gt;% filter(date==date1) %&amp;gt;%
 &lt;h2&gt;The Result for 03/18/2020&lt;/h2&gt;
 &lt;p&gt;This is the first date for which I can find data. The &lt;code&gt;waybackmachine&lt;/code&gt; was crucial.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Plot.COVID(&amp;quot;2020-03-18&amp;quot;, Map.Me)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;the-result-for-03192020&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;The Result for 03/19/2020&lt;/h2&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Plot.COVID(&amp;quot;2020-03-19&amp;quot;, Map.Me)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;the-result-for-03202020&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;The Result for 03/20/2020&lt;/h2&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Plot.COVID(&amp;quot;2020-03-20&amp;quot;, Map.Me)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-8-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;the-result-for-03212020&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;The Result for 03/21/2020&lt;/h2&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Plot.COVID(&amp;quot;2020-03-21&amp;quot;, Map.Me)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-8-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;the-result-for-03222020&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;The Result for 03/22/2020&lt;/h2&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Plot.COVID(&amp;quot;2020-03-22&amp;quot;, Map.Me)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-10-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;the-new-section&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;The New Section&lt;/h2&gt;
