@@ -28,10 +28,10 @@ library(tidyverse)
 
 ## Oregon COVID data
 
-I now have a few days of data.  The scraping script appears at the bottom of the post; I am only using the county level data.  These data are current as of March 22, 2020.
+I now have a few days of data.  The scraping script appears at the bottom of the post; I am only using the county level data.  These data are current as of March 23, 2020.
 
 ```{r}
-load(url("https://github.com/robertwwalker/rww-science/raw/master/content/post/2020-03-22-covid-19-county-maps-for-oregon/OregonCOVID2020-03-22.RData"))
+load("~/Sandbox/awful/content/post/2020-03-22-covid-19-county-maps-for-oregon/OregonCOVID2020-03-23.RData")
 ```
 
 ## A base map
@@ -47,6 +47,8 @@ Map.Me <- left_join(Oregon.SF,Oregon.COVID, by="County")
 ```
 
 # The Whole Thing: An Animation
+
+I will use a ggplot to build Oregon's map and fill it with case numbers.  I have to project the map off of the natural angle in the basic data, repel the labels to prevent print overlap, and scheme the colors.  The last step is to animate it by time.
 
 ```{r}
 library(ggrepel); library(ggthemes); library(gganimate)
@@ -119,6 +121,13 @@ Plot.COVID("2020-03-22", Map.Me)
 ```
 
 
+## The Result for 03/22/2020
+
+```{r}
+Plot.COVID("2020-03-23", Map.Me)
+```
+
+
 ## The New Section
 
 ### A Scraper
@@ -160,7 +169,11 @@ COVID.Age <- webpage %>%
         html_nodes("table") %>%
         .[3] %>%
         html_table(fill = TRUE) %>% data.frame() %>% mutate(date=as.Date(date))
-return(list(Header=COVID.Head, Counties = COVID.County, Ages = COVID.Age))
+COVID.Hospitalized <- webpage %>%
+        html_nodes("table") %>%
+        .[4] %>%
+        html_table(fill = TRUE) %>% data.frame() %>% mutate(date=as.Date(date))
+return(list(Header=COVID.Head, Counties = COVID.County, Ages = COVID.Age, Hospitalized = COVID.Hospitalized))
 }
 # March 18 Update
 Mar18 <- OHA.Corona(website="https://web.archive.org/web/20200319144434/https://govstatus.egov.com/OR-OHA-COVID-19", date="2020-03-18")
@@ -168,6 +181,8 @@ Mar18 <- OHA.Corona(website="https://web.archive.org/web/20200319144434/https://
 Mar19 <- OHA.Corona(website="https://web.archive.org/web/20200320152224/https://govstatus.egov.com/OR-OHA-COVID-19", date="2020-03-19")
 # March 20 Update
 Mar20 <- OHA.Corona(website="https://web.archive.org/web/20200320202955/https://govstatus.egov.com/OR-OHA-COVID-19", date="2020-03-20")
+# March 23 Update
+Mar23 <- OHA.Corona(website="https://govstatus.egov.com/OR-OHA-COVID-19", date="2020-03-23")
 ```
 
 ### Put it all together

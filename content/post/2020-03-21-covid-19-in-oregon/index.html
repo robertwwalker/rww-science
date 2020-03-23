@@ -27,7 +27,7 @@ projects: []
 
 <div id="oregon-covid-data" class="section level2">
 <h2>Oregon COVID data</h2>
-<p>The Oregon data are available from OHA but not in an easy form. The URL that I found is up to date as of 3/21/2020, 8:00 a.m: <a href="https://govstatus.egov.com/OR-OHA-COVID-19">here</a>. <code>datapasta</code> makes it easy to cut and paste them though I will figure out how to automate that shortly. I have to do this by hand until I spend time figuring out how to scrape it.</p>
+<p>The Oregon data are available from OHA <a href="https://govstatus.egov.com/OR-OHA-COVID-19">here</a>. I cut and pasted the first two days because it was easy with <code>datapasta</code>. As it goes one, it was easier to write a script.</p>
 </div>
 <div id="urbnmapr" class="section level2">
 <h2><code>urbnmapr</code></h2>
@@ -104,30 +104,37 @@ ggplot(Map.Me, aes(geometry=geometry, fill=Number.of.cases, label=County.x)) +
     size = 3,
     box.padding = unit(0.05, &quot;lines&quot;))  + scale_fill_continuous_tableau(&quot;Red&quot;) + theme_minimal() + labs(title=&quot;COVID-19 in Oregon&quot;, x=&quot;&quot;, y=&quot;&quot;, caption=&quot;Made with R, ggplot2, and ggrepel by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19&quot;)</code></pre>
 <p><img src="/post/2020-03-21-covid-19-in-oregon/index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
-<div id="a-plotly" class="section level3">
-<h3>A Plotly</h3>
-<p>This doesn’t want to work. I think it is the interaction of the base map and ggplotly.</p>
-<pre class="r"><code>library(plotly)
-fig1 &lt;- ggplot(Map.Me, aes(geometry=geometry, fill=Number.of.cases)) + geom_sf() + coord_sf(crs=3785, datum=NA) + scale_fill_viridis_c() + theme_minimal() + labs(title=&quot;COVID-19 in Oregon&quot;)
-ggplotly(fig1)</code></pre>
-<p>Now let me try something else.</p>
+<div id="a-leaflet" class="section level3">
+<h3>A Leaflet</h3>
 <pre class="r"><code>library(widgetframe); library(leaflet); library(here); library(htmlwidgets); library(htmltools)
 m &lt;- leaflet() %&gt;% addProviderTiles(&quot;OpenStreetMap.Mapnik&quot;) %&gt;% setView(lat=43.8041, lng=-120.5542, zoom=6) %&gt;% addTiles()
 frameWidget(m)</code></pre>
-<p>So I have a base leaflet to work with.</p>
+<p>So I have a base leaflet to work with. There are issues with showing multiple framewidgets so I will skip displaying the basic map of Oregon.</p>
 </div>
 <div id="final-leaflet" class="section level2">
 <h2>Final Leaflet</h2>
+<p>Merge the relevant data together after using TIGER to grab the spatial definitions.</p>
 <pre class="r"><code>library(widgetframe); library(leaflet); library(here); library(htmlwidgets)
 library(tigris); library(rgdal); library(htmltools); library(viridis)
 counties.t &lt;- counties(state = &quot;41&quot;, resolution = &quot;500k&quot;)
 OC22 &lt;- Oregon.COVID %&gt;% filter(date==&quot;2020-03-22&quot;)
 Map.L &lt;- merge(counties.t, OC22, by.x=&quot;NAME&quot;, by.y= &quot;County&quot;)</code></pre>
-<p>The final plot.</p>
+<p>Build the final plot. The first line creates a palette. Then I build the leaflet</p>
 <pre class="r"><code>mypal &lt;- colorNumeric(palette = &quot;viridis&quot;, domain = Map.L$Number.of.cases, na.color = &quot;grey&quot;)
-m2 &lt;- leaflet() %&gt;% addProviderTiles(&quot;OpenStreetMap.Mapnik&quot;) %&gt;% setView(lat=43.8041, lng=-120.5542, zoom=6) %&gt;% addTiles()  %&gt;% addPolygons(data=Map.L, color = &quot;white&quot;, fillOpacity = 0.3, fillColor = mypal(Map.L$Number.of.cases), weight=0.5, highlightOptions = highlightOptions(color = &quot;white&quot;, weight = 2, bringToFront = TRUE), label = lapply(Map.L$PTT, htmltools::HTML)) %&gt;% addLegend(&quot;bottomleft&quot;, pal = mypal, values = Map.L$Number.of.cases, title = &quot;Coronavirus Cases in Oregon&quot;, opacity = 0.3)
+m2 &lt;- leaflet() %&gt;% 
+  addProviderTiles(&quot;OpenStreetMap.Mapnik&quot;) %&gt;% 
+  setView(lat=43.8041, lng=-120.5542, zoom=6) %&gt;% 
+  addTiles()  %&gt;% 
+  addPolygons(data=Map.L, 
+              color = &quot;white&quot;, 
+              fillOpacity = 0.3, 
+              fillColor = mypal(Map.L$Number.of.cases), 
+              weight=0.5, 
+              highlightOptions = highlightOptions(color = &quot;white&quot;, weight = 2, bringToFront = TRUE), 
+              label = lapply(Map.L$PTT, htmltools::HTML)) %&gt;%
+  addLegend(&quot;bottomleft&quot;, pal = mypal, values = Map.L$Number.of.cases, title = &quot;Coronavirus Cases in Oregon&quot;, opacity = 0.3)
 frameWidget(m2)</code></pre>
 <div id="htmlwidget-1" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/post/2020-03-21-covid-19-in-oregon/index_files/figure-html//widgets/widget_unnamed-chunk-13.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/post/2020-03-21-covid-19-in-oregon/index_files/figure-html//widgets/widget_unnamed-chunk-12.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>

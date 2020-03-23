@@ -657,8 +657,8 @@
       <h2><a href="/2020/03/22/covid-19-county-maps-for-oregon/" >COVID-19 County Maps for Oregon</a></h2>
       <div class="article-style">
         
-          Oregon COVID data I now have a few days of data. The scraping script appears at the bottom of the post; I am only using the county level data. These data are current as of March 22, 2020.
-load(url(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/post/2020-03-22-covid-19-county-maps-for-oregon/OregonCOVID2020-03-22.RData&quot;))  A base map I am going to use the urbnmapr package to grab the county map for Oregon. A few steps. Load the library then grab the map as an sf object; there is a geom_sf that makes them easy to work with.
+          Oregon COVID data I now have a few days of data. The scraping script appears at the bottom of the post; I am only using the county level data. These data are current as of March 23, 2020.
+load(&quot;~/Sandbox/awful/content/post/2020-03-22-covid-19-county-maps-for-oregon/OregonCOVID2020-03-23.RData&quot;)  A base map I am going to use the urbnmapr package to grab the county map for Oregon. A few steps. Load the library then grab the map as an sf object; there is a geom_sf that makes them easy to work with.
         
       </div>
     </div>
@@ -670,7 +670,9 @@ load(url(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/p
       <h2><a href="/2020/03/21/covid-19-in-oregon/" >COVID-19 in Oregon</a></h2>
       <div class="article-style">
         
-          Oregon COVID data The Oregon data are available from OHA but not in an easy form. The URL that I found is up to date as of 3/21/2020, 8:00 a.m: here. datapasta makes it easy to cut and paste them though I will figure out how to automate that shortly. I have to do this by hand until I spend time figuring out how to scrape it.
+          Oregon COVID data The Oregon data are available from OHA here. I cut and pasted the first two days because it was easy with datapasta. As it goes one, it was easier to write a script.
+ urbnmapr The Urban Institute has an excellent state and county mapping package. I want to make use of the county-level data and plot the starter map.
+devtools::install_github(&quot;UrbanInstitute/urbnmapr&quot;) Counties.SF &lt;- get_urbn_map(&quot;counties&quot;, sf=TRUE) ggplot(Counties.
         
       </div>
     </div>

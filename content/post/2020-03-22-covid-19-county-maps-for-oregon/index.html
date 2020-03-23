@@ -25,8 +25,8 @@ projects: []
 
 <div id="oregon-covid-data" class="section level2">
 <h2>Oregon COVID data</h2>
-<p>I now have a few days of data. The scraping script appears at the bottom of the post; I am only using the county level data. These data are current as of March 22, 2020.</p>
-<pre class="r"><code>load(url(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/post/2020-03-22-covid-19-county-maps-for-oregon/OregonCOVID2020-03-22.RData&quot;))</code></pre>
+<p>I now have a few days of data. The scraping script appears at the bottom of the post; I am only using the county level data. These data are current as of March 23, 2020.</p>
+<pre class="r"><code>load(&quot;~/Sandbox/awful/content/post/2020-03-22-covid-19-county-maps-for-oregon/OregonCOVID2020-03-23.RData&quot;)</code></pre>
 </div>
 <div id="a-base-map" class="section level2">
 <h2>A base map</h2>
@@ -39,6 +39,7 @@ Map.Me &lt;- left_join(Oregon.SF,Oregon.COVID, by=&quot;County&quot;)</code></pr
 </div>
 <div id="the-whole-thing-an-animation" class="section level1">
 <h1>The Whole Thing: An Animation</h1>
+<p>I will use a ggplot to build Oregon’s map and fill it with case numbers. I have to project the map off of the natural angle in the basic data, repel the labels to prevent print overlap, and scheme the colors. The last step is to animate it by time.</p>
 <pre class="r"><code>library(ggrepel); library(ggthemes); library(gganimate)
 Anim1 &lt;- Map.Me %&gt;% 
   ggplot(., aes(geometry=geometry, fill=Number.of.cases, label=County)) + 
@@ -94,6 +95,11 @@ data %&gt;% filter(date==date1) %&gt;%
 <pre class="r"><code>Plot.COVID(&quot;2020-03-22&quot;, Map.Me)</code></pre>
 <p><img src="/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 </div>
+<div id="the-result-for-03222020-1" class="section level2">
+<h2>The Result for 03/22/2020</h2>
+<pre class="r"><code>Plot.COVID(&quot;2020-03-23&quot;, Map.Me)</code></pre>
+<p><img src="/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+</div>
 <div id="the-new-section" class="section level2">
 <h2>The New Section</h2>
 <div id="a-scraper" class="section level3">
@@ -131,14 +137,20 @@ COVID.Age &lt;- webpage %&gt;%
         html_nodes(&quot;table&quot;) %&gt;%
         .[3] %&gt;%
         html_table(fill = TRUE) %&gt;% data.frame() %&gt;% mutate(date=as.Date(date))
-return(list(Header=COVID.Head, Counties = COVID.County, Ages = COVID.Age))
+COVID.Hospitalized &lt;- webpage %&gt;%
+        html_nodes(&quot;table&quot;) %&gt;%
+        .[4] %&gt;%
+        html_table(fill = TRUE) %&gt;% data.frame() %&gt;% mutate(date=as.Date(date))
+return(list(Header=COVID.Head, Counties = COVID.County, Ages = COVID.Age, Hospitalized = COVID.Hospitalized))
 }
 # March 18 Update
 Mar18 &lt;- OHA.Corona(website=&quot;https://web.archive.org/web/20200319144434/https://govstatus.egov.com/OR-OHA-COVID-19&quot;, date=&quot;2020-03-18&quot;)
 # March 19 Update
 Mar19 &lt;- OHA.Corona(website=&quot;https://web.archive.org/web/20200320152224/https://govstatus.egov.com/OR-OHA-COVID-19&quot;, date=&quot;2020-03-19&quot;)
 # March 20 Update
-Mar20 &lt;- OHA.Corona(website=&quot;https://web.archive.org/web/20200320202955/https://govstatus.egov.com/OR-OHA-COVID-19&quot;, date=&quot;2020-03-20&quot;)</code></pre>
+Mar20 &lt;- OHA.Corona(website=&quot;https://web.archive.org/web/20200320202955/https://govstatus.egov.com/OR-OHA-COVID-19&quot;, date=&quot;2020-03-20&quot;)
+# March 23 Update
+Mar23 &lt;- OHA.Corona(website=&quot;https://govstatus.egov.com/OR-OHA-COVID-19&quot;, date=&quot;2020-03-23&quot;)</code></pre>
 </div>
 <div id="put-it-all-together" class="section level3">
 <h3>Put it all together</h3>

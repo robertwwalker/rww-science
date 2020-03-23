@@ -26,7 +26,7 @@ knitr::opts_chunk$set(message=FALSE, warning = FALSE)
 
 ## Oregon COVID data
 
-The Oregon data are available from OHA but not in an easy form.  The URL that I found is up to date as of 3/21/2020, 8:00 a.m: [here](https://govstatus.egov.com/OR-OHA-COVID-19).  `datapasta` makes it easy to cut and paste them though I will figure out how to automate that shortly.  I have to do this by hand until I spend time figuring out how to scrape it.
+The Oregon data are available from OHA [here](https://govstatus.egov.com/OR-OHA-COVID-19).  I cut and pasted the first two days because it was easy with `datapasta`.  As it goes one, it was easier to write a script.
 
 ```{r, echo=FALSE}
 library(tidyverse)
@@ -83,7 +83,6 @@ Oregon.COVID.0322 <- data.frame(
 )
 Oregon.COVID.0322 <- Oregon.COVID.0322 %>% mutate(PTT = paste(County,"<br/> Cases:",Number.of.cases,"<br/> Deaths:",Deaths,"<br/> Negative Tests:",Negative.test.results,"<br/>", sep=""), date="2020-03-22")
 Oregon.COVID <- bind_rows(Oregon.COVID.0321,Oregon.COVID.0322)
-# Oregon.COVID <- Oregon.COVID.0322
 Oregon.Total <- Oregon.COVID %>% filter(County=="Total")
 Oregon.COVID <- Oregon.COVID %>% filter(County!="Total") %>% mutate(date = as.Date(date))
 Oregon.COVID <- Oregon.COVID %>% filter(date=="2020-03-22")
@@ -172,17 +171,7 @@ ggplot(Map.Me, aes(geometry=geometry, fill=Number.of.cases, label=County.x)) +
     box.padding = unit(0.05, "lines"))  + scale_fill_continuous_tableau("Red") + theme_minimal() + labs(title="COVID-19 in Oregon", x="", y="", caption="Made with R, ggplot2, and ggrepel by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19")
 ```
 
-### A Plotly
-
-This doesn't want to work.  I think it is the interaction of the base map and ggplotly.
-
-```{r, eval=FALSE}
-library(plotly)
-fig1 <- ggplot(Map.Me, aes(geometry=geometry, fill=Number.of.cases)) + geom_sf() + coord_sf(crs=3785, datum=NA) + scale_fill_viridis_c() + theme_minimal() + labs(title="COVID-19 in Oregon")
-ggplotly(fig1)
-```
-
-Now let me try something else.
+### A Leaflet
 
 ```{r, eval=FALSE}
 library(widgetframe); library(leaflet); library(here); library(htmlwidgets); library(htmltools)
@@ -190,10 +179,11 @@ m <- leaflet() %>% addProviderTiles("OpenStreetMap.Mapnik") %>% setView(lat=43.8
 frameWidget(m)
 ```
 
-
-So I have a base leaflet to work with.
+So I have a base leaflet to work with.  There are issues with showing multiple framewidgets so I will skip displaying the basic map of Oregon.
 
 ## Final Leaflet
+
+Merge the relevant data together after using TIGER to grab the spatial definitions.
 
 ```{r, results='hide'}
 library(widgetframe); library(leaflet); library(here); library(htmlwidgets)
@@ -203,10 +193,21 @@ OC22 <- Oregon.COVID %>% filter(date=="2020-03-22")
 Map.L <- merge(counties.t, OC22, by.x="NAME", by.y= "County")
 ```
 
-The final plot.
+Build the final plot.  The first line creates a palette.  Then I build the leaflet
 
 ```{r}
 mypal <- colorNumeric(palette = "viridis", domain = Map.L$Number.of.cases, na.color = "grey")
-m2 <- leaflet() %>% addProviderTiles("OpenStreetMap.Mapnik") %>% setView(lat=43.8041, lng=-120.5542, zoom=6) %>% addTiles()  %>% addPolygons(data=Map.L, color = "white", fillOpacity = 0.3, fillColor = mypal(Map.L$Number.of.cases), weight=0.5, highlightOptions = highlightOptions(color = "white", weight = 2, bringToFront = TRUE), label = lapply(Map.L$PTT, htmltools::HTML)) %>% addLegend("bottomleft", pal = mypal, values = Map.L$Number.of.cases, title = "Coronavirus Cases in Oregon", opacity = 0.3)
+m2 <- leaflet() %>% 
+  addProviderTiles("OpenStreetMap.Mapnik") %>% 
+  setView(lat=43.8041, lng=-120.5542, zoom=6) %>% 
+  addTiles()  %>% 
+  addPolygons(data=Map.L, 
+              color = "white", 
+              fillOpacity = 0.3, 
+              fillColor = mypal(Map.L$Number.of.cases), 
+              weight=0.5, 
+              highlightOptions = highlightOptions(color = "white", weight = 2, bringToFront = TRUE), 
+              label = lapply(Map.L$PTT, htmltools::HTML)) %>%
+  addLegend("bottomleft", pal = mypal, values = Map.L$Number.of.cases, title = "Coronavirus Cases in Oregon", opacity = 0.3)
 frameWidget(m2)
 ```

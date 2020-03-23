@@ -22,8 +22,8 @@
 
 &lt;div id=&#34;oregon-covid-data&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Oregon COVID data&lt;/h2&gt;
-&lt;p&gt;I now have a few days of data. The scraping script appears at the bottom of the post; I am only using the county level data. These data are current as of March 22, 2020.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;load(url(&amp;quot;https://github.com/robertwwalker/rww-science/raw/master/content/post/2020-03-22-covid-19-county-maps-for-oregon/OregonCOVID2020-03-22.RData&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;I now have a few days of data. The scraping script appears at the bottom of the post; I am only using the county level data. These data are current as of March 23, 2020.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;load(&amp;quot;~/Sandbox/awful/content/post/2020-03-22-covid-19-county-maps-for-oregon/OregonCOVID2020-03-23.RData&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 &lt;div id=&#34;a-base-map&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;A base map&lt;/h2&gt;
@@ -36,6 +36,7 @@ Map.Me &amp;lt;- left_join(Oregon.SF,Oregon.COVID, by=&amp;quot;County&amp;quot;
 &lt;/div&gt;
 &lt;div id=&#34;the-whole-thing-an-animation&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;The Whole Thing: An Animation&lt;/h1&gt;
+&lt;p&gt;I will use a ggplot to build Oregon’s map and fill it with case numbers. I have to project the map off of the natural angle in the basic data, repel the labels to prevent print overlap, and scheme the colors. The last step is to animate it by time.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(ggrepel); library(ggthemes); library(gganimate)
 Anim1 &amp;lt;- Map.Me %&amp;gt;% 
   ggplot(., aes(geometry=geometry, fill=Number.of.cases, label=County)) + 
@@ -91,6 +92,11 @@ data %&amp;gt;% filter(date==date1) %&amp;gt;%
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Plot.COVID(&amp;quot;2020-03-22&amp;quot;, Map.Me)&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
+&lt;div id=&#34;the-result-for-03222020-1&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;The Result for 03/22/2020&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Plot.COVID(&amp;quot;2020-03-23&amp;quot;, Map.Me)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-10-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
 &lt;div id=&#34;the-new-section&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;The New Section&lt;/h2&gt;
 &lt;div id=&#34;a-scraper&#34; class=&#34;section level3&#34;&gt;
@@ -128,14 +134,20 @@ COVID.Age &amp;lt;- webpage %&amp;gt;%
         html_nodes(&amp;quot;table&amp;quot;) %&amp;gt;%
         .[3] %&amp;gt;%
         html_table(fill = TRUE) %&amp;gt;% data.frame() %&amp;gt;% mutate(date=as.Date(date))
-return(list(Header=COVID.Head, Counties = COVID.County, Ages = COVID.Age))
+COVID.Hospitalized &amp;lt;- webpage %&amp;gt;%
+        html_nodes(&amp;quot;table&amp;quot;) %&amp;gt;%
+        .[4] %&amp;gt;%
+        html_table(fill = TRUE) %&amp;gt;% data.frame() %&amp;gt;% mutate(date=as.Date(date))
+return(list(Header=COVID.Head, Counties = COVID.County, Ages = COVID.Age, Hospitalized = COVID.Hospitalized))
 }
 # March 18 Update
 Mar18 &amp;lt;- OHA.Corona(website=&amp;quot;https://web.archive.org/web/20200319144434/https://govstatus.egov.com/OR-OHA-COVID-19&amp;quot;, date=&amp;quot;2020-03-18&amp;quot;)
 # March 19 Update
 Mar19 &amp;lt;- OHA.Corona(website=&amp;quot;https://web.archive.org/web/20200320152224/https://govstatus.egov.com/OR-OHA-COVID-19&amp;quot;, date=&amp;quot;2020-03-19&amp;quot;)
 # March 20 Update
-Mar20 &amp;lt;- OHA.Corona(website=&amp;quot;https://web.archive.org/web/20200320202955/https://govstatus.egov.com/OR-OHA-COVID-19&amp;quot;, date=&amp;quot;2020-03-20&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+Mar20 &amp;lt;- OHA.Corona(website=&amp;quot;https://web.archive.org/web/20200320202955/https://govstatus.egov.com/OR-OHA-COVID-19&amp;quot;, date=&amp;quot;2020-03-20&amp;quot;)
+# March 23 Update
+Mar23 &amp;lt;- OHA.Corona(website=&amp;quot;https://govstatus.egov.com/OR-OHA-COVID-19&amp;quot;, date=&amp;quot;2020-03-23&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 &lt;div id=&#34;put-it-all-together&#34; class=&#34;section level3&#34;&gt;
 &lt;h3&gt;Put it all together&lt;/h3&gt;
