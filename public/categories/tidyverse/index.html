@@ -239,7 +239,7 @@
   <meta property="og:description" content="Associate Professor of Quantitative Methods"><meta property="og:image" content="/img/portrait.jpg">
   <meta property="twitter:image" content="/img/portrait.jpg"><meta property="og:locale" content="en-us">
   
-    <meta property="og:updated_time" content="2020-03-21T00:00:00&#43;00:00">
+    <meta property="og:updated_time" content="2020-03-22T00:00:00&#43;00:00">
   
 
   
@@ -654,11 +654,24 @@
     
     
     <div>
+      <h2><a href="/2020/03/22/covid-19-county-maps-for-oregon/" >COVID-19 County Maps for Oregon</a></h2>
+      <div class="article-style">
+        
+           Oregon COVID data I now have two days of data. The scraping script appears below.
+ A base map  The Result for 03/21/2020  The Result for 03/22/2020  The New Section  
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
       <h2><a href="/2020/03/21/covid-19-in-oregon/" >COVID-19 in Oregon</a></h2>
       <div class="article-style">
         
-          Oregon COVID data The Oregon data are available from OHA but not in an easy form. The URL that I found is up to date as of 3/21/2020, 8:00 a.m: here. datapasta makes it easy to cut and paste them though I will figure out how to automate that shortly.
- urbnmapr The Urban Institute has an excellent state and county mapping package. I want to make use of the county-level data and plot the starter map.
+          Oregon COVID data The Oregon data are available from OHA but not in an easy form. The URL that I found is up to date as of 3/21/2020, 8:00 a.m: here. datapasta makes it easy to cut and paste them though I will figure out how to automate that shortly. I have to do this by hand until I spend time figuring out how to scrape it.
+ urbnmapr The Urban Institute has an excellent state and county mapping package.
         
       </div>
     </div>
@@ -681,7 +694,7 @@ p2 &lt;- office_ratings %&gt;% ggplot(., aes(x=as.factor(season), y=imdb_rating,
     
     
     <div>
-      <h2><a href="/2020/03/19/tracking-covid-19/" >Tracking COVID-19 2020-03-20</a></h2>
+      <h2><a href="/2020/03/19/tracking-covid-19/" >Tracking COVID-19 2020-03-21</a></h2>
       <div class="article-style">
         
           R to Import COVID Data library(tidyverse) library(gganimate) COVID.states &lt;- read.csv(url(&quot;http://covidtracking.com/api/states/daily.csv&quot;)) COVID.states &lt;- COVID.states %&gt;% mutate(Date = as.Date(as.character(date), format = &quot;%Y%m%d&quot;)) The Raw Testing Incidence I want to use patchwork to show the testing rate by state in the United States. Then I want to show where things currently stand. In both cases, a base-10 log is used on the number of tests.
@@ -761,20 +774,6 @@ New.Dat &lt;- left_join(My.Map, dog_moves, by= c(&quot;full&quot; = &quot;locati
         
           tidyTuesday: December 10, 2019 Replicating plots from simplystatistics. One nice twist is the development of a tidytuesdayR package to grab the necessary data in an easy way. You can install the package via github. I will also use fiftystater and ggflags.
 devtools::install_github(&quot;thebioengineer/tidytuesdayR&quot;) devtools::install_github(&quot;ellisp/ggflags&quot;) devtools::install_github(&quot;wmurphyrd/fiftystater&quot;) tuesdata &lt;- tidytuesdayR::tt_load(2019, week = 50) ## --- Downloading #TidyTuesday Information for 2019-12-10 ---- ## --- Identified 4 files available for download ---- ## --- Downloading files --- ## Warning in identify_delim(temp_file): Not able to detect delimiter for the file.
-        
-      </div>
-    </div>
-  
-    
-    
-    
-    <div>
-      <h2><a href="/2019/12/09/philadelphia-parking-tickets-a-tidytuesday/" >Philadelphia Parking Tickets: a tidyTuesday</a></h2>
-      <div class="article-style">
-        
-          Philadelphia Map Use ggmap for the base layer.
-library(ggmap); library(osmdata); library(tidyverse) PHI &lt;- get_map(getbb(&quot;Philadelphia, PA&quot;), maptype = &quot;stamen&quot;, zoom=12)  Get the Tickets Data TidyTuesday covers 1.26 million parking tickets in Philadelphia.
-tickets &lt;- readr::read_csv(&quot;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-12-03/tickets.csv&quot;) ## Parsed with column specification: ## cols( ## violation_desc = col_character(), ## issue_datetime = col_datetime(format = &quot;&quot;), ## fine = col_double(), ## issuing_agency = col_character(), ## lat = col_double(), ## lon = col_double(), ## zip_code = col_double() ## )  Two Lines of Code Left library(lubridate); library(ggthemes) tickets &lt;- tickets %&gt;% mutate(Day = wday(issue_datetime, label=TRUE)) # use lubridate to extract the day of the month.
         
       </div>
     </div>

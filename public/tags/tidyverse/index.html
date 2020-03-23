@@ -239,7 +239,7 @@
   <meta property="og:description" content="Associate Professor of Quantitative Methods"><meta property="og:image" content="/img/portrait.jpg">
   <meta property="twitter:image" content="/img/portrait.jpg"><meta property="og:locale" content="en-us">
   
-    <meta property="og:updated_time" content="2020-03-19T00:00:00&#43;00:00">
+    <meta property="og:updated_time" content="2020-03-22T00:00:00&#43;00:00">
   
 
   
@@ -654,7 +654,20 @@
     
     
     <div>
-      <h2><a href="/2020/03/19/tracking-covid-19/" >Tracking COVID-19 2020-03-20</a></h2>
+      <h2><a href="/2020/03/22/covid-19-county-maps-for-oregon/" >COVID-19 County Maps for Oregon</a></h2>
+      <div class="article-style">
+        
+           Oregon COVID data I now have two days of data. The scraping script appears below.
+ A base map  The Result for 03/21/2020  The Result for 03/22/2020  The New Section  
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
+      <h2><a href="/2020/03/19/tracking-covid-19/" >Tracking COVID-19 2020-03-21</a></h2>
       <div class="article-style">
         
           R to Import COVID Data library(tidyverse) library(gganimate) COVID.states &lt;- read.csv(url(&quot;http://covidtracking.com/api/states/daily.csv&quot;)) COVID.states &lt;- COVID.states %&gt;% mutate(Date = as.Date(as.character(date), format = &quot;%Y%m%d&quot;)) The Raw Testing Incidence I want to use patchwork to show the testing rate by state in the United States. Then I want to show where things currently stand. In both cases, a base-10 log is used on the number of tests.
@@ -762,19 +775,6 @@ load(&quot;FarissHRData.RData&quot;) skimr::skim(HR.Data)  Table 1: Data summary
         
           The Economist’s Errors and Credit Where Credit is Due The Economist is serious about their use of data visualization and they have occasionally owned up to errors in their visualizations. They can be deceptive, uninformative, confusing, excessively busy, and present a host of other barriers to clean communication. Their blog post on their errors is great.
 I have drawn the following example from a #tidyTuesday earlier this year that explores this.
-        
-      </div>
-    </div>
-  
-    
-    
-    
-    <div>
-      <h2><a href="/2019/04/30/nflscrapr-is-amazing/" >nflscrapR is amazing</a></h2>
-      <div class="article-style">
-        
-          Scraping NFL data Note: An original version of this post had issues induced by overtime games. There is a better way to handle all of this that I learned from a brief analysis of a tie game between Cleveland and Pittsburgh in Week One.
-The nflscrapR package is designed to make data on NFL games more easily available. To install the package, we need to grab it from github.
         
       </div>
     </div>

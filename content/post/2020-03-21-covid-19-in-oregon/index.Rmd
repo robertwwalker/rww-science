@@ -28,10 +28,10 @@ library(urbnmapr)
 
 ## Oregon COVID data
 
-The Oregon data are available from OHA but not in an easy form.  The URL that I found is up to date as of 3/21/2020, 8:00 a.m: [here](https://govstatus.egov.com/OR-OHA-COVID-19).  `datapasta` makes it easy to cut and paste them though I will figure out how to automate that shortly.
+The Oregon data are available from OHA but not in an easy form.  The URL that I found is up to date as of 3/21/2020, 8:00 a.m: [here](https://govstatus.egov.com/OR-OHA-COVID-19).  `datapasta` makes it easy to cut and paste them though I will figure out how to automate that shortly.  I have to do this by hand until I spend time figuring out how to scrape it.
 
 ```{r}
-Oregon.COVID <- data.frame(
+Oregon.COVID.0321 <- data.frame(
        stringsAsFactors = FALSE,
                  County = c("Baker","Benton",
                             "Clackamas","Clatsop","Columbia","Coos","Crook",
@@ -56,9 +56,36 @@ Oregon.COVID <- data.frame(
                             498L,33L,0L,8L,19L,11L,3L,8L,330L,1L,94L,
                             2338L)
 )
-Oregon.COVID <- Oregon.COVID %>% mutate(PTT = paste("Cases:",Number.of.cases,"<br> Deaths:",Deaths,"<br>Negative Tests:",Negative.test.results, sep=""))
+Oregon.COVID.0321 <- Oregon.COVID.0321 %>% mutate(PTT = paste("Cases:",Number.of.cases,"<br> Deaths:",Deaths,"<br>Negative Tests:",Negative.test.results, sep=""), date="2020-03-21")
+Oregon.COVID.0322 <- data.frame(
+       stringsAsFactors = FALSE,
+                 County = c("Baker","Benton",
+                            "Clackamas","Clatsop","Columbia","Coos","Crook",
+                            "Curry","Deschutes","Douglas","Gilliam","Grant",
+                            "Harney","Hood River","Jackson","Jefferson",
+                            "Josephine","Klamath","Lake","Lane","Lincoln",
+                            "Linn","Malheur","Marion","Morrow","Multnomah",
+                            "Polk","Sherman","Tillamook","Umatilla","Union",
+                            "Wallowa","Wasco","Washington","Wheeler","Yamhill",
+                            "Total"),
+        Number.of.cases = c(0L,4L,12L,0L,0L,
+                            0L,0L,0L,10L,1L,0L,1L,0L,0L,2L,0L,1L,1L,
+                            0L,4L,0L,19L,0L,22L,0L,19L,1L,0L,0L,2L,
+                            1L,0L,0L,55L,0L,6L,161L),
+                 Deaths = c(0L,0L,0L,0L,0L,
+                            0L,0L,0L,0L,0L,0L,0L,0L,0L,0L,0L,0L,0L,
+                            0L,1L,0L,0L,0L,1L,0L,1L,0L,0L,0L,0L,0L,
+                            0L,0L,1L,0L,0L,4L),
+  Negative.test.results = c(1,73,266,32,35,
+                            35,5,12,75,40,1,0,1,17,176,5,21,37,0,
+                            152,19,286,13,197,4,702,44,0,9,30,11,3,10,
+                            456,1,95,2864)
+)
+Oregon.COVID.0322 <- Oregon.COVID.0322 %>% mutate(PTT = paste("Cases:",Number.of.cases,"<br> Deaths:",Deaths,"<br>Negative Tests:",Negative.test.results, sep=""), date="2020-03-22")
+Oregon.COVID <- bind_rows(Oregon.COVID.0321,Oregon.COVID.0322)
+# Oregon.COVID <- Oregon.COVID.0321
 Oregon.Total <- Oregon.COVID %>% filter(County=="Total")
-Oregon.COVID <- Oregon.COVID %>% filter(County!="Total")
+Oregon.COVID <- Oregon.COVID %>% filter(County!="Total") %>% mutate(date = as.Date(date))
 ```
 
 ## `urbnmapr`
@@ -142,6 +169,33 @@ ggplot(Map.Me, aes(geometry=geometry, fill=Number.of.cases, label=County.x)) +
     colour = "white",
     segment.colour = "white",
     size = 3,
-    box.padding = unit(0.05, "lines"))  + scale_fill_continuous_tableau("Red") + theme_minimal() + labs(title="COVID-19 in Oregon", x="", y="", caption="https://govstatus.egov.com/OR-OHA-COVID-19")
+    box.padding = unit(0.05, "lines"))  + scale_fill_continuous_tableau("Red") + theme_minimal() + labs(title="COVID-19 in Oregon", x="", y="", caption="Made with R, ggplot2, and ggrepel by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19")
+```
+
+### A Plotly
+
+This doesn't want to work.  I think it is the interaction of the base map and ggplotly.
+
+```{r, eval=FALSE}
+library(plotly)
+fig1 <- ggplot(Map.Me, aes(geometry=geometry, fill=Number.of.cases)) + geom_sf() + coord_sf(crs=3785, datum=NA) + scale_fill_viridis_c() + theme_minimal() + labs(title="COVID-19 in Oregon")
+ggplotly(fig1)
+```
+
+Now let me try something else.
+
+```{r, eval=FALSE}
+library(leaflet)
+m <- leaflet() %>% setView(lat=43.8041, lng=-120.5542, zoom=6) %>% addTiles() 
+m
+```
+
+So I have a base leaflet to work with.
+
+```{r, eval=FALSE}
+library(rgdal)
+library(sf)
+County.bounds <- shapefiles::read.shapefile("~/Downloads/orotl")
+County.bounds
 ```
 

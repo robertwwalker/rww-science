@@ -239,7 +239,7 @@
   <meta property="og:description" content="Associate Professor of Quantitative Methods"><meta property="og:image" content="/img/portrait.jpg">
   <meta property="twitter:image" content="/img/portrait.jpg"><meta property="og:locale" content="en-us">
   
-    <meta property="og:updated_time" content="2020-03-21T00:00:00&#43;00:00">
+    <meta property="og:updated_time" content="2020-03-22T00:00:00&#43;00:00">
   
 
   
@@ -1159,6 +1159,108 @@
           Last updated on
       
     
+    Mar 22, 2020
+  </span>
+  
+
+  
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    1 min read
+  </span>
+  
+
+  
+  
+  
+
+  
+  
+  <span class="middot-divider"></span>
+  <span class="article-categories">
+    <i class="fas fa-folder mr-1"></i><a href="/categories/tidyverse/">tidyverse</a>, <a href="/categories/web-scraping/">web scraping</a></span>
+  
+
+</div>
+
+  
+
+  
+  
+  
+
+  <h3 class="article-title mb-1 mt-3">
+    <a href="/2020/03/22/covid-19-county-maps-for-oregon/">COVID-19 County Maps for Oregon</a>
+  </h3>
+
+  
+  <div class="article-style">
+    <p>
+
+
+<div id="oregon-covid-data" class="section level2">
+<h2>Oregon COVID data</h2>
+<p>I now have two days of data. The scraping script appears below.</p>
+</div>
+<div id="a-base-map" class="section level2">
+<h2>A base map</h2>
+</div>
+<div id="the-result-for-03212020" class="section level2">
+<h2>The Result for 03/21/2020</h2>
+<p><img src="/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+</div>
+<div id="the-result-for-03222020" class="section level2">
+<h2>The Result for 03/22/2020</h2>
+<p><img src="/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
+<div id="the-new-section" class="section level2">
+<h2>The New Section</h2>
+</div>
+</p>
+  </div>
+  
+
+  
+
+</div>
+
+      
+    
+      
+        
+
+
+
+
+
+
+
+
+
+  
+
+
+<div class="card-simple">
+
+  
+    
+
+
+<div class="article-metadata">
+
+  
+  
+
+  
+  <span class="article-date">
+    
+    
+      
+          Last updated on
+      
+    
     Mar 21, 2020
   </span>
   
@@ -1197,8 +1299,8 @@
 
   
   <div class="article-style">
-    <p>Oregon COVID data The Oregon data are available from OHA but not in an easy form. The URL that I found is up to date as of 3/21/2020, 8:00 a.m: here. datapasta makes it easy to cut and paste them though I will figure out how to automate that shortly.
- urbnmapr The Urban Institute has an excellent state and county mapping package. I want to make use of the county-level data and plot the starter map.</p>
+    <p>Oregon COVID data The Oregon data are available from OHA but not in an easy form. The URL that I found is up to date as of 3/21/2020, 8:00 a.m: here. datapasta makes it easy to cut and paste them though I will figure out how to automate that shortly. I have to do this by hand until I spend time figuring out how to scrape it.
+ urbnmapr The Urban Institute has an excellent state and county mapping package.</p>
   </div>
   
 
@@ -1333,7 +1435,7 @@ p2 &lt;- office_ratings %&gt;% ggplot(., aes(x=as.factor(season), y=imdb_rating,
   
   <span class="middot-divider"></span>
   <span class="article-reading-time">
-    625 min read
+    500 min read
   </span>
   
 
@@ -1357,7 +1459,7 @@ p2 &lt;- office_ratings %&gt;% ggplot(., aes(x=as.factor(season), y=imdb_rating,
   
 
   <h3 class="article-title mb-1 mt-3">
-    <a href="/2020/03/19/tracking-covid-19/">Tracking COVID-19 2020-03-20</a>
+    <a href="/2020/03/19/tracking-covid-19/">Tracking COVID-19 2020-03-21</a>
   </h3>
 
   
@@ -1446,87 +1548,6 @@ p2 &lt;- office_ratings %&gt;% ggplot(., aes(x=as.factor(season), y=imdb_rating,
     <p>Get Some VIX data NB: I originally wrote this on February 27, 2020 so there is commentary surrounding that date. It was done on the quick for curiosity.
 Chicago Board Of Exchange (CBOE) makes data available regularly. To judge the currency of the data, I have tailed it below after converting the dates to a valid date format.
 library(tidyverse) VIX &lt;- read.csv(url(&quot;http://www.cboe.com/publish/scheduledtask/mktdata/datahouse/vixcurrent.csv&quot;), skip = 1) VIX$Dates &lt;- as.</p>
-  </div>
-  
-
-  
-
-</div>
-
-      
-    
-      
-        
-
-
-
-
-
-
-
-
-
-  
-
-
-<div class="card-simple">
-
-  
-    
-
-
-<div class="article-metadata">
-
-  
-  
-
-  
-  <span class="article-date">
-    
-    
-      
-          Last updated on
-      
-    
-    Feb 28, 2020
-  </span>
-  
-
-  
-
-  
-  <span class="middot-divider"></span>
-  <span class="article-reading-time">
-    3 min read
-  </span>
-  
-
-  
-  
-  
-
-  
-  
-  <span class="middot-divider"></span>
-  <span class="article-categories">
-    <i class="fas fa-folder mr-1"></i><a href="/categories/tidyverse/">tidyverse</a></span>
-  
-
-</div>
-
-  
-
-  
-  
-  
-
-  <h3 class="article-title mb-1 mt-3">
-    <a href="/2020/02/24/quick-and-dirty-fredr/">Quick and Dirty Fredr</a>
-  </h3>
-
-  
-  <div class="article-style">
-    <p>Some Data from FREDr Downloading the FRED data on national debt as a percentage of GDP. I first want to examine the US data and will then turn to some comparisons. fredr makes it markable asy to do! I will use two core tools from fredr. First, fredr_series_search allows one to enter search text and retrieve the responsive series given that search text. They can be sorted in particular ways, two such options are shown below.</p>
   </div>
   
 
@@ -2633,7 +2654,7 @@ library(tidyverse) VIX &lt;- read.csv(url(&quot;http://www.cboe.com/publish/sche
           
           
           
-          <a href="/tags/essex/" style="font-size:0.96rem">Essex</a>
+          <a href="/tags/essex/" style="font-size:0.9577118221217287rem">Essex</a>
         
           
           
@@ -2643,7 +2664,7 @@ library(tidyverse) VIX &lt;- read.csv(url(&quot;http://www.cboe.com/publish/sche
           
           
           
-          <a href="/tags/gganimate/" style="font-size:1.22rem">gganimate</a>
+          <a href="/tags/gganimate/" style="font-size:1.2154236442434574rem">gganimate</a>
         
           
           
@@ -2658,7 +2679,7 @@ library(tidyverse) VIX &lt;- read.csv(url(&quot;http://www.cboe.com/publish/sche
           
           
           
-          <a href="/tags/maps/" style="font-size:1.6621143267166838rem">Maps</a>
+          <a href="/tags/maps/" style="font-size:1.6536470624137571rem">Maps</a>
         
           
           
@@ -2668,12 +2689,12 @@ library(tidyverse) VIX &lt;- read.csv(url(&quot;http://www.cboe.com/publish/sche
           
           
           
-          <a href="/tags/panel-data/" style="font-size:1.22rem">panel data</a>
+          <a href="/tags/panel-data/" style="font-size:1.2154236442434574rem">panel data</a>
         
           
           
           
-          <a href="/tags/plot/" style="font-size:1.48rem">plot</a>
+          <a href="/tags/plot/" style="font-size:1.473135466365186rem">plot</a>
         
           
           
@@ -2683,37 +2704,37 @@ library(tidyverse) VIX &lt;- read.csv(url(&quot;http://www.cboe.com/publish/sche
           
           
           
-          <a href="/tags/python/" style="font-size:0.96rem">python</a>
+          <a href="/tags/python/" style="font-size:0.9577118221217287rem">python</a>
         
           
           
           
-          <a href="/tags/r/" style="font-size:1.9880910407005876rem">R</a>
+          <a href="/tags/r/" style="font-size:1.9885591106086433rem">R</a>
         
           
           
           
-          <a href="/tags/r-markdown/" style="font-size:1.6621143267166838rem">R Markdown</a>
+          <a href="/tags/r-markdown/" style="font-size:1.6536470624137571rem">R Markdown</a>
         
           
           
           
-          <a href="/tags/reticulate/" style="font-size:0.96rem">reticulate</a>
+          <a href="/tags/reticulate/" style="font-size:0.9577118221217287rem">reticulate</a>
         
           
           
           
-          <a href="/tags/tidytext/" style="font-size:1.3037013046707142rem">tidytext</a>
+          <a href="/tags/tidytext/" style="font-size:1.2983883201690563rem">tidytext</a>
         
           
           
           
-          <a href="/tags/tidytuesday/" style="font-size:1.7157915548582148rem">tidyTuesday</a>
+          <a href="/tags/tidytuesday/" style="font-size:1.7068518942245172rem">tidyTuesday</a>
         
           
           
           
-          <a href="/tags/tidyverse/" style="font-size:1.7627403387250882rem">tidyverse</a>
+          <a href="/tags/tidyverse/" style="font-size:1.7746389702326504rem">tidyverse</a>
         
       </div>
     

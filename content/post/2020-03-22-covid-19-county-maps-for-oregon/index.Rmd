@@ -1,0 +1,95 @@
+---
+title: COVID-19 County Maps for Oregon
+author: Robert W. Walker
+date: '2020-03-22'
+slug: covid-19-county-maps-for-oregon
+categories:
+  - tidyverse
+  - web scraping
+tags:
+  - tidyverse
+  - R
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2020-03-22T20:46:49-07:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning = FALSE)
+library(tidyverse)
+```
+
+## Oregon COVID data
+
+I now have two days of data.  The scraping script appears below.
+
+```{r}
+load("OregonCOVID2020-03-22.RData")
+```
+
+
+## A base map
+
+```{r}
+library(urbnmapr)
+Counties.SF <- get_urbn_map("counties", sf=TRUE)
+Oregon.SF <- Counties.SF %>% filter(state_name=="Oregon")
+Oregon.SF <- Oregon.SF %>% mutate(County = str_remove(county_name, " County"))
+```
+
+## The Result for 03/21/2020
+
+```{r}
+library(ggrepel); library(ggthemes)
+Map.Me <- left_join(Oregon.SF,Oregon.COVID, by="County")
+Map.Me %>% filter(date=="03/21/2020") %>%
+  ggplot(., aes(geometry=geometry, fill=Number.of.cases, label=County)) + 
+  geom_sf() +
+  coord_sf(crs=3785, datum=NA) + 
+  geom_label_repel(stat = "sf_coordinates",
+    min.segment.length = 0,
+    colour = "white",
+    segment.colour = "white",
+    size = 3,
+    box.padding = unit(0.05, "lines"))  + scale_fill_continuous_tableau("Red") + theme_minimal() + labs(title="COVID-19 in Oregon", subtitle="03-21-2020", x="", y="", caption="Made with R, ggplot2, and ggrepel by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19")
+```
+
+## The Result for 03/22/2020
+
+```{r}
+Map.Me %>% filter(date=="03/22/2020") %>%
+  ggplot(., aes(geometry=geometry, fill=Number.of.cases, label=County)) + 
+  geom_sf() +
+  coord_sf(crs=3785, datum=NA) + 
+  geom_label_repel(stat = "sf_coordinates",
+    min.segment.length = 0,
+    colour = "white",
+    segment.colour = "white",
+    size = 3,
+    box.padding = unit(0.05, "lines"))  + scale_fill_continuous_tableau("Red") + theme_minimal() + labs(title="COVID-19 in Oregon", subtitle="03-22-2020", x="", y="", caption="Made with R, ggplot2, and ggrepel by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19")
+```
+
+
+## The New Section
+
+```{r, eval=FALSE}
+library(rvest)
+webpage <- read_html("https://govstatus.egov.com/OR-OHA-COVID-19")
+tbls <- html_nodes(webpage, "table")
+tbls
+COVID.New <- webpage %>%
+        html_nodes("table") %>%
+        .[2] %>%
+        html_table(fill = TRUE) %>% data.frame()
+Oregon.Total <- COVID.New %>% mutate(date=as.Date(Sys.Date())) %>% filter(County=="Total") %>% bind_rows(.,Oregon.Total) 
+Oregon.COVID <- COVID.New %>% mutate(date=as.Date(Sys.Date())) %>% filter(County!="Total") %>% bind_rows(.,Oregon.COVID) 
+save(Oregon.COVID, Oregon.Total, file=paste0("OregonCOVID",Sys.Date(),".RData"))
+```
+

@@ -154,4 +154,3 @@ This obscures important spatial data about location by aggregating cases by coun
 My.Map <- ggplot(Map.Me, aes(fill=Deaths.Total, geometry=geometry, text=name.y)) + geom_sf(size=0.1, color="white") + scale_fill_viridis_c() + theme_map()
 plotly::ggplotly(My.Map)
 ```
-

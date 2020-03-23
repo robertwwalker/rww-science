@@ -24,7 +24,7 @@ projects: []
 
 <div id="oregon-covid-data" class="section level2">
 <h2>Oregon COVID data</h2>
-<p>The Oregon data are available from OHA but not in an easy form. The URL that I found is up to date as of 3/21/2020, 8:00 a.m: <a href="https://govstatus.egov.com/OR-OHA-COVID-19">here</a>. <code>datapasta</code> makes it easy to cut and paste them though I will figure out how to automate that shortly.</p>
+<p>The Oregon data are available from OHA but not in an easy form. The URL that I found is up to date as of 3/21/2020, 8:00 a.m: <a href="https://govstatus.egov.com/OR-OHA-COVID-19">here</a>. <code>datapasta</code> makes it easy to cut and paste them though I will figure out how to automate that shortly. I have to do this by hand until I spend time figuring out how to scrape it.</p>
 </div>
 <div id="urbnmapr" class="section level2">
 <h2><code>urbnmapr</code></h2>
@@ -128,42 +128,42 @@ projects: []
 ##       Yamhill County 1 0.02777778</code></pre>
 <p>The data have named counties also, they look like this:</p>
 <pre><code>##      County n    percent
-##       Baker 1 0.02777778
-##      Benton 1 0.02777778
-##   Clackamas 1 0.02777778
-##     Clatsop 1 0.02777778
-##    Columbia 1 0.02777778
-##        Coos 1 0.02777778
-##       Crook 1 0.02777778
-##       Curry 1 0.02777778
-##   Deschutes 1 0.02777778
-##     Douglas 1 0.02777778
-##     Gilliam 1 0.02777778
-##       Grant 1 0.02777778
-##      Harney 1 0.02777778
-##  Hood River 1 0.02777778
-##     Jackson 1 0.02777778
-##   Jefferson 1 0.02777778
-##   Josephine 1 0.02777778
-##     Klamath 1 0.02777778
-##        Lake 1 0.02777778
-##        Lane 1 0.02777778
-##     Lincoln 1 0.02777778
-##        Linn 1 0.02777778
-##     Malheur 1 0.02777778
-##      Marion 1 0.02777778
-##      Morrow 1 0.02777778
-##   Multnomah 1 0.02777778
-##        Polk 1 0.02777778
-##     Sherman 1 0.02777778
-##   Tillamook 1 0.02777778
-##    Umatilla 1 0.02777778
-##       Union 1 0.02777778
-##     Wallowa 1 0.02777778
-##       Wasco 1 0.02777778
-##  Washington 1 0.02777778
-##     Wheeler 1 0.02777778
-##     Yamhill 1 0.02777778</code></pre>
+##       Baker 2 0.02777778
+##      Benton 2 0.02777778
+##   Clackamas 2 0.02777778
+##     Clatsop 2 0.02777778
+##    Columbia 2 0.02777778
+##        Coos 2 0.02777778
+##       Crook 2 0.02777778
+##       Curry 2 0.02777778
+##   Deschutes 2 0.02777778
+##     Douglas 2 0.02777778
+##     Gilliam 2 0.02777778
+##       Grant 2 0.02777778
+##      Harney 2 0.02777778
+##  Hood River 2 0.02777778
+##     Jackson 2 0.02777778
+##   Jefferson 2 0.02777778
+##   Josephine 2 0.02777778
+##     Klamath 2 0.02777778
+##        Lake 2 0.02777778
+##        Lane 2 0.02777778
+##     Lincoln 2 0.02777778
+##        Linn 2 0.02777778
+##     Malheur 2 0.02777778
+##      Marion 2 0.02777778
+##      Morrow 2 0.02777778
+##   Multnomah 2 0.02777778
+##        Polk 2 0.02777778
+##     Sherman 2 0.02777778
+##   Tillamook 2 0.02777778
+##    Umatilla 2 0.02777778
+##       Union 2 0.02777778
+##     Wallowa 2 0.02777778
+##       Wasco 2 0.02777778
+##  Washington 2 0.02777778
+##     Wheeler 2 0.02777778
+##     Yamhill 2 0.02777778</code></pre>
 <p>To match them up, I will add to the existing names in <code>Oregon.COVID</code> with the missing verbiage. After reconciling the names, combine the data and the map using a <code>left_join</code> with the map as the base and attaching matching data so that all the counties that we wish to map are available even if some are missing data in the merge.</p>
 </div>
 <div id="covid-19-in-oregon" class="section level1">
@@ -171,4 +171,10 @@ projects: []
 <p><img src="/post/2020-03-21-covid-19-in-oregon/index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 <p>Or even better</p>
 <p><img src="/post/2020-03-21-covid-19-in-oregon/index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<div id="a-plotly" class="section level3">
+<h3>A Plotly</h3>
+<p>This doesn’t want to work. I think it is the interaction of the base map and ggplotly.</p>
+<p>Now let me try something else.</p>
+<p>So I have a base leaflet to work with.</p>
+</div>
 </div>

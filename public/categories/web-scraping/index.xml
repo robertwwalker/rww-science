@@ -5,12 +5,41 @@
     <link>/categories/web-scraping/</link>
       <atom:link href="/categories/web-scraping/index.xml" rel="self" type="application/rss+xml" />
     <description>web scraping</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© 2018</copyright><lastBuildDate>Sat, 18 Jan 2020 00:00:00 +0000</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© 2018</copyright><lastBuildDate>Sun, 22 Mar 2020 00:00:00 +0000</lastBuildDate>
     <image>
       <url>/img/portrait.jpg</url>
       <title>web scraping</title>
       <link>/categories/web-scraping/</link>
     </image>
+    
+    <item>
+      <title>COVID-19 County Maps for Oregon</title>
+      <link>/2020/03/22/covid-19-county-maps-for-oregon/</link>
+      <pubDate>Sun, 22 Mar 2020 00:00:00 +0000</pubDate>
+      <guid>/2020/03/22/covid-19-county-maps-for-oregon/</guid>
+      <description>
+
+
+&lt;div id=&#34;oregon-covid-data&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Oregon COVID data&lt;/h2&gt;
+&lt;p&gt;I now have two days of data. The scraping script appears below.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;a-base-map&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;A base map&lt;/h2&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-result-for-03212020&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;The Result for 03/21/2020&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-result-for-03222020&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;The Result for 03/22/2020&lt;/h2&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-new-section&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;The New Section&lt;/h2&gt;
+&lt;/div&gt;
+</description>
+    </item>
     
     <item>
       <title>a quick tidyTuesday on Passwords</title>
