@@ -28,7 +28,7 @@ library(tidyverse)
 
 ## Oregon COVID data
 
-I now have a few days of data.  The scraping script appears below.
+I now have a few days of data.  The scraping script appears at the bottom of the post; I am only using the county level data.  These data are current as of March 22, 2020.
 
 ```{r}
 load("OregonCOVID2020-03-22.RData")
@@ -37,16 +37,37 @@ load("OregonCOVID2020-03-22.RData")
 
 ## A base map
 
+I am going to use the `urbnmapr` package to grab the county map for Oregon.  A few steps.  Load the library then grab the map as an `sf` object; there is a `geom_sf` that makes them easy to work with.  Next I filter Oregon's counties.  Finally, I join the map to the data.
+
 ```{r}
 library(urbnmapr)
 Counties.SF <- get_urbn_map("counties", sf=TRUE)
 Oregon.SF <- Counties.SF %>% filter(state_name=="Oregon")
 Oregon.SF <- Oregon.SF %>% mutate(County = str_remove(county_name, " County"))
-library(ggrepel); library(ggthemes)
 Map.Me <- left_join(Oregon.SF,Oregon.COVID, by="County")
 ```
 
+# The Whole Thing: An Animation
+
+```{r}
+library(ggrepel); library(ggthemes); library(gganimate)
+Anim1 <- Map.Me %>% 
+  ggplot(., aes(geometry=geometry, fill=Number.of.cases, label=County)) + 
+  geom_sf() +
+  coord_sf(crs=3785, datum=NA) + 
+  geom_label_repel(stat = "sf_coordinates",
+    min.segment.length = 0,
+    colour = "white",
+    segment.colour = "white",
+    size = 3,
+    box.padding = unit(0.05, "lines"))  + scale_fill_continuous_tableau("Red") + theme_minimal() + labs(title="COVID-19 in Oregon", subtitle="{frame_time}", x="", y="", caption="Made with R, ggplot2, and ggrepel by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19") + transition_time(date)
+animate(Anim1, end_pause=100, nframes=200)
+```
+
+
 ## A Mapping Function
+
+To save time later, I turned the plots into a function so that I can use to reproduce each frame.  Two inputs to the function, the dataset that is always the merged data from above and the date that I want to plot located in `date1` in a `YYYY-MM-DD` format.
 
 ```{r}
 Plot.COVID <- function(date1, data) {
@@ -63,25 +84,9 @@ data %>% filter(date==date1) %>%
 }
 ```
 
-# The Whole Thing
-
-```{r}
-library(gganimate)
-Anim1 <- Map.Me %>% 
-  ggplot(., aes(geometry=geometry, fill=Number.of.cases, label=County)) + 
-  geom_sf() +
-  coord_sf(crs=3785, datum=NA) + 
-  geom_label_repel(stat = "sf_coordinates",
-    min.segment.length = 0,
-    colour = "white",
-    segment.colour = "white",
-    size = 3,
-    box.padding = unit(0.05, "lines"))  + scale_fill_continuous_tableau("Red") + theme_minimal() + labs(title="COVID-19 in Oregon", subtitle="{frame_time}", x="", y="", caption="Made with R, ggplot2, and ggrepel by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19") + transition_time(date)
-animate(Anim1, end_pause=100, nframes=200)
-```
-
-
 ## The Result for 03/18/2020
+
+This is the first date for which I can find data.  The `waybackmachine` was crucial.
 
 ```{r}
 Plot.COVID("2020-03-18", Map.Me)
@@ -133,7 +138,7 @@ COVID.New <- webpage %>%
         html_table(fill = TRUE) %>% data.frame()
 # Oregon.Total <- COVID.New %>% mutate(date=as.Date(Sys.Date())) %>% filter(County=="Total") %>% bind_rows(.,Oregon.Total) 
 Oregon.COVID <- COVID.New %>% mutate(date=as.Date(Sys.Date())) %>% filter(County!="Total") %>% bind_rows(.,Oregon.COVID) 
-save(Oregon.COVID, file=paste0("OregonCOVID",Sys.Date(),".RData"))
+# save(Oregon.COVID, file=paste0("OregonCOVID",Sys.Date(),".RData"))
 ```
 
 ### Adding Historical Data Together
@@ -164,12 +169,22 @@ Mar18 <- OHA.Corona(website="https://web.archive.org/web/20200319144434/https://
 Mar19 <- OHA.Corona(website="https://web.archive.org/web/20200320152224/https://govstatus.egov.com/OR-OHA-COVID-19", date="2020-03-19")
 # March 20 Update
 Mar20 <- OHA.Corona(website="https://web.archive.org/web/20200320202955/https://govstatus.egov.com/OR-OHA-COVID-19", date="2020-03-20")
+```
+
+### Put it all together
+
+```{r, eval=FALSE}
 # Load March 21, 22 that I already had
 load("OregonCOVID2020-03-22.RData")
+# Drop the labels
 OR.Fixing <- Oregon.COVID %>% select(-PTT) %>% head() %>% mutate(m=str_split_fixed(date, "/", 3)[,1], d=str_split_fixed(date, "/", 3)[,2], yr=str_split_fixed(date, "/", 3)[,3])
+# Create the dates and drop the intermediate garbage
 OR.COVID <- OR.Fixing %>% mutate(date = as.Date(paste(yr,m,d,sep="-"))) %>% select(-c(m,d,yr))
+# Bind it all together
 Oregon.COVID <- bind_rows(Oregon.COVID,Mar18$Counties,Mar19$Counties,Mar20$Counties)
+# Drop the rows of Totals
 Oregon.COVID <- Oregon.COVID %>% filter(County!="Total")
+# Save it for later use.
 save(Oregon.COVID, file="OregonCOVID2020-03-22.RData")
 ```
 

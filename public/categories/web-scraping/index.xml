@@ -22,19 +22,22 @@
 
 &lt;div id=&#34;oregon-covid-data&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Oregon COVID data&lt;/h2&gt;
-&lt;p&gt;I now have a few days of data. The scraping script appears below.&lt;/p&gt;
+&lt;p&gt;I now have a few days of data. The scraping script appears at the bottom of the post; I am only using the county level data. These data are current as of March 22, 2020.&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;a-base-map&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;A base map&lt;/h2&gt;
+&lt;p&gt;I am going to use the &lt;code&gt;urbnmapr&lt;/code&gt; package to grab the county map for Oregon. A few steps. Load the library then grab the map as an &lt;code&gt;sf&lt;/code&gt; object; there is a &lt;code&gt;geom_sf&lt;/code&gt; that makes them easy to work with. Next I filter Oregon’s counties. Finally, I join the map to the data.&lt;/p&gt;
 &lt;/div&gt;
+&lt;div id=&#34;the-whole-thing-an-animation&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;The Whole Thing: An Animation&lt;/h1&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-3-1.gif&#34; /&gt;&lt;!-- --&gt;&lt;/p&gt;
 &lt;div id=&#34;a-mapping-function&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;A Mapping Function&lt;/h2&gt;
+&lt;p&gt;To save time later, I turned the plots into a function so that I can use to reproduce each frame. Two inputs to the function, the dataset that is always the merged data from above and the date that I want to plot located in &lt;code&gt;date1&lt;/code&gt; in a &lt;code&gt;YYYY-MM-DD&lt;/code&gt; format.&lt;/p&gt;
 &lt;/div&gt;
-&lt;div id=&#34;the-whole-thing&#34; class=&#34;section level1&#34;&gt;
-&lt;h1&gt;The Whole Thing&lt;/h1&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-4-1.gif&#34; /&gt;&lt;!-- --&gt;&lt;/p&gt;
 &lt;div id=&#34;the-result-for-03182020&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;The Result for 03/18/2020&lt;/h2&gt;
+&lt;p&gt;This is the first date for which I can find data. The &lt;code&gt;waybackmachine&lt;/code&gt; was crucial.&lt;/p&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;the-result-for-03192020&#34; class=&#34;section level2&#34;&gt;
@@ -61,6 +64,9 @@
 &lt;/div&gt;
 &lt;div id=&#34;adding-historical-data-together&#34; class=&#34;section level3&#34;&gt;
 &lt;h3&gt;Adding Historical Data Together&lt;/h3&gt;
+&lt;/div&gt;
+&lt;div id=&#34;put-it-all-together&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Put it all together&lt;/h3&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
