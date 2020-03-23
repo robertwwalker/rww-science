@@ -23,50 +23,135 @@
 &lt;div id=&#34;oregon-covid-data&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Oregon COVID data&lt;/h2&gt;
 &lt;p&gt;I now have a few days of data. The scraping script appears at the bottom of the post; I am only using the county level data. These data are current as of March 22, 2020.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;load(url(&amp;quot;https://github.com/robertwwalker/rww-science/raw/master/content/post/2020-03-22-covid-19-county-maps-for-oregon/OregonCOVID2020-03-22.RData&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;load(&amp;quot;OregonCOVID2020-03-22.RData&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 &lt;div id=&#34;a-base-map&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;A base map&lt;/h2&gt;
 &lt;p&gt;I am going to use the &lt;code&gt;urbnmapr&lt;/code&gt; package to grab the county map for Oregon. A few steps. Load the library then grab the map as an &lt;code&gt;sf&lt;/code&gt; object; there is a &lt;code&gt;geom_sf&lt;/code&gt; that makes them easy to work with. Next I filter Oregon’s counties. Finally, I join the map to the data.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(urbnmapr)
+Counties.SF &amp;lt;- get_urbn_map(&amp;quot;counties&amp;quot;, sf=TRUE)
+Oregon.SF &amp;lt;- Counties.SF %&amp;gt;% filter(state_name==&amp;quot;Oregon&amp;quot;)
+Oregon.SF &amp;lt;- Oregon.SF %&amp;gt;% mutate(County = str_remove(county_name, &amp;quot; County&amp;quot;))
+Map.Me &amp;lt;- left_join(Oregon.SF,Oregon.COVID, by=&amp;quot;County&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 &lt;div id=&#34;the-whole-thing-an-animation&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;The Whole Thing: An Animation&lt;/h1&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-3-1.gif&#34; /&gt;&lt;!-- --&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(ggrepel); library(ggthemes); library(gganimate)
+Anim1 &amp;lt;- Map.Me %&amp;gt;% 
+  ggplot(., aes(geometry=geometry, fill=Number.of.cases, label=County)) + 
+  geom_sf() +
+  coord_sf(crs=3785, datum=NA) + 
+  geom_label_repel(stat = &amp;quot;sf_coordinates&amp;quot;,
+    min.segment.length = 0,
+    colour = &amp;quot;white&amp;quot;,
+    segment.colour = &amp;quot;white&amp;quot;,
+    size = 3,
+    box.padding = unit(0.05, &amp;quot;lines&amp;quot;))  + scale_fill_continuous_tableau(&amp;quot;Red&amp;quot;) + theme_minimal() + labs(title=&amp;quot;COVID-19 in Oregon&amp;quot;, subtitle=&amp;quot;{frame_time}&amp;quot;, x=&amp;quot;&amp;quot;, y=&amp;quot;&amp;quot;, caption=&amp;quot;Made with R, ggplot2, and ggrepel by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19&amp;quot;) + transition_time(date)
+animate(Anim1, end_pause=100, nframes=200)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-4-1.gif&#34; /&gt;&lt;!-- --&gt;&lt;/p&gt;
 &lt;div id=&#34;a-mapping-function&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;A Mapping Function&lt;/h2&gt;
 &lt;p&gt;To save time later, I turned the plots into a function so that I can use to reproduce each frame. Two inputs to the function, the dataset that is always the merged data from above and the date that I want to plot located in &lt;code&gt;date1&lt;/code&gt; in a &lt;code&gt;YYYY-MM-DD&lt;/code&gt; format.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Plot.COVID &amp;lt;- function(date1, data) {
+data %&amp;gt;% filter(date==date1) %&amp;gt;%
+  ggplot(., aes(geometry=geometry, fill=Number.of.cases, label=County)) + 
+  geom_sf() +
+  coord_sf(crs=3785, datum=NA) + 
+  geom_label_repel(stat = &amp;quot;sf_coordinates&amp;quot;,
+    min.segment.length = 0,
+    colour = &amp;quot;white&amp;quot;,
+    segment.colour = &amp;quot;white&amp;quot;,
+    size = 3,
+    box.padding = unit(0.05, &amp;quot;lines&amp;quot;))  + scale_fill_continuous_tableau(&amp;quot;Red&amp;quot;) + theme_minimal() + labs(title=&amp;quot;COVID-19 in Oregon&amp;quot;, subtitle=date1, x=&amp;quot;&amp;quot;, y=&amp;quot;&amp;quot;, caption=&amp;quot;Made with R, ggplot2, and ggrepel by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19&amp;quot;)
+}&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 &lt;div id=&#34;the-result-for-03182020&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;The Result for 03/18/2020&lt;/h2&gt;
 &lt;p&gt;This is the first date for which I can find data. The &lt;code&gt;waybackmachine&lt;/code&gt; was crucial.&lt;/p&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Plot.COVID(&amp;quot;2020-03-18&amp;quot;, Map.Me)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;the-result-for-03192020&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;The Result for 03/19/2020&lt;/h2&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Plot.COVID(&amp;quot;2020-03-19&amp;quot;, Map.Me)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;the-result-for-03202020&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;The Result for 03/20/2020&lt;/h2&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Plot.COVID(&amp;quot;2020-03-20&amp;quot;, Map.Me)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-8-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;the-result-for-03212020&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;The Result for 03/21/2020&lt;/h2&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-8-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Plot.COVID(&amp;quot;2020-03-21&amp;quot;, Map.Me)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;the-result-for-03222020&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;The Result for 03/22/2020&lt;/h2&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Plot.COVID(&amp;quot;2020-03-22&amp;quot;, Map.Me)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-10-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;the-new-section&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;The New Section&lt;/h2&gt;
 &lt;div id=&#34;a-scraper&#34; class=&#34;section level3&#34;&gt;
 &lt;h3&gt;A Scraper&lt;/h3&gt;
 &lt;p&gt;I have written some code here to grab the updates as they post them and add them to the dataset. Now I need to set an cron job to evaluate this script daily.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(rvest)
+load(paste0(&amp;quot;OregonCOVID&amp;quot;,Sys.Date()-1,&amp;quot;.RData&amp;quot;))
+webpage &amp;lt;- read_html(&amp;quot;https://govstatus.egov.com/OR-OHA-COVID-19&amp;quot;)
+tbls &amp;lt;- html_nodes(webpage, &amp;quot;table&amp;quot;)
+tbls
+COVID.New &amp;lt;- webpage %&amp;gt;%
+        html_nodes(&amp;quot;table&amp;quot;) %&amp;gt;%
+        .[2] %&amp;gt;%
+        html_table(fill = TRUE) %&amp;gt;% data.frame()
+# Oregon.Total &amp;lt;- COVID.New %&amp;gt;% mutate(date=as.Date(Sys.Date())) %&amp;gt;% filter(County==&amp;quot;Total&amp;quot;) %&amp;gt;% bind_rows(.,Oregon.Total) 
+Oregon.COVID &amp;lt;- COVID.New %&amp;gt;% mutate(date=as.Date(Sys.Date())) %&amp;gt;% filter(County!=&amp;quot;Total&amp;quot;) %&amp;gt;% bind_rows(.,Oregon.COVID) 
+# save(Oregon.COVID, file=paste0(&amp;quot;OregonCOVID&amp;quot;,Sys.Date(),&amp;quot;.RData&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 &lt;div id=&#34;adding-historical-data-together&#34; class=&#34;section level3&#34;&gt;
 &lt;h3&gt;Adding Historical Data Together&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# A function to parse the tables
+OHA.Corona &amp;lt;- function(website, date) {
+webpage &amp;lt;- read_html(website)
+COVID.Head &amp;lt;- webpage %&amp;gt;%
+        html_nodes(&amp;quot;table&amp;quot;) %&amp;gt;%
+        .[1] %&amp;gt;%
+        html_table(fill = TRUE) %&amp;gt;% data.frame()
+names(COVID.Head) &amp;lt;- c(&amp;quot;Category&amp;quot;,&amp;quot;Outcome&amp;quot;)
+COVID.Head &amp;lt;- COVID.Head %&amp;gt;% mutate(date=as.Date(date))
+COVID.County &amp;lt;- webpage %&amp;gt;%
+        html_nodes(&amp;quot;table&amp;quot;) %&amp;gt;%
+        .[2] %&amp;gt;%
+        html_table(fill = TRUE) %&amp;gt;% data.frame() %&amp;gt;% mutate(date=as.Date(date))
+COVID.Age &amp;lt;- webpage %&amp;gt;%
+        html_nodes(&amp;quot;table&amp;quot;) %&amp;gt;%
+        .[3] %&amp;gt;%
+        html_table(fill = TRUE) %&amp;gt;% data.frame() %&amp;gt;% mutate(date=as.Date(date))
+return(list(Header=COVID.Head, Counties = COVID.County, Ages = COVID.Age))
+}
+# March 18 Update
+Mar18 &amp;lt;- OHA.Corona(website=&amp;quot;https://web.archive.org/web/20200319144434/https://govstatus.egov.com/OR-OHA-COVID-19&amp;quot;, date=&amp;quot;2020-03-18&amp;quot;)
+# March 19 Update
+Mar19 &amp;lt;- OHA.Corona(website=&amp;quot;https://web.archive.org/web/20200320152224/https://govstatus.egov.com/OR-OHA-COVID-19&amp;quot;, date=&amp;quot;2020-03-19&amp;quot;)
+# March 20 Update
+Mar20 &amp;lt;- OHA.Corona(website=&amp;quot;https://web.archive.org/web/20200320202955/https://govstatus.egov.com/OR-OHA-COVID-19&amp;quot;, date=&amp;quot;2020-03-20&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 &lt;div id=&#34;put-it-all-together&#34; class=&#34;section level3&#34;&gt;
 &lt;h3&gt;Put it all together&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Load March 21, 22 that I already had
+load(&amp;quot;OregonCOVID2020-03-22.RData&amp;quot;)
+# Drop the labels
+OR.Fixing &amp;lt;- Oregon.COVID %&amp;gt;% select(-PTT) %&amp;gt;% head() %&amp;gt;% mutate(m=str_split_fixed(date, &amp;quot;/&amp;quot;, 3)[,1], d=str_split_fixed(date, &amp;quot;/&amp;quot;, 3)[,2], yr=str_split_fixed(date, &amp;quot;/&amp;quot;, 3)[,3])
+# Create the dates and drop the intermediate garbage
+OR.COVID &amp;lt;- OR.Fixing %&amp;gt;% mutate(date = as.Date(paste(yr,m,d,sep=&amp;quot;-&amp;quot;))) %&amp;gt;% select(-c(m,d,yr))
+# Bind it all together
+Oregon.COVID &amp;lt;- bind_rows(Oregon.COVID,Mar18$Counties,Mar19$Counties,Mar20$Counties)
+# Drop the rows of Totals
+Oregon.COVID &amp;lt;- Oregon.COVID %&amp;gt;% filter(County!=&amp;quot;Total&amp;quot;)
+# Save it for later use.
+save(Oregon.COVID, file=&amp;quot;OregonCOVID2020-03-22.RData&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;

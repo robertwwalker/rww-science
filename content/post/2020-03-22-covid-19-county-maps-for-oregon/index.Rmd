@@ -22,13 +22,18 @@ projects: []
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE, message=FALSE, warning = FALSE)
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning = FALSE)
 library(tidyverse)
 ```
 
 ## Oregon COVID data
 
 I now have a few days of data.  The scraping script appears at the bottom of the post; I am only using the county level data.  These data are current as of March 22, 2020.
+
+```{r}
+load(url("https://github.com/robertwwalker/rww-science/raw/master/content/post/2020-03-22-covid-19-county-maps-for-oregon/OregonCOVID2020-03-22.RData"))
+```
+
 
 ```{r}
 load("OregonCOVID2020-03-22.RData")
