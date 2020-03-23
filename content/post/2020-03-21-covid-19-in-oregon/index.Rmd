@@ -28,7 +28,7 @@ knitr::opts_chunk$set(message=FALSE, warning = FALSE)
 
 The Oregon data are available from OHA but not in an easy form.  The URL that I found is up to date as of 3/21/2020, 8:00 a.m: [here](https://govstatus.egov.com/OR-OHA-COVID-19).  `datapasta` makes it easy to cut and paste them though I will figure out how to automate that shortly.  I have to do this by hand until I spend time figuring out how to scrape it.
 
-```{r}
+```{r, echo=FALSE}
 library(tidyverse)
 library(urbnmapr)
 Oregon.COVID.0321 <- data.frame(
@@ -56,7 +56,7 @@ Oregon.COVID.0321 <- data.frame(
                             498L,33L,0L,8L,19L,11L,3L,8L,330L,1L,94L,
                             2338L)
 )
-Oregon.COVID.0321 <- Oregon.COVID.0321 %>% mutate(PTT = paste(County,"<br/> Cases:",Number.of.cases,"<br/> Deaths:",Deaths,"<br/> Negative Tests:",Negative.test.results, sep=""), date="2020-03-21")
+Oregon.COVID.0321 <- Oregon.COVID.0321 %>% mutate(PTT = paste(County,"<br/> Cases:",Number.of.cases,"<br/> Deaths:",Deaths,"<br/> Negative Tests:",Negative.test.results,"<br/>", sep=""), date="2020-03-21")
 Oregon.COVID.0322 <- data.frame(
        stringsAsFactors = FALSE,
                  County = c("Baker","Benton",
@@ -81,11 +81,12 @@ Oregon.COVID.0322 <- data.frame(
                             152,19,286,13,197,4,702,44,0,9,30,11,3,10,
                             456,1,95,2864)
 )
-Oregon.COVID.0322 <- Oregon.COVID.0322 %>% mutate(PTT = paste(County,"<br/> Cases:",Number.of.cases,"<br/> Deaths:",Deaths,"<br/> Negative Tests:",Negative.test.results, sep=""), date="2020-03-22")
+Oregon.COVID.0322 <- Oregon.COVID.0322 %>% mutate(PTT = paste(County,"<br/> Cases:",Number.of.cases,"<br/> Deaths:",Deaths,"<br/> Negative Tests:",Negative.test.results,"<br/>", sep=""), date="2020-03-22")
 Oregon.COVID <- bind_rows(Oregon.COVID.0321,Oregon.COVID.0322)
 # Oregon.COVID <- Oregon.COVID.0322
 Oregon.Total <- Oregon.COVID %>% filter(County=="Total")
 Oregon.COVID <- Oregon.COVID %>% filter(County!="Total") %>% mutate(date = as.Date(date))
+Oregon.COVID <- Oregon.COVID %>% filter(date=="2020-03-22")
 ```
 
 ## `urbnmapr`
@@ -106,7 +107,7 @@ I want to use it to map Oregon counties.  First, I need to identify Oregon count
 
 ```{r}
 library(janitor)
-Counties.SF %>% tabyl(state_name)
+Counties.SF %>% tabyl(state_name) %>% head()
 Oregon.SF <- Counties.SF %>% filter(state_name=="Oregon")
 ggplot(Oregon.SF) + geom_sf()
 ```
@@ -137,13 +138,13 @@ ggplot(Oregon.SF, aes(geometry=geometry)) +
 To join the data together, we are going to need an appropriate merge column.  The named counties in Oregon from the map are:
 
 ```{r}
-Oregon.SF %>% tabyl(county_name)
+Oregon.SF %>% tabyl(county_name) %>% head()
 ```
 
 The data have named counties also, they look like this:
 
 ```{r}
-Oregon.COVID %>% tabyl(County)
+Oregon.COVID %>% tabyl(County) %>% head()
 ```
 
 To match them up, I will add to the existing names in `Oregon.COVID` with the missing verbiage.  After reconciling the names, combine the data and the map using a `left_join` with the map as the base and attaching matching data so that all the counties that we wish to map are available even if some are missing data in the merge.
@@ -183,20 +184,29 @@ ggplotly(fig1)
 
 Now let me try something else.
 
-```{r}
-library(leaflet)
+```{r, eval=FALSE}
+library(widgetframe); library(leaflet); library(here); library(htmlwidgets); library(htmltools)
 m <- leaflet() %>% addProviderTiles("OpenStreetMap.Mapnik") %>% setView(lat=43.8041, lng=-120.5542, zoom=6) %>% addTiles()
-m
+frameWidget(m)
 ```
+
 
 So I have a base leaflet to work with.
 
-```{r}
-library(tigris); library(rgdal); library(htmltools); library(widgetframe); library(viridis)
+## Final Leaflet
+
+```{r, results='hide'}
+library(widgetframe); library(leaflet); library(here); library(htmlwidgets)
+library(tigris); library(rgdal); library(htmltools); library(viridis)
 counties.t <- counties(state = "41", resolution = "500k")
 OC22 <- Oregon.COVID %>% filter(date=="2020-03-22")
 Map.L <- merge(counties.t, OC22, by.x="NAME", by.y= "County")
+```
+
+The final plot.
+
+```{r}
 mypal <- colorNumeric(palette = "viridis", domain = Map.L$Number.of.cases, na.color = "grey")
-m <- leaflet() %>% addProviderTiles("OpenStreetMap.Mapnik") %>% setView(lat=43.8041, lng=-120.5542, zoom=6) %>% addTiles()  %>% addPolygons(data=Map.L, color = "white", fillOpacity = 0.3, fillColor = mypal(Map.L$Number.of.cases), weight=0.5, highlightOptions = highlightOptions(color = "white", weight = 2, bringToFront = TRUE), label = ~HTML(PTT)) %>% addLegend("bottomleft", pal = mypal, values = Map.L$Number.of.cases, title = "Coronavirus Cases in Oregon", opacity = 0.3)
-frameWidget(m)
+m2 <- leaflet() %>% addProviderTiles("OpenStreetMap.Mapnik") %>% setView(lat=43.8041, lng=-120.5542, zoom=6) %>% addTiles()  %>% addPolygons(data=Map.L, color = "white", fillOpacity = 0.3, fillColor = mypal(Map.L$Number.of.cases), weight=0.5, highlightOptions = highlightOptions(color = "white", weight = 2, bringToFront = TRUE), label = lapply(Map.L$PTT, htmltools::HTML)) %>% addLegend("bottomleft", pal = mypal, values = Map.L$Number.of.cases, title = "Coronavirus Cases in Oregon", opacity = 0.3)
+frameWidget(m2)
 ```
