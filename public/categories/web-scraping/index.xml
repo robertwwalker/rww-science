@@ -5,7 +5,7 @@
     <link>/categories/web-scraping/</link>
       <atom:link href="/categories/web-scraping/index.xml" rel="self" type="application/rss+xml" />
     <description>web scraping</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© 2018</copyright><lastBuildDate>Sun, 22 Mar 2020 00:00:00 +0000</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© 2018</copyright><lastBuildDate>Mon, 23 Mar 2020 00:00:00 +0000</lastBuildDate>
     <image>
       <url>/img/portrait.jpg</url>
       <title>web scraping</title>
@@ -14,9 +14,9 @@
     
     <item>
       <title>COVID-19 County Maps for Oregon</title>
-      <link>/2020/03/22/covid-19-county-maps-for-oregon/</link>
-      <pubDate>Sun, 22 Mar 2020 00:00:00 +0000</pubDate>
-      <guid>/2020/03/22/covid-19-county-maps-for-oregon/</guid>
+      <link>/2020/03/23/covid-19-county-maps-for-oregon/</link>
+      <pubDate>Mon, 23 Mar 2020 00:00:00 +0000</pubDate>
+      <guid>/2020/03/23/covid-19-county-maps-for-oregon/</guid>
       <description>
 
 
@@ -27,37 +27,377 @@
 &lt;/div&gt;
 &lt;div id=&#34;a-base-map&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;A base map&lt;/h2&gt;
-&lt;p&gt;I am going to use the &lt;code&gt;urbnmapr&lt;/code&gt; package to grab the county map for Oregon. A few steps. Load the library then grab the map as an &lt;code&gt;sf&lt;/code&gt; object; there is a &lt;code&gt;geom_sf&lt;/code&gt; that makes them easy to work with. Next I filter Oregon’s counties. Finally, I join the map to the data.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(urbnmapr)
-Counties.SF &amp;lt;- get_urbn_map(&amp;quot;counties&amp;quot;, sf=TRUE)
-Oregon.SF &amp;lt;- Counties.SF %&amp;gt;% filter(state_name==&amp;quot;Oregon&amp;quot;)
-Oregon.SF &amp;lt;- Oregon.SF %&amp;gt;% mutate(County = str_remove(county_name, &amp;quot; County&amp;quot;))
-Map.Me &amp;lt;- left_join(Oregon.SF,Oregon.COVID, by=&amp;quot;County&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Load the &lt;code&gt;tigris&lt;/code&gt; library then grab the map as an &lt;code&gt;sf&lt;/code&gt; object; there is a &lt;code&gt;geom_sf&lt;/code&gt; that makes them easy to work with. Finally, I join the map to the data.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(tigris); library(rgdal); library(htmltools); library(viridis); library(sf)
+counties.t &amp;lt;- counties(state = &amp;quot;41&amp;quot;, resolution = &amp;quot;500k&amp;quot;, class=&amp;quot;sf&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## 
+  |                                                                            
+  |                                                                      |   0%
+  |                                                                            
+  |                                                                      |   1%
+  |                                                                            
+  |=                                                                     |   1%
+  |                                                                            
+  |=                                                                     |   2%
+  |                                                                            
+  |==                                                                    |   2%
+  |                                                                            
+  |==                                                                    |   3%
+  |                                                                            
+  |==                                                                    |   4%
+  |                                                                            
+  |===                                                                   |   4%
+  |                                                                            
+  |===                                                                   |   5%
+  |                                                                            
+  |====                                                                  |   5%
+  |                                                                            
+  |====                                                                  |   6%
+  |                                                                            
+  |=====                                                                 |   6%
+  |                                                                            
+  |=====                                                                 |   7%
+  |                                                                            
+  |=====                                                                 |   8%
+  |                                                                            
+  |======                                                                |   8%
+  |                                                                            
+  |======                                                                |   9%
+  |                                                                            
+  |=======                                                               |   9%
+  |                                                                            
+  |=======                                                               |  10%
+  |                                                                            
+  |=======                                                               |  11%
+  |                                                                            
+  |========                                                              |  11%
+  |                                                                            
+  |========                                                              |  12%
+  |                                                                            
+  |=========                                                             |  12%
+  |                                                                            
+  |=========                                                             |  13%
+  |                                                                            
+  |=========                                                             |  14%
+  |                                                                            
+  |==========                                                            |  14%
+  |                                                                            
+  |==========                                                            |  15%
+  |                                                                            
+  |===========                                                           |  15%
+  |                                                                            
+  |===========                                                           |  16%
+  |                                                                            
+  |============                                                          |  16%
+  |                                                                            
+  |============                                                          |  17%
+  |                                                                            
+  |============                                                          |  18%
+  |                                                                            
+  |=============                                                         |  18%
+  |                                                                            
+  |=============                                                         |  19%
+  |                                                                            
+  |==============                                                        |  19%
+  |                                                                            
+  |==============                                                        |  20%
+  |                                                                            
+  |==============                                                        |  21%
+  |                                                                            
+  |===============                                                       |  21%
+  |                                                                            
+  |===============                                                       |  22%
+  |                                                                            
+  |================                                                      |  22%
+  |                                                                            
+  |================                                                      |  23%
+  |                                                                            
+  |================                                                      |  24%
+  |                                                                            
+  |=================                                                     |  24%
+  |                                                                            
+  |=================                                                     |  25%
+  |                                                                            
+  |==================                                                    |  25%
+  |                                                                            
+  |==================                                                    |  26%
+  |                                                                            
+  |===================                                                   |  26%
+  |                                                                            
+  |===================                                                   |  27%
+  |                                                                            
+  |===================                                                   |  28%
+  |                                                                            
+  |====================                                                  |  28%
+  |                                                                            
+  |====================                                                  |  29%
+  |                                                                            
+  |=====================                                                 |  29%
+  |                                                                            
+  |=====================                                                 |  30%
+  |                                                                            
+  |=====================                                                 |  31%
+  |                                                                            
+  |======================                                                |  31%
+  |                                                                            
+  |======================                                                |  32%
+  |                                                                            
+  |=======================                                               |  32%
+  |                                                                            
+  |=======================                                               |  33%
+  |                                                                            
+  |=======================                                               |  34%
+  |                                                                            
+  |========================                                              |  34%
+  |                                                                            
+  |========================                                              |  35%
+  |                                                                            
+  |=========================                                             |  35%
+  |                                                                            
+  |=========================                                             |  36%
+  |                                                                            
+  |==========================                                            |  36%
+  |                                                                            
+  |==========================                                            |  37%
+  |                                                                            
+  |==========================                                            |  38%
+  |                                                                            
+  |===========================                                           |  38%
+  |                                                                            
+  |===========================                                           |  39%
+  |                                                                            
+  |============================                                          |  39%
+  |                                                                            
+  |============================                                          |  40%
+  |                                                                            
+  |============================                                          |  41%
+  |                                                                            
+  |=============================                                         |  41%
+  |                                                                            
+  |=============================                                         |  42%
+  |                                                                            
+  |==============================                                        |  42%
+  |                                                                            
+  |==============================                                        |  43%
+  |                                                                            
+  |==============================                                        |  44%
+  |                                                                            
+  |===============================                                       |  44%
+  |                                                                            
+  |===============================                                       |  45%
+  |                                                                            
+  |================================                                      |  45%
+  |                                                                            
+  |================================                                      |  46%
+  |                                                                            
+  |=================================                                     |  46%
+  |                                                                            
+  |=================================                                     |  47%
+  |                                                                            
+  |=================================                                     |  48%
+  |                                                                            
+  |==================================                                    |  48%
+  |                                                                            
+  |==================================                                    |  49%
+  |                                                                            
+  |===================================                                   |  49%
+  |                                                                            
+  |===================================                                   |  50%
+  |                                                                            
+  |===================================                                   |  51%
+  |                                                                            
+  |====================================                                  |  51%
+  |                                                                            
+  |====================================                                  |  52%
+  |                                                                            
+  |=====================================                                 |  52%
+  |                                                                            
+  |=====================================                                 |  53%
+  |                                                                            
+  |=====================================                                 |  54%
+  |                                                                            
+  |======================================                                |  54%
+  |                                                                            
+  |======================================                                |  55%
+  |                                                                            
+  |=======================================                               |  55%
+  |                                                                            
+  |=======================================                               |  56%
+  |                                                                            
+  |========================================                              |  56%
+  |                                                                            
+  |========================================                              |  57%
+  |                                                                            
+  |========================================                              |  58%
+  |                                                                            
+  |=========================================                             |  58%
+  |                                                                            
+  |=========================================                             |  59%
+  |                                                                            
+  |==========================================                            |  59%
+  |                                                                            
+  |==========================================                            |  60%
+  |                                                                            
+  |==========================================                            |  61%
+  |                                                                            
+  |===========================================                           |  61%
+  |                                                                            
+  |===========================================                           |  62%
+  |                                                                            
+  |============================================                          |  62%
+  |                                                                            
+  |============================================                          |  63%
+  |                                                                            
+  |============================================                          |  64%
+  |                                                                            
+  |=============================================                         |  64%
+  |                                                                            
+  |=============================================                         |  65%
+  |                                                                            
+  |==============================================                        |  65%
+  |                                                                            
+  |==============================================                        |  66%
+  |                                                                            
+  |===============================================                       |  66%
+  |                                                                            
+  |===============================================                       |  67%
+  |                                                                            
+  |===============================================                       |  68%
+  |                                                                            
+  |================================================                      |  68%
+  |                                                                            
+  |================================================                      |  69%
+  |                                                                            
+  |=================================================                     |  69%
+  |                                                                            
+  |=================================================                     |  70%
+  |                                                                            
+  |=================================================                     |  71%
+  |                                                                            
+  |==================================================                    |  71%
+  |                                                                            
+  |==================================================                    |  72%
+  |                                                                            
+  |===================================================                   |  72%
+  |                                                                            
+  |===================================================                   |  73%
+  |                                                                            
+  |===================================================                   |  74%
+  |                                                                            
+  |====================================================                  |  74%
+  |                                                                            
+  |====================================================                  |  75%
+  |                                                                            
+  |=====================================================                 |  75%
+  |                                                                            
+  |=====================================================                 |  76%
+  |                                                                            
+  |======================================================                |  76%
+  |                                                                            
+  |======================================================                |  77%
+  |                                                                            
+  |======================================================                |  78%
+  |                                                                            
+  |=======================================================               |  78%
+  |                                                                            
+  |=======================================================               |  79%
+  |                                                                            
+  |========================================================              |  79%
+  |                                                                            
+  |========================================================              |  80%
+  |                                                                            
+  |========================================================              |  81%
+  |                                                                            
+  |=========================================================             |  81%
+  |                                                                            
+  |=========================================================             |  82%
+  |                                                                            
+  |==========================================================            |  82%
+  |                                                                            
+  |==========================================================            |  83%
+  |                                                                            
+  |==========================================================            |  84%
+  |                                                                            
+  |===========================================================           |  84%
+  |                                                                            
+  |===========================================================           |  85%
+  |                                                                            
+  |============================================================          |  85%
+  |                                                                            
+  |============================================================          |  86%
+  |                                                                            
+  |=============================================================         |  86%
+  |                                                                            
+  |=============================================================         |  87%
+  |                                                                            
+  |=============================================================         |  88%
+  |                                                                            
+  |==============================================================        |  88%
+  |                                                                            
+  |==============================================================        |  89%
+  |                                                                            
+  |===============================================================       |  89%
+  |                                                                            
+  |===============================================================       |  90%
+  |                                                                            
+  |===============================================================       |  91%
+  |                                                                            
+  |================================================================      |  91%
+  |                                                                            
+  |================================================================      |  92%
+  |                                                                            
+  |=================================================================     |  92%
+  |                                                                            
+  |=================================================================     |  93%
+  |                                                                            
+  |=================================================================     |  94%
+  |                                                                            
+  |==================================================================    |  94%
+  |                                                                            
+  |==================================================================    |  95%
+  |                                                                            
+  |===================================================================   |  95%
+  |                                                                            
+  |===================================================================   |  96%
+  |                                                                            
+  |====================================================================  |  96%
+  |                                                                            
+  |====================================================================  |  97%
+  |                                                                            
+  |====================================================================  |  98%
+  |                                                                            
+  |===================================================================== |  98%
+  |                                                                            
+  |===================================================================== |  99%
+  |                                                                            
+  |======================================================================|  99%
+  |                                                                            
+  |======================================================================| 100%&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Map.Me &amp;lt;- left_join(counties.t,Oregon.COVID, by=c(&amp;quot;NAME&amp;quot; = &amp;quot;County&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 &lt;div id=&#34;the-whole-thing-an-animation&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;The Whole Thing: An Animation&lt;/h1&gt;
 &lt;p&gt;I will use a ggplot to build Oregon’s map and fill it with case numbers. I have to project the map off of the natural angle in the basic data, repel the labels to prevent print overlap, and scheme the colors. The last step is to animate it by time.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(ggrepel); library(ggthemes); library(gganimate)
 Anim1 &amp;lt;- Map.Me %&amp;gt;% 
-  ggplot(., aes(geometry=geometry, fill=Number.of.cases, label=County)) + 
+  ggplot(., aes(geometry=geometry, fill=Number.of.cases, label=NAME)) + 
   geom_sf() +
-  coord_sf(crs=3785, datum=NA) + 
   geom_label_repel(stat = &amp;quot;sf_coordinates&amp;quot;,
     min.segment.length = 0,
     colour = &amp;quot;white&amp;quot;,
     segment.colour = &amp;quot;white&amp;quot;,
     size = 3,
     box.padding = unit(0.05, &amp;quot;lines&amp;quot;))  + scale_fill_continuous_tableau(&amp;quot;Red&amp;quot;) + theme_minimal() + labs(title=&amp;quot;COVID-19 in Oregon&amp;quot;, subtitle=&amp;quot;{frame_time}&amp;quot;, x=&amp;quot;&amp;quot;, y=&amp;quot;&amp;quot;, caption=&amp;quot;Made with R, ggplot2, and ggrepel by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19&amp;quot;) + transition_time(date)
-animate(Anim1, end_pause=100, nframes=200)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-3-1.gif&#34; /&gt;&lt;!-- --&gt;&lt;/p&gt;
+ResA &amp;lt;- animate(Anim1, end_pause=100, nframes=200)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ResA&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-4-1.gif&#34; /&gt;&lt;!-- --&gt;&lt;/p&gt;
 &lt;div id=&#34;a-mapping-function&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;A Mapping Function&lt;/h2&gt;
 &lt;p&gt;To save time later, I turned the plots into a function so that I can use to reproduce each frame. Two inputs to the function, the dataset that is always the merged data from above and the date that I want to plot located in &lt;code&gt;date1&lt;/code&gt; in a &lt;code&gt;YYYY-MM-DD&lt;/code&gt; format.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Plot.COVID &amp;lt;- function(date1, data) {
 data %&amp;gt;% filter(date==date1) %&amp;gt;%
-  ggplot(., aes(geometry=geometry, fill=Number.of.cases, label=County)) + 
+  ggplot(., aes(geometry=geometry, fill=Number.of.cases, label=NAME)) + 
   geom_sf() +
-  coord_sf(crs=3785, datum=NA) + 
   geom_label_repel(stat = &amp;quot;sf_coordinates&amp;quot;,
     min.segment.length = 0,
     colour = &amp;quot;white&amp;quot;,
@@ -70,32 +410,32 @@ data %&amp;gt;% filter(date==date1) %&amp;gt;%
 &lt;h2&gt;The Result for 03/18/2020&lt;/h2&gt;
 &lt;p&gt;This is the first date for which I can find data. The &lt;code&gt;waybackmachine&lt;/code&gt; was crucial.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Plot.COVID(&amp;quot;2020-03-18&amp;quot;, Map.Me)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;the-result-for-03192020&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;The Result for 03/19/2020&lt;/h2&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Plot.COVID(&amp;quot;2020-03-19&amp;quot;, Map.Me)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;the-result-for-03202020&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;The Result for 03/20/2020&lt;/h2&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Plot.COVID(&amp;quot;2020-03-20&amp;quot;, Map.Me)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-8-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;the-result-for-03212020&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;The Result for 03/21/2020&lt;/h2&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Plot.COVID(&amp;quot;2020-03-21&amp;quot;, Map.Me)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-8-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;the-result-for-03222020&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;The Result for 03/22/2020&lt;/h2&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Plot.COVID(&amp;quot;2020-03-22&amp;quot;, Map.Me)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-10-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;the-result-for-03222020-1&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;The Result for 03/22/2020&lt;/h2&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Plot.COVID(&amp;quot;2020-03-23&amp;quot;, Map.Me)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-10-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;the-new-section&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;The New Section&lt;/h2&gt;

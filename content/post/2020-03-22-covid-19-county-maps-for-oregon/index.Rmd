@@ -1,7 +1,7 @@
 ---
 title: COVID-19 County Maps for Oregon
 author: Robert W. Walker
-date: '2020-03-22'
+date: '2020-03-23'
 slug: covid-19-county-maps-for-oregon
 categories:
   - tidyverse
@@ -12,7 +12,7 @@ tags:
 subtitle: ''
 summary: ''
 authors: []
-lastmod: '2020-03-22T20:46:49-07:00'
+lastmod: '2020-03-23T15:46:49-07:00'
 featured: no
 image:
   caption: ''
@@ -36,35 +36,35 @@ load("~/Sandbox/awful/content/post/2020-03-22-covid-19-county-maps-for-oregon/Or
 
 ## A base map
 
-I am going to use the `urbnmapr` package to grab the county map for Oregon.  A few steps.  Load the library then grab the map as an `sf` object; there is a `geom_sf` that makes them easy to work with.  Next I filter Oregon's counties.  Finally, I join the map to the data.
+Load the `tigris` library then grab the map as an `sf` object; there is a `geom_sf` that makes them easy to work with.  Finally, I join the map to the data.
 
 ```{r}
-library(urbnmapr)
-Counties.SF <- get_urbn_map("counties", sf=TRUE)
-Oregon.SF <- Counties.SF %>% filter(state_name=="Oregon")
-Oregon.SF <- Oregon.SF %>% mutate(County = str_remove(county_name, " County"))
-Map.Me <- left_join(Oregon.SF,Oregon.COVID, by="County")
+library(tigris); library(rgdal); library(htmltools); library(viridis); library(sf)
+counties.t <- counties(state = "41", resolution = "500k", class="sf")
+Map.Me <- left_join(counties.t,Oregon.COVID, by=c("NAME" = "County"))
 ```
 
 # The Whole Thing: An Animation
 
 I will use a ggplot to build Oregon's map and fill it with case numbers.  I have to project the map off of the natural angle in the basic data, repel the labels to prevent print overlap, and scheme the colors.  The last step is to animate it by time.
 
-```{r}
+```{r, results='hide'}
 library(ggrepel); library(ggthemes); library(gganimate)
 Anim1 <- Map.Me %>% 
-  ggplot(., aes(geometry=geometry, fill=Number.of.cases, label=County)) + 
+  ggplot(., aes(geometry=geometry, fill=Number.of.cases, label=NAME)) + 
   geom_sf() +
-  coord_sf(crs=3785, datum=NA) + 
   geom_label_repel(stat = "sf_coordinates",
     min.segment.length = 0,
     colour = "white",
     segment.colour = "white",
     size = 3,
     box.padding = unit(0.05, "lines"))  + scale_fill_continuous_tableau("Red") + theme_minimal() + labs(title="COVID-19 in Oregon", subtitle="{frame_time}", x="", y="", caption="Made with R, ggplot2, and ggrepel by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19") + transition_time(date)
-animate(Anim1, end_pause=100, nframes=200)
+ResA <- animate(Anim1, end_pause=100, nframes=200)
 ```
 
+```{r}
+ResA
+```
 
 ## A Mapping Function
 
@@ -73,9 +73,8 @@ To save time later, I turned the plots into a function so that I can use to repr
 ```{r}
 Plot.COVID <- function(date1, data) {
 data %>% filter(date==date1) %>%
-  ggplot(., aes(geometry=geometry, fill=Number.of.cases, label=County)) + 
+  ggplot(., aes(geometry=geometry, fill=Number.of.cases, label=NAME)) + 
   geom_sf() +
-  coord_sf(crs=3785, datum=NA) + 
   geom_label_repel(stat = "sf_coordinates",
     min.segment.length = 0,
     colour = "white",
