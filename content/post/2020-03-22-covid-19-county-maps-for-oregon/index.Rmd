@@ -51,7 +51,7 @@ I will use a ggplot to build Oregon's map and fill it with case numbers.  I have
 ```{r}
 library(ggrepel); library(ggthemes); library(gganimate)
 Anim1 <- Map.Me %>% 
-  ggplot(., aes(geometry=geometry, fill=Number.of.cases, label=NAME)) + 
+  ggplot(., aes(geometry=geometry, fill=Number.of.cases, label=NAME, group=NAME)) + 
   geom_sf() +
   geom_label_repel(stat = "sf_coordinates",
     min.segment.length = 0,
@@ -160,23 +160,29 @@ webpage <- read_html(website)
 COVID.Head <- webpage %>%
         html_nodes("table") %>%
         .[1] %>%
-        html_table(fill = TRUE) %>% data.frame() %>% filter(!startsWith(.[[1]],"Total"))
+        html_table(fill = TRUE) %>% data.frame()  # %>% filter(!startsWith(.[[1]],"Total"))
 Scraped.date <- names(COVID.Head)[1] %>% str_remove(.,"X.Oregon.Test.Results.as.of.") %>% str_remove(., "..8.00.a.m..Updated.daily.")
 names(COVID.Head) <- c("Category","Outcome")
-COVID.Head <- COVID.Head %>% mutate(Outcome = as.numeric(str_remove(Outcome, ",")))
-COVID.Head <- COVID.Head %>% mutate(date=as.Date(date), Scraped.date = Scraped.date) %>% filter(!startsWith(.[[1]],"Total"))
+COVID.Head <- COVID.Head %>% mutate(Outcome = as.numeric(str_remove_all(Outcome, ",")), date=as.Date(date), Scraped.date = Scraped.date) # %>% filter(!startsWith(.[[1]],"Total"))
 COVID.County <- webpage %>%
         html_nodes("table") %>%
         .[2] %>%
-        html_table(fill = TRUE) %>% data.frame()  %>% filter(!startsWith(.[[1]],"Total")) %>% mutate(date=as.Date(date), Scraped.date = Scraped.date, Negative.test.results = as.numeric(str_remove_all(Negative.test.results, ",")))
+        html_table(fill = TRUE) %>% 
+        data.frame() %>% 
+        mutate(date=as.Date(date), 
+               Scraped.date = Scraped.date, 
+               Negative.test.results = as.numeric(str_remove_all(Negative.test.results, ",")))
 COVID.Age <- webpage %>%
         html_nodes("table") %>%
         .[3] %>%
-        html_table(fill = TRUE) %>% data.frame()  %>% filter(!startsWith(.[[1]],"Total")) %>% mutate(date=as.Date(date), Scraped.date = Scraped.date)
+        html_table(fill = TRUE) %>% data.frame()  %>%  
+        mutate(date=as.Date(date), Scraped.date = Scraped.date)
 COVID.Hospitalized <- webpage %>%
         html_nodes("table") %>%
         .[4] %>%
-        html_table(fill = TRUE) %>% data.frame()  %>% filter(!startsWith(.[[1]],"Total")) %>% mutate(date=as.Date(date), Scraped.date = Scraped.date)
+        html_table(fill = TRUE) %>% 
+        data.frame()  %>% 
+        mutate(date=as.Date(date), Scraped.date = Scraped.date)
 return(list(Header=COVID.Head, Counties = COVID.County, Ages = COVID.Age, Hospitalized = COVID.Hospitalized))
 }
 OHA.Corona.3 <- function(website, date) {
@@ -204,7 +210,8 @@ webpage <- read_html(website)
 COVID.Head <- webpage %>%
         html_nodes("table") %>%
         .[1] %>%
-        html_table(fill = TRUE) %>% data.frame() %>% filter(!startsWith(.[[1]],"Total"))
+        html_table(fill = TRUE) %>% 
+        data.frame()
 Scraped.date <- names(COVID.Head)[1] %>% str_remove(.,"X.Oregon.Test.Results.as.of.") %>% str_remove(., "..8.00.a.m..Updated.daily.")
 names(COVID.Head) <- c("Category","Outcome")
 COVID.Head <- COVID.Head %>% mutate(Outcome = as.numeric(str_remove(Outcome,",")))
@@ -234,7 +241,11 @@ Mar22 <- OHA.Corona.3("https://web.archive.org/web/20200322205228/https://govsta
 Mar23 <- OHA.Corona(website="https://web.archive.org/web/20200323192410/https://govstatus.egov.com/OR-OHA-COVID-19", date="2020-03-23")
 # March 24 Update
 Mar24 <- OHA.Corona(website="https://govstatus.egov.com/OR-OHA-COVID-19", date=as.character(Sys.Date()))
-Oregon.COVID <- bind_rows(Mar24$Counties,Mar23$Counties,Mar22$Counties,Mar21$Counties,Mar20$Counties,Mar19$Counties,Mar18$Counties)
+Oregon.Tests.All <- bind_rows(Mar24$Header,Mar23$Header,Mar22$Header,Mar21$Header,Mar20$Header,Mar19$Header,Mar18$Header)
+Oregon.COVID.All <- bind_rows(Mar24$Counties,Mar23$Counties,Mar22$Counties,Mar21$Counties,Mar20$Counties,Mar19$Counties,Mar18$Counties)
+Oregon.COVID.Total <- Oregon.COVID.All %>% filter(County=="Total")
+Oregon.COVID <- Oregon.COVID.All %>% filter(County!="Total")
+Oregon.Tests <- Oregon.Tests.All[!str_detect(Oregon.Tests.All$Category, "Total"),]
 # save.image("~/Sandbox/awful/content/post/2020-03-22-covid-19-county-maps-for-oregon/data/OregonCOVID2020-03-24.RData")
 ```
 
