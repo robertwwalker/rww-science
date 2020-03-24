@@ -1,7 +1,7 @@
 ---
 title: COVID-19 County Maps for Oregon
 author: Robert W. Walker
-date: '2020-03-23'
+date: '2020-03-24'
 slug: covid-19-county-maps-for-oregon
 categories:
   - tidyverse
@@ -12,7 +12,7 @@ tags:
 subtitle: ''
 summary: ''
 authors: []
-lastmod: '2020-03-23T15:46:49-07:00'
+lastmod: '2020-03-24T13:46:49-07:00'
 featured: no
 image:
   caption: ''
@@ -31,7 +31,7 @@ library(tidyverse)
 I now have a few days of data.  The scraping script appears at the bottom of the post; I am only using the county level data.  These data are current as of March 23, 2020.
 
 ```{r}
-load("~/Sandbox/awful/content/post/2020-03-22-covid-19-county-maps-for-oregon/OregonCOVID2020-03-23.RData")
+load("~/Sandbox/awful/content/post/2020-03-22-covid-19-county-maps-for-oregon/data/OregonCOVID2020-03-24.RData")
 ```
 
 ## A base map
@@ -123,6 +123,12 @@ Plot.COVID("2020-03-22", Map.Me)
 Plot.COVID("2020-03-23", Map.Me)
 ```
 
+## The Result for 03/24/2020
+
+```{r}
+Plot.COVID("2020-03-23", Map.Me)
+```
+
 
 ## The New Section
 
@@ -149,26 +155,28 @@ Oregon.COVID <- COVID.New %>% mutate(date=as.Date(Sys.Date())) %>% filter(County
 
 ```{r, eval=FALSE}
 # A function to parse the tables
-OHA.Corona.4 <- function(website, date) {
+OHA.Corona <- function(website, date) {
 webpage <- read_html(website)
 COVID.Head <- webpage %>%
         html_nodes("table") %>%
         .[1] %>%
-        html_table(fill = TRUE) %>% data.frame()
+        html_table(fill = TRUE) %>% data.frame() %>% filter(!startsWith(.[[1]],"Total"))
+Scraped.date <- names(COVID.Head)[1] %>% str_remove(.,"X.Oregon.Test.Results.as.of.") %>% str_remove(., "..8.00.a.m..Updated.daily.")
 names(COVID.Head) <- c("Category","Outcome")
-COVID.Head <- COVID.Head %>% mutate(date=as.Date(date))
+COVID.Head <- COVID.Head %>% mutate(Outcome = as.numeric(str_remove(Outcome, ",")))
+COVID.Head <- COVID.Head %>% mutate(date=as.Date(date), Scraped.date = Scraped.date) %>% filter(!startsWith(.[[1]],"Total"))
 COVID.County <- webpage %>%
         html_nodes("table") %>%
         .[2] %>%
-        html_table(fill = TRUE) %>% data.frame() %>% mutate(date=as.Date(date))
+        html_table(fill = TRUE) %>% data.frame()  %>% filter(!startsWith(.[[1]],"Total")) %>% mutate(date=as.Date(date), Scraped.date = Scraped.date, Negative.test.results = as.numeric(str_remove_all(Negative.test.results, ",")))
 COVID.Age <- webpage %>%
         html_nodes("table") %>%
         .[3] %>%
-        html_table(fill = TRUE) %>% data.frame() %>% mutate(date=as.Date(date))
+        html_table(fill = TRUE) %>% data.frame()  %>% filter(!startsWith(.[[1]],"Total")) %>% mutate(date=as.Date(date), Scraped.date = Scraped.date)
 COVID.Hospitalized <- webpage %>%
         html_nodes("table") %>%
         .[4] %>%
-        html_table(fill = TRUE) %>% data.frame() %>% mutate(date=as.Date(date))
+        html_table(fill = TRUE) %>% data.frame()  %>% filter(!startsWith(.[[1]],"Total")) %>% mutate(date=as.Date(date), Scraped.date = Scraped.date)
 return(list(Header=COVID.Head, Counties = COVID.County, Ages = COVID.Age, Hospitalized = COVID.Hospitalized))
 }
 OHA.Corona.3 <- function(website, date) {
@@ -176,47 +184,57 @@ webpage <- read_html(website)
 COVID.Head <- webpage %>%
         html_nodes("table") %>%
         .[1] %>%
-        html_table(fill = TRUE) %>% data.frame()
+        html_table(fill = TRUE) %>% data.frame() %>% filter(!startsWith(.[[1]],"Total"))
+Scraped.date <- names(COVID.Head)[1] %>% str_remove(.,"X.Oregon.Test.Results.as.of.") %>% str_remove(., "..8.00.a.m..Updated.daily.")
 names(COVID.Head) <- c("Category","Outcome")
-COVID.Head <- COVID.Head %>% mutate(date=as.Date(date))
+COVID.Head <- COVID.Head %>% mutate(Outcome = as.numeric(str_remove(Outcome,",")))
+COVID.Head <- COVID.Head %>% mutate(date=as.Date(date), Scraped.date = Scraped.date)
 COVID.County <- webpage %>%
         html_nodes("table") %>%
         .[2] %>%
-        html_table(fill = TRUE) %>% data.frame() %>% mutate(date=as.Date(date))
+        html_table(fill = TRUE) %>% data.frame()  %>% filter(!startsWith(.[[1]],"Total")) %>% mutate(date=as.Date(date), Scraped.date = Scraped.date, Negative.test.results = as.numeric(str_remove_all(Negative.test.results, ",")))
 COVID.Age <- webpage %>%
         html_nodes("table") %>%
         .[3] %>%
-        html_table(fill = TRUE) %>% data.frame() %>% mutate(date=as.Date(date))
+        html_table(fill = TRUE) %>% data.frame()  %>% filter(!startsWith(.[[1]],"Total")) %>% mutate(date=as.Date(date), Scraped.date = Scraped.date)
 return(list(Header=COVID.Head, Counties = COVID.County, Ages = COVID.Age))
 }
+OHA.Corona.2 <- function(website, date) {
+webpage <- read_html(website)
+COVID.Head <- webpage %>%
+        html_nodes("table") %>%
+        .[1] %>%
+        html_table(fill = TRUE) %>% data.frame() %>% filter(!startsWith(.[[1]],"Total"))
+Scraped.date <- names(COVID.Head)[1] %>% str_remove(.,"X.Oregon.Test.Results.as.of.") %>% str_remove(., "..8.00.a.m..Updated.daily.")
+names(COVID.Head) <- c("Category","Outcome")
+COVID.Head <- COVID.Head %>% mutate(Outcome = as.numeric(str_remove(Outcome,",")))
+COVID.Head <- COVID.Head %>% mutate(date=as.Date(date), Scraped.date = Scraped.date)
+COVID.County <- webpage %>%
+        html_nodes("table") %>%
+        .[2] %>%
+        html_table(fill = TRUE) %>% data.frame()  %>% filter(!startsWith(.[[1]],"Total")) %>% mutate(date=as.Date(date), Scraped.date = Scraped.date)
+COVID.Age <- webpage %>%
+        html_nodes("table") %>%
+        .[3] %>%
+        html_table(fill = TRUE) %>% data.frame()  %>% filter(!startsWith(.[[1]],"Total")) %>% mutate(date=as.Date(date), Scraped.date = Scraped.date)
+return(list(Header=COVID.Head, Counties = COVID.County, Ages = COVID.Age))
+}
+
 # March 18 Update
-Mar18 <- OHA.Corona.3(website="https://web.archive.org/web/20200319144434/https://govstatus.egov.com/OR-OHA-COVID-19", date="2020-03-18")
+Mar18 <- OHA.Corona.2(website="https://web.archive.org/web/20200319144434/https://govstatus.egov.com/OR-OHA-COVID-19", date="2020-03-18")
 # March 19 Update
-Mar19 <- OHA.Corona.3(website="https://web.archive.org/web/20200320152224/https://govstatus.egov.com/OR-OHA-COVID-19", date="2020-03-19")
+Mar19 <- OHA.Corona.2(website="https://web.archive.org/web/20200320152224/https://govstatus.egov.com/OR-OHA-COVID-19", date="2020-03-19")
 # March 20 Update
-Mar20 <- OHA.Corona.3(website="https://web.archive.org/web/20200320202955/https://govstatus.egov.com/OR-OHA-COVID-19", date="2020-03-20")
+Mar20 <- OHA.Corona.2(website="https://web.archive.org/web/20200320202955/https://govstatus.egov.com/OR-OHA-COVID-19", date="2020-03-20")
 # March 21 Update
 Mar21 <- OHA.Corona.3(website="https://web.archive.org/web/20200321211741/https://govstatus.egov.com/OR-OHA-COVID-19", date="2020-03-21")
 # March 22 Update
 Mar22 <- OHA.Corona.3("https://web.archive.org/web/20200322205228/https://govstatus.egov.com/OR-OHA-COVID-19", date="2020-03-22")
 # March 23 Update
-Mar23 <- OHA.Corona.4(website="https://govstatus.egov.com/OR-OHA-COVID-19", date="2020-03-23")
-```
-
-### Put it all together
-
-```{r, eval=FALSE}
-# Load March 21, 22 that I already had
-load("OregonCOVID2020-03-22.RData")
-# Drop the labels
-OR.Fixing <- Oregon.COVID %>% select(-PTT) %>% head() %>% mutate(m=str_split_fixed(date, "/", 3)[,1], d=str_split_fixed(date, "/", 3)[,2], yr=str_split_fixed(date, "/", 3)[,3])
-# Create the dates and drop the intermediate garbage
-OR.COVID <- OR.Fixing %>% mutate(date = as.Date(paste(yr,m,d,sep="-"))) %>% select(-c(m,d,yr))
-# Bind it all together
-Oregon.COVID <- bind_rows(Oregon.COVID,Mar18$Counties,Mar19$Counties,Mar20$Counties)
-# Drop the rows of Totals
-Oregon.COVID <- Oregon.COVID %>% filter(County!="Total")
-# Save it for later use.
-save(Oregon.COVID, file="OregonCOVID2020-03-22.RData")
+Mar23 <- OHA.Corona(website="https://web.archive.org/web/20200323192410/https://govstatus.egov.com/OR-OHA-COVID-19", date="2020-03-23")
+# March 24 Update
+Mar24 <- OHA.Corona(website="https://govstatus.egov.com/OR-OHA-COVID-19", date=as.character(Sys.Date()))
+Oregon.COVID <- bind_rows(Mar24$Counties,Mar23$Counties,Mar22$Counties,Mar21$Counties,Mar20$Counties,Mar19$Counties,Mar18$Counties)
+save.image()
 ```
 

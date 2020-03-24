@@ -115,26 +115,28 @@ Oregon.COVID &amp;lt;- COVID.New %&amp;gt;% mutate(date=as.Date(Sys.Date())) %&a
 &lt;div id=&#34;adding-historical-data-together&#34; class=&#34;section level3&#34;&gt;
 &lt;h3&gt;Adding Historical Data Together&lt;/h3&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# A function to parse the tables
-OHA.Corona.4 &amp;lt;- function(website, date) {
+OHA.Corona &amp;lt;- function(website, date) {
 webpage &amp;lt;- read_html(website)
 COVID.Head &amp;lt;- webpage %&amp;gt;%
         html_nodes(&amp;quot;table&amp;quot;) %&amp;gt;%
         .[1] %&amp;gt;%
-        html_table(fill = TRUE) %&amp;gt;% data.frame()
+        html_table(fill = TRUE) %&amp;gt;% data.frame() %&amp;gt;% filter(!startsWith(.[[1]],&amp;quot;Total&amp;quot;))
+Scraped.date &amp;lt;- names(COVID.Head)[1] %&amp;gt;% str_remove(.,&amp;quot;X.Oregon.Test.Results.as.of.&amp;quot;) %&amp;gt;% str_remove(., &amp;quot;..8.00.a.m..Updated.daily.&amp;quot;)
 names(COVID.Head) &amp;lt;- c(&amp;quot;Category&amp;quot;,&amp;quot;Outcome&amp;quot;)
-COVID.Head &amp;lt;- COVID.Head %&amp;gt;% mutate(date=as.Date(date))
+COVID.Head &amp;lt;- COVID.Head %&amp;gt;% mutate(Outcome = as.numeric(str_remove(Outcome, &amp;quot;,&amp;quot;))
+COVID.Head &amp;lt;- COVID.Head %&amp;gt;% mutate(date=as.Date(date), Scraped.date = Scraped.date) %&amp;gt;% filter(!startsWith(.[[1]],&amp;quot;Total&amp;quot;))
 COVID.County &amp;lt;- webpage %&amp;gt;%
         html_nodes(&amp;quot;table&amp;quot;) %&amp;gt;%
         .[2] %&amp;gt;%
-        html_table(fill = TRUE) %&amp;gt;% data.frame() %&amp;gt;% mutate(date=as.Date(date))
+        html_table(fill = TRUE) %&amp;gt;% data.frame()  %&amp;gt;% filter(startsWith(.[[1]],&amp;quot;Total&amp;quot;)) %&amp;gt;% mutate(date=as.Date(date), Scraped.date = Scraped.date)
 COVID.Age &amp;lt;- webpage %&amp;gt;%
         html_nodes(&amp;quot;table&amp;quot;) %&amp;gt;%
         .[3] %&amp;gt;%
-        html_table(fill = TRUE) %&amp;gt;% data.frame() %&amp;gt;% mutate(date=as.Date(date))
+        html_table(fill = TRUE) %&amp;gt;% data.frame()  %&amp;gt;% filter(startsWith(.[[1]],&amp;quot;Total&amp;quot;)) %&amp;gt;% mutate(date=as.Date(date), Scraped.date = Scraped.date)
 COVID.Hospitalized &amp;lt;- webpage %&amp;gt;%
         html_nodes(&amp;quot;table&amp;quot;) %&amp;gt;%
         .[4] %&amp;gt;%
-        html_table(fill = TRUE) %&amp;gt;% data.frame() %&amp;gt;% mutate(date=as.Date(date))
+        html_table(fill = TRUE) %&amp;gt;% data.frame()  %&amp;gt;% filter(startsWith(.[[1]],&amp;quot;Total&amp;quot;)) %&amp;gt;% mutate(date=as.Date(date), Scraped.date = Scraped.date)
 return(list(Header=COVID.Head, Counties = COVID.County, Ages = COVID.Age, Hospitalized = COVID.Hospitalized))
 }
 OHA.Corona.3 &amp;lt;- function(website, date) {
@@ -142,17 +144,19 @@ webpage &amp;lt;- read_html(website)
 COVID.Head &amp;lt;- webpage %&amp;gt;%
         html_nodes(&amp;quot;table&amp;quot;) %&amp;gt;%
         .[1] %&amp;gt;%
-        html_table(fill = TRUE) %&amp;gt;% data.frame()
+        html_table(fill = TRUE) %&amp;gt;% data.frame() %&amp;gt;% filter(startsWith(.[[1]],&amp;quot;Total&amp;quot;))
+Scraped.date &amp;lt;- names(COVID.Head)[1] %&amp;gt;% str_remove(.,&amp;quot;X.Oregon.Test.Results.as.of.&amp;quot;) %&amp;gt;% str_remove(., &amp;quot;..8.00.a.m..Updated.daily.&amp;quot;)
 names(COVID.Head) &amp;lt;- c(&amp;quot;Category&amp;quot;,&amp;quot;Outcome&amp;quot;)
-COVID.Head &amp;lt;- COVID.Head %&amp;gt;% mutate(date=as.Date(date))
+COVID.Head &amp;lt;- COVID.Head %&amp;gt;% mutate(Outcome = as.numeric(str_remove(Outcome,&amp;quot;,&amp;quot;))
+COVID.Head &amp;lt;- COVID.Head %&amp;gt;% mutate(date=as.Date(date), Scraped.date = Scraped.date)
 COVID.County &amp;lt;- webpage %&amp;gt;%
         html_nodes(&amp;quot;table&amp;quot;) %&amp;gt;%
         .[2] %&amp;gt;%
-        html_table(fill = TRUE) %&amp;gt;% data.frame() %&amp;gt;% mutate(date=as.Date(date))
+        html_table(fill = TRUE) %&amp;gt;% data.frame()  %&amp;gt;% filter(startsWith(.[[1]],&amp;quot;Total&amp;quot;)) %&amp;gt;% mutate(date=as.Date(date), Scraped.date = Scraped.date)
 COVID.Age &amp;lt;- webpage %&amp;gt;%
         html_nodes(&amp;quot;table&amp;quot;) %&amp;gt;%
         .[3] %&amp;gt;%
-        html_table(fill = TRUE) %&amp;gt;% data.frame() %&amp;gt;% mutate(date=as.Date(date))
+        html_table(fill = TRUE) %&amp;gt;% data.frame()  %&amp;gt;% filter(startsWith(.[[1]],&amp;quot;Total&amp;quot;)) %&amp;gt;% mutate(date=as.Date(date), Scraped.date = Scraped.date)
 return(list(Header=COVID.Head, Counties = COVID.County, Ages = COVID.Age))
 }
 # March 18 Update
@@ -166,22 +170,9 @@ Mar21 &amp;lt;- OHA.Corona.3(website=&amp;quot;https://web.archive.org/web/20200
 # March 22 Update
 Mar22 &amp;lt;- OHA.Corona.3(&amp;quot;https://web.archive.org/web/20200322205228/https://govstatus.egov.com/OR-OHA-COVID-19&amp;quot;, date=&amp;quot;2020-03-22&amp;quot;)
 # March 23 Update
-Mar23 &amp;lt;- OHA.Corona.4(website=&amp;quot;https://govstatus.egov.com/OR-OHA-COVID-19&amp;quot;, date=&amp;quot;2020-03-23&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;div id=&#34;put-it-all-together&#34; class=&#34;section level3&#34;&gt;
-&lt;h3&gt;Put it all together&lt;/h3&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Load March 21, 22 that I already had
-load(&amp;quot;OregonCOVID2020-03-22.RData&amp;quot;)
-# Drop the labels
-OR.Fixing &amp;lt;- Oregon.COVID %&amp;gt;% select(-PTT) %&amp;gt;% head() %&amp;gt;% mutate(m=str_split_fixed(date, &amp;quot;/&amp;quot;, 3)[,1], d=str_split_fixed(date, &amp;quot;/&amp;quot;, 3)[,2], yr=str_split_fixed(date, &amp;quot;/&amp;quot;, 3)[,3])
-# Create the dates and drop the intermediate garbage
-OR.COVID &amp;lt;- OR.Fixing %&amp;gt;% mutate(date = as.Date(paste(yr,m,d,sep=&amp;quot;-&amp;quot;))) %&amp;gt;% select(-c(m,d,yr))
-# Bind it all together
-Oregon.COVID &amp;lt;- bind_rows(Oregon.COVID,Mar18$Counties,Mar19$Counties,Mar20$Counties)
-# Drop the rows of Totals
-Oregon.COVID &amp;lt;- Oregon.COVID %&amp;gt;% filter(County!=&amp;quot;Total&amp;quot;)
-# Save it for later use.
-save(Oregon.COVID, file=&amp;quot;OregonCOVID2020-03-22.RData&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+Mar23 &amp;lt;- OHA.Corona(website=&amp;quot;https://web.archive.org/web/20200323192410/https://govstatus.egov.com/OR-OHA-COVID-19&amp;quot;, date=&amp;quot;2020-03-23&amp;quot;)
+# March 24 Update
+Mar24 &amp;lt;- OHA.Corona(website=&amp;quot;https://govstatus.egov.com/OR-OHA-COVID-19&amp;quot;, date=as.character(Sys.Date()))&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
