@@ -235,6 +235,6 @@ Mar23 <- OHA.Corona(website="https://web.archive.org/web/20200323192410/https://
 # March 24 Update
 Mar24 <- OHA.Corona(website="https://govstatus.egov.com/OR-OHA-COVID-19", date=as.character(Sys.Date()))
 Oregon.COVID <- bind_rows(Mar24$Counties,Mar23$Counties,Mar22$Counties,Mar21$Counties,Mar20$Counties,Mar19$Counties,Mar18$Counties)
-save.image()
+# save.image("~/Sandbox/awful/content/post/2020-03-22-covid-19-county-maps-for-oregon/data/OregonCOVID2020-03-24.RData")
 ```
 
