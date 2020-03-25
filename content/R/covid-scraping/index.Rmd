@@ -74,6 +74,34 @@ COVID.Hospitalized <- webpage %>%
 return(list(Header=COVID.Head, Counties = COVID.County, Ages = COVID.Age, Hospitalized = COVID.Hospitalized))
 }
 # A function to extract the previous website organization with only three tables.
+OHA.Corona.3 <- function(website, date) {
+webpage <- read_html(website)
+# Extract the header data
+COVID.Head <- webpage %>%
+        html_nodes("table") %>%
+        .[1] %>%
+        html_table(fill = TRUE) %>% 
+        data.frame()
+# Extract the reported date from the website
+Scraped.date <- names(COVID.Head)[1] %>% str_remove(.,"X.Oregon.Test.Results.as.of.") %>% str_remove(., "..8.00.a.m..Updated.daily.")
+# Change the column names
+names(COVID.Head) <- c("Category","Outcome")
+# Complete the header data
+COVID.Head <- COVID.Head %>% mutate(Outcome = as.numeric(str_remove(Outcome,",")), date=as.Date(date), Scraped.date = as.Date(Scraped.date,"%m.%d.%y"))
+# Extract the county data
+COVID.County <- webpage %>%
+        html_nodes("table") %>%
+        .[2] %>%
+        html_table(fill = TRUE) %>% data.frame() %>% mutate(date=as.Date(date), 
+                                                            Scraped.date = as.Date(Scraped.date,"%m.%d.%y"),
+                                                            Negative.test.results = comma.rm.to.numeric(Negative.test.results))
+# Extract the age data
+COVID.Age <- webpage %>%
+        html_nodes("table") %>%
+        .[3] %>%
+        html_table(fill = TRUE) %>% data.frame()  %>% filter(!startsWith(.[[1]],"Total")) %>% mutate(date=as.Date(date), Scraped.date = as.Date(Scraped.date,"%m.%d.%y"))
+return(list(Header=COVID.Head, Counties = COVID.County, Ages = COVID.Age))
+}
 OHA.Corona.2 <- function(website, date) {
 webpage <- read_html(website)
 # Extract the header data
@@ -112,13 +140,13 @@ March19 <- OHA.Corona.2(website="https://web.archive.org/web/20200320152224/http
 # March 20 Update
 March20 <- OHA.Corona.2(website="https://web.archive.org/web/20200320202955/https://govstatus.egov.com/OR-OHA-COVID-19", date="2020-03-20")
 # March 21 Update
-March21 <- OHA.Corona.2(website="https://web.archive.org/web/20200321211741/https://govstatus.egov.com/OR-OHA-COVID-19", date="2020-03-21")
+March21 <- OHA.Corona.3(website="https://web.archive.org/web/20200321211741/https://govstatus.egov.com/OR-OHA-COVID-19", date="2020-03-21")
 # March 22 Update
-March22 <- OHA.Corona.2("https://web.archive.org/web/20200322205228/https://govstatus.egov.com/OR-OHA-COVID-19", date="2020-03-22")
+March22 <- OHA.Corona.3("https://web.archive.org/web/20200322205228/https://govstatus.egov.com/OR-OHA-COVID-19", date="2020-03-22")
 # March 23 Update
 March23 <- OHA.Corona(website="https://web.archive.org/web/20200323192410/https://govstatus.egov.com/OR-OHA-COVID-19", date="2020-03-23")
 # March 24 Update
-March24 <- OHA.Corona(website="https://govstatus.egov.com/OR-OHA-COVID-19", date=as.character(Sys.Date()))
+March24 <- OHA.Corona(website="https://govstatus.egov.com/OR-OHA-COVID-19", date=as.character(Sys.Date()-1))
 ```
 
 Finally, I need to combine the various tables together by type and take out the totals row in some cases.
@@ -131,16 +159,16 @@ Oregon.Tests <- Oregon.Tests.All[!str_detect(Oregon.Tests.All$Category, "Total")
 # Create a summary table
 OR.Testing <- Oregon.Tests %>% group_by(date) %>% summarise(Total = sum(Outcome))
 # Create county data
-Oregon.COVID.All <- bind_rows(Mar24$Counties,Mar23$Counties,Mar22$Counties,Mar21$Counties,Mar20$Counties,Mar19$Counties,Mar18$Counties)
+Oregon.COVID.All <- bind_rows(March24$Counties,March23$Counties,March22$Counties,March21$Counties,March20$Counties,March19$Counties,March18$Counties)
 # Split the county data into one that is exclusively totals and one without the totals
 Oregon.COVID.Total <- Oregon.COVID.All %>% filter(County=="Total")
 Oregon.COVID <- Oregon.COVID.All %>% filter(County!="Total")
 # Create the data by age
-OR.Ages <- bind_rows(Mar24$Ages,Mar23$Ages,Mar22$Ages,Mar21$Ages,Mar20$Ages,Mar19$Ages,Mar18$Ages)  %>% filter(Age.group!="Total")
+OR.Ages <- bind_rows(March24$Ages,March23$Ages,March22$Ages,March21$Ages,March20$Ages,March19$Ages,March18$Ages)  %>% filter(Age.group!="Total")
 # Create a summary table by age
 OR.AgeT <- OR.Ages %>%  group_by(date) %>% summarise(Total=sum(Number.of.cases))
 # Create the hospitalization data
-OR.Hosp <- bind_rows(Mar23$Hospitalized,Mar24$Hospitalized)
+OR.Hosp <- bind_rows(March23$Hospitalized,March24$Hospitalized)
 # Save the image
 # save.image("~/Sandbox/awful/content/R/COVID/data/OregonCOVID2020-03-24.RData")
 ```

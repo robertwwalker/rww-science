@@ -1,0 +1,186 @@
+---
+title: COVID-19 Scraping
+author: Robert W. Walker
+date: '2020-03-24'
+slug: covid-scraping
+categories:
+  - tidyverse
+  - web scraping
+tags:
+  - tidyverse
+  - R
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2020-03-24T22:46:49-07:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+
+
+# Building Oregon COVID data
+
+I now have a few days of data now.  To rebuild it, I will have to use the [waybackmachine](https://archive.org/web/).  These data are current as of March 24, 2020.  The files that I need to locate and follow updates to [this page from Oregon's OHA](https://govstatus.egov.com/OR-OHA-COVID-19).
+
+# A Scraper
+
+Let me explain the logic for the scraper.  *NB: I had to rewrite it; the original versions of the website had three tables without data on hospitalizations.  The state of Oregon is now providing hospitalization data.*  First, I use `read_html` to read the version of the page, parse the individual tables using `html_nodes`, render the table using `html_table` and turn it into a `data.frame`.  In a few cases, there are commas formatted into numbers and I also grab the reported date from within the scrape.  At the end, I use `bind_rows` to put the data.frames together.
+
+
+```r
+library(rvest); library(htmltools)
+# A function to remove commas from numbers.
+comma.rm.to.numeric <- function(variable) {as.numeric(str_remove_all( {{variable}}, ",")) }
+# A function to parse the tables currently
+OHA.Corona <- function(website, date) {
+webpage <- read_html(website)
+COVID.Head <- webpage %>%
+        html_nodes("table") %>%
+        .[1] %>%
+        html_table(fill = TRUE) %>% data.frame()
+Scraped.date <- names(COVID.Head)[1] %>% str_remove(.,"X.Oregon.Test.Results.as.of.") %>% str_remove(., "..8.00.a.m..Updated.daily.")
+names(COVID.Head) <- c("Category","Outcome")
+COVID.Head <- COVID.Head %>% 
+  mutate(Outcome = comma.rm.to.numeric(Outcome), date=as.Date(date), Scraped.date = as.Date(Scraped.date,"%m.%d.%y"))
+# Extract the county data
+COVID.County <- webpage %>%
+        html_nodes("table") %>%
+        .[2] %>%
+        html_table(fill = TRUE) %>% 
+        data.frame() %>% 
+        mutate(date=as.Date(date), 
+               Scraped.date = as.Date(Scraped.date,"%m.%d.%y"), 
+               Negative.test.results = comma.rm.to.numeric(Negative.test.results))
+# Extract the age data
+COVID.Age <- webpage %>%
+        html_nodes("table") %>%
+        .[3] %>%
+        html_table(fill = TRUE) %>% data.frame()  %>%  
+        mutate(date=as.Date(date), Scraped.date = as.Date(Scraped.date,"%m.%d.%y"))
+# Extract the hospitalization data
+COVID.Hospitalized <- webpage %>%
+        html_nodes("table") %>%
+        .[4] %>%
+        html_table(fill = TRUE) %>% 
+        data.frame()  %>% 
+        mutate(date=as.Date(date), Scraped.date = as.Date(Scraped.date,"%m.%d.%y"))
+return(list(Header=COVID.Head, Counties = COVID.County, Ages = COVID.Age, Hospitalized = COVID.Hospitalized))
+}
+# A function to extract the previous website organization with only three tables.
+OHA.Corona.2 <- function(website, date) {
+webpage <- read_html(website)
+# Extract the header data
+COVID.Head <- webpage %>%
+        html_nodes("table") %>%
+        .[1] %>%
+        html_table(fill = TRUE) %>% 
+        data.frame()
+# Extract the reported date from the website
+Scraped.date <- names(COVID.Head)[1] %>% str_remove(.,"X.Oregon.Test.Results.as.of.") %>% str_remove(., "..8.00.a.m..Updated.daily.")
+# Change the column names
+names(COVID.Head) <- c("Category","Outcome")
+# Complete the header data
+COVID.Head <- COVID.Head %>% mutate(Outcome = as.numeric(str_remove(Outcome,",")), date=as.Date(date), Scraped.date = as.Date(Scraped.date,"%m.%d.%y"))
+# Extract the county data
+COVID.County <- webpage %>%
+        html_nodes("table") %>%
+        .[2] %>%
+        html_table(fill = TRUE) %>% data.frame() %>% mutate(date=as.Date(date), Scraped.date = as.Date(Scraped.date,"%m.%d.%y"))
+# Extract the age data
+COVID.Age <- webpage %>%
+        html_nodes("table") %>%
+        .[3] %>%
+        html_table(fill = TRUE) %>% data.frame()  %>% filter(!startsWith(.[[1]],"Total")) %>% mutate(date=as.Date(date), Scraped.date = as.Date(Scraped.date,"%m.%d.%y"))
+return(list(Header=COVID.Head, Counties = COVID.County, Ages = COVID.Age))
+}
+```
+
+Now I invoke the function for each date of valid data.
+
+
+```r
+# March 18 Update
+March18 <- OHA.Corona.2(website="https://web.archive.org/web/20200319144434/https://govstatus.egov.com/OR-OHA-COVID-19", date="2020-03-18")
+# March 19 Update
+March19 <- OHA.Corona.2(website="https://web.archive.org/web/20200320152224/https://govstatus.egov.com/OR-OHA-COVID-19", date="2020-03-19")
+# March 20 Update
+March20 <- OHA.Corona.2(website="https://web.archive.org/web/20200320202955/https://govstatus.egov.com/OR-OHA-COVID-19", date="2020-03-20")
+# March 21 Update
+March21 <- OHA.Corona.2(website="https://web.archive.org/web/20200321211741/https://govstatus.egov.com/OR-OHA-COVID-19", date="2020-03-21")
+# March 22 Update
+March22 <- OHA.Corona.2("https://web.archive.org/web/20200322205228/https://govstatus.egov.com/OR-OHA-COVID-19", date="2020-03-22")
+# March 23 Update
+March23 <- OHA.Corona(website="https://web.archive.org/web/20200323192410/https://govstatus.egov.com/OR-OHA-COVID-19", date="2020-03-23")
+# March 24 Update
+March24 <- OHA.Corona(website="https://govstatus.egov.com/OR-OHA-COVID-19", date=as.character(Sys.Date()))
+```
+
+Finally, I need to combine the various tables together by type and take out the totals row in some cases.
+
+
+```r
+# Create test data
+Oregon.Tests.All <- bind_rows(March24$Header,March23$Header,March22$Header,March21$Header,March20$Header,March19$Header,March18$Header)
+# Drop the row of totals
+Oregon.Tests <- Oregon.Tests.All[!str_detect(Oregon.Tests.All$Category, "Total"),]
+# Create a summary table
+OR.Testing <- Oregon.Tests %>% group_by(date) %>% summarise(Total = sum(Outcome))
+# Create county data
+Oregon.COVID.All <- bind_rows(Mar24$Counties,Mar23$Counties,Mar22$Counties,Mar21$Counties,Mar20$Counties,Mar19$Counties,Mar18$Counties)
+# Split the county data into one that is exclusively totals and one without the totals
+Oregon.COVID.Total <- Oregon.COVID.All %>% filter(County=="Total")
+Oregon.COVID <- Oregon.COVID.All %>% filter(County!="Total")
+# Create the data by age
+OR.Ages <- bind_rows(Mar24$Ages,Mar23$Ages,Mar22$Ages,Mar21$Ages,Mar20$Ages,Mar19$Ages,Mar18$Ages)  %>% filter(Age.group!="Total")
+# Create a summary table by age
+OR.AgeT <- OR.Ages %>%  group_by(date) %>% summarise(Total=sum(Number.of.cases))
+# Create the hospitalization data
+OR.Hosp <- bind_rows(Mar23$Hospitalized,Mar24$Hospitalized)
+# Save the image
+# save.image("~/Sandbox/awful/content/R/COVID/data/OregonCOVID2020-03-24.RData")
+```
+
+# Automating updates
+
+
+```r
+library(rvest); library(htmltools); library(tidyverse); library(rlang)
+load(url(paste0("https://rww.science/r/covid/data/OregonCOVID",Sys.Date()-1,".RData")))
+Today <- OHA.Corona(website="https://govstatus.egov.com/OR-OHA-COVID-19", date=as.character(Sys.Date()))
+if(Today$Header$date[[1]]==as.Date(Today$Header$Scraped.date[[1]],"%m.%d.%y")) {
+# Store Today
+eval(parse_expr(paste(months(Sys.Date()),format(Sys.Date(), "%d")," <- Today", sep="")))
+# Create test data
+Oregon.Tests.All <- bind_rows(Today$Header,Oregon.Tests.All) %>% distinct(.)
+# Drop the row of totals
+Oregon.Tests <- Oregon.Tests.All[!str_detect(Oregon.Tests.All$Category, "Total"),]
+# Create a summary table
+OR.Testing <- Oregon.Tests %>% group_by(date) %>% summarise(Total = sum(Outcome))
+# Create county data
+Oregon.COVID.All <- bind_rows(Today$Counties,Oregon.COVID.All) %>% distinct(.)
+# Split the county data into one that is exclusively totals and one without the totals
+Oregon.COVID.Total <- Oregon.COVID.All %>% filter(County=="Total")
+Oregon.COVID <- Oregon.COVID.All %>% filter(County!="Total")
+# Create the data by age
+OR.Ages <- bind_rows(Today$Ages,OR.Ages)  %>% filter(Age.group!="Total") %>% distinct(.)
+# Create a summary table by age
+OR.AgeT <- OR.Ages %>% group_by(date) %>% summarise(Total=sum(Number.of.cases))
+# Create the hospitalization data
+OR.Hosp <- bind_rows(Today$Hospitalized,OR.Hosp) %>% distinct(.)
+# Save the imageformat(Sys.Date(), "%d")
+save.image(paste0("~/Sandbox/awful/content/R/COVID/data/OregonCOVID",Sys.Date(),".RData"))
+cat("Added new data...")
+} else {
+cat("Nothing new to add; have a nice day!")
+}
+```
+
+```
+## Nothing new to add; have a nice day!
+```
+

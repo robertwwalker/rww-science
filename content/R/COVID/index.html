@@ -4,13 +4,16 @@ author: Robert W. Walker
 date: '2020-03-24'
 ---
 
+<script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
+<script src="/rmarkdown-libs/pymjs/pym.v1.js"></script>
+<script src="/rmarkdown-libs/widgetframe-binding/widgetframe.js"></script>
 
 
 <div id="oregon-covid-data" class="section level1">
 <h1>Oregon COVID data</h1>
 <p>In this post, I want to visualize the data on COVID-19 in the state of Oregon. I now have a few days of data that I want to scrape, separate, clean up, and plot. The process of scraping it is detailed in <a href="https://rww.science/r/covid-scraping/">a separate file</a>. These data are current as of March 24, 2020.</p>
 <pre class="r"><code>load(url(&quot;https://rww.science/r/covid/data/OregonCOVID2020-03-24.RData&quot;))</code></pre>
-<p>These data are current as of 3.24.2020.</p>
+<p>These data are current as of 2020-03-24.</p>
 <div id="building-a-base-map" class="section level2">
 <h2>Building a base map</h2>
 <p>To build a map to work from, I need a map library. Load the <code>tigris</code> library then grab the map as an <code>sf</code> object; there is a <code>geom_sf</code> that makes them easy to work with. Finally, I join the map to the data.</p>
@@ -23,6 +26,7 @@ Map.Me &lt;- left_join(counties.t,Oregon.COVID, by=c(&quot;NAME&quot; = &quot;Co
 <h1>The Whole Thing: An Animation</h1>
 <p>I will use a ggplot to build Oregon’s map and fill it with case numbers. <code>geom_sf()</code> plots the geometry. I have to repel the labels to prevent print overlap, and scheme the colors. The last step is to animate it by time.</p>
 <pre class="r"><code>library(ggrepel); library(ggthemes); library(gganimate)
+library(patchwork); library(hrbrthemes)
 Anim1 &lt;- Map.Me %&gt;% 
   ggplot(., aes(geometry=geometry, fill=Number.of.cases, label=NAME, group=NAME)) + 
   geom_sf() +
@@ -40,22 +44,27 @@ ResA</code></pre>
 <h1>Some Data on Testing</h1>
 <p>What is the status of testing?</p>
 <pre class="r"><code>OR.Testing &lt;- Oregon.Tests %&gt;% group_by(date) %&gt;% summarise(Total = sum(Outcome))
-Test1 &lt;- Oregon.Tests %&gt;% ggplot(.) + aes(x=date, y=Outcome, fill=Category, label=Outcome) + geom_col() + geom_label(col=&quot;magenta&quot;) + scale_fill_viridis_d() + labs(title=&quot;COVID-19 Testing in Oregon&quot;, y=&quot;Tests&quot;, subtitle=&quot;Total shown as label&quot;, caption = &quot;data: https://govstatus.egov.com/OR-OHA-COVID-19&quot;) + geom_label(data=OR.Testing, aes(x=date, y=Total+100, label=Total), fill=&quot;white&quot;, color=&quot;black&quot;, inherit.aes = FALSE)
+Test1 &lt;- Oregon.Tests %&gt;% ggplot(.) + aes(x=date, y=Outcome, fill=Category, label=Outcome) + geom_col() + geom_label(col=&quot;magenta&quot;, show.legend = FALSE) + scale_fill_viridis_d() + labs(title=&quot;COVID-19 Testing in Oregon&quot;, y=&quot;Tests&quot;, x=&quot;Date&quot;, subtitle=&quot;Total shown as label&quot;, caption = &quot;data: https://govstatus.egov.com/OR-OHA-COVID-19&quot;) + geom_label(data=OR.Testing, aes(x=date, y=Total+100, label=Total), fill=&quot;white&quot;, color=&quot;black&quot;, inherit.aes = FALSE)
 Test1</code></pre>
 <p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 </div>
 <div id="hospitalization-data" class="section level1">
 <h1>Hospitalization Data</h1>
 <p>How do positive cases and hospitalization relate?</p>
-<pre class="r"><code>Hos1 &lt;- OR.Hosp %&gt;% filter(Hospitalized.!=&quot;Total&quot;) %&gt;% ggplot(., aes(x=date, y=Number.of.cases,fill=Hospitalized.)) + geom_col() + scale_fill_viridis_d() + labs(x=&quot;Date&quot;, y=&quot;Number of COVID Positives&quot;, fill=&quot;Hospitalized?&quot;, title=&quot;Hospitalization Status of COVID-19 Positives in Oregon&quot;)
+<pre class="r"><code>Hos1 &lt;- OR.Hosp %&gt;% filter(Hospitalized.!=&quot;Total&quot;) %&gt;% ggplot(., aes(x=date, y=Number.of.cases,fill=Hospitalized.)) + geom_col() + scale_fill_ipsum() + labs(x=&quot;Date&quot;, y=&quot;Number of COVID Positives&quot;, fill=&quot;Hospitalized?&quot;, title=&quot;Hospitalization Status of COVID-19 Positives in Oregon&quot;)
 Hos1</code></pre>
 <p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 </div>
 <div id="age-data" class="section level1">
 <h1>Age Data</h1>
 <p>How does this break down by age?</p>
-<pre class="r"><code>Age1 &lt;- OR.Ages %&gt;% ggplot(., aes(x=date, y=Number.of.cases, fill=Age.group)) + geom_col() + scale_fill_viridis_d() + labs(x=&quot;Date&quot;, y=&quot;Number of COVID-19 Positives&quot;)
-Age1</code></pre>
+<pre class="r"><code>Age1 &lt;- OR.Ages %&gt;% ggplot(., aes(x=date, y=Number.of.cases, fill=Age.group)) + geom_col() + scale_fill_ipsum() + labs(x=&quot;Date&quot;, y=&quot;Number of COVID-19 Positives&quot;) + theme_economist() + guides(fill=FALSE)
+Age2 &lt;- OR.Ages %&gt;% ggplot(.) +
+ aes(x = date, fill = Age.group, weight = Number.of.cases) +
+ geom_bar(position = &quot;fill&quot;) +
+ scale_fill_ipsum() + labs(x=&quot;Date&quot;, y=&quot;Percent of COVID-19 Positives&quot;, caption=&quot;@PieRatio from OHA data&quot;) +
+ theme_minimal()
+Age1 + Age2</code></pre>
 <p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <div id="a-mapping-function" class="section level2">
 <h2>A Mapping Function</h2>
@@ -105,7 +114,17 @@ data %&gt;% filter(date==date1) %&gt;%
 </div>
 <div id="the-result-for-03242020" class="section level2">
 <h2>The Result for 03/24/2020</h2>
-<pre class="r"><code>Plot.COVID(&quot;2020-03-23&quot;, Map.Me)</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<pre class="r"><code>library(plotly); library(widgetframe); library(ggthemes); library(RColorBrewer)
+Map.Me &lt;- Map.Me %&gt;% mutate(TTip = paste0(&quot;Deaths: &quot;,Deaths,&quot;&lt;br&gt; Negative .sts:&quot;,Negative.test.results))
+Res.1 &lt;- Map.Me %&gt;% filter(date==&quot;2020-03-24&quot;) %&gt;%
+  ggplot(., aes(geometry=geometry, fill=Number.of.cases, label=NAME, text=TTip)) + 
+  geom_sf() + 
+  scale_fill_viridis_c(option = &quot;A&quot;) + 
+  theme_map() + 
+  labs(title=&quot;COVID-19 in Oregon&quot;, subtitle=Sys.Date(), x=&quot;&quot;, y=&quot;&quot;, caption=&quot;Made with R, ggplot2, and ggrepel by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19&quot;, fill=&quot;COVID-19 Cases&quot;)
+ggp &lt;- ggplotly(Res.1)
+frameWidget(ggp)</code></pre>
+<div id="htmlwidget-1" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/R/COVID/index_files/figure-html//widgets/widget_unnamed-chunk-14.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
