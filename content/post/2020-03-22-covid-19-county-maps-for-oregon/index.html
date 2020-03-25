@@ -51,6 +51,29 @@ Anim1 &lt;- Map.Me %&gt;%
 ResA &lt;- animate(Anim1, end_pause=100, nframes=200)
 ResA</code></pre>
 <p><img src="/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-3-1.gif" /><!-- --></p>
+</div>
+<div id="some-data-on-testing" class="section level1">
+<h1>Some Data on Testing</h1>
+<pre class="r"><code>library(hrbrthemes)
+OR.Testing &lt;- Oregon.Tests %&gt;% group_by(date) %&gt;% summarise(Total = sum(Outcome))
+Test1 &lt;- Oregon.Tests %&gt;% ggplot(.) + aes(x=date, y=Outcome, fill=Category, label=Outcome) + geom_col() + geom_label(col=&quot;magenta&quot;) + scale_fill_ipsum() + labs(title=&quot;COVID-19 Testing in Oregon&quot;, y=&quot;Tests&quot;, subtitle=&quot;Total shown as label&quot;, caption = &quot;data: https://govstatus.egov.com/OR-OHA-COVID-19&quot;) + geom_label(data=OR.Testing, aes(x=date, y=Total+100, label=Total), fill=&quot;white&quot;, color=&quot;black&quot;, inherit.aes = FALSE)
+Test1</code></pre>
+<p><img src="/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
+<div id="hospitalization-data" class="section level1">
+<h1>Hospitalization Data</h1>
+<pre class="r"><code>OR.Hosp &lt;- bind_rows(Mar23$Hospitalized,Mar24$Hospitalized)
+Hos1 &lt;- OR.Hosp %&gt;% filter(Hospitalized.!=&quot;Total&quot;) %&gt;% ggplot(., aes(x=date, y=Number.of.cases,fill=Hospitalized.)) + geom_col() + labs(x=&quot;Date&quot;, y=&quot;Number of COVID Positives&quot;, fill=&quot;Hospitalized?&quot;, title=&quot;Hospitalization Status of COVID-19 Positives in Oregon&quot;)
+Hos1</code></pre>
+<p><img src="/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+</div>
+<div id="age-data" class="section level1">
+<h1>Age Data</h1>
+<pre class="r"><code>OR.Ages &lt;- bind_rows(Mar24$Ages,Mar23$Ages,Mar22$Ages,Mar21$Ages,Mar20$Ages,Mar19$Ages,Mar18$Ages) %&gt;% filter(Age.group!=&quot;Total&quot;)
+OR.AgeT &lt;- OR.Ages %&gt;% group_by(date) %&gt;% summarise(Total=sum(Number.of.cases))
+Age1 &lt;- OR.Ages %&gt;% ggplot(., aes(x=date, y=Number.of.cases, fill=Age.group)) + geom_col() + scale_fill_ipsum() + labs(x=&quot;Date&quot;, y=&quot;Number of COVID-19 Positives&quot;)
+Age1</code></pre>
+<p><img src="/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <div id="a-mapping-function" class="section level2">
 <h2>A Mapping Function</h2>
 <p>To save time later, I turned the plots into a function so that I can use to reproduce each frame. Two inputs to the function, the dataset that is always the merged data from above and the date that I want to plot located in <code>date1</code> in a <code>YYYY-MM-DD</code> format.</p>
@@ -70,37 +93,37 @@ data %&gt;% filter(date==date1) %&gt;%
 <h2>The Result for 03/18/2020</h2>
 <p>This is the first date for which I can find data. The <code>waybackmachine</code> was crucial.</p>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-18&quot;, Map.Me)</code></pre>
-<p><img src="/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03192020" class="section level2">
 <h2>The Result for 03/19/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-19&quot;, Map.Me)</code></pre>
-<p><img src="/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03202020" class="section level2">
 <h2>The Result for 03/20/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-20&quot;, Map.Me)</code></pre>
-<p><img src="/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03212020" class="section level2">
 <h2>The Result for 03/21/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-21&quot;, Map.Me)</code></pre>
-<p><img src="/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p><img src="/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03222020" class="section level2">
 <h2>The Result for 03/22/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-22&quot;, Map.Me)</code></pre>
-<p><img src="/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03232020" class="section level2">
 <h2>The Result for 03/23/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-23&quot;, Map.Me)</code></pre>
-<p><img src="/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p><img src="/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03242020" class="section level2">
 <h2>The Result for 03/24/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-23&quot;, Map.Me)</code></pre>
-<p><img src="/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p><img src="/post/2020-03-22-covid-19-county-maps-for-oregon/index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 </div>
 <div id="the-new-section" class="section level2">
 <h2>The New Section</h2>
@@ -122,7 +145,8 @@ Oregon.COVID &lt;- COVID.New %&gt;% mutate(date=as.Date(Sys.Date())) %&gt;% filt
 </div>
 <div id="adding-historical-data-together" class="section level3">
 <h3>Adding Historical Data Together</h3>
-<pre class="r"><code># A function to parse the tables
+<pre class="r"><code>comma.rm.to.numeric &lt;- function(variable) {as.numeric(str_remove_all( {{variable}}, &quot;,&quot;)) }
+# A function to parse the tables
 OHA.Corona &lt;- function(website, date) {
 webpage &lt;- read_html(website)
 COVID.Head &lt;- webpage %&gt;%
@@ -131,7 +155,7 @@ COVID.Head &lt;- webpage %&gt;%
         html_table(fill = TRUE) %&gt;% data.frame()  # %&gt;% filter(!startsWith(.[[1]],&quot;Total&quot;))
 Scraped.date &lt;- names(COVID.Head)[1] %&gt;% str_remove(.,&quot;X.Oregon.Test.Results.as.of.&quot;) %&gt;% str_remove(., &quot;..8.00.a.m..Updated.daily.&quot;)
 names(COVID.Head) &lt;- c(&quot;Category&quot;,&quot;Outcome&quot;)
-COVID.Head &lt;- COVID.Head %&gt;% mutate(Outcome = as.numeric(str_remove_all(Outcome, &quot;,&quot;)), date=as.Date(date), Scraped.date = Scraped.date) # %&gt;% filter(!startsWith(.[[1]],&quot;Total&quot;))
+COVID.Head &lt;- COVID.Head %&gt;% mutate(Outcome = comma.rm.to.numeric(Outcome), date=as.Date(date), Scraped.date = Scraped.date) # %&gt;% filter(!startsWith(.[[1]],&quot;Total&quot;))
 COVID.County &lt;- webpage %&gt;%
         html_nodes(&quot;table&quot;) %&gt;%
         .[2] %&gt;%
@@ -139,7 +163,7 @@ COVID.County &lt;- webpage %&gt;%
         data.frame() %&gt;% 
         mutate(date=as.Date(date), 
                Scraped.date = Scraped.date, 
-               Negative.test.results = as.numeric(str_remove_all(Negative.test.results, &quot;,&quot;)))
+               Negative.test.results = comma.rm.to.numeric(Negative.test.results))
 COVID.Age &lt;- webpage %&gt;%
         html_nodes(&quot;table&quot;) %&gt;%
         .[3] %&gt;%
@@ -166,11 +190,11 @@ COVID.Head &lt;- COVID.Head %&gt;% mutate(date=as.Date(date), Scraped.date = Scr
 COVID.County &lt;- webpage %&gt;%
         html_nodes(&quot;table&quot;) %&gt;%
         .[2] %&gt;%
-        html_table(fill = TRUE) %&gt;% data.frame()  %&gt;% filter(!startsWith(.[[1]],&quot;Total&quot;)) %&gt;% mutate(date=as.Date(date), Scraped.date = Scraped.date, Negative.test.results = as.numeric(str_remove_all(Negative.test.results, &quot;,&quot;)))
+        html_table(fill = TRUE) %&gt;% data.frame() %&gt;% mutate(date=as.Date(date), Scraped.date = Scraped.date, Negative.test.results = as.numeric(str_remove_all(Negative.test.results, &quot;,&quot;)))
 COVID.Age &lt;- webpage %&gt;%
         html_nodes(&quot;table&quot;) %&gt;%
         .[3] %&gt;%
-        html_table(fill = TRUE) %&gt;% data.frame()  %&gt;% filter(!startsWith(.[[1]],&quot;Total&quot;)) %&gt;% mutate(date=as.Date(date), Scraped.date = Scraped.date)
+        html_table(fill = TRUE) %&gt;% data.frame() %&gt;% mutate(date=as.Date(date), Scraped.date = Scraped.date)
 return(list(Header=COVID.Head, Counties = COVID.County, Ages = COVID.Age))
 }
 OHA.Corona.2 &lt;- function(website, date) {
@@ -187,7 +211,7 @@ COVID.Head &lt;- COVID.Head %&gt;% mutate(date=as.Date(date), Scraped.date = Scr
 COVID.County &lt;- webpage %&gt;%
         html_nodes(&quot;table&quot;) %&gt;%
         .[2] %&gt;%
-        html_table(fill = TRUE) %&gt;% data.frame()  %&gt;% filter(!startsWith(.[[1]],&quot;Total&quot;)) %&gt;% mutate(date=as.Date(date), Scraped.date = Scraped.date)
+        html_table(fill = TRUE) %&gt;% data.frame() %&gt;% mutate(date=as.Date(date), Scraped.date = Scraped.date)
 COVID.Age &lt;- webpage %&gt;%
         html_nodes(&quot;table&quot;) %&gt;%
         .[3] %&gt;%

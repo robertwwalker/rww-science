@@ -47,7 +47,7 @@ library(widgetframe)
 frameWidget(fig, width = 1000)
 ```
 
-As an overall it has been worse, but keep in mind, that big blip happened TODAY!  What does it look like in perspective [keeping in mind that the futures are currently just under 40] since 2012?
+*As an overall it has been worse, but keep in mind, that big blip happened TODAY!*  What does it look like in perspective [keeping in mind that the futures are currently just under 40] since 2012?
 
 ```{r}
 fig2 <- VIX %>% filter(Dates > as.Date("01/01/2012", format = "%m/%d/%Y")) %>% plot_ly(x = ~Dates, type="candlestick",
@@ -80,7 +80,4 @@ fig <- ggplotly(p)
 frameWidget(fig, width = 1000)
 ```
 
-
-
-
-This doesn't look good.  The smooth on a small span is uncomfortably headed upward and today will shock it like no previous day in a very long while.
+*NB: This commentary was in mid-March.*  This doesn't look good.  The smooth on a small span is uncomfortably headed upward and today will shock it like no previous day in a very long while.

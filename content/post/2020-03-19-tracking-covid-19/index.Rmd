@@ -36,7 +36,7 @@ COVID.states <- read.csv(url("http://covidtracking.com/api/states/daily.csv"))
 COVID.states <- COVID.states %>% mutate(Date = as.Date(as.character(date), format = "%Y%m%d"))
 ```
 
-## The Raw Testing Incidence
+#  The Raw Testing Incidence
 
 I want to use patchwork to show the testing rate by state in the United States.  Then I want to show where things currently stand.  In both cases, a base-10 log is used on the number of tests.
 
