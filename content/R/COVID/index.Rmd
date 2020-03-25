@@ -60,18 +60,43 @@ Test1 <- Oregon.Tests %>% ggplot(.) + aes(x=date, y=Outcome, fill=Category, labe
 Test1
 ```
 
+# A Second Look at Testing
+
+We should worry about the degree to which tests are applied at all randomly; they are surely not.  As a result, what it means to calculate or break down probability based on having been tested is subject to so many important caveats that vary over time.  It is important to note that this is also cumulative.
+
+```{r}
+Test2 <- Oregon.Tests %>% ggplot(.) + aes(x=date, y=Outcome, fill=Category, label=Outcome) + geom_col(position = "fill") + scale_fill_viridis_d() + labs(title="COVID-19 Testing in Oregon", y="Tests", x="Date", subtitle="Total shown as label", caption = "data: https://govstatus.egov.com/OR-OHA-COVID-19")
+Test2
+```
+
+## A Better Look at This
+
+```{r}
+MyDat <- Oregon.Tests %>% 
+  pivot_wider(., names_from = Category, values_from = Outcome) %>% 
+  mutate(Positive.Chg = Positive - lag(Positive, order_by = date), 
+         Negative.Chg = Negative - lag(Negative, order_by = date)) %>% 
+  mutate(Total = Positive.Chg + Negative.Chg) %>% 
+  mutate(Positive.Pct = round(Positive.Chg / Total, digits=3)) %>% 
+  select(date, Positive.Chg, Negative.Chg, Positive.Pct) %>% 
+  pivot_longer(., c(Negative.Chg, Positive.Chg), names_to = "Outcome", values_to = "Test.Changes")
+MyDat %>% ggplot(., aes(x=date, y=Test.Changes, fill=Outcome)) + geom_col(position="fill") + geom_label(data=MyDat, aes(x=date, y=Positive.Pct, label=Positive.Pct), inherit.aes = TRUE, show.legend=FALSE) + scale_fill_ipsum() + labs(title="Daily Distribution of Test Outcomes", subtitle="Percent of Positive Tests Shown")
+```
+
+
 # Hospitalization Data
 
 How do positive cases and hospitalization relate?
 
 ```{r}
 Hos1 <- OR.Hosp %>% filter(Hospitalized.!="Total") %>% ggplot(., aes(x=date, y=Number.of.cases,fill=Hospitalized.)) + geom_col() + scale_fill_ipsum() + labs(x="Date", y="Number of COVID Positives", fill="Hospitalized?", title="Hospitalization Status of COVID-19 Positives in Oregon")
-Hos1
+Hos2 <- OR.Hosp %>% filter(Hospitalized.!="Total") %>% ggplot(., aes(x=date, y=Number.of.cases,fill=Hospitalized.)) + geom_col(position="fill") + scale_fill_ipsum() + labs(x="Date", y="Number of COVID Positives", fill="Hospitalized?", title="Hospitalization Status of COVID-19 Positives in Oregon")
+(Hos1) / Hos2
 ```
 
 # Age Data
 
-How does this break down by age?  *I had to break this into two parts.  They changed the classification method midstream.*
+How does this break down by age?  *I had to break this into two parts.  They changed the classification method on March 25, 2020.*
 
 ```{r}
 OR.Ages1 <- OR.Ages %>% filter(date < "2020-03-25")
