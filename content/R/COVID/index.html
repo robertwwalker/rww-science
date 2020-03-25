@@ -57,15 +57,28 @@ Hos1</code></pre>
 </div>
 <div id="age-data" class="section level1">
 <h1>Age Data</h1>
-<p>How does this break down by age?</p>
-<pre class="r"><code>Age1 &lt;- OR.Ages %&gt;% ggplot(., aes(x=date, y=Number.of.cases, fill=Age.group)) + geom_col() + scale_fill_ipsum() + labs(x=&quot;Date&quot;, y=&quot;Number of COVID-19 Positives&quot;) + theme_economist() + guides(fill=FALSE)
-Age2 &lt;- OR.Ages %&gt;% ggplot(.) +
+<p>How does this break down by age? <em>I had to break this into two parts. They changed the classification method midstream.</em></p>
+<pre class="r"><code>OR.Ages1 &lt;- OR.Ages %&gt;% filter(date &lt; &quot;2020-03-25&quot;)
+Age1 &lt;- OR.Ages1 %&gt;% ggplot(., aes(x=date, y=Number.of.cases, fill=Age.group)) + geom_col() + scale_fill_ipsum() + labs(x=&quot;Date&quot;, y=&quot;Number of COVID-19 Positives&quot;) + theme_economist() + guides(fill=FALSE)
+Age2 &lt;- OR.Ages1 %&gt;% ggplot(.) +
  aes(x = date, fill = Age.group, weight = Number.of.cases) +
  geom_bar(position = &quot;fill&quot;) +
  scale_fill_ipsum() + labs(x=&quot;Date&quot;, y=&quot;Percent of COVID-19 Positives&quot;, caption=&quot;@PieRatio from OHA data&quot;) +
  theme_minimal()
 Age1 + Age2</code></pre>
 <p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<div id="the-revision" class="section level3">
+<h3>The Revision</h3>
+<pre class="r"><code>OR.Ages1 &lt;- OR.Ages %&gt;% filter(date &gt; &quot;2020-03-24&quot;)
+Age1 &lt;- OR.Ages1 %&gt;% ggplot(., aes(x=date, y=Number.of.cases, fill=Age.group)) + geom_col() + scale_fill_viridis(discrete = TRUE) + labs(x=&quot;Date&quot;, y=&quot;Number of COVID-19 Positives&quot;) + theme_economist() + guides(fill=FALSE)
+Age2 &lt;- OR.Ages1 %&gt;% ggplot(.) +
+ aes(x = date, fill = Age.group, weight = Number.of.cases) +
+ geom_bar(position = &quot;fill&quot;) +
+ scale_fill_viridis(discrete=TRUE) + labs(x=&quot;Date&quot;, y=&quot;Percent of COVID-19 Positives&quot;, caption=&quot;@PieRatio from OHA data&quot;) +
+ theme_minimal()
+Age1 + Age2</code></pre>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+</div>
 <div id="a-mapping-function" class="section level2">
 <h2>A Mapping Function</h2>
 <p>To save time later, I turned the plots into a function so that I can use to reproduce each frame. Two inputs to the function, the dataset that is always the merged data from above and the date that I want to plot located in <code>date1</code> in a <code>YYYY-MM-DD</code> format.</p>
@@ -85,37 +98,37 @@ data %&gt;% filter(date==date1) %&gt;%
 <h2>The Result for 03/18/2020</h2>
 <p>This is the first date for which I can find data. The <code>waybackmachine</code> was crucial.</p>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-18&quot;, Map.Me)</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03192020" class="section level2">
 <h2>The Result for 03/19/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-19&quot;, Map.Me)</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03202020" class="section level2">
 <h2>The Result for 03/20/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-20&quot;, Map.Me)</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03212020" class="section level2">
 <h2>The Result for 03/21/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-21&quot;, Map.Me)</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03222020" class="section level2">
 <h2>The Result for 03/22/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-22&quot;, Map.Me)</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03232020" class="section level2">
 <h2>The Result for 03/23/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-23&quot;, Map.Me)</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03232020-1" class="section level2">
 <h2>The Result for 03/23/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-24&quot;, Map.Me)</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03252020" class="section level2">
 <h2>The Result for 03/25/2020</h2>
@@ -130,6 +143,6 @@ Res.1 &lt;- Map.Me %&gt;% filter(date==&quot;2020-03-25&quot;) %&gt;%
 ggp &lt;- ggplotly(Res.1)
 frameWidget(ggp)</code></pre>
 <div id="htmlwidget-1" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/R/COVID/index_files/figure-html//widgets/widget_unnamed-chunk-15.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/R/COVID/index_files/figure-html//widgets/widget_unnamed-chunk-16.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>

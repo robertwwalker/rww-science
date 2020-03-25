@@ -71,14 +71,28 @@ Hos1
 
 # Age Data
 
-How does this break down by age?
+How does this break down by age?  *I had to break this into two parts.  They changed the classification method midstream.*
 
 ```{r}
-Age1 <- OR.Ages %>% ggplot(., aes(x=date, y=Number.of.cases, fill=Age.group)) + geom_col() + scale_fill_ipsum() + labs(x="Date", y="Number of COVID-19 Positives") + theme_economist() + guides(fill=FALSE)
-Age2 <- OR.Ages %>% ggplot(.) +
+OR.Ages1 <- OR.Ages %>% filter(date < "2020-03-25")
+Age1 <- OR.Ages1 %>% ggplot(., aes(x=date, y=Number.of.cases, fill=Age.group)) + geom_col() + scale_fill_ipsum() + labs(x="Date", y="Number of COVID-19 Positives") + theme_economist() + guides(fill=FALSE)
+Age2 <- OR.Ages1 %>% ggplot(.) +
  aes(x = date, fill = Age.group, weight = Number.of.cases) +
  geom_bar(position = "fill") +
  scale_fill_ipsum() + labs(x="Date", y="Percent of COVID-19 Positives", caption="@PieRatio from OHA data") +
+ theme_minimal()
+Age1 + Age2
+```
+
+### The Revision
+
+```{r}
+OR.Ages1 <- OR.Ages %>% filter(date > "2020-03-24")
+Age1 <- OR.Ages1 %>% ggplot(., aes(x=date, y=Number.of.cases, fill=Age.group)) + geom_col() + scale_fill_viridis(discrete = TRUE) + labs(x="Date", y="Number of COVID-19 Positives") + theme_economist() + guides(fill=FALSE)
+Age2 <- OR.Ages1 %>% ggplot(.) +
+ aes(x = date, fill = Age.group, weight = Number.of.cases) +
+ geom_bar(position = "fill") +
+ scale_fill_viridis(discrete=TRUE) + labs(x="Date", y="Percent of COVID-19 Positives", caption="@PieRatio from OHA data") +
  theme_minimal()
 Age1 + Age2
 ```

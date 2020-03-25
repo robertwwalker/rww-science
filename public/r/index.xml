@@ -71,15 +71,28 @@ Hos1&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 &lt;div id=&#34;age-data&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;Age Data&lt;/h1&gt;
-&lt;p&gt;How does this break down by age?&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Age1 &amp;lt;- OR.Ages %&amp;gt;% ggplot(., aes(x=date, y=Number.of.cases, fill=Age.group)) + geom_col() + scale_fill_ipsum() + labs(x=&amp;quot;Date&amp;quot;, y=&amp;quot;Number of COVID-19 Positives&amp;quot;) + theme_economist() + guides(fill=FALSE)
-Age2 &amp;lt;- OR.Ages %&amp;gt;% ggplot(.) +
+&lt;p&gt;How does this break down by age? &lt;em&gt;I had to break this into two parts. They changed the classification method midstream.&lt;/em&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;OR.Ages1 &amp;lt;- OR.Ages %&amp;gt;% filter(date &amp;lt; &amp;quot;2020-03-25&amp;quot;)
+Age1 &amp;lt;- OR.Ages1 %&amp;gt;% ggplot(., aes(x=date, y=Number.of.cases, fill=Age.group)) + geom_col() + scale_fill_ipsum() + labs(x=&amp;quot;Date&amp;quot;, y=&amp;quot;Number of COVID-19 Positives&amp;quot;) + theme_economist() + guides(fill=FALSE)
+Age2 &amp;lt;- OR.Ages1 %&amp;gt;% ggplot(.) +
  aes(x = date, fill = Age.group, weight = Number.of.cases) +
  geom_bar(position = &amp;quot;fill&amp;quot;) +
  scale_fill_ipsum() + labs(x=&amp;quot;Date&amp;quot;, y=&amp;quot;Percent of COVID-19 Positives&amp;quot;, caption=&amp;quot;@PieRatio from OHA data&amp;quot;) +
  theme_minimal()
 Age1 + Age2&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;div id=&#34;the-revision&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;The Revision&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;OR.Ages1 &amp;lt;- OR.Ages %&amp;gt;% filter(date &amp;gt; &amp;quot;2020-03-24&amp;quot;)
+Age1 &amp;lt;- OR.Ages1 %&amp;gt;% ggplot(., aes(x=date, y=Number.of.cases, fill=Age.group)) + geom_col() + scale_fill_viridis(discrete = TRUE) + labs(x=&amp;quot;Date&amp;quot;, y=&amp;quot;Number of COVID-19 Positives&amp;quot;) + theme_economist() + guides(fill=FALSE)
+Age2 &amp;lt;- OR.Ages1 %&amp;gt;% ggplot(.) +
+ aes(x = date, fill = Age.group, weight = Number.of.cases) +
+ geom_bar(position = &amp;quot;fill&amp;quot;) +
+ scale_fill_viridis(discrete=TRUE) + labs(x=&amp;quot;Date&amp;quot;, y=&amp;quot;Percent of COVID-19 Positives&amp;quot;, caption=&amp;quot;@PieRatio from OHA data&amp;quot;) +
+ theme_minimal()
+Age1 + Age2&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
 &lt;div id=&#34;a-mapping-function&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;A Mapping Function&lt;/h2&gt;
 &lt;p&gt;To save time later, I turned the plots into a function so that I can use to reproduce each frame. Two inputs to the function, the dataset that is always the merged data from above and the date that I want to plot located in &lt;code&gt;date1&lt;/code&gt; in a &lt;code&gt;YYYY-MM-DD&lt;/code&gt; format.&lt;/p&gt;
@@ -99,37 +112,37 @@ data %&amp;gt;% filter(date==date1) %&amp;gt;%
 &lt;h2&gt;The Result for 03/18/2020&lt;/h2&gt;
 &lt;p&gt;This is the first date for which I can find data. The &lt;code&gt;waybackmachine&lt;/code&gt; was crucial.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Plot.COVID(&amp;quot;2020-03-18&amp;quot;, Map.Me)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-8-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;the-result-for-03192020&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;The Result for 03/19/2020&lt;/h2&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Plot.COVID(&amp;quot;2020-03-19&amp;quot;, Map.Me)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-10-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;the-result-for-03202020&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;The Result for 03/20/2020&lt;/h2&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Plot.COVID(&amp;quot;2020-03-20&amp;quot;, Map.Me)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-10-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;the-result-for-03212020&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;The Result for 03/21/2020&lt;/h2&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Plot.COVID(&amp;quot;2020-03-21&amp;quot;, Map.Me)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-12-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;the-result-for-03222020&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;The Result for 03/22/2020&lt;/h2&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Plot.COVID(&amp;quot;2020-03-22&amp;quot;, Map.Me)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-12-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-13-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;the-result-for-03232020&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;The Result for 03/23/2020&lt;/h2&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Plot.COVID(&amp;quot;2020-03-23&amp;quot;, Map.Me)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-13-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-14-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;the-result-for-03232020-1&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;The Result for 03/23/2020&lt;/h2&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Plot.COVID(&amp;quot;2020-03-24&amp;quot;, Map.Me)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-14-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-15-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;the-result-for-03252020&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;The Result for 03/25/2020&lt;/h2&gt;
@@ -144,7 +157,7 @@ Res.1 &amp;lt;- Map.Me %&amp;gt;% filter(date==&amp;quot;2020-03-25&amp;quot;) %
 ggp &amp;lt;- ggplotly(Res.1)
 frameWidget(ggp)&lt;/code&gt;&lt;/pre&gt;
 &lt;div id=&#34;htmlwidget-1&#34; style=&#34;width:100%;height:480px;&#34; class=&#34;widgetframe html-widget&#34;&gt;&lt;/div&gt;
-&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-1&#34;&gt;{&#34;x&#34;:{&#34;url&#34;:&#34;/R/COVID/index_files/figure-html//widgets/widget_unnamed-chunk-15.html&#34;,&#34;options&#34;:{&#34;xdomain&#34;:&#34;*&#34;,&#34;allowfullscreen&#34;:false,&#34;lazyload&#34;:false}},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-1&#34;&gt;{&#34;x&#34;:{&#34;url&#34;:&#34;/R/COVID/index_files/figure-html//widgets/widget_unnamed-chunk-16.html&#34;,&#34;options&#34;:{&#34;xdomain&#34;:&#34;*&#34;,&#34;allowfullscreen&#34;:false,&#34;lazyload&#34;:false}},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 </description>
