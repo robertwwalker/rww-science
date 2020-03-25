@@ -9,17 +9,17 @@ knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning = FALSE)
 library(tidyverse)
 ```
 
-## Oregon COVID data
+# Oregon COVID data
 
-I now have a few days of data.  The process of scraping it is detailed in [ScrapingThese data are current as of March 24, 2020.
+In this post, I want to visualize the data on COVID-19 in the state of Oregon.  I now have a few days of data that I want to scrape, separate, clean up, and plot.  The process of scraping it is detailed in [a separate file](https://rww.science/r/covid/scraping/).  These data are current as of March 24, 2020.
 
 ```{r}
-load("~/Sandbox/awful/content/post/2020-03-22-covid-19-county-maps-for-oregon/data/OregonCOVID2020-03-24.RData")
+load(url("https://rww.science/2020/03/24/covid-19-county-maps-for-oregon/data/OregonCOVID2020-03-24.RData"))
 ```
 
-## A base map
+## Building a base map
 
-Load the `tigris` library then grab the map as an `sf` object; there is a `geom_sf` that makes them easy to work with.  Finally, I join the map to the data.
+To build a map to work from, I need a map library.  Load the `tigris` library then grab the map as an `sf` object; there is a `geom_sf` that makes them easy to work with.  Finally, I join the map to the data.
 
 ```{r, message=FALSE, warning=FALSE, results='hide'}
 library(tigris); library(rgdal); library(htmltools); library(viridis); library(sf); library(viridis)
@@ -29,7 +29,7 @@ Map.Me <- left_join(counties.t,Oregon.COVID, by=c("NAME" = "County"))
 
 # The Whole Thing: An Animation
 
-I will use a ggplot to build Oregon's map and fill it with case numbers.  I have to project the map off of the natural angle in the basic data, repel the labels to prevent print overlap, and scheme the colors.  The last step is to animate it by time.
+I will use a ggplot to build Oregon's map and fill it with case numbers.  `geom_sf()` plots the geometry.  I have to repel the labels to prevent print overlap, and scheme the colors.  The last step is to animate it by time.
 
 ```{r}
 library(ggrepel); library(ggthemes); library(gganimate)
@@ -48,6 +48,8 @@ ResA
 
 # Some Data on Testing
 
+What is the status of testing?
+
 ```{r}
 OR.Testing <- Oregon.Tests %>% group_by(date) %>% summarise(Total = sum(Outcome))
 Test1 <- Oregon.Tests %>% ggplot(.) + aes(x=date, y=Outcome, fill=Category, label=Outcome) + geom_col() + geom_label(col="magenta") + scale_fill_viridis_d() + labs(title="COVID-19 Testing in Oregon", y="Tests", subtitle="Total shown as label", caption = "data: https://govstatus.egov.com/OR-OHA-COVID-19") + geom_label(data=OR.Testing, aes(x=date, y=Total+100, label=Total), fill="white", color="black", inherit.aes = FALSE)
@@ -56,12 +58,16 @@ Test1
 
 # Hospitalization Data
 
+How do positive cases and hospitalization relate?
+
 ```{r}
 Hos1 <- OR.Hosp %>% filter(Hospitalized.!="Total") %>% ggplot(., aes(x=date, y=Number.of.cases,fill=Hospitalized.)) + geom_col() + scale_fill_viridis_d() + labs(x="Date", y="Number of COVID Positives", fill="Hospitalized?", title="Hospitalization Status of COVID-19 Positives in Oregon")
 Hos1
 ```
 
 # Age Data
+
+How does this break down by age?
 
 ```{r}
 Age1 <- OR.Ages %>% ggplot(., aes(x=date, y=Number.of.cases, fill=Age.group)) + geom_col() + scale_fill_viridis_d() + labs(x="Date", y="Number of COVID-19 Positives")
