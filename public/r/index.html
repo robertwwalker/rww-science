@@ -667,7 +667,8 @@
       <div class="article-style">
         
           Oregon COVID data In this post, I want to visualize the data on COVID-19 in the state of Oregon. I now have a few days of data that I want to scrape, separate, clean up, and plot. The process of scraping it is detailed in a separate file. These data are current as of March 24, 2020.
-load(url(&quot;https://rww.science/2020/03/24/covid-19-county-maps-for-oregon/data/OregonCOVID2020-03-24.RData&quot;)) Building a base map To build a map to work from, I need a map library.
+load(url(&quot;https://rww.science/r/covid/data/OregonCOVID2020-03-24.RData&quot;)) These data are current as of 3.24.2020.
+Building a base map To build a map to work from, I need a map library.
         
       </div>
     </div>
@@ -676,10 +677,10 @@ load(url(&quot;https://rww.science/2020/03/24/covid-19-county-maps-for-oregon/da
     
     
     <div>
-      <h2><a href="/r/scraping-covid-19-in-oregon/" >COVID-19 Scraping</a></h2>
+      <h2><a href="/r/covid-scraping/" >COVID-19 Scraping</a></h2>
       <div class="article-style">
         
-          Building an Oregon COVID data I now have a few days of data now. To rebuild it, I will have to use the waybackmachine. These data are current as of March 24, 2020. The files that I need to locate and follow updates to this page from Oregon’s OHA.
+          Building Oregon COVID data I now have a few days of data now. To rebuild it, I will have to use the waybackmachine. These data are current as of March 24, 2020. The files that I need to locate and follow updates to this page from Oregon’s OHA.
  A Scraper Let me explain the logic for the scraper. NB: I had to rewrite it; the original versions of the website had three tables without data on hospitalizations.
         
       </div>

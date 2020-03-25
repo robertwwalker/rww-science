@@ -4,52 +4,52 @@
   
   <url>
     <loc>/categories/</loc>
-    <lastmod>2020-03-24T22:46:49-07:00</lastmod>
+    <lastmod>2020-03-24T22:58:48-07:00</lastmod>
   </url>
   
   <url>
     <loc>/r/covid/</loc>
-    <lastmod>2020-03-24T21:41:05-07:00</lastmod>
+    <lastmod>2020-03-24T22:58:48-07:00</lastmod>
   </url>
   
   <url>
-    <loc>/r/scraping-covid-19-in-oregon/</loc>
-    <lastmod>2020-03-24T22:46:49-07:00</lastmod>
+    <loc>/r/covid-scraping/</loc>
+    <lastmod>2020-03-24T22:58:48-07:00</lastmod>
   </url>
   
   <url>
     <loc>/tags/r/</loc>
-    <lastmod>2020-03-24T22:46:49-07:00</lastmod>
+    <lastmod>2020-03-24T22:58:48-07:00</lastmod>
   </url>
   
   <url>
     <loc>/</loc>
-    <lastmod>2020-03-24T22:46:49-07:00</lastmod>
+    <lastmod>2020-03-24T22:58:48-07:00</lastmod>
   </url>
   
   <url>
     <loc>/tags/</loc>
-    <lastmod>2020-03-24T22:46:49-07:00</lastmod>
+    <lastmod>2020-03-24T22:58:48-07:00</lastmod>
   </url>
   
   <url>
     <loc>/tags/tidyverse/</loc>
-    <lastmod>2020-03-24T22:46:49-07:00</lastmod>
+    <lastmod>2020-03-24T22:58:48-07:00</lastmod>
   </url>
   
   <url>
     <loc>/categories/tidyverse/</loc>
-    <lastmod>2020-03-24T22:46:49-07:00</lastmod>
+    <lastmod>2020-03-24T22:58:48-07:00</lastmod>
   </url>
   
   <url>
     <loc>/2020/03/24/covid-19-county-maps-for-oregon/</loc>
-    <lastmod>2020-03-24T21:20:07-07:00</lastmod>
+    <lastmod>2020-03-24T22:58:48-07:00</lastmod>
   </url>
   
   <url>
     <loc>/categories/web-scraping/</loc>
-    <lastmod>2020-03-24T22:46:49-07:00</lastmod>
+    <lastmod>2020-03-24T22:58:48-07:00</lastmod>
   </url>
   
   <url>
@@ -78,12 +78,12 @@
   </url>
   
   <url>
-    <loc>/tags/tidytuesday/</loc>
+    <loc>/categories/tidytuesday/</loc>
     <lastmod>2020-03-19T14:48:11-07:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/tidytuesday/</loc>
+    <loc>/tags/tidytuesday/</loc>
     <lastmod>2020-03-19T14:48:11-07:00</lastmod>
   </url>
   
@@ -138,12 +138,12 @@
   </url>
   
   <url>
-    <loc>/tags/reticulate/</loc>
+    <loc>/categories/reticulate/</loc>
     <lastmod>2020-02-24T00:09:44-08:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/reticulate/</loc>
+    <loc>/tags/reticulate/</loc>
     <lastmod>2020-02-24T00:09:44-08:00</lastmod>
   </url>
   

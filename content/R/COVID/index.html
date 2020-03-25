@@ -9,7 +9,8 @@ date: '2020-03-24'
 <div id="oregon-covid-data" class="section level1">
 <h1>Oregon COVID data</h1>
 <p>In this post, I want to visualize the data on COVID-19 in the state of Oregon. I now have a few days of data that I want to scrape, separate, clean up, and plot. The process of scraping it is detailed in <a href="https://rww.science/r/covid-scraping/">a separate file</a>. These data are current as of March 24, 2020.</p>
-<pre class="r"><code>load(url(&quot;https://rww.science/2020/03/24/covid-19-county-maps-for-oregon/data/OregonCOVID2020-03-24.RData&quot;))</code></pre>
+<pre class="r"><code>load(url(&quot;https://rww.science/r/covid/data/OregonCOVID2020-03-24.RData&quot;))</code></pre>
+<p>These data are current as of 3.24.2020.</p>
 <div id="building-a-base-map" class="section level2">
 <h2>Building a base map</h2>
 <p>To build a map to work from, I need a map library. Load the <code>tigris</code> library then grab the map as an <code>sf</code> object; there is a <code>geom_sf</code> that makes them easy to work with. Finally, I join the map to the data.</p>
