@@ -11,10 +11,10 @@ library(tidyverse)
 
 # Oregon COVID data
 
-In this post, I want to visualize the data on COVID-19 in the state of Oregon.  I now have a few days of data that I want to scrape, separate, clean up, and plot.  The process of scraping it is detailed in [a separate file](https://rww.science/r/covid-scraping/).  These data are current as of March 24, 2020.
+In this post, I want to visualize the data on COVID-19 in the state of Oregon.  I now have a few days of data that I want to scrape, separate, clean up, and plot.  The process of scraping it is detailed in [a separate file](https://rww.science/r/covid-scraping/).  These data are current as of March 25, 2020.
 
 ```{r}
-load(url("https://rww.science/r/covid/data/OregonCOVID2020-03-24.RData"))
+load(url(paste0("https://rww.science/r/covid/data/OregonCOVID",Sys.Date(),".RData")))
 ```
 
 These data are current as of `r max(Oregon.COVID$Scraped.date)`.
@@ -144,12 +144,18 @@ Plot.COVID("2020-03-22", Map.Me)
 Plot.COVID("2020-03-23", Map.Me)
 ```
 
-## The Result for 03/24/2020
+## The Result for 03/23/2020
+
+```{r}
+Plot.COVID("2020-03-24", Map.Me)
+```
+
+## The Result for 03/25/2020
 
 ```{r}
 library(plotly); library(widgetframe); library(ggthemes); library(RColorBrewer)
-Map.Me <- Map.Me %>% mutate(TTip = paste0("Deaths: ",Deaths,"<br> Negative .sts:",Negative.test.results))
-Res.1 <- Map.Me %>% filter(date=="2020-03-24") %>%
+Map.Me <- Map.Me %>% mutate(TTip = paste0("Deaths: ",Deaths,"<br> Negative Tests:",Negative.test.results))
+Res.1 <- Map.Me %>% filter(date=="2020-03-25") %>%
   ggplot(., aes(geometry=geometry, fill=Number.of.cases, label=NAME, text=TTip)) + 
   geom_sf() + 
   scale_fill_viridis_c(option = "A") + 

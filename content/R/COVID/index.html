@@ -11,9 +11,9 @@ date: '2020-03-24'
 
 <div id="oregon-covid-data" class="section level1">
 <h1>Oregon COVID data</h1>
-<p>In this post, I want to visualize the data on COVID-19 in the state of Oregon. I now have a few days of data that I want to scrape, separate, clean up, and plot. The process of scraping it is detailed in <a href="https://rww.science/r/covid-scraping/">a separate file</a>. These data are current as of March 24, 2020.</p>
-<pre class="r"><code>load(url(&quot;https://rww.science/r/covid/data/OregonCOVID2020-03-24.RData&quot;))</code></pre>
-<p>These data are current as of 2020-03-24.</p>
+<p>In this post, I want to visualize the data on COVID-19 in the state of Oregon. I now have a few days of data that I want to scrape, separate, clean up, and plot. The process of scraping it is detailed in <a href="https://rww.science/r/covid-scraping/">a separate file</a>. These data are current as of March 25, 2020.</p>
+<pre class="r"><code>load(url(paste0(&quot;https://rww.science/r/covid/data/OregonCOVID&quot;,Sys.Date(),&quot;.RData&quot;)))</code></pre>
+<p>These data are current as of 2020-03-25.</p>
 <div id="building-a-base-map" class="section level2">
 <h2>Building a base map</h2>
 <p>To build a map to work from, I need a map library. Load the <code>tigris</code> library then grab the map as an <code>sf</code> object; there is a <code>geom_sf</code> that makes them easy to work with. Finally, I join the map to the data.</p>
@@ -112,11 +112,16 @@ data %&gt;% filter(date==date1) %&gt;%
 <pre class="r"><code>Plot.COVID(&quot;2020-03-23&quot;, Map.Me)</code></pre>
 <p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 </div>
-<div id="the-result-for-03242020" class="section level2">
-<h2>The Result for 03/24/2020</h2>
+<div id="the-result-for-03232020-1" class="section level2">
+<h2>The Result for 03/23/2020</h2>
+<pre class="r"><code>Plot.COVID(&quot;2020-03-24&quot;, Map.Me)</code></pre>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+</div>
+<div id="the-result-for-03252020" class="section level2">
+<h2>The Result for 03/25/2020</h2>
 <pre class="r"><code>library(plotly); library(widgetframe); library(ggthemes); library(RColorBrewer)
-Map.Me &lt;- Map.Me %&gt;% mutate(TTip = paste0(&quot;Deaths: &quot;,Deaths,&quot;&lt;br&gt; Negative .sts:&quot;,Negative.test.results))
-Res.1 &lt;- Map.Me %&gt;% filter(date==&quot;2020-03-24&quot;) %&gt;%
+Map.Me &lt;- Map.Me %&gt;% mutate(TTip = paste0(&quot;Deaths: &quot;,Deaths,&quot;&lt;br&gt; Negative Tests:&quot;,Negative.test.results))
+Res.1 &lt;- Map.Me %&gt;% filter(date==&quot;2020-03-25&quot;) %&gt;%
   ggplot(., aes(geometry=geometry, fill=Number.of.cases, label=NAME, text=TTip)) + 
   geom_sf() + 
   scale_fill_viridis_c(option = &quot;A&quot;) + 
@@ -125,6 +130,6 @@ Res.1 &lt;- Map.Me %&gt;% filter(date==&quot;2020-03-24&quot;) %&gt;%
 ggp &lt;- ggplotly(Res.1)
 frameWidget(ggp)</code></pre>
 <div id="htmlwidget-1" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/R/COVID/index_files/figure-html//widgets/widget_unnamed-chunk-14.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/R/COVID/index_files/figure-html//widgets/widget_unnamed-chunk-15.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
