@@ -22,7 +22,7 @@
 
 &lt;div id=&#34;oregon-covid-data&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;Oregon COVID data&lt;/h1&gt;
-&lt;p&gt;In this post, I want to visualize the data on COVID-19 in the state of Oregon. I now have a few days of data that I want to scrape, separate, clean up, and plot. The process of scraping it is detailed in &lt;a href=&#34;https://rww.science/r/covid/scraping/&#34;&gt;a separate file&lt;/a&gt;. These data are current as of March 24, 2020.&lt;/p&gt;
+&lt;p&gt;In this post, I want to visualize the data on COVID-19 in the state of Oregon. I now have a few days of data that I want to scrape, separate, clean up, and plot. The process of scraping it is detailed in &lt;a href=&#34;https://rww.science/r/covid-scraping/&#34;&gt;a separate file&lt;/a&gt;. These data are current as of March 24, 2020.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;load(url(&amp;quot;https://rww.science/2020/03/24/covid-19-county-maps-for-oregon/data/OregonCOVID2020-03-24.RData&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
 &lt;div id=&#34;building-a-base-map&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Building a base map&lt;/h2&gt;
@@ -121,6 +121,126 @@ data %&amp;gt;% filter(date==date1) %&amp;gt;%
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Plot.COVID(&amp;quot;2020-03-23&amp;quot;, Map.Me)&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-14-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>COVID-19 Scraping</title>
+      <link>/r/scraping-covid-19-in-oregon/</link>
+      <pubDate>Tue, 24 Mar 2020 00:00:00 +0000</pubDate>
+      <guid>/r/scraping-covid-19-in-oregon/</guid>
+      <description>
+
+
+&lt;div id=&#34;building-an-oregon-covid-data&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Building an Oregon COVID data&lt;/h1&gt;
+&lt;p&gt;I now have a few days of data now. To rebuild it, I will have to use the &lt;a href=&#34;https://archive.org/web/&#34;&gt;waybackmachine&lt;/a&gt;. These data are current as of March 24, 2020. The files that I need to locate and follow updates to &lt;a href=&#34;https://govstatus.egov.com/OR-OHA-COVID-19&#34;&gt;this page from Oregon’s OHA&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;a-scraper&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;A Scraper&lt;/h1&gt;
+&lt;p&gt;Let me explain the logic for the scraper. &lt;em&gt;NB: I had to rewrite it; the original versions of the website had three tables without data on hospitalizations. The state of Oregon is now providing hospitalization data.&lt;/em&gt; First, I use &lt;code&gt;read_html&lt;/code&gt; to read the version of the page, parse the individual tables using &lt;code&gt;html_nodes&lt;/code&gt;, render the table using &lt;code&gt;html_table&lt;/code&gt; and turn it into a &lt;code&gt;data.frame&lt;/code&gt;. In a few cases, there are commas formatted into numbers and I also grab the reported date from within the scrape. At the end, I use &lt;code&gt;bind_rows&lt;/code&gt; to put the data.frames together.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(rvest); library(htmltools)
+# A function to remove commas from numbers.
+comma.rm.to.numeric &amp;lt;- function(variable) {as.numeric(str_remove_all( {{variable}}, &amp;quot;,&amp;quot;)) }
+# A function to parse the tables currently
+OHA.Corona &amp;lt;- function(website, date) {
+webpage &amp;lt;- read_html(website)
+COVID.Head &amp;lt;- webpage %&amp;gt;%
+        html_nodes(&amp;quot;table&amp;quot;) %&amp;gt;%
+        .[1] %&amp;gt;%
+        html_table(fill = TRUE) %&amp;gt;% data.frame()
+Scraped.date &amp;lt;- names(COVID.Head)[1] %&amp;gt;% str_remove(.,&amp;quot;X.Oregon.Test.Results.as.of.&amp;quot;) %&amp;gt;% str_remove(., &amp;quot;..8.00.a.m..Updated.daily.&amp;quot;)
+names(COVID.Head) &amp;lt;- c(&amp;quot;Category&amp;quot;,&amp;quot;Outcome&amp;quot;)
+COVID.Head &amp;lt;- COVID.Head %&amp;gt;% 
+  mutate(Outcome = comma.rm.to.numeric(Outcome), date=as.Date(date), Scraped.date = Scraped.date)
+# Extract the county data
+COVID.County &amp;lt;- webpage %&amp;gt;%
+        html_nodes(&amp;quot;table&amp;quot;) %&amp;gt;%
+        .[2] %&amp;gt;%
+        html_table(fill = TRUE) %&amp;gt;% 
+        data.frame() %&amp;gt;% 
+        mutate(date=as.Date(date), 
+               Scraped.date = Scraped.date, 
+               Negative.test.results = comma.rm.to.numeric(Negative.test.results))
+# Extract the age data
+COVID.Age &amp;lt;- webpage %&amp;gt;%
+        html_nodes(&amp;quot;table&amp;quot;) %&amp;gt;%
+        .[3] %&amp;gt;%
+        html_table(fill = TRUE) %&amp;gt;% data.frame()  %&amp;gt;%  
+        mutate(date=as.Date(date), Scraped.date = Scraped.date)
+# Extract the hospitalization data
+COVID.Hospitalized &amp;lt;- webpage %&amp;gt;%
+        html_nodes(&amp;quot;table&amp;quot;) %&amp;gt;%
+        .[4] %&amp;gt;%
+        html_table(fill = TRUE) %&amp;gt;% 
+        data.frame()  %&amp;gt;% 
+        mutate(date=as.Date(date), Scraped.date = Scraped.date)
+return(list(Header=COVID.Head, Counties = COVID.County, Ages = COVID.Age, Hospitalized = COVID.Hospitalized))
+}
+# A function to extract the previous website organization with only three tables.
+OHA.Corona.2 &amp;lt;- function(website, date) {
+webpage &amp;lt;- read_html(website)
+# Extract the header data
+COVID.Head &amp;lt;- webpage %&amp;gt;%
+        html_nodes(&amp;quot;table&amp;quot;) %&amp;gt;%
+        .[1] %&amp;gt;%
+        html_table(fill = TRUE) %&amp;gt;% 
+        data.frame()
+# Extract the reported date from the website
+Scraped.date &amp;lt;- names(COVID.Head)[1] %&amp;gt;% str_remove(.,&amp;quot;X.Oregon.Test.Results.as.of.&amp;quot;) %&amp;gt;% str_remove(., &amp;quot;..8.00.a.m..Updated.daily.&amp;quot;)
+# Change the column names
+names(COVID.Head) &amp;lt;- c(&amp;quot;Category&amp;quot;,&amp;quot;Outcome&amp;quot;)
+# Complete the header data
+COVID.Head &amp;lt;- COVID.Head %&amp;gt;% mutate(Outcome = as.numeric(str_remove(Outcome,&amp;quot;,&amp;quot;), date=as.Date(date), Scraped.date = Scraped.date)
+# Extract the county data
+COVID.County &amp;lt;- webpage %&amp;gt;%
+        html_nodes(&amp;quot;table&amp;quot;) %&amp;gt;%
+        .[2] %&amp;gt;%
+        html_table(fill = TRUE) %&amp;gt;% data.frame() %&amp;gt;% mutate(date=as.Date(date), Scraped.date = Scraped.date)
+# Extract the age data
+COVID.Age &amp;lt;- webpage %&amp;gt;%
+        html_nodes(&amp;quot;table&amp;quot;) %&amp;gt;%
+        .[3] %&amp;gt;%
+        html_table(fill = TRUE) %&amp;gt;% data.frame()  %&amp;gt;% filter(!startsWith(.[[1]],&amp;quot;Total&amp;quot;)) %&amp;gt;% mutate(date=as.Date(date), Scraped.date = Scraped.date)
+return(list(Header=COVID.Head, Counties = COVID.County, Ages = COVID.Age))
+}&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Now I invoke the function for each date of valid data.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# March 18 Update
+Mar18 &amp;lt;- OHA.Corona.2(website=&amp;quot;https://web.archive.org/web/20200319144434/https://govstatus.egov.com/OR-OHA-COVID-19&amp;quot;, date=&amp;quot;2020-03-18&amp;quot;)
+# March 19 Update
+Mar19 &amp;lt;- OHA.Corona.2(website=&amp;quot;https://web.archive.org/web/20200320152224/https://govstatus.egov.com/OR-OHA-COVID-19&amp;quot;, date=&amp;quot;2020-03-19&amp;quot;)
+# March 20 Update
+Mar20 &amp;lt;- OHA.Corona.2(website=&amp;quot;https://web.archive.org/web/20200320202955/https://govstatus.egov.com/OR-OHA-COVID-19&amp;quot;, date=&amp;quot;2020-03-20&amp;quot;)
+# March 21 Update
+Mar21 &amp;lt;- OHA.Corona.2(website=&amp;quot;https://web.archive.org/web/20200321211741/https://govstatus.egov.com/OR-OHA-COVID-19&amp;quot;, date=&amp;quot;2020-03-21&amp;quot;)
+# March 22 Update
+Mar22 &amp;lt;- OHA.Corona.2(&amp;quot;https://web.archive.org/web/20200322205228/https://govstatus.egov.com/OR-OHA-COVID-19&amp;quot;, date=&amp;quot;2020-03-22&amp;quot;)
+# March 23 Update
+Mar23 &amp;lt;- OHA.Corona(website=&amp;quot;https://web.archive.org/web/20200323192410/https://govstatus.egov.com/OR-OHA-COVID-19&amp;quot;, date=&amp;quot;2020-03-23&amp;quot;)
+# March 24 Update
+Mar24 &amp;lt;- OHA.Corona(website=&amp;quot;https://govstatus.egov.com/OR-OHA-COVID-19&amp;quot;, date=as.character(Sys.Date()))&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Finally, I need to combine the various tables together by type and take out the totals row in some cases.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# Create test data
+Oregon.Tests.All &amp;lt;- bind_rows(Mar24$Header,Mar23$Header,Mar22$Header,Mar21$Header,Mar20$Header,Mar19$Header,Mar18$Header)
+# Drop the row of totals
+Oregon.Tests &amp;lt;- Oregon.Tests.All[!str_detect(Oregon.Tests.All$Category, &amp;quot;Total&amp;quot;),]
+# Create a summary table
+OR.Testing &amp;lt;- Oregon.Tests %&amp;gt;% group_by(date) %&amp;gt;% summarise(Total = sum(Outcome))
+# Create county data
+Oregon.COVID.All &amp;lt;- bind_rows(Mar24$Counties,Mar23$Counties,Mar22$Counties,Mar21$Counties,Mar20$Counties,Mar19$Counties,Mar18$Counties)
+# Split the county data into one that is exclusively totals and one without the totals
+Oregon.COVID.Total &amp;lt;- Oregon.COVID.All %&amp;gt;% filter(County==&amp;quot;Total&amp;quot;)
+Oregon.COVID &amp;lt;- Oregon.COVID.All %&amp;gt;% filter(County!=&amp;quot;Total&amp;quot;)
+# Create the data by age
+OR.Ages &amp;lt;- bind_rows(Mar24$Ages,Mar23$Ages,Mar22$Ages,Mar21$Ages,Mar20$Ages,Mar19$Ages,Mar18$Ages) %&amp;gt;% filter(Age.group!=&amp;quot;Total&amp;quot;)
+# Create a summary table by age
+OR.AgeT &amp;lt;- OR.Ages %&amp;gt;% group_by(date) %&amp;gt;% summarise(Total=sum(Number.of.cases))
+# Create the hospitalization data
+OR.Hosp &amp;lt;- bind_rows(Mar23$Hospitalized,Mar24$Hospitalized)
+# Save the image
+# save.image(&amp;quot;~/Sandbox/awful/content/R/COVID/data/OregonCOVID2020-03-24.RData&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;Tomorrow, it will be time to create the automation for updating the data.&lt;/p&gt;
 &lt;/div&gt;
 </description>
     </item>

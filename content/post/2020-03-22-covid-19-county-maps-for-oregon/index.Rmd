@@ -1,5 +1,5 @@
 ---
-title: COVID-19 County Maps for Oregon
+title: Visualising COVID-19 in Oregon
 author: Robert W. Walker
 date: '2020-03-24'
 slug: covid-19-county-maps-for-oregon
@@ -28,10 +28,11 @@ library(tidyverse)
 
 ## Oregon COVID data
 
-I now have a few days of data.  The scraping script appears at the bottom of the post; I am only using the county level data.  These data are current as of March 23, 2020.
+I now have a few days of data.  These data are current as of March 24, 2020.  I will present the first version of these visualizations here and then move the auto-update to a [different location](https://rww.science/r/covid/).  A messy first version of [the scraping exercise](https://rww.science/r/covid/scraping/) is at the bottom of this post.
 
 ```{r}
-load("~/Sandbox/awful/content/post/2020-03-22-covid-19-county-maps-for-oregon/data/OregonCOVID2020-03-24.RData")
+paste0("https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID",Sys.Date(),".RData")
+load(url(paste0("https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID",Sys.Date(),".RData")))
 ```
 
 ## A base map
@@ -46,7 +47,7 @@ Map.Me <- left_join(counties.t,Oregon.COVID, by=c("NAME" = "County"))
 
 # The Whole Thing: An Animation
 
-I will use a ggplot to build Oregon's map and fill it with case numbers.  I have to project the map off of the natural angle in the basic data, repel the labels to prevent print overlap, and scheme the colors.  The last step is to animate it by time.
+I will use a ggplot to build Oregon's map and fill it with case numbers.  I have to repel the labels to prevent print overlap [using `ggrepel`], and scheme the colors with viridis.  The last step is to animate it by time.
 
 ```{r}
 library(ggrepel); library(ggthemes); library(gganimate)
@@ -66,26 +67,22 @@ ResA
 # Some Data on Testing
 
 ```{r}
-library(hrbrthemes)
 OR.Testing <- Oregon.Tests %>% group_by(date) %>% summarise(Total = sum(Outcome))
-Test1 <- Oregon.Tests %>% ggplot(.) + aes(x=date, y=Outcome, fill=Category, label=Outcome) + geom_col() + geom_label(col="magenta") + scale_fill_ipsum() + labs(title="COVID-19 Testing in Oregon", y="Tests", subtitle="Total shown as label", caption = "data: https://govstatus.egov.com/OR-OHA-COVID-19") + geom_label(data=OR.Testing, aes(x=date, y=Total+100, label=Total), fill="white", color="black", inherit.aes = FALSE)
+Test1 <- Oregon.Tests %>% ggplot(.) + aes(x=date, y=Outcome, fill=Category, label=Outcome) + geom_col() + geom_label(col="magenta") + scale_fill_viridis_d() + labs(title="COVID-19 Testing in Oregon", y="Tests", subtitle="Total shown as label", caption = "data: https://govstatus.egov.com/OR-OHA-COVID-19") + geom_label(data=OR.Testing, aes(x=date, y=Total+100, label=Total), fill="white", color="black", inherit.aes = FALSE)
 Test1
 ```
 
 # Hospitalization Data
 
 ```{r}
-OR.Hosp <- bind_rows(Mar23$Hospitalized,Mar24$Hospitalized)
-Hos1 <- OR.Hosp %>% filter(Hospitalized.!="Total") %>% ggplot(., aes(x=date, y=Number.of.cases,fill=Hospitalized.)) + geom_col() + labs(x="Date", y="Number of COVID Positives", fill="Hospitalized?", title="Hospitalization Status of COVID-19 Positives in Oregon")
+Hos1 <- OR.Hosp %>% filter(Hospitalized.!="Total") %>% ggplot(., aes(x=date, y=Number.of.cases,fill=Hospitalized.)) + geom_col() + scale_fill_viridis_d() + labs(x="Date", y="Number of COVID Positives", fill="Hospitalized?", title="Hospitalization Status of COVID-19 Positives in Oregon")
 Hos1
 ```
 
 # Age Data
 
 ```{r}
-OR.Ages <- bind_rows(Mar24$Ages,Mar23$Ages,Mar22$Ages,Mar21$Ages,Mar20$Ages,Mar19$Ages,Mar18$Ages) %>% filter(Age.group!="Total")
-OR.AgeT <- OR.Ages %>% group_by(date) %>% summarise(Total=sum(Number.of.cases))
-Age1 <- OR.Ages %>% ggplot(., aes(x=date, y=Number.of.cases, fill=Age.group)) + geom_col() + scale_fill_ipsum() + labs(x="Date", y="Number of COVID-19 Positives")
+Age1 <- OR.Ages %>% ggplot(., aes(x=date, y=Number.of.cases, fill=Age.group)) + geom_col() + scale_fill_viridis_d() + labs(x="Date", y="Number of COVID-19 Positives")
 Age1
 ```
 
@@ -104,13 +101,17 @@ data %>% filter(date==date1) %>%
     colour = "white",
     segment.colour = "white",
     size = 3,
-    box.padding = unit(0.05, "lines"))  + scale_fill_continuous_tableau("Red") + theme_minimal() + labs(title="COVID-19 in Oregon", subtitle=date1, x="", y="", caption="Made with R, ggplot2, and ggrepel by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19")
+    box.padding = unit(0.05, "lines"))  + scale_fill_continuous_tableau("Red") + 
+    theme_minimal() + 
+    labs(title="COVID-19 in Oregon", 
+         subtitle=date1, x="", y="", 
+         caption="Made with R, ggplot2, and ggrepel by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19")
 }
 ```
 
 ## The Result for 03/18/2020
 
-This is the first date for which I can find data.  The `waybackmachine` was crucial.
+This is the first date for which I can find data.  The [waybackmachine](https://archive.org/web/) was crucial.
 
 ```{r}
 Plot.COVID("2020-03-18", Map.Me)
@@ -153,13 +154,11 @@ Plot.COVID("2020-03-23", Map.Me)
 ## The Result for 03/24/2020
 
 ```{r}
-Plot.COVID("2020-03-23", Map.Me)
+Plot.COVID("2020-03-24", Map.Me)
 ```
 
 
-## The New Section
-
-### A Scraper
+## A Scraper
 
 I have written some code here to grab the updates as they post them and add them to the dataset.  Now I need to set a cron job to evaluate this script daily.  It is also worth nothing that the script has required changing over time.  Because I am particularly interested in the county map here, I will only remove a single table.
 
