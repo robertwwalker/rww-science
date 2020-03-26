@@ -51,7 +51,7 @@ Test1</code></pre>
 <div id="a-second-look-at-testing" class="section level1">
 <h1>A Second Look at Testing</h1>
 <p>We should worry about the degree to which tests are applied at all randomly; they are surely not. As a result, what it means to calculate or break down probability based on having been tested is subject to so many important caveats that vary over time. It is important to note that this is also cumulative.</p>
-<pre class="r"><code>Test2 &lt;- Oregon.Tests %&gt;% ggplot(.) + aes(x=date, y=Outcome, fill=Category, label=Outcome) + geom_col(position = &quot;fill&quot;) + scale_fill_viridis_d() + labs(title=&quot;COVID-19 Testing in Oregon&quot;, y=&quot;Tests&quot;, x=&quot;Date&quot;, subtitle=&quot;Total shown as label&quot;, caption = &quot;data: https://govstatus.egov.com/OR-OHA-COVID-19&quot;)
+<pre class="r"><code>Test2 &lt;- Oregon.Tests %&gt;% ggplot(.) + aes(x=date, y=Outcome, fill=Category, label=Outcome) + geom_col(position = &quot;fill&quot;) + scale_fill_viridis_d() + labs(title=&quot;COVID-19 Testing in Oregon&quot;, y=&quot;Proportion of Tests&quot;, x=&quot;Date&quot;, caption = &quot;data: https://govstatus.egov.com/OR-OHA-COVID-19&quot;)
 Test2</code></pre>
 <p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <div id="a-better-look-at-this" class="section level2">
@@ -73,7 +73,7 @@ MyDat %&gt;% ggplot(., aes(x=date, y=Test.Changes, fill=Outcome)) + geom_col(pos
 <p>How do positive cases and hospitalization relate?</p>
 <pre class="r"><code>Hos1 &lt;- OR.Hosp %&gt;% filter(Hospitalized.!=&quot;Total&quot;) %&gt;% ggplot(., aes(x=date, y=Number.of.cases,fill=Hospitalized.)) + geom_col() + scale_fill_ipsum() + labs(x=&quot;Date&quot;, y=&quot;Number of COVID Positives&quot;, fill=&quot;Hospitalized?&quot;, title=&quot;Hospitalization Status of COVID-19 Positives in Oregon&quot;)
 Hos2 &lt;- OR.Hosp %&gt;% filter(Hospitalized.!=&quot;Total&quot;) %&gt;% ggplot(., aes(x=date, y=Number.of.cases,fill=Hospitalized.)) + geom_col(position=&quot;fill&quot;) + scale_fill_ipsum() + labs(x=&quot;Date&quot;, y=&quot;Number of COVID Positives&quot;, fill=&quot;Hospitalized?&quot;, title=&quot;Hospitalization Status of COVID-19 Positives in Oregon&quot;)
-(Hos1) / Hos2</code></pre>
+Hos1 + Hos2</code></pre>
 <p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 </div>
 <div id="age-data" class="section level1">
@@ -84,7 +84,7 @@ Age1 &lt;- OR.Ages1 %&gt;% ggplot(., aes(x=date, y=Number.of.cases, fill=Age.gro
 Age2 &lt;- OR.Ages1 %&gt;% ggplot(.) +
  aes(x = date, fill = Age.group, weight = Number.of.cases) +
  geom_bar(position = &quot;fill&quot;) +
- scale_fill_ipsum() + labs(x=&quot;Date&quot;, y=&quot;Percent of COVID-19 Positives&quot;, caption=&quot;@PieRatio from OHA data&quot;) +
+ scale_fill_ipsum() + labs(x=&quot;Date&quot;, y=&quot;Proportion of COVID-19 Positives&quot;) +
  theme_minimal()
 Age1 + Age2</code></pre>
 <p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
@@ -95,7 +95,7 @@ Age1 &lt;- OR.Ages1 %&gt;% ggplot(., aes(x=date, y=Number.of.cases, fill=Age.gro
 Age2 &lt;- OR.Ages1 %&gt;% ggplot(.) +
  aes(x = date, fill = Age.group, weight = Number.of.cases) +
  geom_bar(position = &quot;fill&quot;) +
- scale_fill_viridis(discrete=TRUE) + labs(x=&quot;Date&quot;, y=&quot;Percent of COVID-19 Positives&quot;, caption=&quot;@PieRatio from OHA data&quot;) +
+ scale_fill_viridis(discrete=TRUE) + labs(x=&quot;Date&quot;, y=&quot;Percent of COVID-19 Positives&quot;) +
  theme_minimal()
 Age1 + Age2</code></pre>
 <p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>

@@ -65,7 +65,7 @@ Test1
 We should worry about the degree to which tests are applied at all randomly; they are surely not.  As a result, what it means to calculate or break down probability based on having been tested is subject to so many important caveats that vary over time.  It is important to note that this is also cumulative.
 
 ```{r}
-Test2 <- Oregon.Tests %>% ggplot(.) + aes(x=date, y=Outcome, fill=Category, label=Outcome) + geom_col(position = "fill") + scale_fill_viridis_d() + labs(title="COVID-19 Testing in Oregon", y="Tests", x="Date", subtitle="Total shown as label", caption = "data: https://govstatus.egov.com/OR-OHA-COVID-19")
+Test2 <- Oregon.Tests %>% ggplot(.) + aes(x=date, y=Outcome, fill=Category, label=Outcome) + geom_col(position = "fill") + scale_fill_viridis_d() + labs(title="COVID-19 Testing in Oregon", y="Proportion of Tests", x="Date", caption = "data: https://govstatus.egov.com/OR-OHA-COVID-19")
 Test2
 ```
 
@@ -91,7 +91,7 @@ How do positive cases and hospitalization relate?
 ```{r}
 Hos1 <- OR.Hosp %>% filter(Hospitalized.!="Total") %>% ggplot(., aes(x=date, y=Number.of.cases,fill=Hospitalized.)) + geom_col() + scale_fill_ipsum() + labs(x="Date", y="Number of COVID Positives", fill="Hospitalized?", title="Hospitalization Status of COVID-19 Positives in Oregon")
 Hos2 <- OR.Hosp %>% filter(Hospitalized.!="Total") %>% ggplot(., aes(x=date, y=Number.of.cases,fill=Hospitalized.)) + geom_col(position="fill") + scale_fill_ipsum() + labs(x="Date", y="Number of COVID Positives", fill="Hospitalized?", title="Hospitalization Status of COVID-19 Positives in Oregon")
-(Hos1) / Hos2
+Hos1 + Hos2
 ```
 
 # Age Data
@@ -104,7 +104,7 @@ Age1 <- OR.Ages1 %>% ggplot(., aes(x=date, y=Number.of.cases, fill=Age.group)) +
 Age2 <- OR.Ages1 %>% ggplot(.) +
  aes(x = date, fill = Age.group, weight = Number.of.cases) +
  geom_bar(position = "fill") +
- scale_fill_ipsum() + labs(x="Date", y="Percent of COVID-19 Positives", caption="@PieRatio from OHA data") +
+ scale_fill_ipsum() + labs(x="Date", y="Proportion of COVID-19 Positives") +
  theme_minimal()
 Age1 + Age2
 ```
@@ -117,7 +117,7 @@ Age1 <- OR.Ages1 %>% ggplot(., aes(x=date, y=Number.of.cases, fill=Age.group)) +
 Age2 <- OR.Ages1 %>% ggplot(.) +
  aes(x = date, fill = Age.group, weight = Number.of.cases) +
  geom_bar(position = "fill") +
- scale_fill_viridis(discrete=TRUE) + labs(x="Date", y="Percent of COVID-19 Positives", caption="@PieRatio from OHA data") +
+ scale_fill_viridis(discrete=TRUE) + labs(x="Date", y="Percent of COVID-19 Positives") +
  theme_minimal()
 Age1 + Age2
 ```

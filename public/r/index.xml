@@ -65,7 +65,7 @@ Test1&lt;/code&gt;&lt;/pre&gt;
 &lt;div id=&#34;a-second-look-at-testing&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;A Second Look at Testing&lt;/h1&gt;
 &lt;p&gt;We should worry about the degree to which tests are applied at all randomly; they are surely not. As a result, what it means to calculate or break down probability based on having been tested is subject to so many important caveats that vary over time. It is important to note that this is also cumulative.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Test2 &amp;lt;- Oregon.Tests %&amp;gt;% ggplot(.) + aes(x=date, y=Outcome, fill=Category, label=Outcome) + geom_col(position = &amp;quot;fill&amp;quot;) + scale_fill_viridis_d() + labs(title=&amp;quot;COVID-19 Testing in Oregon&amp;quot;, y=&amp;quot;Tests&amp;quot;, x=&amp;quot;Date&amp;quot;, subtitle=&amp;quot;Total shown as label&amp;quot;, caption = &amp;quot;data: https://govstatus.egov.com/OR-OHA-COVID-19&amp;quot;)
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Test2 &amp;lt;- Oregon.Tests %&amp;gt;% ggplot(.) + aes(x=date, y=Outcome, fill=Category, label=Outcome) + geom_col(position = &amp;quot;fill&amp;quot;) + scale_fill_viridis_d() + labs(title=&amp;quot;COVID-19 Testing in Oregon&amp;quot;, y=&amp;quot;Proportion of Tests&amp;quot;, x=&amp;quot;Date&amp;quot;, caption = &amp;quot;data: https://govstatus.egov.com/OR-OHA-COVID-19&amp;quot;)
 Test2&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;div id=&#34;a-better-look-at-this&#34; class=&#34;section level2&#34;&gt;
@@ -87,7 +87,7 @@ MyDat %&amp;gt;% ggplot(., aes(x=date, y=Test.Changes, fill=Outcome)) + geom_col
 &lt;p&gt;How do positive cases and hospitalization relate?&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Hos1 &amp;lt;- OR.Hosp %&amp;gt;% filter(Hospitalized.!=&amp;quot;Total&amp;quot;) %&amp;gt;% ggplot(., aes(x=date, y=Number.of.cases,fill=Hospitalized.)) + geom_col() + scale_fill_ipsum() + labs(x=&amp;quot;Date&amp;quot;, y=&amp;quot;Number of COVID Positives&amp;quot;, fill=&amp;quot;Hospitalized?&amp;quot;, title=&amp;quot;Hospitalization Status of COVID-19 Positives in Oregon&amp;quot;)
 Hos2 &amp;lt;- OR.Hosp %&amp;gt;% filter(Hospitalized.!=&amp;quot;Total&amp;quot;) %&amp;gt;% ggplot(., aes(x=date, y=Number.of.cases,fill=Hospitalized.)) + geom_col(position=&amp;quot;fill&amp;quot;) + scale_fill_ipsum() + labs(x=&amp;quot;Date&amp;quot;, y=&amp;quot;Number of COVID Positives&amp;quot;, fill=&amp;quot;Hospitalized?&amp;quot;, title=&amp;quot;Hospitalization Status of COVID-19 Positives in Oregon&amp;quot;)
-(Hos1) / Hos2&lt;/code&gt;&lt;/pre&gt;
+Hos1 + Hos2&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;age-data&#34; class=&#34;section level1&#34;&gt;
@@ -98,7 +98,7 @@ Age1 &amp;lt;- OR.Ages1 %&amp;gt;% ggplot(., aes(x=date, y=Number.of.cases, fill
 Age2 &amp;lt;- OR.Ages1 %&amp;gt;% ggplot(.) +
  aes(x = date, fill = Age.group, weight = Number.of.cases) +
  geom_bar(position = &amp;quot;fill&amp;quot;) +
- scale_fill_ipsum() + labs(x=&amp;quot;Date&amp;quot;, y=&amp;quot;Percent of COVID-19 Positives&amp;quot;, caption=&amp;quot;@PieRatio from OHA data&amp;quot;) +
+ scale_fill_ipsum() + labs(x=&amp;quot;Date&amp;quot;, y=&amp;quot;Proportion of COVID-19 Positives&amp;quot;) +
  theme_minimal()
 Age1 + Age2&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-8-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
@@ -109,7 +109,7 @@ Age1 &amp;lt;- OR.Ages1 %&amp;gt;% ggplot(., aes(x=date, y=Number.of.cases, fill
 Age2 &amp;lt;- OR.Ages1 %&amp;gt;% ggplot(.) +
  aes(x = date, fill = Age.group, weight = Number.of.cases) +
  geom_bar(position = &amp;quot;fill&amp;quot;) +
- scale_fill_viridis(discrete=TRUE) + labs(x=&amp;quot;Date&amp;quot;, y=&amp;quot;Percent of COVID-19 Positives&amp;quot;, caption=&amp;quot;@PieRatio from OHA data&amp;quot;) +
+ scale_fill_viridis(discrete=TRUE) + labs(x=&amp;quot;Date&amp;quot;, y=&amp;quot;Percent of COVID-19 Positives&amp;quot;) +
  theme_minimal()
 Age1 + Age2&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
@@ -359,7 +359,19 @@ cat(&amp;quot;Added new data...&amp;quot;)
 } else {
 cat(&amp;quot;Nothing new to add; have a nice day!&amp;quot;)
 }&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Nothing new to add; have a nice day!&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Added new data...&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;OR.Testing&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## # A tibble: 8 x 2
+##   date       Total
+##   &amp;lt;date&amp;gt;     &amp;lt;dbl&amp;gt;
+## 1 2020-03-18  1554
+## 2 2020-03-19  1854
+## 3 2020-03-20  2550
+## 4 2020-03-21  2912
+## 5 2020-03-22  3025
+## 6 2020-03-23  3840
+## 7 2020-03-24  4559
+## 8 2020-03-25  5742&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 </description>
     </item>

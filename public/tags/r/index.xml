@@ -187,7 +187,19 @@ cat(&amp;quot;Added new data...&amp;quot;)
 } else {
 cat(&amp;quot;Nothing new to add; have a nice day!&amp;quot;)
 }&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Nothing new to add; have a nice day!&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Added new data...&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;OR.Testing&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## # A tibble: 8 x 2
+##   date       Total
+##   &amp;lt;date&amp;gt;     &amp;lt;dbl&amp;gt;
+## 1 2020-03-18  1554
+## 2 2020-03-19  1854
+## 3 2020-03-20  2550
+## 4 2020-03-21  2912
+## 5 2020-03-22  3025
+## 6 2020-03-23  3840
+## 7 2020-03-24  4559
+## 8 2020-03-25  5742&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 </description>
     </item>
