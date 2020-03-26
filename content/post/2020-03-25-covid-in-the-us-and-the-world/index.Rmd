@@ -1,0 +1,36 @@
+---
+title: COVID in the US and the World
+author: Robert W. Walker
+date: '2020-03-25'
+slug: covid-in-the-us-and-the-world
+categories: []
+tags: []
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2020-03-25T23:33:58-07:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+Johns Hopkins has an extensive collection of data.  Let's see what one set looks like.
+
+```{r, warning=FALSE, message=FALSE}
+library(leaflet); library(tidyverse); library(rMaps); library(leaflet.extras)
+March25JH <- read_csv(url("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/03-25-2020.csv"))
+March25JH <- March25JH %>% mutate(Long = Long_)
+library(leaflet)
+L2 <- leaflet(March25JH) %>% 
+  addTiles() %>% 
+#  addCircles(lng = ~Long, lat = ~Lat, weight = 1, radius = 1, popup = ~Combined_Key) %>% 
+  addHeatmap(lng=~Long,
+             lat=~Lat,
+             radius = 9,
+             intensity = ~Confirmed)
+library(widgetframe)
+frameWidget(L2)
+``` 
