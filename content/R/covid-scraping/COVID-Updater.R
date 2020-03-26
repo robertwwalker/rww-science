@@ -1,7 +1,11 @@
+load(url(paste0("https://rww.science/r/covid/data/OregonCOVID",Sys.Date()-1,".RData"))) # 1
 library(rvest); library(htmltools); library(tidyverse); library(rlang)
 # A function to remove commas from numbers.
 comma.rm.to.numeric <- function(variable) {
   as.numeric(str_remove_all( {{variable}}, ",")) 
+}
+dash.rm.to.numeric <- function(variable) {
+  as.numeric(str_remove_all( {{variable}}, "-")) 
 }
 # A function to parse the tables currently
 OHA.Corona <- function(website, date) {
@@ -12,7 +16,7 @@ OHA.Corona <- function(website, date) {
     html_table(fill = TRUE) %>%  # 3
     data.frame()  # 4 
   # Acquire the scraped date from the heading on the page.  The rest is 5
-  Scraped.date <- names(COVID.Head)[1] %>% str_remove(.,"X.Oregon.Test.Results.as.of.") %>% str_remove(., "..8.00.a.m..Updated.daily.")
+  Scraped.date <- names(COVID.Head)[1] %>% str_remove(.,"X.As.of.") %>% str_remove(., "..8.00.a.m..Updated.daily.")
   names(COVID.Head) <- c("Category","Outcome") # Change the names
   COVID.Head <- COVID.Head %>% 
     mutate(Outcome = comma.rm.to.numeric(Outcome), date=as.Date(date), Scraped.date = as.Date(Scraped.date,"%m.%d.%y")) # Create a few variables including the date for checking
@@ -24,24 +28,39 @@ OHA.Corona <- function(website, date) {
     data.frame() %>%  # 4
     mutate(date=as.Date(date), # 5
            Scraped.date = as.Date(Scraped.date,"%m.%d.%y"), 
-           Negative.test.results = comma.rm.to.numeric(Negative.test.results))
+           Negative.test.results = Negative,
+           Deaths. = Deaths,
+           Number.of.cases = Positive)
   # Extract the age data
   COVID.Age <- webpage %>%
     html_nodes("table") %>% #2
     .[3] %>%
     html_table(fill = TRUE) %>% # 3 
     data.frame()  %>%   # 4
-    mutate(date=as.Date(date), Scraped.date = as.Date(Scraped.date,"%m.%d.%y")) # 5
+    mutate(date=as.Date(date), Scraped.date = as.Date(Scraped.date,"%m.%d.%y"), Hospitalized = dash.rm.to.numeric(Ever.hospitalized.), Deaths = dash.rm.to.numeric(Deaths.)) %>% select(-c(Ever.hospitalized.,Deaths.)) # 5
+  # Extract the age data
+  COVID.Gender <- webpage %>%
+    html_nodes("table") %>% #2
+    .[4] %>%
+    html_table(fill = TRUE) %>% # 3 
+    data.frame()  %>%   # 4
+    mutate(date=as.Date(date), Scraped.date = as.Date(Scraped.date,"%m.%d.%y"), Deaths = dash.rm.to.numeric(Deaths.)) %>% select(-Deaths.) # 5
   # Extract the hospitalization data
   COVID.Hospitalized <- webpage %>%
     html_nodes("table") %>% # 2
-    .[4] %>%
+    .[5] %>%
     html_table(fill = TRUE) %>% # 3
     data.frame()  %>%  # 4
     mutate(date=as.Date(date), Scraped.date = as.Date(Scraped.date,"%m.%d.%y")) # 5
-  return(list(Header=COVID.Head, Counties = COVID.County, Ages = COVID.Age, Hospitalized = COVID.Hospitalized))
+  # Extract the hospital capacity data
+  COVID.Hospital.Cap <- webpage %>%
+    html_nodes("table") %>% # 2
+    .[6] %>%
+    html_table(fill = TRUE) %>% # 3
+    data.frame()  %>%  # 4
+    mutate(date=as.Date(date), Scraped.date = as.Date(Scraped.date,"%m.%d.%y")) # 5
+  return(list(Header=COVID.Head, Counties = COVID.County, Gender = COVID.Gender, Ages = COVID.Age, Hospitalized = COVID.Hospitalized, Hospital.Cap=COVID.Hospital.Cap))
 }
-load(url(paste0("https://rww.science/r/covid/data/OregonCOVID",Sys.Date()-1,".RData"))) # 1
 Today <- OHA.Corona(website="https://govstatus.egov.com/OR-OHA-COVID-19", date=as.character(Sys.Date())) # 2
 if(Today$Header$date[[1]]==as.Date(Today$Header$Scraped.date[[1]],"%m.%d.%y")) { # 3
   # Store Today
@@ -64,6 +83,10 @@ if(Today$Header$date[[1]]==as.Date(Today$Header$Scraped.date[[1]],"%m.%d.%y")) {
   # Create the hospitalization data
   OR.Hosp <- bind_rows(Today$Hospitalized,OR.Hosp) %>% distinct(.) # 5
   # Save the imageformat(Sys.Date(), "%d")
+  OR.Gender <- Today$Gender
+  OR.Hospital.Caps <- Today$Hospital.Cap
+  OR.Gender <- bind_rows(Today$Gender, OR.Gender) 
+  OR.Hospital.Caps <- bind_rows(Today$Hospital.Cap, OR.Hospital.Caps) 
   save.image(paste0("~/Sandbox/awful/content/R/COVID/data/OregonCOVID",Sys.Date(),".RData")) # Save the data with a date flag in the name.
   cat("Added new data...") # Report the updates
 } else {
