@@ -1,7 +1,7 @@
 ---
 title: COVID-19 in Oregon
 author: Robert W. Walker
-date: '2020-03-24'
+date: '2020-03-26'
 ---
 
 <script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
@@ -100,11 +100,26 @@ Age2 &lt;- OR.Ages1 %&gt;% ggplot(.) +
 Age1 + Age2</code></pre>
 <p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 </div>
-<div id="some-gender-data" class="section level2">
-<h2>Some Gender Data</h2>
+<div id="some-sex-data" class="section level2">
+<h2>Some Sex Data</h2>
+<p>This table contains Sex, Cases, and Deaths.</p>
+<pre class="r"><code>library(hrbrthemes)
+OR.Sex.Reshape &lt;- OR.Gender %&gt;% filter(Sex %in% c(&quot;Female&quot;,&quot;Male&quot;)) %&gt;% mutate(Actives = Cases - Deaths) %&gt;% select(-Cases) %&gt;%  pivot_longer(., c(Actives,Deaths), names_to = &quot;Outcome&quot;, values_to  = &quot;Count&quot;)
+ggplot(OR.Sex.Reshape, aes(x=Sex, y=Count, fill=Outcome)) + geom_col() + scale_fill_ipsum() + labs(x=&quot;Sex&quot;, y=&quot;COVID-19 Positives&quot;) + theme_economist()</code></pre>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-10-1.png" width="672" />
+## A Plan for This</p>
+<p>Separate the bar plots by Sex.</p>
+<pre class="r"><code>OR.Sex.Reshape %&gt;% mutate(Category = paste(Sex, Outcome, sep=&quot;:&quot;)) %&gt;% ggplot(., aes(x=date, y=Count, fill=Outcome)) + geom_col(position=&quot;stack&quot;) + scale_fill_ipsum() + labs(x=&quot;Date&quot;, y=&quot;Cases&quot;, title=&quot;Deaths and COVID-19 Cases in Oregon by Sex&quot;) + facet_wrap(vars(Sex))</code></pre>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 </div>
 <div id="hospital-capacity-data" class="section level2">
 <h2>Hospital Capacity Data</h2>
+<p>There isn’t really much to do with this yet; today is the first day of this data. For tomorrow, a line graph to show what is happening with capacity.</p>
+<pre class="r"><code>OR.Hospital.Caps</code></pre>
+<pre><code>##        Hospital.Capacity Number       date Scraped.date
+## 1     Available ICU beds    362 2020-03-26   2020-03-26
+## 2 Available non-ICU beds   2193 2020-03-26   2020-03-26
+## 3  Available ventilators    684 2020-03-26   2020-03-26</code></pre>
 </div>
 <div id="a-mapping-function" class="section level2">
 <h2>A Mapping Function</h2>
@@ -125,42 +140,42 @@ data %&gt;% filter(date==date1) %&gt;%
 <h2>The Result for 03/18/2020</h2>
 <p>This is the first date for which I can find data. The <code>waybackmachine</code> was crucial.</p>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-18&quot;, Map.Me)</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03192020" class="section level2">
 <h2>The Result for 03/19/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-19&quot;, Map.Me)</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03202020" class="section level2">
 <h2>The Result for 03/20/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-20&quot;, Map.Me)</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03212020" class="section level2">
 <h2>The Result for 03/21/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-21&quot;, Map.Me)</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03222020" class="section level2">
 <h2>The Result for 03/22/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-22&quot;, Map.Me)</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03232020" class="section level2">
 <h2>The Result for 03/23/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-23&quot;, Map.Me)</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03242020" class="section level2">
 <h2>The Result for 03/24/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-24&quot;, Map.Me)</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03252020" class="section level2">
 <h2>The Result for 03/25/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-25&quot;, Map.Me)</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03262020" class="section level2">
 <h2>The Result for 03/26/2020</h2>
@@ -175,6 +190,6 @@ Res.1 &lt;- Map.Me %&gt;% filter(date==Sys.Date()) %&gt;%
 ggp &lt;- ggplotly(Res.1)
 frameWidget(ggp)</code></pre>
 <div id="htmlwidget-1" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/R/COVID/index_files/figure-html//widgets/widget_unnamed-chunk-19.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/R/COVID/index_files/figure-html//widgets/widget_unnamed-chunk-22.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>

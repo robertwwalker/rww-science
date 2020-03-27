@@ -1,7 +1,7 @@
 ---
 title: COVID-19 in Oregon
 author: Robert W. Walker
-date: '2020-03-24'
+date: '2020-03-26'
 ---
 
 ```{r setup, include=FALSE}
@@ -122,9 +122,30 @@ Age2 <- OR.Ages1 %>% ggplot(.) +
 Age1 + Age2
 ```
 
-## Some Gender Data
+## Some Sex Data
+
+This table contains Sex, Cases, and Deaths.
+
+```{r}
+library(hrbrthemes)
+OR.Sex.Reshape <- OR.Gender %>% filter(Sex %in% c("Female","Male")) %>% mutate(Actives = Cases - Deaths) %>% select(-Cases) %>%  pivot_longer(., c(Actives,Deaths), names_to = "Outcome", values_to  = "Count")
+ggplot(OR.Sex.Reshape, aes(x=Sex, y=Count, fill=Outcome)) + geom_col() + scale_fill_ipsum() + labs(x="Sex", y="COVID-19 Positives") + theme_economist()
+```
+## A Plan for This
+
+Separate the bar plots by Sex.
+
+```{r}
+OR.Sex.Reshape %>% mutate(Category = paste(Sex, Outcome, sep=":")) %>% ggplot(., aes(x=date, y=Count, fill=Outcome)) + geom_col(position="stack") + scale_fill_ipsum() + labs(x="Date", y="Cases", title="Deaths and COVID-19 Cases in Oregon by Sex") + facet_wrap(vars(Sex))
+```
 
 ## Hospital Capacity Data
+
+There isn't really much to do with this yet; today is the first day of this data.  For tomorrow, a line graph to show what is happening with capacity.
+
+```{r}
+OR.Hospital.Caps
+```
 
 
 ## A Mapping Function
@@ -213,3 +234,4 @@ Res.1 <- Map.Me %>% filter(date==Sys.Date()) %>%
 ggp <- ggplotly(Res.1)
 frameWidget(ggp)
 ```
+

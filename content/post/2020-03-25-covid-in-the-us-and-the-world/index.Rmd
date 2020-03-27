@@ -17,20 +17,34 @@ image:
 projects: []
 ---
 
-Johns Hopkins has an extensive collection of data.  Let's see what one set looks like.
+# The Johns Hopkins dashboard
+
+This is what [Johns Hopkins has provided as a dashboard using ARCGIS](https://coronavirus.jhu.edu/map.html).  They have essentially layered out the data into national and subnational data and then used the arcgis dashboard to cycle through them.
+
+<iframe width="650" height="400" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" title="2019-nCoV" src="//gisanddata.maps.arcgis.com/apps/Embed/index.html?webmap=14aa9e5660cf42b5b4b546dec6ceec7c&extent=77.3846,11.535,163.5174,52.8632&zoom=true&previewImage=false&scale=true&disable_scroll=true&theme=light"></iframe>
+
+# The data
+
+```{r, message=FALSE, warning=FALSE}
+library(tidyverse); library(sf); library(rnaturalearth); library(rnaturalearthdata); library(ggmap)
+March26JH <- read_csv(url("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/03-26-2020.csv"))
+```
+
+# A Leaflet
+
+Johns Hopkins also has an extensive collection of data.  Let's see what one set looks like.
 
 ```{r, warning=FALSE, message=FALSE}
-library(leaflet); library(tidyverse); library(rMaps); library(leaflet.extras)
-March25JH <- read_csv(url("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/03-25-2020.csv"))
-March25JH <- March25JH %>% mutate(Long = Long_)
-library(leaflet)
-L2 <- leaflet(March25JH) %>% 
+library(leaflet); library(rMaps); library(leaflet.extras)
+L2 <- leaflet(March26JH) %>% 
   addTiles() %>% 
 #  addCircles(lng = ~Long, lat = ~Lat, weight = 1, radius = 1, popup = ~Combined_Key) %>% 
-  addHeatmap(lng=~Long,
+  addHeatmap(lng=~Long_,
              lat=~Lat,
              radius = 9,
              intensity = ~Confirmed)
 library(widgetframe)
 frameWidget(L2)
 ``` 
+
+

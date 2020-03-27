@@ -22,19 +22,30 @@ projects: []
 <script src="/rmarkdown-libs/widgetframe-binding/widgetframe.js"></script>
 
 
-<p>Johns Hopkins has an extensive collection of data. Let’s see what one set looks like.</p>
-<pre class="r"><code>library(leaflet); library(tidyverse); library(rMaps); library(leaflet.extras)
-March25JH &lt;- read_csv(url(&quot;https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/03-25-2020.csv&quot;))
-March25JH &lt;- March25JH %&gt;% mutate(Long = Long_)
-library(leaflet)
-L2 &lt;- leaflet(March25JH) %&gt;% 
+<div id="the-johns-hopkins-dashboard" class="section level1">
+<h1>The Johns Hopkins dashboard</h1>
+<p>This is what <a href="https://coronavirus.jhu.edu/map.html">Johns Hopkins has provided as a dashboard using ARCGIS</a>. They have essentially layered out the data into national and subnational data and then used the arcgis dashboard to cycle through them.</p>
+<iframe width="650" height="400" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" title="2019-nCoV" src="//gisanddata.maps.arcgis.com/apps/Embed/index.html?webmap=14aa9e5660cf42b5b4b546dec6ceec7c&amp;extent=77.3846,11.535,163.5174,52.8632&amp;zoom=true&amp;previewImage=false&amp;scale=true&amp;disable_scroll=true&amp;theme=light">
+</iframe>
+</div>
+<div id="the-data" class="section level1">
+<h1>The data</h1>
+<pre class="r"><code>library(tidyverse); library(sf); library(rnaturalearth); library(rnaturalearthdata); library(ggmap)
+March26JH &lt;- read_csv(url(&quot;https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/03-26-2020.csv&quot;))</code></pre>
+</div>
+<div id="a-leaflet" class="section level1">
+<h1>A Leaflet</h1>
+<p>Johns Hopkins also has an extensive collection of data. Let’s see what one set looks like.</p>
+<pre class="r"><code>library(leaflet); library(rMaps); library(leaflet.extras)
+L2 &lt;- leaflet(March26JH) %&gt;% 
   addTiles() %&gt;% 
 #  addCircles(lng = ~Long, lat = ~Lat, weight = 1, radius = 1, popup = ~Combined_Key) %&gt;% 
-  addHeatmap(lng=~Long,
+  addHeatmap(lng=~Long_,
              lat=~Lat,
              radius = 9,
              intensity = ~Confirmed)
 library(widgetframe)
 frameWidget(L2)</code></pre>
 <div id="htmlwidget-1" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/post/2020-03-25-covid-in-the-us-and-the-world/index_files/figure-html//widgets/widget_unnamed-chunk-1.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/post/2020-03-25-covid-in-the-us-and-the-world/index_files/figure-html//widgets/widget_unnamed-chunk-2.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+</div>
