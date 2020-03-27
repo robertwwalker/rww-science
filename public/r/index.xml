@@ -25,9 +25,9 @@
 
 &lt;div id=&#34;oregon-covid-data&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;Oregon COVID data&lt;/h1&gt;
-&lt;p&gt;In this post, I want to visualize the data on COVID-19 in the state of Oregon. I now have a few days of data that I want to scrape, separate, clean up, and plot. The process of scraping it is detailed in &lt;a href=&#34;https://rww.science/r/covid-scraping/&#34;&gt;a separate file&lt;/a&gt;. These data are current as of March 25, 2020.&lt;/p&gt;
+&lt;p&gt;In this post, I want to visualize the data on COVID-19 in the state of Oregon. I now have a few days of data that I want to scrape, separate, clean up, and plot. The process of scraping it is detailed in &lt;a href=&#34;https://rww.science/r/covid-scraping/&#34;&gt;a separate file&lt;/a&gt;. These data are current as of March 26, 2020.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;load(url(paste0(&amp;quot;https://rww.science/r/covid/data/OregonCOVID&amp;quot;,Sys.Date(),&amp;quot;.RData&amp;quot;)))&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;These data are current as of 2020-03-25.&lt;/p&gt;
+&lt;p&gt;These data are current as of 2020-03-26.&lt;/p&gt;
 &lt;div id=&#34;building-a-base-map&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Building a base map&lt;/h2&gt;
 &lt;p&gt;To build a map to work from, I need a map library. Load the &lt;code&gt;tigris&lt;/code&gt; library then grab the map as an &lt;code&gt;sf&lt;/code&gt; object; there is a &lt;code&gt;geom_sf&lt;/code&gt; that makes them easy to work with. Finally, I join the map to the data.&lt;/p&gt;
@@ -38,7 +38,7 @@ Map.Me &amp;lt;- left_join(counties.t,Oregon.COVID, by=c(&amp;quot;NAME&amp;quot
 &lt;/div&gt;
 &lt;div id=&#34;the-whole-thing-an-animation&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;The Whole Thing: An Animation&lt;/h1&gt;
-&lt;p&gt;I will use a ggplot to build Oregon’s map and fill it with case numbers. &lt;code&gt;geom_sf()&lt;/code&gt; plots the geometry. I have to repel the labels to prevent print overlap, and scheme the colors. The last step is to animate it by time.&lt;/p&gt;
+&lt;p&gt;I will use a ggplot to build Oregon’s map and fill it with case numbers. &lt;code&gt;geom_sf()&lt;/code&gt; plots the geometry. I have to repel the labels to prevent print overlap, and scheme the colors. The last step is to animate it by time. If I stop the label repelling, they will not bounce but it adds excitement.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(ggrepel); library(ggthemes); library(gganimate)
 library(patchwork); library(hrbrthemes)
 Anim1 &amp;lt;- Map.Me %&amp;gt;% 
@@ -114,6 +114,12 @@ Age2 &amp;lt;- OR.Ages1 %&amp;gt;% ggplot(.) +
 Age1 + Age2&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
+&lt;div id=&#34;some-gender-data&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Some Gender Data&lt;/h2&gt;
+&lt;/div&gt;
+&lt;div id=&#34;hospital-capacity-data&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Hospital Capacity Data&lt;/h2&gt;
+&lt;/div&gt;
 &lt;div id=&#34;a-mapping-function&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;A Mapping Function&lt;/h2&gt;
 &lt;p&gt;To save time later, I turned the plots into a function so that I can use to reproduce each frame. Two inputs to the function, the dataset that is always the merged data from above and the date that I want to plot located in &lt;code&gt;date1&lt;/code&gt; in a &lt;code&gt;YYYY-MM-DD&lt;/code&gt; format.&lt;/p&gt;
@@ -160,16 +166,21 @@ data %&amp;gt;% filter(date==date1) %&amp;gt;%
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Plot.COVID(&amp;quot;2020-03-23&amp;quot;, Map.Me)&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-16-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
-&lt;div id=&#34;the-result-for-03232020-1&#34; class=&#34;section level2&#34;&gt;
-&lt;h2&gt;The Result for 03/23/2020&lt;/h2&gt;
+&lt;div id=&#34;the-result-for-03242020&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;The Result for 03/24/2020&lt;/h2&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Plot.COVID(&amp;quot;2020-03-24&amp;quot;, Map.Me)&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-17-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;the-result-for-03252020&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;The Result for 03/25/2020&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Plot.COVID(&amp;quot;2020-03-25&amp;quot;, Map.Me)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-18-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-result-for-03262020&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;The Result for 03/26/2020&lt;/h2&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(plotly); library(widgetframe); library(ggthemes); library(RColorBrewer)
 Map.Me &amp;lt;- Map.Me %&amp;gt;% mutate(TTip = paste0(&amp;quot;Deaths: &amp;quot;,Deaths,&amp;quot;&amp;lt;br&amp;gt; Negative Tests:&amp;quot;,Negative.test.results))
-Res.1 &amp;lt;- Map.Me %&amp;gt;% filter(date==&amp;quot;2020-03-25&amp;quot;) %&amp;gt;%
+Res.1 &amp;lt;- Map.Me %&amp;gt;% filter(date==Sys.Date()) %&amp;gt;%
   ggplot(., aes(geometry=geometry, fill=Number.of.cases, label=NAME, text=TTip)) + 
   geom_sf() + 
   scale_fill_viridis_c(option = &amp;quot;A&amp;quot;) + 
@@ -178,7 +189,7 @@ Res.1 &amp;lt;- Map.Me %&amp;gt;% filter(date==&amp;quot;2020-03-25&amp;quot;) %
 ggp &amp;lt;- ggplotly(Res.1)
 frameWidget(ggp)&lt;/code&gt;&lt;/pre&gt;
 &lt;div id=&#34;htmlwidget-1&#34; style=&#34;width:100%;height:480px;&#34; class=&#34;widgetframe html-widget&#34;&gt;&lt;/div&gt;
-&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-1&#34;&gt;{&#34;x&#34;:{&#34;url&#34;:&#34;/R/COVID/index_files/figure-html//widgets/widget_unnamed-chunk-18.html&#34;,&#34;options&#34;:{&#34;xdomain&#34;:&#34;*&#34;,&#34;allowfullscreen&#34;:false,&#34;lazyload&#34;:false}},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-1&#34;&gt;{&#34;x&#34;:{&#34;url&#34;:&#34;/R/COVID/index_files/figure-html//widgets/widget_unnamed-chunk-19.html&#34;,&#34;options&#34;:{&#34;xdomain&#34;:&#34;*&#34;,&#34;allowfullscreen&#34;:false,&#34;lazyload&#34;:false}},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 </description>

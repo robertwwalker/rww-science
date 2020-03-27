@@ -37,28 +37,37 @@ OHA.Corona <- function(website, date) {
     .[3] %>%
     html_table(fill = TRUE) %>% # 3 
     data.frame()  %>%   # 4
-    mutate(date=as.Date(date), Scraped.date = as.Date(Scraped.date,"%m.%d.%y"), Hospitalized = dash.rm.to.numeric(Ever.hospitalized.), Deaths = dash.rm.to.numeric(Deaths.)) %>% select(-c(Ever.hospitalized.,Deaths.)) # 5
+    mutate(date=as.Date(date), 
+           Scraped.date = as.Date(Scraped.date,"%m.%d.%y"), 
+           Hospitalized = dash.rm.to.numeric(Ever.hospitalized.), 
+           Deaths = dash.rm.to.numeric(Deaths.)) %>% 
+    select(-c(Ever.hospitalized.,Deaths.)) # 5
   # Extract the age data
   COVID.Gender <- webpage %>%
     html_nodes("table") %>% #2
     .[4] %>%
     html_table(fill = TRUE) %>% # 3 
     data.frame()  %>%   # 4
-    mutate(date=as.Date(date), Scraped.date = as.Date(Scraped.date,"%m.%d.%y"), Deaths = dash.rm.to.numeric(Deaths.)) %>% select(-Deaths.) # 5
+    mutate(date=as.Date(date), 
+           Scraped.date = as.Date(Scraped.date,"%m.%d.%y"), 
+           Deaths = dash.rm.to.numeric(Deaths.)) %>% select(-Deaths.) # 5
   # Extract the hospitalization data
   COVID.Hospitalized <- webpage %>%
     html_nodes("table") %>% # 2
     .[5] %>%
     html_table(fill = TRUE) %>% # 3
     data.frame()  %>%  # 4
-    mutate(date=as.Date(date), Scraped.date = as.Date(Scraped.date,"%m.%d.%y")) # 5
+    mutate(date=as.Date(date), 
+           Scraped.date = as.Date(Scraped.date,"%m.%d.%y"),
+           Number.of.cases = Cases) # 5
   # Extract the hospital capacity data
   COVID.Hospital.Cap <- webpage %>%
     html_nodes("table") %>% # 2
     .[6] %>%
     html_table(fill = TRUE) %>% # 3
     data.frame()  %>%  # 4
-    mutate(date=as.Date(date), Scraped.date = as.Date(Scraped.date,"%m.%d.%y")) # 5
+    mutate(date=as.Date(date), 
+           Scraped.date = as.Date(Scraped.date,"%m.%d.%y")) # 5
   return(list(Header=COVID.Head, Counties = COVID.County, Gender = COVID.Gender, Ages = COVID.Age, Hospitalized = COVID.Hospitalized, Hospital.Cap=COVID.Hospital.Cap))
 }
 Today <- OHA.Corona(website="https://govstatus.egov.com/OR-OHA-COVID-19", date=as.character(Sys.Date())) # 2
@@ -83,8 +92,10 @@ if(max(Oregon.COVID$Scraped.date) < as.Date(Today$Header$Scraped.date[[1]],"%m.%
   # Create the hospitalization data
   OR.Hosp <- bind_rows(Today$Hospitalized,OR.Hosp) %>% distinct(.) # 5
   # Create the gender data
+#  OR.Gender <- Today$Gender
   OR.Gender <- bind_rows(Today$Gender, OR.Gender) %>% distinct(.) # 5
   # Create the hospital capacity data
+#  OR.Hospital.Caps <- Today$Hospital.Cap
   OR.Hospital.Caps <- bind_rows(Today$Hospital.Cap, OR.Hospital.Caps) %>% distinct(.) # 5 
   # Save the imageformat(Sys.Date(), "%d")
   save.image(paste0("~/Sandbox/awful/content/R/COVID/data/OregonCOVID",Sys.Date(),".RData")) # Save the data with a date flag in the name.

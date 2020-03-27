@@ -11,7 +11,7 @@ library(tidyverse)
 
 # Oregon COVID data
 
-In this post, I want to visualize the data on COVID-19 in the state of Oregon.  I now have a few days of data that I want to scrape, separate, clean up, and plot.  The process of scraping it is detailed in [a separate file](https://rww.science/r/covid-scraping/).  These data are current as of March 25, 2020.
+In this post, I want to visualize the data on COVID-19 in the state of Oregon.  I now have a few days of data that I want to scrape, separate, clean up, and plot.  The process of scraping it is detailed in [a separate file](https://rww.science/r/covid-scraping/).  These data are current as of March 26, 2020.
 
 ```{r}
 load(url(paste0("https://rww.science/r/covid/data/OregonCOVID",Sys.Date(),".RData")))
@@ -32,7 +32,7 @@ Map.Me <- left_join(counties.t,Oregon.COVID, by=c("NAME" = "County"))
 
 # The Whole Thing: An Animation
 
-I will use a ggplot to build Oregon's map and fill it with case numbers.  `geom_sf()` plots the geometry.  I have to repel the labels to prevent print overlap, and scheme the colors.  The last step is to animate it by time.
+I will use a ggplot to build Oregon's map and fill it with case numbers.  `geom_sf()` plots the geometry.  I have to repel the labels to prevent print overlap, and scheme the colors.  The last step is to animate it by time. If I stop the label repelling, they will not bounce but it adds excitement.
 
 ```{r}
 library(ggrepel); library(ggthemes); library(gganimate)
@@ -122,6 +122,10 @@ Age2 <- OR.Ages1 %>% ggplot(.) +
 Age1 + Age2
 ```
 
+## Some Gender Data
+
+## Hospital Capacity Data
+
 
 ## A Mapping Function
 
@@ -183,7 +187,7 @@ Plot.COVID("2020-03-22", Map.Me)
 Plot.COVID("2020-03-23", Map.Me)
 ```
 
-## The Result for 03/23/2020
+## The Result for 03/24/2020
 
 ```{r}
 Plot.COVID("2020-03-24", Map.Me)
@@ -192,9 +196,15 @@ Plot.COVID("2020-03-24", Map.Me)
 ## The Result for 03/25/2020
 
 ```{r}
+Plot.COVID("2020-03-25", Map.Me)
+```
+
+## The Result for 03/26/2020
+
+```{r}
 library(plotly); library(widgetframe); library(ggthemes); library(RColorBrewer)
 Map.Me <- Map.Me %>% mutate(TTip = paste0("Deaths: ",Deaths,"<br> Negative Tests:",Negative.test.results))
-Res.1 <- Map.Me %>% filter(date=="2020-03-25") %>%
+Res.1 <- Map.Me %>% filter(date==Sys.Date()) %>%
   ggplot(., aes(geometry=geometry, fill=Number.of.cases, label=NAME, text=TTip)) + 
   geom_sf() + 
   scale_fill_viridis_c(option = "A") + 

@@ -83,12 +83,12 @@
   </url>
   
   <url>
-    <loc>/tags/tidytuesday/</loc>
+    <loc>/categories/tidytuesday/</loc>
     <lastmod>2020-03-19T14:48:11-07:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/tidytuesday/</loc>
+    <loc>/tags/tidytuesday/</loc>
     <lastmod>2020-03-19T14:48:11-07:00</lastmod>
   </url>
   
@@ -133,12 +133,12 @@
   </url>
   
   <url>
-    <loc>/tags/python/</loc>
+    <loc>/categories/python/</loc>
     <lastmod>2020-02-24T00:09:44-08:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/python/</loc>
+    <loc>/tags/python/</loc>
     <lastmod>2020-02-24T00:09:44-08:00</lastmod>
   </url>
   
@@ -388,13 +388,13 @@
   </url>
   
   <url>
-    <loc>/categories/tidytext/</loc>
-    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
+    <loc>/tags/tidytext/</loc>
+    <lastmod>2020-02-05T13:19:17-08:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/tidytext/</loc>
-    <lastmod>2020-02-05T13:19:17-08:00</lastmod>
+    <loc>/categories/tidytext/</loc>
+    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
   </url>
   
   <url>
