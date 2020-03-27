@@ -40,7 +40,8 @@ OHA.Corona <- function(website, date) {
     mutate(date=as.Date(date), 
            Scraped.date = as.Date(Scraped.date,"%m.%d.%y"), 
            Hospitalized = dash.rm.to.numeric(Ever.hospitalized.), 
-           Deaths = dash.rm.to.numeric(Deaths.)) %>% 
+           Deaths = dash.rm.to.numeric(Deaths.),
+           Number.of.cases = Cases) %>% 
     select(-c(Ever.hospitalized.,Deaths.)) # 5
   # Extract the age data
   COVID.Gender <- webpage %>%
