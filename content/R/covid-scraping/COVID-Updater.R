@@ -29,7 +29,7 @@ OHA.Corona <- function(website, date) {
     mutate(date=as.Date(date), # 5
            Scraped.date = as.Date(Scraped.date,"%m.%d.%y"), 
            Negative.test.results = Negative,
-           Deaths. = Deaths,
+           Deaths = Deaths.,
            Number.of.cases = Positive)
   # Extract the age data
   COVID.Age <- webpage %>%
@@ -62,12 +62,12 @@ OHA.Corona <- function(website, date) {
   return(list(Header=COVID.Head, Counties = COVID.County, Gender = COVID.Gender, Ages = COVID.Age, Hospitalized = COVID.Hospitalized, Hospital.Cap=COVID.Hospital.Cap))
 }
 Today <- OHA.Corona(website="https://govstatus.egov.com/OR-OHA-COVID-19", date=as.character(Sys.Date())) # 2
-if(Today$Header$date[[1]]==as.Date(Today$Header$Scraped.date[[1]],"%m.%d.%y")) { # 3
+if(max(Oregon.COVID$Scraped.date) < as.Date(Today$Header$Scraped.date[[1]],"%m.%d.%y")) { # 3
   # Store Today
   eval(parse_expr(paste(months(Sys.Date()),format(Sys.Date(), "%d")," <- Today", sep=""))) # 4
   # Create test data
   Oregon.Tests.All <- bind_rows(Today$Header,Oregon.Tests.All) %>% distinct(.) # 5
-  # Drop the row of totals
+  # Drop the row of totals and other things.
   Oregon.Tests <- Oregon.Tests.All[!str_detect(Oregon.Tests.All$Category, "Total"),]  # 6
   # Create a summary table
   OR.Testing <- Oregon.Tests %>% group_by(date) %>% summarise(Total = sum(Outcome)) # 6
@@ -82,11 +82,11 @@ if(Today$Header$date[[1]]==as.Date(Today$Header$Scraped.date[[1]],"%m.%d.%y")) {
   OR.AgeT <- OR.Ages %>% group_by(date) %>% summarise(Total=sum(Number.of.cases)) # 6
   # Create the hospitalization data
   OR.Hosp <- bind_rows(Today$Hospitalized,OR.Hosp) %>% distinct(.) # 5
+  # Create the gender data
+  OR.Gender <- bind_rows(Today$Gender, OR.Gender) %>% distinct(.) # 5
+  # Create the hospital capacity data
+  OR.Hospital.Caps <- bind_rows(Today$Hospital.Cap, OR.Hospital.Caps) %>% distinct(.) # 5 
   # Save the imageformat(Sys.Date(), "%d")
-  OR.Gender <- Today$Gender
-  OR.Hospital.Caps <- Today$Hospital.Cap
-  OR.Gender <- bind_rows(Today$Gender, OR.Gender) 
-  OR.Hospital.Caps <- bind_rows(Today$Hospital.Cap, OR.Hospital.Caps) 
   save.image(paste0("~/Sandbox/awful/content/R/COVID/data/OregonCOVID",Sys.Date(),".RData")) # Save the data with a date flag in the name.
   cat("Added new data...") # Report the updates
 } else {
