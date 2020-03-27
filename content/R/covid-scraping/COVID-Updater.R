@@ -37,6 +37,7 @@ OHA.Corona <- function(website, date) {
     .[3] %>%
     html_table(fill = TRUE) %>% # 3 
     data.frame()  %>%   # 4
+    mutate(Cases = dash.rm.to.numeric(Cases)) %>%
     mutate(date=as.Date(date), 
            Scraped.date = as.Date(Scraped.date,"%m.%d.%y"), 
            Hospitalized = dash.rm.to.numeric(Ever.hospitalized.), 
