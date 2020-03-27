@@ -1,7 +1,7 @@
 ---
 title: COVID-19 in Oregon
 author: Robert W. Walker
-date: '2020-03-26'
+date: '2020-03-27'
 ---
 
 <script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
@@ -13,7 +13,7 @@ date: '2020-03-26'
 <h1>Oregon COVID data</h1>
 <p>In this post, I want to visualize the data on COVID-19 in the state of Oregon. I now have a few days of data that I want to scrape, separate, clean up, and plot. The process of scraping it is detailed in <a href="https://rww.science/r/covid-scraping/">a separate file</a>. These data are current as of March 26, 2020.</p>
 <pre class="r"><code>load(url(paste0(&quot;https://rww.science/r/covid/data/OregonCOVID&quot;,Sys.Date(),&quot;.RData&quot;)))</code></pre>
-<p>These data are current as of 2020-03-26.</p>
+<p>These data are current as of 2020-03-27.</p>
 <div id="building-a-base-map" class="section level2">
 <h2>Building a base map</h2>
 <p>To build a map to work from, I need a map library. Load the <code>tigris</code> library then grab the map as an <code>sf</code> object; there is a <code>geom_sf</code> that makes them easy to work with. Finally, I join the map to the data.</p>
@@ -116,10 +116,15 @@ ggplot(OR.Sex.Reshape, aes(x=Sex, y=Count, fill=Outcome)) + geom_col() + scale_f
 <h2>Hospital Capacity Data</h2>
 <p>There isn’t really much to do with this yet; today is the first day of this data. For tomorrow, a line graph to show what is happening with capacity.</p>
 <pre class="r"><code>OR.Hospital.Caps</code></pre>
-<pre><code>##        Hospital.Capacity Number       date Scraped.date
-## 1     Available ICU beds    362 2020-03-26   2020-03-26
-## 2 Available non-ICU beds   2193 2020-03-26   2020-03-26
-## 3  Available ventilators    684 2020-03-26   2020-03-26</code></pre>
+<pre><code>##                  Hospital.Capacity Number       date Scraped.date
+## 1               Available ICU beds    360 2020-03-27   2020-03-27
+## 2           Available non-ICU beds   2294 2020-03-27   2020-03-27
+## 3            Available ventilators    715 2020-03-27   2020-03-27
+## 4              COVID-19 admissions     91 2020-03-27   2020-03-27
+## 5 COVID-19 patients on ventilators     31 2020-03-27   2020-03-27
+## 6               Available ICU beds    362 2020-03-26   2020-03-26
+## 7           Available non-ICU beds   2193 2020-03-26   2020-03-26
+## 8            Available ventilators    684 2020-03-26   2020-03-26</code></pre>
 </div>
 <div id="a-mapping-function" class="section level2">
 <h2>A Mapping Function</h2>
