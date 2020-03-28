@@ -9,12 +9,12 @@
   
   <url>
     <loc>/</loc>
-    <lastmod>2020-03-27T18:02:47-07:00</lastmod>
+    <lastmod>2020-03-28T12:24:42-07:00</lastmod>
   </url>
   
   <url>
     <loc>/2020/03/25/covid-in-the-us-and-the-world/</loc>
-    <lastmod>2020-03-27T14:54:02-07:00</lastmod>
+    <lastmod>2020-03-28T12:24:42-07:00</lastmod>
   </url>
   
   <url>
@@ -83,12 +83,12 @@
   </url>
   
   <url>
-    <loc>/tags/tidytuesday/</loc>
+    <loc>/categories/tidytuesday/</loc>
     <lastmod>2020-03-19T14:48:11-07:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/tidytuesday/</loc>
+    <loc>/tags/tidytuesday/</loc>
     <lastmod>2020-03-19T14:48:11-07:00</lastmod>
   </url>
   
@@ -133,22 +133,22 @@
   </url>
   
   <url>
-    <loc>/categories/python/</loc>
-    <lastmod>2020-02-24T00:09:44-08:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/tags/python/</loc>
     <lastmod>2020-02-24T00:09:44-08:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/reticulate/</loc>
+    <loc>/categories/python/</loc>
     <lastmod>2020-02-24T00:09:44-08:00</lastmod>
   </url>
   
   <url>
     <loc>/categories/reticulate/</loc>
+    <lastmod>2020-02-24T00:09:44-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/reticulate/</loc>
     <lastmod>2020-02-24T00:09:44-08:00</lastmod>
   </url>
   
@@ -183,12 +183,12 @@
   </url>
   
   <url>
-    <loc>/tags/blogdown/</loc>
+    <loc>/categories/blogdown/</loc>
     <lastmod>2020-02-04T14:46:56-08:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/blogdown/</loc>
+    <loc>/tags/blogdown/</loc>
     <lastmod>2020-02-04T14:46:56-08:00</lastmod>
   </url>
   
@@ -388,13 +388,13 @@
   </url>
   
   <url>
-    <loc>/categories/tidytext/</loc>
-    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
+    <loc>/tags/tidytext/</loc>
+    <lastmod>2020-02-05T13:19:17-08:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/tidytext/</loc>
-    <lastmod>2020-02-05T13:19:17-08:00</lastmod>
+    <loc>/categories/tidytext/</loc>
+    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
   </url>
   
   <url>

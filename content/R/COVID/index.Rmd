@@ -14,7 +14,7 @@ library(tidyverse)
 In this post, I want to visualize the data on COVID-19 in the state of Oregon.  I now have a few days of data that I want to scrape, separate, clean up, and plot.  The process of scraping it is detailed in [a separate file](https://rww.science/r/covid-scraping/).  These data are current as of March 26, 2020.
 
 ```{r}
-load(url(paste0("https://rww.science/r/covid/data/OregonCOVID",Sys.Date(),".RData")))
+load(url(paste0("https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID",Sys.Date(),".RData")))
 ```
 
 These data are current as of `r max(Oregon.COVID$Scraped.date)`.
@@ -232,6 +232,13 @@ Plot.COVID("2020-03-26", Map.Me)
 ```
 
 ## The Result for 03/27/2020
+
+```{r}
+Plot.COVID("2020-03-27", Map.Me)
+```
+
+
+## The Result for 03/28/2020
 
 ```{r}
 library(plotly); library(widgetframe); library(ggthemes); library(RColorBrewer)
