@@ -49,3 +49,49 @@ frameWidget(L2)</code></pre>
 <div id="htmlwidget-1" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
 <script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/post/2020-03-25-covid-in-the-us-and-the-world/index_files/figure-html//widgets/widget_unnamed-chunk-2.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 </div>
+<div id="jburnmurdoch-of-the-financial-times" class="section level1">
+<h1><code>@jburnmurdoch</code> of the Financial Times</h1>
+<pre class="r"><code>SR.TS &lt;- read_csv(url(&quot;https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/who_covid_19_situation_reports/who_covid_19_sit_rep_time_series/who_covid_19_sit_rep_time_series.csv&quot;))</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   .default = col_double(),
+##   `Province/States` = col_character(),
+##   `Country/Region` = col_character(),
+##   `WHO region` = col_character(),
+##   `3/5/2020` = col_character()
+## )</code></pre>
+<pre><code>## See spec(...) for full column specifications.</code></pre>
+<p>Something is wrong with the <code>3/5/2020</code> column. It has two values; one a number and another parenthetical number. I just remove the parenthetical.</p>
+<pre class="r"><code>SR.TS &lt;- SR.TS %&gt;% mutate(`3/5/2020` = as.numeric(str_remove(`3/5/2020`,&quot;(418)&quot;)))</code></pre>
+<pre><code>## Warning: NAs introduced by coercion</code></pre>
+</div>
+<div id="global-coronavirus-cases" class="section level1">
+<h1>Global Coronavirus Cases</h1>
+<p>Now it is time to rearrange this data. Let’s start with the global case totals.</p>
+<pre class="r"><code>SR.Global &lt;- SR.TS %&gt;% filter(`Country/Region`==&quot;Globally&quot;) %&gt;% pivot_longer(cols=c(4:dim(SR.TS)[[2]])) %&gt;% pivot_wider(., names_from = `Province/States`, values_from = value) %&gt;% mutate(date=as.Date(name, format = &quot;%m/%d/%Y&quot;))</code></pre>
+<div id="the-plot" class="section level2">
+<h2>The Plot</h2>
+<pre class="r"><code>ggplot(SR.Global) +
+ aes(x = date, y = Confirmed) +
+ geom_line(size = 1L, colour = &quot;#c6dbef&quot;) +
+ geom_point(size = 1L, colour = &quot;#c6dbef&quot;) +
+ labs(x = &quot;Date&quot;, y = &quot;Confirmed Cases&quot;, title = &quot;Global Cases of Coronavirus&quot;) +
+ hrbrthemes::theme_ft_rc()</code></pre>
+<p><img src="/post/2020-03-25-covid-in-the-us-and-the-world/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+</div>
+</div>
+<div id="deaths" class="section level1">
+<h1>Deaths</h1>
+<pre class="r"><code>ggplot(SR.Global) +
+ aes(x = date, y = Deaths) +
+ geom_line(size = 1L, colour = &quot;#c6dbef&quot;) +
+ geom_point(size = 1L, colour = &quot;#c6dbef&quot;) +
+ labs(x = &quot;Date&quot;, y = &quot;Confirmed Cases&quot;, title = &quot;Reported Global Deaths from COVID-19&quot;) +
+ hrbrthemes::theme_ft_rc()</code></pre>
+<pre><code>## Warning: Removed 56 row(s) containing missing values (geom_path).</code></pre>
+<pre><code>## Warning: Removed 56 rows containing missing values (geom_point).</code></pre>
+<p><img src="/post/2020-03-25-covid-in-the-us-and-the-world/index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p>That is legitimately odd.</p>
+<pre class="r"><code>TS2 &lt;- read_csv(url(&quot;https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv&quot;))
+Tidy.Counts &lt;- TS2 %&gt;% pivot_longer(., cols=c(5:dim(TS2)[[2]]), names_to = &quot;date&quot;, values_to = &quot;Cases&quot;)</code></pre>
+</div>

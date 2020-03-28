@@ -48,3 +48,51 @@ frameWidget(L2)
 ``` 
 
 
+# `@jburnmurdoch` of the Financial Times
+
+```{r}
+SR.TS <- read_csv(url("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/who_covid_19_situation_reports/who_covid_19_sit_rep_time_series/who_covid_19_sit_rep_time_series.csv"))
+```
+Something is wrong with the `3/5/2020` column.  It has two values; one a number and another parenthetical number.  I just remove the parenthetical.
+
+```{r}
+SR.TS <- SR.TS %>% mutate(`3/5/2020` = as.numeric(str_remove(`3/5/2020`,"(418)")))
+```
+
+# Global Coronavirus Cases
+
+Now it is time to rearrange this data.  Let's start with the global case totals.
+
+```{r}
+SR.Global <- SR.TS %>% filter(`Country/Region`=="Globally") %>% pivot_longer(cols=c(4:dim(SR.TS)[[2]])) %>% pivot_wider(., names_from = `Province/States`, values_from = value) %>% mutate(date=as.Date(name, format = "%m/%d/%Y"))
+```
+
+## The Plot
+
+```{r}
+ggplot(SR.Global) +
+ aes(x = date, y = Confirmed) +
+ geom_line(size = 1L, colour = "#c6dbef") +
+ geom_point(size = 1L, colour = "#c6dbef") +
+ labs(x = "Date", y = "Confirmed Cases", title = "Global Cases of Coronavirus") +
+ hrbrthemes::theme_ft_rc()
+```
+
+# Deaths
+
+```{r}
+ggplot(SR.Global) +
+ aes(x = date, y = Deaths) +
+ geom_line(size = 1L, colour = "#c6dbef") +
+ geom_point(size = 1L, colour = "#c6dbef") +
+ labs(x = "Date", y = "Confirmed Cases", title = "Reported Global Deaths from COVID-19") +
+ hrbrthemes::theme_ft_rc()
+```
+
+That is legitimately odd.
+
+```{r, eval=FALSE}
+TS2 <- read_csv(url("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv"))
+Tidy.Counts <- TS2 %>% pivot_longer(., cols=c(5:dim(TS2)[[2]]), names_to = "date", values_to = "Cases")
+```
+
