@@ -89,8 +89,8 @@ MyDat %>% ggplot(., aes(x=date, y=Test.Changes, fill=Outcome)) + geom_col(positi
 How do positive cases and hospitalization relate?
 
 ```{r}
-Hos1 <- OR.Hosp %>% filter(Hospitalized.!="Total") %>% ggplot(., aes(x=date, y=Number.of.cases,fill=Hospitalized.)) + geom_col() + scale_fill_ipsum() + labs(x="Date", y="Number of COVID Positives", fill="Hospitalized?", title="Hospitalization Status of COVID-19 Positives in Oregon")
-Hos2 <- OR.Hosp %>% filter(Hospitalized.!="Total") %>% ggplot(., aes(x=date, y=Number.of.cases,fill=Hospitalized.)) + geom_col(position="fill") + scale_fill_ipsum() + labs(x="Date", y="Number of COVID Positives", fill="Hospitalized?", title="Hospitalization Status of COVID-19 Positives in Oregon")
+Hos1 <- OR.Hosp %>% filter(Hospitalized.!="Total") %>% ggplot(., aes(x=date, y=Number.of.cases,fill=Hospitalized.)) + geom_col() + scale_fill_ipsum() + labs(x="Date", y="Number of COVID Positives", fill="Hospitalized?", title="Hospitalization Status of COVID-19 Positives in Oregon") + coord_flip()
+Hos2 <- OR.Hosp %>% filter(Hospitalized.!="Total") %>% ggplot(., aes(x=date, y=Number.of.cases,fill=Hospitalized.)) + geom_col(position="fill") + scale_fill_ipsum() + labs(x="Date", y="Number of COVID Positives", fill="Hospitalized?", title="Hospitalization Status of COVID-19 Positives in Oregon") + coord_flip()
 Hos1 + Hos2
 ```
 
@@ -144,7 +144,12 @@ OR.Sex.Reshape %>% mutate(Category = paste(Sex, Outcome, sep=":")) %>% ggplot(.,
 There isn't really much to do with this yet; today is the first day of this data.  For tomorrow, a line graph to show what is happening with capacity.
 
 ```{r}
-OR.Hospital.Caps
+OR.Hospital.Caps <- OR.Hospital.Caps %>% mutate(Capacity = stringr::str_to_title(str_remove(Hospital.Capacity, "COVID-19")))
+OR.Hospital.Caps  %>% ggplot() +
+ aes(x = date, y = Number) +
+ geom_col(position = "dodge", fill="purple") +
+ theme_economist() +
+ facet_wrap(vars(Capacity), scales = "free_y")
 ```
 
 
@@ -221,6 +226,12 @@ Plot.COVID("2020-03-25", Map.Me)
 ```
 
 ## The Result for 03/26/2020
+
+```{r}
+Plot.COVID("2020-03-26", Map.Me)
+```
+
+## The Result for 03/27/2020
 
 ```{r}
 library(plotly); library(widgetframe); library(ggthemes); library(RColorBrewer)

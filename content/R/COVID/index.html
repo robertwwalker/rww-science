@@ -71,8 +71,8 @@ MyDat %&gt;% ggplot(., aes(x=date, y=Test.Changes, fill=Outcome)) + geom_col(pos
 <div id="hospitalization-data" class="section level1">
 <h1>Hospitalization Data</h1>
 <p>How do positive cases and hospitalization relate?</p>
-<pre class="r"><code>Hos1 &lt;- OR.Hosp %&gt;% filter(Hospitalized.!=&quot;Total&quot;) %&gt;% ggplot(., aes(x=date, y=Number.of.cases,fill=Hospitalized.)) + geom_col() + scale_fill_ipsum() + labs(x=&quot;Date&quot;, y=&quot;Number of COVID Positives&quot;, fill=&quot;Hospitalized?&quot;, title=&quot;Hospitalization Status of COVID-19 Positives in Oregon&quot;)
-Hos2 &lt;- OR.Hosp %&gt;% filter(Hospitalized.!=&quot;Total&quot;) %&gt;% ggplot(., aes(x=date, y=Number.of.cases,fill=Hospitalized.)) + geom_col(position=&quot;fill&quot;) + scale_fill_ipsum() + labs(x=&quot;Date&quot;, y=&quot;Number of COVID Positives&quot;, fill=&quot;Hospitalized?&quot;, title=&quot;Hospitalization Status of COVID-19 Positives in Oregon&quot;)
+<pre class="r"><code>Hos1 &lt;- OR.Hosp %&gt;% filter(Hospitalized.!=&quot;Total&quot;) %&gt;% ggplot(., aes(x=date, y=Number.of.cases,fill=Hospitalized.)) + geom_col() + scale_fill_ipsum() + labs(x=&quot;Date&quot;, y=&quot;Number of COVID Positives&quot;, fill=&quot;Hospitalized?&quot;, title=&quot;Hospitalization Status of COVID-19 Positives in Oregon&quot;) + coord_flip()
+Hos2 &lt;- OR.Hosp %&gt;% filter(Hospitalized.!=&quot;Total&quot;) %&gt;% ggplot(., aes(x=date, y=Number.of.cases,fill=Hospitalized.)) + geom_col(position=&quot;fill&quot;) + scale_fill_ipsum() + labs(x=&quot;Date&quot;, y=&quot;Number of COVID Positives&quot;, fill=&quot;Hospitalized?&quot;, title=&quot;Hospitalization Status of COVID-19 Positives in Oregon&quot;) + coord_flip()
 Hos1 + Hos2</code></pre>
 <p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 </div>
@@ -115,16 +115,13 @@ ggplot(OR.Sex.Reshape, aes(x=Sex, y=Count, fill=Outcome)) + geom_col() + scale_f
 <div id="hospital-capacity-data" class="section level2">
 <h2>Hospital Capacity Data</h2>
 <p>There isn’t really much to do with this yet; today is the first day of this data. For tomorrow, a line graph to show what is happening with capacity.</p>
-<pre class="r"><code>OR.Hospital.Caps</code></pre>
-<pre><code>##                  Hospital.Capacity Number       date Scraped.date
-## 1               Available ICU beds    360 2020-03-27   2020-03-27
-## 2           Available non-ICU beds   2294 2020-03-27   2020-03-27
-## 3            Available ventilators    715 2020-03-27   2020-03-27
-## 4              COVID-19 admissions     91 2020-03-27   2020-03-27
-## 5 COVID-19 patients on ventilators     31 2020-03-27   2020-03-27
-## 6               Available ICU beds    362 2020-03-26   2020-03-26
-## 7           Available non-ICU beds   2193 2020-03-26   2020-03-26
-## 8            Available ventilators    684 2020-03-26   2020-03-26</code></pre>
+<pre class="r"><code>OR.Hospital.Caps &lt;- OR.Hospital.Caps %&gt;% mutate(Capacity = stringr::str_to_title(str_remove(Hospital.Capacity, &quot;COVID-19&quot;)))
+OR.Hospital.Caps  %&gt;% ggplot() +
+ aes(x = date, y = Number) +
+ geom_col(position = &quot;dodge&quot;, fill=&quot;purple&quot;) +
+ theme_economist() +
+ facet_wrap(vars(Capacity), scales = &quot;free_y&quot;)</code></pre>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 </div>
 <div id="a-mapping-function" class="section level2">
 <h2>A Mapping Function</h2>
@@ -184,6 +181,11 @@ data %&gt;% filter(date==date1) %&gt;%
 </div>
 <div id="the-result-for-03262020" class="section level2">
 <h2>The Result for 03/26/2020</h2>
+<pre class="r"><code>Plot.COVID(&quot;2020-03-26&quot;, Map.Me)</code></pre>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+</div>
+<div id="the-result-for-03272020" class="section level2">
+<h2>The Result for 03/27/2020</h2>
 <pre class="r"><code>library(plotly); library(widgetframe); library(ggthemes); library(RColorBrewer)
 Map.Me &lt;- Map.Me %&gt;% mutate(TTip = paste0(&quot;Deaths: &quot;,Deaths,&quot;&lt;br&gt; Negative Tests:&quot;,Negative.test.results))
 Res.1 &lt;- Map.Me %&gt;% filter(date==Sys.Date()) %&gt;%
@@ -195,6 +197,6 @@ Res.1 &lt;- Map.Me %&gt;% filter(date==Sys.Date()) %&gt;%
 ggp &lt;- ggplotly(Res.1)
 frameWidget(ggp)</code></pre>
 <div id="htmlwidget-1" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/R/COVID/index_files/figure-html//widgets/widget_unnamed-chunk-22.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/R/COVID/index_files/figure-html//widgets/widget_unnamed-chunk-23.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
