@@ -1,7 +1,7 @@
 ---
 title: COVID-19 in Oregon
 author: Robert W. Walker
-date: '2020-03-27'
+date: '2020-03-29'
 ---
 
 ```{r setup, include=FALSE}
@@ -11,13 +11,18 @@ library(tidyverse)
 
 # Oregon COVID data
 
-In this post, I want to visualize the data on COVID-19 in the state of Oregon.  I now have a few days of data that I want to scrape, separate, clean up, and plot.  The process of scraping it is detailed in [a separate file](https://rww.science/r/covid-scraping/).  These data are current as of March 26, 2020.
+In this post, I want to visualize the data on COVID-19 in the state of Oregon.  I now have a few days of data that I want to scrape, separate, clean up, and plot.  The process of scraping it is detailed in [a separate file](https://rww.science/r/covid-scraping/).  These data are current as of March 29, 2020; this first bit of R code loads the current data from my github.
 
 ```{r}
-load(url(paste0("https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID",Sys.Date(),".RData")))
+# load(url(paste0("https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID",Sys.Date()-1,".RData")))
+load("~/Sandbox/awful/content/R/COVID/data/OregonCOVID2020-03-29.RData")
 ```
 
-These data are current as of `r max(Oregon.COVID$Scraped.date)`.
+Verifying, these data are current as of `r max(Oregon.COVID$Scraped.date)`.
+
+### A running commentary on the data
+
+The central takeaway from doing this over the last week or so is that the underlying data reports are constantly changing over time.  They are reporting new and different quantities and this destroys the comparability of data.  Some of it can be reconstructed but much of it is only useful going forward and keeping the schema constant.  I hope that will happen.
 
 
 ## Building a base map
@@ -30,11 +35,11 @@ counties.t <- counties(state = "41", resolution = "500k", class="sf")
 Map.Me <- left_join(counties.t,Oregon.COVID, by=c("NAME" = "County"))
 ```
 
-# The Whole Thing: An Animation
+# Summarising the County Data: An Animation
 
 I will use a ggplot to build Oregon's map and fill it with case numbers.  `geom_sf()` plots the geometry.  I have to repel the labels to prevent print overlap, and scheme the colors.  The last step is to animate it by time. If I stop the label repelling, they will not bounce but it adds excitement.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 library(ggrepel); library(ggthemes); library(gganimate)
 library(patchwork); library(hrbrthemes)
 Anim1 <- Map.Me %>% 
@@ -55,8 +60,16 @@ ResA
 What is the status of testing?
 
 ```{r}
-OR.Testing <- Oregon.Tests %>% group_by(date) %>% summarise(Total = sum(Outcome))
-Test1 <- Oregon.Tests %>% ggplot(.) + aes(x=date, y=Outcome, fill=Category, label=Outcome) + geom_col() + geom_label(col="magenta", show.legend = FALSE) + scale_fill_viridis_d() + labs(title="COVID-19 Testing in Oregon", y="Tests", x="Date", subtitle="Total shown as label", caption = "data: https://govstatus.egov.com/OR-OHA-COVID-19") + geom_label(data=OR.Testing, aes(x=date, y=Total+100, label=Total), fill="white", color="black", inherit.aes = FALSE)
+Oregon.Tests <- Oregon.Tests %>% mutate(Result = Outcome) %>% filter(Category!="Pending")
+OR.Testing <- Oregon.Tests %>% group_by(date) %>% summarise(Total = sum(Outcome, na.rm=TRUE))
+Test1 <- Oregon.Tests %>% 
+  ggplot(.) + 
+  aes(x=date, y=Result, fill=Category, label=Outcome) + 
+  geom_col() + 
+  geom_label(col="magenta", show.legend = FALSE, vjust=1) + 
+  scale_fill_viridis_d() + 
+  labs(title="COVID-19 Testing in Oregon", y="Completed Tests", x="Date", subtitle="Total appears in black and white", caption = "data: https://govstatus.egov.com/OR-OHA-COVID-19") + 
+  geom_label(data=OR.Testing, aes(x=date, y=Total+100, label=Total), fill="white", color="black", inherit.aes = FALSE, vjust = 0)
 Test1
 ```
 
@@ -237,18 +250,24 @@ Plot.COVID("2020-03-26", Map.Me)
 Plot.COVID("2020-03-27", Map.Me)
 ```
 
-
 ## The Result for 03/28/2020
+
+```{r}
+Plot.COVID("2020-03-28", Map.Me)
+```
+
+
+## The Result for 03/29/2020
 
 ```{r}
 library(plotly); library(widgetframe); library(ggthemes); library(RColorBrewer)
 Map.Me <- Map.Me %>% mutate(TTip = paste0("Deaths: ",Deaths,"<br> Negative Tests:",Negative.test.results))
-Res.1 <- Map.Me %>% filter(date==Sys.Date()) %>%
+Res.1 <- Map.Me %>% filter(date==Sys.Date()-1) %>%
   ggplot(., aes(geometry=geometry, fill=Number.of.cases, label=NAME, text=TTip)) + 
   geom_sf() + 
   scale_fill_viridis_c(option = "A") + 
   theme_map() + 
-  labs(title="COVID-19 in Oregon", subtitle=Sys.Date(), x="", y="", caption="Made with R, ggplot2, and ggrepel by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19", fill="COVID-19 Cases")
+  labs(title="COVID-19 in Oregon", subtitle=Sys.Date()-1, x="", y="", caption="Made with R, ggplot2, and ggrepel by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19", fill="COVID-19 Cases")
 ggp <- ggplotly(Res.1)
 frameWidget(ggp)
 ```

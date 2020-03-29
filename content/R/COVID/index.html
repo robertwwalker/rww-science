@@ -1,7 +1,7 @@
 ---
 title: COVID-19 in Oregon
 author: Robert W. Walker
-date: '2020-03-27'
+date: '2020-03-29'
 ---
 
 <script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
@@ -11,9 +11,14 @@ date: '2020-03-27'
 
 <div id="oregon-covid-data" class="section level1">
 <h1>Oregon COVID data</h1>
-<p>In this post, I want to visualize the data on COVID-19 in the state of Oregon. I now have a few days of data that I want to scrape, separate, clean up, and plot. The process of scraping it is detailed in <a href="https://rww.science/r/covid-scraping/">a separate file</a>. These data are current as of March 26, 2020.</p>
-<pre class="r"><code>load(url(paste0(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&quot;,Sys.Date(),&quot;.RData&quot;)))</code></pre>
-<p>These data are current as of 2020-03-28.</p>
+<p>In this post, I want to visualize the data on COVID-19 in the state of Oregon. I now have a few days of data that I want to scrape, separate, clean up, and plot. The process of scraping it is detailed in <a href="https://rww.science/r/covid-scraping/">a separate file</a>. These data are current as of March 29, 2020; this first bit of R code loads the current data from my github.</p>
+<pre class="r"><code># load(url(paste0(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&quot;,Sys.Date()-1,&quot;.RData&quot;)))
+load(&quot;~/Sandbox/awful/content/R/COVID/data/OregonCOVID2020-03-29.RData&quot;)</code></pre>
+<p>Verifying, these data are current as of 2020-03-29.</p>
+<div id="a-running-commentary-on-the-data" class="section level3">
+<h3>A running commentary on the data</h3>
+<p>The central takeaway from doing this over the last week or so is that the underlying data reports are constantly changing over time. They are reporting new and different quantities and this destroys the comparability of data. Some of it can be reconstructed but much of it is only useful going forward and keeping the schema constant. I hope that will happen.</p>
+</div>
 <div id="building-a-base-map" class="section level2">
 <h2>Building a base map</h2>
 <p>To build a map to work from, I need a map library. Load the <code>tigris</code> library then grab the map as an <code>sf</code> object; there is a <code>geom_sf</code> that makes them easy to work with. Finally, I join the map to the data.</p>
@@ -22,8 +27,8 @@ counties.t &lt;- counties(state = &quot;41&quot;, resolution = &quot;500k&quot;,
 Map.Me &lt;- left_join(counties.t,Oregon.COVID, by=c(&quot;NAME&quot; = &quot;County&quot;))</code></pre>
 </div>
 </div>
-<div id="the-whole-thing-an-animation" class="section level1">
-<h1>The Whole Thing: An Animation</h1>
+<div id="summarising-the-county-data-an-animation" class="section level1">
+<h1>Summarising the County Data: An Animation</h1>
 <p>I will use a ggplot to build Oregon’s map and fill it with case numbers. <code>geom_sf()</code> plots the geometry. I have to repel the labels to prevent print overlap, and scheme the colors. The last step is to animate it by time. If I stop the label repelling, they will not bounce but it adds excitement.</p>
 <pre class="r"><code>library(ggrepel); library(ggthemes); library(gganimate)
 library(patchwork); library(hrbrthemes)
@@ -43,8 +48,16 @@ ResA</code></pre>
 <div id="some-data-on-testing" class="section level1">
 <h1>Some Data on Testing</h1>
 <p>What is the status of testing?</p>
-<pre class="r"><code>OR.Testing &lt;- Oregon.Tests %&gt;% group_by(date) %&gt;% summarise(Total = sum(Outcome))
-Test1 &lt;- Oregon.Tests %&gt;% ggplot(.) + aes(x=date, y=Outcome, fill=Category, label=Outcome) + geom_col() + geom_label(col=&quot;magenta&quot;, show.legend = FALSE) + scale_fill_viridis_d() + labs(title=&quot;COVID-19 Testing in Oregon&quot;, y=&quot;Tests&quot;, x=&quot;Date&quot;, subtitle=&quot;Total shown as label&quot;, caption = &quot;data: https://govstatus.egov.com/OR-OHA-COVID-19&quot;) + geom_label(data=OR.Testing, aes(x=date, y=Total+100, label=Total), fill=&quot;white&quot;, color=&quot;black&quot;, inherit.aes = FALSE)
+<pre class="r"><code>Oregon.Tests &lt;- Oregon.Tests %&gt;% mutate(Result = Outcome) %&gt;% filter(Category!=&quot;Pending&quot;)
+OR.Testing &lt;- Oregon.Tests %&gt;% group_by(date) %&gt;% summarise(Total = sum(Outcome, na.rm=TRUE))
+Test1 &lt;- Oregon.Tests %&gt;% 
+  ggplot(.) + 
+  aes(x=date, y=Result, fill=Category, label=Outcome) + 
+  geom_col() + 
+  geom_label(col=&quot;magenta&quot;, show.legend = FALSE, vjust=1) + 
+  scale_fill_viridis_d() + 
+  labs(title=&quot;COVID-19 Testing in Oregon&quot;, y=&quot;Completed Tests&quot;, x=&quot;Date&quot;, subtitle=&quot;Total appears in black and white&quot;, caption = &quot;data: https://govstatus.egov.com/OR-OHA-COVID-19&quot;) + 
+  geom_label(data=OR.Testing, aes(x=date, y=Total+100, label=Total), fill=&quot;white&quot;, color=&quot;black&quot;, inherit.aes = FALSE, vjust = 0)
 Test1</code></pre>
 <p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 </div>
@@ -191,17 +204,22 @@ data %&gt;% filter(date==date1) %&gt;%
 </div>
 <div id="the-result-for-03282020" class="section level2">
 <h2>The Result for 03/28/2020</h2>
+<pre class="r"><code>Plot.COVID(&quot;2020-03-28&quot;, Map.Me)</code></pre>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
+</div>
+<div id="the-result-for-03292020" class="section level2">
+<h2>The Result for 03/29/2020</h2>
 <pre class="r"><code>library(plotly); library(widgetframe); library(ggthemes); library(RColorBrewer)
 Map.Me &lt;- Map.Me %&gt;% mutate(TTip = paste0(&quot;Deaths: &quot;,Deaths,&quot;&lt;br&gt; Negative Tests:&quot;,Negative.test.results))
-Res.1 &lt;- Map.Me %&gt;% filter(date==Sys.Date()) %&gt;%
+Res.1 &lt;- Map.Me %&gt;% filter(date==Sys.Date()-1) %&gt;%
   ggplot(., aes(geometry=geometry, fill=Number.of.cases, label=NAME, text=TTip)) + 
   geom_sf() + 
   scale_fill_viridis_c(option = &quot;A&quot;) + 
   theme_map() + 
-  labs(title=&quot;COVID-19 in Oregon&quot;, subtitle=Sys.Date(), x=&quot;&quot;, y=&quot;&quot;, caption=&quot;Made with R, ggplot2, and ggrepel by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19&quot;, fill=&quot;COVID-19 Cases&quot;)
+  labs(title=&quot;COVID-19 in Oregon&quot;, subtitle=Sys.Date()-1, x=&quot;&quot;, y=&quot;&quot;, caption=&quot;Made with R, ggplot2, and ggrepel by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19&quot;, fill=&quot;COVID-19 Cases&quot;)
 ggp &lt;- ggplotly(Res.1)
 frameWidget(ggp)</code></pre>
 <div id="htmlwidget-1" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/R/COVID/index_files/figure-html//widgets/widget_unnamed-chunk-24.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/R/COVID/index_files/figure-html//widgets/widget_unnamed-chunk-25.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
