@@ -12,8 +12,7 @@ date: '2020-03-29'
 <div id="oregon-covid-data" class="section level1">
 <h1>Oregon COVID data</h1>
 <p>In this post, I want to visualize the data on COVID-19 in the state of Oregon. I now have a few days of data that I want to scrape, separate, clean up, and plot. The process of scraping it is detailed in <a href="https://rww.science/r/covid-scraping/">a separate file</a>. These data are current as of March 29, 2020; this first bit of R code loads the current data from my github.</p>
-<pre class="r"><code># load(url(paste0(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&quot;,Sys.Date()-1,&quot;.RData&quot;)))
-load(&quot;~/Sandbox/awful/content/R/COVID/data/OregonCOVID2020-03-29.RData&quot;)</code></pre>
+<pre class="r"><code>load(url(paste0(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&quot;,Sys.Date(),&quot;.RData&quot;)))</code></pre>
 <p>Verifying, these data are current as of 2020-03-29.</p>
 <div id="a-running-commentary-on-the-data" class="section level3">
 <h3>A running commentary on the data</h3>
@@ -54,10 +53,10 @@ Test1 &lt;- Oregon.Tests %&gt;%
   ggplot(.) + 
   aes(x=date, y=Result, fill=Category, label=Outcome) + 
   geom_col() + 
-  geom_label(col=&quot;magenta&quot;, show.legend = FALSE, vjust=1) + 
+  geom_label(col=&quot;magenta&quot;, show.legend = FALSE, vjust=1, size=3) + 
   scale_fill_viridis_d() + 
   labs(title=&quot;COVID-19 Testing in Oregon&quot;, y=&quot;Completed Tests&quot;, x=&quot;Date&quot;, subtitle=&quot;Total appears in black and white&quot;, caption = &quot;data: https://govstatus.egov.com/OR-OHA-COVID-19&quot;) + 
-  geom_label(data=OR.Testing, aes(x=date, y=Total+100, label=Total), fill=&quot;white&quot;, color=&quot;black&quot;, inherit.aes = FALSE, vjust = 0)
+  geom_label(data=OR.Testing, aes(x=date, y=Total+100, label=Total), fill=&quot;white&quot;, color=&quot;black&quot;, inherit.aes = FALSE, vjust = 0, size=3)
 Test1</code></pre>
 <p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 </div>
@@ -69,7 +68,8 @@ Test2</code></pre>
 <p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <div id="a-better-look-at-this" class="section level2">
 <h2>A Better Look at This</h2>
-<pre class="r"><code>MyDat &lt;- Oregon.Tests %&gt;% 
+<pre class="r"><code>library(hrbrthemes)
+MyDat &lt;- Oregon.Tests %&gt;% select(-Result) %&gt;%
   pivot_wider(., names_from = Category, values_from = Outcome) %&gt;% 
   mutate(Positive.Chg = Positive - lag(Positive, order_by = date), 
          Negative.Chg = Negative - lag(Negative, order_by = date)) %&gt;% 
@@ -77,7 +77,8 @@ Test2</code></pre>
   mutate(Positive.Pct = round(Positive.Chg / Total, digits=3)) %&gt;% 
   select(date, Positive.Chg, Negative.Chg, Positive.Pct) %&gt;% 
   pivot_longer(., c(Negative.Chg, Positive.Chg), names_to = &quot;Outcome&quot;, values_to = &quot;Test.Changes&quot;)
-MyDat %&gt;% ggplot(., aes(x=date, y=Test.Changes, fill=Outcome)) + geom_col(position=&quot;fill&quot;) + geom_label(data=MyDat, aes(x=date, y=Positive.Pct, label=Positive.Pct), inherit.aes = TRUE, show.legend=FALSE) + scale_fill_ipsum() + labs(title=&quot;Daily Distribution of Test Outcomes&quot;, subtitle=&quot;Percent of Positive Tests Shown&quot;)</code></pre>
+ResultG &lt;- MyDat %&gt;% ggplot(., aes(x=date, y=Test.Changes, fill=Outcome)) + geom_col(position=&quot;fill&quot;) + geom_label(data=MyDat, aes(x=date, y=Positive.Pct, label=Positive.Pct), size=3.5, inherit.aes = TRUE, show.legend=FALSE) + scale_fill_ipsum() + labs(title=&quot;Daily Distribution of Test Outcomes&quot;, subtitle=&quot;Percent of Positive Tests Shown&quot;)
+ResultG</code></pre>
 <p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 </div>
 </div>
