@@ -11,12 +11,13 @@ date: '2020-03-29'
 
 <div id="oregon-covid-data" class="section level1">
 <h1>Oregon COVID data</h1>
-<p>In this post, I want to visualize the data on COVID-19 in the state of Oregon. I now have a few days of data that I want to scrape, separate, clean up, and plot. The process of scraping it is detailed in <a href="https://rww.science/r/covid-scraping/">a separate file</a>. These data are current as of March 29, 2020; this first bit of R code loads the current data from my github.</p>
+<p>In this post, I want to visualize the data on COVID-19 in the state of Oregon. I now have a few days of data that I want to scrape, separate, clean up, and plot. The process of scraping it is detailed in <a href="https://rww.science/r/covid-scraping/">a separate file</a>. These data are current as of March 30, 2020; this first bit of R code loads the current data from my github.</p>
 <pre class="r"><code>load(url(paste0(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&quot;,Sys.Date(),&quot;.RData&quot;)))</code></pre>
-<p>Verifying, these data are current as of 2020-03-29.</p>
+<p>Verifying, these data are current as of 2020-03-30.</p>
 <div id="a-running-commentary-on-the-data" class="section level3">
 <h3>A running commentary on the data</h3>
 <p>The central takeaway from doing this over the last week or so is that the underlying data reports are constantly changing over time. They are reporting new and different quantities and this destroys the comparability of data. Some of it can be reconstructed but much of it is only useful going forward and keeping the schema constant. I hope that will happen.</p>
+<p><em>2020-03-20</em> Footnotes for some entries appear newly today. That’s irritating because it changes the variable names.</p>
 </div>
 <div id="building-a-base-map" class="section level2">
 <h2>Building a base map</h2>
@@ -42,7 +43,7 @@ Anim1 &lt;- Map.Me %&gt;%
     box.padding = unit(0.05, &quot;lines&quot;))  + scale_fill_continuous_tableau(&quot;Red&quot;) + theme_minimal() + labs(title=&quot;COVID-19 in Oregon&quot;, subtitle=&quot;{frame_time}&quot;, x=&quot;&quot;, y=&quot;&quot;, caption=&quot;Made with R, ggplot2, and ggrepel by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19&quot;) + transition_time(date)
 ResA &lt;- animate(Anim1, end_pause=100, nframes=200)
 ResA</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-3-1.gif" /><!-- --></p>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-4-1.gif" /><!-- --></p>
 </div>
 <div id="some-data-on-testing" class="section level1">
 <h1>Some Data on Testing</h1>
@@ -58,14 +59,14 @@ Test1 &lt;- Oregon.Tests %&gt;%
   labs(title=&quot;COVID-19 Testing in Oregon&quot;, y=&quot;Completed Tests&quot;, x=&quot;Date&quot;, subtitle=&quot;Total appears in black and white&quot;, caption = &quot;data: https://govstatus.egov.com/OR-OHA-COVID-19&quot;) + 
   geom_label(data=OR.Testing, aes(x=date, y=Total+100, label=Total), fill=&quot;white&quot;, color=&quot;black&quot;, inherit.aes = FALSE, vjust = 0, size=3)
 Test1</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 </div>
 <div id="a-second-look-at-testing" class="section level1">
 <h1>A Second Look at Testing</h1>
 <p>We should worry about the degree to which tests are applied at all randomly; they are surely not. As a result, what it means to calculate or break down probability based on having been tested is subject to so many important caveats that vary over time. It is important to note that this is also cumulative.</p>
 <pre class="r"><code>Test2 &lt;- Oregon.Tests %&gt;% ggplot(.) + aes(x=date, y=Outcome, fill=Category, label=Outcome) + geom_col(position = &quot;fill&quot;) + scale_fill_viridis_d() + labs(title=&quot;COVID-19 Testing in Oregon&quot;, y=&quot;Proportion of Tests&quot;, x=&quot;Date&quot;, caption = &quot;data: https://govstatus.egov.com/OR-OHA-COVID-19&quot;)
 Test2</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <div id="a-better-look-at-this" class="section level2">
 <h2>A Better Look at This</h2>
 <pre class="r"><code>library(hrbrthemes)
@@ -79,7 +80,7 @@ MyDat &lt;- Oregon.Tests %&gt;% select(-Result) %&gt;%
   pivot_longer(., c(Negative.Chg, Positive.Chg), names_to = &quot;Outcome&quot;, values_to = &quot;Test.Changes&quot;)
 ResultG &lt;- MyDat %&gt;% ggplot(., aes(x=date, y=Test.Changes, fill=Outcome)) + geom_col(position=&quot;fill&quot;) + geom_label(data=MyDat, aes(x=date, y=Positive.Pct, label=Positive.Pct), size=3.5, inherit.aes = TRUE, show.legend=FALSE) + scale_fill_ipsum() + labs(title=&quot;Daily Distribution of Test Outcomes&quot;, subtitle=&quot;Percent of Positive Tests Shown&quot;)
 ResultG</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 </div>
 </div>
 <div id="hospitalization-data" class="section level1">
@@ -88,7 +89,7 @@ ResultG</code></pre>
 <pre class="r"><code>Hos1 &lt;- OR.Hosp %&gt;% filter(Hospitalized.!=&quot;Total&quot;) %&gt;% ggplot(., aes(x=date, y=Number.of.cases,fill=Hospitalized.)) + geom_col() + scale_fill_ipsum() + labs(x=&quot;Date&quot;, y=&quot;Number of COVID Positives&quot;, fill=&quot;Hospitalized?&quot;, title=&quot;Hospitalization Status of COVID-19 Positives in Oregon&quot;) + coord_flip()
 Hos2 &lt;- OR.Hosp %&gt;% filter(Hospitalized.!=&quot;Total&quot;) %&gt;% ggplot(., aes(x=date, y=Number.of.cases,fill=Hospitalized.)) + geom_col(position=&quot;fill&quot;) + scale_fill_ipsum() + labs(x=&quot;Date&quot;, y=&quot;Number of COVID Positives&quot;, fill=&quot;Hospitalized?&quot;, title=&quot;Hospitalization Status of COVID-19 Positives in Oregon&quot;) + coord_flip()
 Hos1 + Hos2</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 </div>
 <div id="age-data" class="section level1">
 <h1>Age Data</h1>
@@ -101,7 +102,7 @@ Age2 &lt;- OR.Ages1 %&gt;% ggplot(.) +
  scale_fill_ipsum() + labs(x=&quot;Date&quot;, y=&quot;Proportion of COVID-19 Positives&quot;) +
  theme_minimal()
 Age1 + Age2</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <div id="the-revision" class="section level3">
 <h3>The Revision</h3>
 <pre class="r"><code>OR.Ages1 &lt;- OR.Ages %&gt;% filter(date &gt; &quot;2020-03-24&quot;)
@@ -112,7 +113,7 @@ Age2 &lt;- OR.Ages1 %&gt;% ggplot(.) +
  scale_fill_viridis(discrete=TRUE) + labs(x=&quot;Date&quot;, y=&quot;Percent of COVID-19 Positives&quot;) +
  theme_minimal()
 Age1 + Age2</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 </div>
 <div id="some-sex-data" class="section level2">
 <h2>Some Sex Data</h2>
@@ -120,23 +121,44 @@ Age1 + Age2</code></pre>
 <pre class="r"><code>library(hrbrthemes)
 OR.Sex.Reshape &lt;- OR.Gender %&gt;% filter(Sex %in% c(&quot;Female&quot;,&quot;Male&quot;)) %&gt;% mutate(Actives = Cases - Deaths) %&gt;% select(-Cases) %&gt;%  pivot_longer(., c(Actives,Deaths), names_to = &quot;Outcome&quot;, values_to  = &quot;Count&quot;)
 ggplot(OR.Sex.Reshape, aes(x=Sex, y=Count, fill=Outcome)) + geom_col() + scale_fill_ipsum() + labs(x=&quot;Sex&quot;, y=&quot;COVID-19 Positives&quot;) + theme_economist()</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-10-1.png" width="672" />
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-11-1.png" width="672" />
 ## A Plan for This</p>
 <p>Separate the bar plots by Sex.</p>
 <pre class="r"><code>OR.Sex.Reshape %&gt;% mutate(Category = paste(Sex, Outcome, sep=&quot;:&quot;)) %&gt;% ggplot(., aes(x=date, y=Count, fill=Outcome)) + geom_col(position=&quot;stack&quot;) + scale_fill_ipsum() + labs(x=&quot;Date&quot;, y=&quot;Cases&quot;, title=&quot;Deaths and COVID-19 Cases in Oregon by Sex&quot;) + facet_wrap(vars(Sex))</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 </div>
 <div id="hospital-capacity-data" class="section level2">
 <h2>Hospital Capacity Data</h2>
 <p>There isn’t really much to do with this yet; today is the first day of this data. For tomorrow, a line graph to show what is happening with capacity.</p>
-<pre class="r"><code>OR.Hospital.Caps &lt;- OR.Hospital.Caps %&gt;% mutate(Capacity = stringr::str_to_title(str_remove(Hospital.Capacity, &quot;COVID-19&quot;)))
+<pre class="r"><code>OR.Hospital.Caps &lt;- OR.Hospital.Caps %&gt;% mutate(Capacity = stringr::str_to_title(str_remove(Hospital.Capacity, &quot;COVID-19 &quot;))) %&gt;% mutate(Capacity = stringr::str_to_title(str_replace(Capacity, &quot;Available&quot;, &quot;Open&quot;))) %&gt;% mutate(Capacity = str_replace(Capacity, &quot;Icu&quot;, &quot;ICU&quot;))
 OR.Hospital.Caps  %&gt;% ggplot() +
  aes(x = date, y = Number) +
  geom_col(position = &quot;dodge&quot;, fill=&quot;purple&quot;) +
  theme_economist() +
  facet_wrap(vars(Capacity), scales = &quot;free_y&quot;)</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 </div>
+<div id="some-analysis-over-time" class="section level2">
+<h2>Some Analysis over Time</h2>
+</div>
+</div>
+<div id="admissions" class="section level1">
+<h1>Admissions</h1>
+<pre class="r"><code>OR.Hospital.Caps %&gt;% filter(Capacity==&quot;Admissions&quot;) %&gt;% ggplot(., aes(x=date, y=Number)) + geom_point() + geom_line() + labs(title=&quot;COVID-19 Admissions&quot;, x=&quot;Date&quot;, y=&quot;Count&quot;, caption = &quot;data: https://govstatus.egov.com/OR-OHA-COVID-19 \n By: @PieRatio&quot;) + theme_ipsum() + theme(axis.text.x = element_text(angle = 90))</code></pre>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<div id="ventilators" class="section level2">
+<h2>Ventilators</h2>
+<pre class="r"><code>OR.Hospital.Caps %&gt;% filter(str_detect(Capacity, &quot;Ventilators&quot;)) %&gt;% ggplot(., aes(x=date, y=Number)) + geom_point() + geom_line() + labs(title=&quot;Ventilators in Oregon&quot;, x=&quot;Date&quot;, y=&quot;Count&quot;, caption = &quot;data: https://govstatus.egov.com/OR-OHA-COVID-19 \n By: @PieRatio&quot;) + theme_ipsum() + theme(axis.text.x = element_text(angle = 90)) + facet_wrap(vars(Capacity), scales = &quot;free_y&quot;)</code></pre>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+</div>
+<div id="beds" class="section level2">
+<h2>Beds</h2>
+<pre class="r"><code>OR.Hospital.Caps %&gt;% filter(!(Capacity%in%c(&quot;Open ICU Beds&quot;,&quot;Open Non-ICU Beds&quot;))) %&gt;% filter(str_detect(Capacity, &quot;Beds&quot;)) %&gt;% ggplot(., aes(x=date, y=Number)) + geom_point() + geom_line() + labs(title=&quot;Available Beds in Oregon&quot;, x=&quot;Date&quot;, y=&quot;Count&quot;, caption = &quot;data: https://govstatus.egov.com/OR-OHA-COVID-19 \n By: @PieRatio&quot;) + theme_ipsum() + theme(axis.text.x = element_text(angle = 90)) + facet_wrap(vars(Capacity), scales = &quot;free_y&quot;)</code></pre>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+</div>
+</div>
+<div id="daily-maps" class="section level1">
+<h1>Daily Maps</h1>
 <div id="a-mapping-function" class="section level2">
 <h2>A Mapping Function</h2>
 <p>To save time later, I turned the plots into a function so that I can use to reproduce each frame. Two inputs to the function, the dataset that is always the merged data from above and the date that I want to plot located in <code>date1</code> in a <code>YYYY-MM-DD</code> format.</p>
@@ -156,57 +178,57 @@ data %&gt;% filter(date==date1) %&gt;%
 <h2>The Result for 03/18/2020</h2>
 <p>This is the first date for which I can find data. The <code>waybackmachine</code> was crucial.</p>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-18&quot;, Map.Me)</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03192020" class="section level2">
 <h2>The Result for 03/19/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-19&quot;, Map.Me)</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03202020" class="section level2">
 <h2>The Result for 03/20/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-20&quot;, Map.Me)</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03212020" class="section level2">
 <h2>The Result for 03/21/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-21&quot;, Map.Me)</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03222020" class="section level2">
 <h2>The Result for 03/22/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-22&quot;, Map.Me)</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03232020" class="section level2">
 <h2>The Result for 03/23/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-23&quot;, Map.Me)</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03242020" class="section level2">
 <h2>The Result for 03/24/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-24&quot;, Map.Me)</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03252020" class="section level2">
 <h2>The Result for 03/25/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-25&quot;, Map.Me)</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03262020" class="section level2">
 <h2>The Result for 03/26/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-26&quot;, Map.Me)</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03272020" class="section level2">
 <h2>The Result for 03/27/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-27&quot;, Map.Me)</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03282020" class="section level2">
 <h2>The Result for 03/28/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-28&quot;, Map.Me)</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03292020" class="section level2">
 <h2>The Result for 03/29/2020</h2>
@@ -221,6 +243,6 @@ Res.1 &lt;- Map.Me %&gt;% filter(date==Sys.Date()-1) %&gt;%
 ggp &lt;- ggplotly(Res.1)
 frameWidget(ggp)</code></pre>
 <div id="htmlwidget-1" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/R/COVID/index_files/figure-html//widgets/widget_unnamed-chunk-25.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/R/COVID/index_files/figure-html//widgets/widget_unnamed-chunk-29.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>

@@ -11,11 +11,16 @@ library(tidyverse)
 
 # Oregon COVID data
 
-In this post, I want to visualize the data on COVID-19 in the state of Oregon.  I now have a few days of data that I want to scrape, separate, clean up, and plot.  The process of scraping it is detailed in [a separate file](https://rww.science/r/covid-scraping/).  These data are current as of March 29, 2020; this first bit of R code loads the current data from my github.
+In this post, I want to visualize the data on COVID-19 in the state of Oregon.  I now have a few days of data that I want to scrape, separate, clean up, and plot.  The process of scraping it is detailed in [a separate file](https://rww.science/r/covid-scraping/).  These data are current as of March 30, 2020; this first bit of R code loads the current data from my github.
 
-```{r}
+```{r, eval=FALSE}
 load(url(paste0("https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID",Sys.Date(),".RData")))
 ```
+
+```{r, echo=FALSE}
+load(paste0("~/Sandbox/awful/content/R/COVID/data/OregonCOVID",Sys.Date(),".RData"))
+```
+
 
 Verifying, these data are current as of `r max(Oregon.COVID$Scraped.date)`.
 
@@ -23,6 +28,7 @@ Verifying, these data are current as of `r max(Oregon.COVID$Scraped.date)`.
 
 The central takeaway from doing this over the last week or so is that the underlying data reports are constantly changing over time.  They are reporting new and different quantities and this destroys the comparability of data.  Some of it can be reconstructed but much of it is only useful going forward and keeping the schema constant.  I hope that will happen.
 
+*2020-03-20* Footnotes for some entries appear newly today.  That's irritating because it changes the variable names.
 
 ## Building a base map
 
@@ -158,7 +164,7 @@ OR.Sex.Reshape %>% mutate(Category = paste(Sex, Outcome, sep=":")) %>% ggplot(.,
 There isn't really much to do with this yet; today is the first day of this data.  For tomorrow, a line graph to show what is happening with capacity.
 
 ```{r}
-OR.Hospital.Caps <- OR.Hospital.Caps %>% mutate(Capacity = stringr::str_to_title(str_remove(Hospital.Capacity, "COVID-19")))
+OR.Hospital.Caps <- OR.Hospital.Caps %>% mutate(Capacity = stringr::str_to_title(str_remove(Hospital.Capacity, "COVID-19 "))) %>% mutate(Capacity = stringr::str_to_title(str_replace(Capacity, "Available", "Open"))) %>% mutate(Capacity = str_replace(Capacity, "Icu", "ICU"))
 OR.Hospital.Caps  %>% ggplot() +
  aes(x = date, y = Number) +
  geom_col(position = "dodge", fill="purple") +
@@ -166,6 +172,28 @@ OR.Hospital.Caps  %>% ggplot() +
  facet_wrap(vars(Capacity), scales = "free_y")
 ```
 
+## Some Analysis over Time
+
+# Admissions
+
+```{r}
+OR.Hospital.Caps %>% filter(Capacity=="Admissions") %>% ggplot(., aes(x=date, y=Number)) + geom_point() + geom_line() + labs(title="COVID-19 Admissions", x="Date", y="Count", caption = "data: https://govstatus.egov.com/OR-OHA-COVID-19 \n By: @PieRatio") + theme_ipsum() + theme(axis.text.x = element_text(angle = 90))
+```
+
+## Ventilators
+
+```{r}
+OR.Hospital.Caps %>% filter(str_detect(Capacity, "Ventilators")) %>% ggplot(., aes(x=date, y=Number)) + geom_point() + geom_line() + labs(title="Ventilators in Oregon", x="Date", y="Count", caption = "data: https://govstatus.egov.com/OR-OHA-COVID-19 \n By: @PieRatio") + theme_ipsum() + theme(axis.text.x = element_text(angle = 90)) + facet_wrap(vars(Capacity), scales = "free_y")
+```
+
+## Beds
+
+```{r}
+OR.Hospital.Caps %>% filter(!(Capacity%in%c("Open ICU Beds","Open Non-ICU Beds"))) %>% filter(str_detect(Capacity, "Beds")) %>% ggplot(., aes(x=date, y=Number)) + geom_point() + geom_line() + labs(title="Available Beds in Oregon", x="Date", y="Count", caption = "data: https://govstatus.egov.com/OR-OHA-COVID-19 \n By: @PieRatio") + theme_ipsum() + theme(axis.text.x = element_text(angle = 90)) + facet_wrap(vars(Capacity), scales = "free_y")
+```
+
+
+# Daily Maps
 
 ## A Mapping Function
 

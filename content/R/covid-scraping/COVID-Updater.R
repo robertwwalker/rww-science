@@ -1,4 +1,4 @@
-load(url(paste0("https://rww.science/r/covid/data/OregonCOVID",Sys.Date()-1,".RData"))) # 1
+load(url(paste0("https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID",Sys.Date()-1,".RData"))) # 1
 library(rvest); library(htmltools); library(tidyverse); library(rlang)
 # A function to remove commas from numbers.
 comma.rm.to.numeric <- function(variable) {
@@ -101,9 +101,8 @@ if(max(Oregon.COVID$Scraped.date) < as.Date(Today$Header$Scraped.date[[1]],"%m.%
   OR.Hospital.Caps <- bind_rows(Today$Hospital.Cap, OR.Hospital.Caps) %>% distinct(.) # 5 
   # Save the imageformat(Sys.Date(), "%d")
   save.image(paste0("~/Sandbox/awful/content/R/COVID/data/OregonCOVID",Sys.Date(),".RData")) # Save the data with a date flag in the name.
-  cat("Added new data...") # Report the updates
+  cat(paste0("Added new data... \n",Sys.time())) # Report the updates
 } else {
-  cat("Nothing new to add; have a nice day!") # Report no updates.
+  cat(paste0("Nothing new to add; have a nice day! \n",Sys.time())) # Report no updates.
 }
-OR.Testing # Show a little bit of data.
 paste0(Sys.time()) # Show when we were updated.

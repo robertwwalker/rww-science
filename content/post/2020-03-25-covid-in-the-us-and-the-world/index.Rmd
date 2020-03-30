@@ -85,7 +85,7 @@ ggplot(SR.Global) +
  aes(x = date, y = Deaths) +
  geom_line(size = 1L, colour = "#c6dbef") +
  geom_point(size = 1L, colour = "#c6dbef") +
- labs(x = "Date", y = "Confirmed Cases", title = "Reported Global Deaths from COVID-19") +
+ labs(x = "Date", y = "Confirmed Deaths", title = "Reported Global Deaths from COVID-19") +
  hrbrthemes::theme_ft_rc()
 ```
 
@@ -94,5 +94,56 @@ That is legitimately odd.
 ```{r, eval=FALSE}
 TS2 <- read_csv(url("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv"))
 Tidy.Counts <- TS2 %>% pivot_longer(., cols=c(5:dim(TS2)[[2]]), names_to = "date", values_to = "Cases")
+```
+
+# The US Counties Data
+
+```{r}
+library(urbnmapr); library(ggthemes)
+USCounties <- read_csv("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-counties.csv")
+library(tigris); library(rgdal); library(htmltools); library(viridis); library(sf); library(viridis)
+counties.t <- get_urbn_map("counties", sf=TRUE) %>% mutate(fips = county_fips)
+# Map.Me <- left_join(counties.t,Oregon.COVID, by=c("NAME" = "County"))
+Map.Me <- merge(counties.t, USCounties)
+```
+
+The county level choropleth is not a very good plot.  Too much is missing and it is hard to se any variation at all.  The epidemic is currently concentrated.
+
+```{r}
+Map.Me %>% filter(date=="2020-03-28") %>% ggplot(., aes(geometry=geometry, fill=cases)) + geom_sf() + scale_fill_viridis_c() + theme_map()
+```
+
+I don't really like that so I will put it together with a bubble.
+
+```{r}
+# devtools::install_github("hafen/housingData")
+Map.Me.2 <- left_join(housingData::geoCounty, USCounties, by="fips")
+MM3 <- merge(counties.t,Map.Me.2)
+Map1 <- counties.t %>% ggplot(., aes(geometry=geometry)) + geom_sf(color="black", size=0.1, alpha=0.2) + theme_map()
+MM3 %>% 
+  filter(date=="2020-03-28") %>% 
+  ggplot(.) + 
+  geom_point(aes(y=lat, x=lon, color=cases, fill=cases, size=cases), alpha=0.35, shape=21, color="red", inherit.aes = FALSE) + 
+  scale_size(range = c(.1, 24), name="Population (M)") +  
+  guides(size=FALSE) + 
+  scale_fill_continuous_tableau(palette = "Red") + 
+  labs(title="COVID-19 by County Reporting")
+```
+
+# A Leaflet
+
+```{r}
+library(leaflet)
+MM2 <- Map.Me.2 %>% filter(date=="2020-03-28")
+mytext <- paste("County: ", MM2$county.x, "<br/>", 
+   "State: ", MM2$state.x, "<br/>", 
+   "Cases: ", MM2$cases, "<br/>", 
+   "Deaths: ", MM2$deaths, sep="") %>%
+   lapply(htmltools::HTML)
+mypalette <- colorNumeric(palette="viridis", domain=Map.Me.2$cases, na.color="transparent")
+m <- Map.Me.2 %>% filter(date=="2020-03-28") %>% leaflet(.) %>% 
+  addTiles()  %>% 
+  addCircleMarkers(~lon, ~lat, fillColor = ~mypalette(cases), fillOpacity = 0.2, color="white", radius = ~ sqrt(cases)/2, stroke=FALSE,    label = mytext, labelOptions = labelOptions( style = list("font-weight" = "normal", padding = "3px 8px"), textsize = "13px", direction = "auto")) %>% addLegend(pal=mypalette, values=~cases, opacity=0.9, title = "Cases", position = "bottomright")
+m 
 ```
 
