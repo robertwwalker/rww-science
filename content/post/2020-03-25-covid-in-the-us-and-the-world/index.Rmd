@@ -25,14 +25,17 @@ This is what [Johns Hopkins has provided as a dashboard using ARCGIS](https://co
 
 # The data
 
+There are a few different types of data available.  I am relying on the same sources that Johns Hopkins is using for the county level incident data.
+
 ```{r, message=FALSE, warning=FALSE}
 library(tidyverse); library(sf); library(rnaturalearth); library(rnaturalearthdata); library(ggmap)
 March26JH <- read_csv(url("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/03-26-2020.csv"))
+March29JH <- read_csv(url("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_daily_reports/03-29-2020.csv"))
 ```
 
 # A Leaflet
 
-Johns Hopkins also has an extensive collection of data.  Let's see what one set looks like.
+Let's see what one set looks like.  I am doing this first for March 26; after, I will do March 29.
 
 ```{r, warning=FALSE, message=FALSE}
 library(leaflet); library(rMaps); library(leaflet.extras)
@@ -47,16 +50,33 @@ library(widgetframe)
 frameWidget(L2)
 ``` 
 
+### March 29
+
+```{r}
+L2 <- leaflet(March29JH) %>% 
+  addTiles() %>% 
+#  addCircles(lng = ~Long, lat = ~Lat, weight = 1, radius = 1, popup = ~Combined_Key) %>% 
+  addHeatmap(lng=~Long_,
+             lat=~Lat,
+             radius = 9,
+             intensity = ~Confirmed)
+library(widgetframe)
+frameWidget(L2)
+```
+
 
 # `@jburnmurdoch` of the Financial Times
+
+Now I will work with the nominal time series of this.
 
 ```{r}
 SR.TS <- read_csv(url("https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/who_covid_19_situation_reports/who_covid_19_sit_rep_time_series/who_covid_19_sit_rep_time_series.csv"))
 ```
-Something is wrong with the `3/5/2020` column.  It has two values; one a number and another parenthetical number.  I just remove the parenthetical.
+Something is wrong with the `3/5/2020` column.  It has two values; one a number and another parenthetical number.  I just replace the value.
 
 ```{r}
-SR.TS <- SR.TS %>% mutate(`3/5/2020` = as.numeric(str_remove(`3/5/2020`,"(418)")))
+SR.TS$`3/5/2020`[18] <- "128"
+SR.TS <- SR.TS %>% mutate(`3/5/2020` = as.numeric(`3/5/2020`))
 ```
 
 # Global Coronavirus Cases
@@ -113,21 +133,25 @@ The county level choropleth is not a very good plot.  Too much is missing and it
 Map.Me %>% filter(date=="2020-03-28") %>% ggplot(., aes(geometry=geometry, fill=cases)) + geom_sf() + scale_fill_viridis_c() + theme_map()
 ```
 
-I don't really like that so I will put it together with a bubble.
+I don't really like that so I will put it together with a bubble.  I have intentionally left out Hawaii and Alaska from this plot.
 
 ```{r}
+library(rnaturalearth)
 # devtools::install_github("hafen/housingData")
 Map.Me.2 <- left_join(housingData::geoCounty, USCounties, by="fips")
 MM3 <- merge(counties.t,Map.Me.2)
-Map1 <- counties.t %>% ggplot(., aes(geometry=geometry)) + geom_sf(color="black", size=0.1, alpha=0.2) + theme_map()
-MM3 %>% 
-  filter(date=="2020-03-28") %>% 
-  ggplot(.) + 
-  geom_point(aes(y=lat, x=lon, color=cases, fill=cases, size=cases), alpha=0.35, shape=21, color="red", inherit.aes = FALSE) + 
-  scale_size(range = c(.1, 24), name="Population (M)") +  
+Map1 <- counties.t %>% ggplot(., aes(geometry=geometry)) + geom_sf(color="black", size=0.1, alpha=0.2, fill="white")
+Shorty <- MM3 %>% filter(date=="2020-03-28")
+world <- ne_countries(scale = "medium", returnclass = "sf")
+counties <- st_as_sf(maps::map("county", plot = FALSE, fill = TRUE))
+ggplot(data = world) + geom_sf() +
+  geom_sf(data = counties, color = "grey", alpha=0.1, size=0.1) +
+  coord_sf(xlim = c(-130, -65), ylim = c(20, 55), expand = FALSE) +
+  geom_point(data=Shorty, aes(y=lat, x=lon, color=cases, fill=cases, size=cases), alpha=0.35, shape=21, color="red", inherit.aes = FALSE) + 
+  scale_size(range = c(.1, 24)) +  
   guides(size=FALSE) + 
   scale_fill_continuous_tableau(palette = "Red") + 
-  labs(title="COVID-19 by County Reporting")
+  labs(title="COVID-19 by County Reporting") + theme_map()
 ```
 
 # A Leaflet

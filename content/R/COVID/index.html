@@ -13,7 +13,7 @@ date: '2020-03-29'
 <h1>Oregon COVID data</h1>
 <p>In this post, I want to visualize the data on COVID-19 in the state of Oregon. I now have a few days of data that I want to scrape, separate, clean up, and plot. The process of scraping it is detailed in <a href="https://rww.science/r/covid-scraping/">a separate file</a>. These data are current as of March 30, 2020; this first bit of R code loads the current data from my github.</p>
 <pre class="r"><code>load(url(paste0(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&quot;,Sys.Date(),&quot;.RData&quot;)))</code></pre>
-<p>Verifying, these data are current as of 2020-03-30.</p>
+<p>Verifying, these data are current as of 2020-03-31.</p>
 <div id="a-running-commentary-on-the-data" class="section level3">
 <h3>A running commentary on the data</h3>
 <p>The central takeaway from doing this over the last week or so is that the underlying data reports are constantly changing over time. They are reporting new and different quantities and this destroys the comparability of data. Some of it can be reconstructed but much of it is only useful going forward and keeping the schema constant. I hope that will happen.</p>
