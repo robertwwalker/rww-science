@@ -11,7 +11,7 @@ date: '2020-03-31'
 
 <div id="oregon-covid-data" class="section level1">
 <h1>Oregon COVID data</h1>
-<p>I wanted to visualize the data on COVID-19 in the state of Oregon. I now have almost two weeks of data on some things. The process of scraping it is detailed in <a href="https://rww.science/r/covid-scraping/">a separate file</a>. These data are current as of March 31, 2020; this first bit of R code loads the current data from my github.</p>
+<p>I wanted to visualize the data on COVID-19 in the state of Oregon. This updates, expands, and consolidates two previous posts <a href="https://rww.science/2020/03/21/covid-19-in-oregon/">here</a> and <a href="https://rww.science/2020/03/24/covid-19-county-maps-for-oregon/">here</a>. I now have almost two weeks of data on some things. The process of scraping it is detailed in <a href="https://rww.science/r/covid-scraping/">a separate file</a>. These data are current as of March 31, 2020; this first bit of R code loads the current data from my github.</p>
 <pre class="r"><code>load(url(paste0(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&quot;,Sys.Date(),&quot;.RData&quot;)))</code></pre>
 <p>Verifying, these data are current as of 2020-03-31 according to the loaded dataset.</p>
 <div id="a-running-commentary-on-the-data" class="section level3">

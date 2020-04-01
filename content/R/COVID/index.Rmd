@@ -11,7 +11,7 @@ library(tidyverse)
 
 # Oregon COVID data
 
-I wanted to visualize the data on COVID-19 in the state of Oregon.  I now have almost two weeks of data on some things.  The process of scraping it is detailed in [a separate file](https://rww.science/r/covid-scraping/).  These data are current as of March 31, 2020; this first bit of R code loads the current data from my github.
+I wanted to visualize the data on COVID-19 in the state of Oregon.  This updates, expands, and consolidates two previous posts [here](https://rww.science/2020/03/21/covid-19-in-oregon/) and [here](https://rww.science/2020/03/24/covid-19-county-maps-for-oregon/).  I now have almost two weeks of data on some things.  The process of scraping it is detailed in [a separate file](https://rww.science/r/covid-scraping/).  These data are current as of March 31, 2020; this first bit of R code loads the current data from my github.
 
 ```{r, eval=FALSE}
 load(url(paste0("https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID",Sys.Date(),".RData")))
