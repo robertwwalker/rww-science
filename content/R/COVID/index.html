@@ -130,7 +130,7 @@ ggplot(OR.Sex.Reshape, aes(x=Sex, y=Count, fill=Outcome)) + geom_col() + scale_f
 <div id="hospital-capacity-data" class="section level2">
 <h2>Hospital Capacity Data</h2>
 <p>There isn’t really much to do with this yet; today is the first day of this data. For tomorrow, a line graph to show what is happening with capacity.</p>
-<pre class="r"><code>OR.Hospital.Caps &lt;- OR.Hospital.Caps %&gt;% mutate(Capacity = stringr::str_to_title(str_remove(Hospital.Capacity, &quot;COVID-19 &quot;))) %&gt;% mutate(Capacity = stringr::str_to_title(str_replace(Capacity, &quot;Available&quot;, &quot;Open&quot;))) %&gt;% mutate(Capacity = str_replace(Capacity, &quot;Icu&quot;, &quot;ICU&quot;))
+<pre class="r"><code>OR.Hospital.Caps &lt;- OR.Hospital.Caps %&gt;% mutate(Capacity = Hospital.Capacity) %&gt;% filter(Capacity != &quot;ICU beds&quot;) %&gt;% filter(Capacity != &quot;Non-ICU beds&quot;)
 OR.Hospital.Caps  %&gt;% ggplot() +
  aes(x = date, y = Number) +
  geom_col(position = &quot;dodge&quot;, fill=&quot;purple&quot;) +
@@ -144,16 +144,19 @@ OR.Hospital.Caps  %&gt;% ggplot() +
 </div>
 <div id="admissions" class="section level1">
 <h1>Admissions</h1>
-<pre class="r"><code>OR.Hospital.Caps %&gt;% filter(Capacity==&quot;Admissions&quot;) %&gt;% ggplot(., aes(x=date, y=Number)) + geom_point() + geom_line() + labs(title=&quot;COVID-19 Admissions&quot;, x=&quot;Date&quot;, y=&quot;Count&quot;, caption = &quot;data: https://govstatus.egov.com/OR-OHA-COVID-19 \n By: @PieRatio&quot;) + theme_ipsum() + theme(axis.text.x = element_text(angle = 90))</code></pre>
+<pre class="r"><code>OR.COVID.Strain %&gt;% filter(COVID.19.Details==&quot;COVID-19 admissions&quot;) %&gt;% ggplot(., aes(x=date, y=Number)) + geom_point() + geom_line() + labs(title=&quot;COVID-19 Admissions&quot;, x=&quot;Date&quot;, y=&quot;Count&quot;, caption = &quot;data: https://govstatus.egov.com/OR-OHA-COVID-19 \n By: @PieRatio&quot;) + theme_ipsum() + theme(axis.text.x = element_text(angle = 90))</code></pre>
 <p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 <div id="ventilators" class="section level2">
 <h2>Ventilators</h2>
-<pre class="r"><code>OR.Hospital.Caps %&gt;% filter(str_detect(Capacity, &quot;Ventilators&quot;)) %&gt;% ggplot(., aes(x=date, y=Number)) + geom_point() + geom_line() + labs(title=&quot;Ventilators in Oregon&quot;, x=&quot;Date&quot;, y=&quot;Count&quot;, caption = &quot;data: https://govstatus.egov.com/OR-OHA-COVID-19 \n By: @PieRatio&quot;) + theme_ipsum() + theme(axis.text.x = element_text(angle = 90)) + facet_wrap(vars(Capacity), scales = &quot;free_y&quot;)</code></pre>
+<pre class="r"><code>Vent1 &lt;- OR.Hospital.Caps %&gt;% filter(str_detect(Capacity, &quot;Ventilators&quot;)) %&gt;% filter(Type!=&quot;Total&quot;) %&gt;% select(-Hospital.Capacity)
+Vent2 &lt;- OR.COVID.Strain %&gt;% filter(str_detect(COVID.19.Details, &quot;ventilators&quot;)) %&gt;% mutate(Capacity = COVID.19.Details) %&gt;% select(-COVID.19.Details)
+Vents &lt;- bind_rows(Vent1,Vent2)
+Vents %&gt;% ggplot(., aes(x=date, y=Number)) + geom_point() + geom_line() + labs(title=&quot;Ventilators in Oregon&quot;, x=&quot;Date&quot;, y=&quot;Count&quot;, caption = &quot;data: https://govstatus.egov.com/OR-OHA-COVID-19 \n By: @PieRatio&quot;) + theme_ipsum() + theme(axis.text.x = element_text(angle = 90)) + facet_wrap(vars(Capacity), scales = &quot;free_y&quot;)</code></pre>
 <p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 </div>
 <div id="beds" class="section level2">
 <h2>Beds</h2>
-<pre class="r"><code>OR.Hospital.Caps %&gt;% filter(!(Capacity%in%c(&quot;Open ICU Beds&quot;,&quot;Open Non-ICU Beds&quot;))) %&gt;% filter(str_detect(Capacity, &quot;Beds&quot;)) %&gt;% ggplot(., aes(x=date, y=Number)) + geom_point() + geom_line() + labs(title=&quot;Available Beds in Oregon&quot;, x=&quot;Date&quot;, y=&quot;Count&quot;, caption = &quot;data: https://govstatus.egov.com/OR-OHA-COVID-19 \n By: @PieRatio&quot;) + theme_ipsum() + theme(axis.text.x = element_text(angle = 90)) + facet_wrap(vars(Capacity), scales = &quot;free_y&quot;)</code></pre>
+<pre class="r"><code>OR.Hospital.Caps %&gt;% filter(Capacity!=&quot;Ventilators&quot;) %&gt;% filter(Type!=&quot;Total&quot;) %&gt;% ggplot(., aes(x=date, y=Number)) + geom_point() + geom_line() + labs(title=&quot;Available Beds in Oregon&quot;, x=&quot;Date&quot;, y=&quot;Count&quot;, caption = &quot;data: https://govstatus.egov.com/OR-OHA-COVID-19 \n By: @PieRatio&quot;) + theme_ipsum() + theme(axis.text.x = element_text(angle = 90)) + facet_wrap(vars(Capacity), scales = &quot;free_y&quot;)</code></pre>
 <p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
 </div>
 </div>

@@ -108,7 +108,7 @@ if(max(Oregon.COVID$Scraped.date) < as.Date(Today$Header$Scraped.date[[1]],"%m.%
 #  OR.Hospital.Caps <- Today$Hospital.Cap
   OR.Hospital.Caps <- bind_rows(Today$Hospital.Cap, OR.Hospital.Caps) %>% distinct(.) # 5 
 # Integrate the COVID Strain on Hospitals
-  OR.COVID.Strain <- bind_rows(Today$COVID.Strain, OR.Hospital.Caps) %>% distinct(.) # 5 
+  OR.COVID.Strain <- bind_rows(Today$COVID.Strain, OR.COVID.Strain) %>% distinct(.) # 5 
 # Save the imageformat(Sys.Date(), "%d")
 #  save.image(paste0("~/Sandbox/awful/content/R/COVID/data/OregonCOVID",Sys.Date(),".RData")) # Save the data with a date flag in the name.
   cat(paste0("Added new data... \n",Sys.time())) # Report the updates

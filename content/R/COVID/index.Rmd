@@ -164,7 +164,7 @@ OR.Sex.Reshape %>% mutate(Category = paste(Sex, Outcome, sep=":")) %>% ggplot(.,
 There isn't really much to do with this yet; today is the first day of this data.  For tomorrow, a line graph to show what is happening with capacity.
 
 ```{r}
-OR.Hospital.Caps <- OR.Hospital.Caps %>% mutate(Capacity = stringr::str_to_title(str_remove(Hospital.Capacity, "COVID-19 "))) %>% mutate(Capacity = stringr::str_to_title(str_replace(Capacity, "Available", "Open"))) %>% mutate(Capacity = str_replace(Capacity, "Icu", "ICU"))
+OR.Hospital.Caps <- OR.Hospital.Caps %>% mutate(Capacity = Hospital.Capacity) %>% filter(Capacity != "ICU beds") %>% filter(Capacity != "Non-ICU beds")
 OR.Hospital.Caps  %>% ggplot() +
  aes(x = date, y = Number) +
  geom_col(position = "dodge", fill="purple") +
@@ -177,19 +177,22 @@ OR.Hospital.Caps  %>% ggplot() +
 # Admissions
 
 ```{r}
-OR.Hospital.Caps %>% filter(Capacity=="Admissions") %>% ggplot(., aes(x=date, y=Number)) + geom_point() + geom_line() + labs(title="COVID-19 Admissions", x="Date", y="Count", caption = "data: https://govstatus.egov.com/OR-OHA-COVID-19 \n By: @PieRatio") + theme_ipsum() + theme(axis.text.x = element_text(angle = 90))
+OR.COVID.Strain %>% filter(COVID.19.Details=="COVID-19 admissions") %>% ggplot(., aes(x=date, y=Number)) + geom_point() + geom_line() + labs(title="COVID-19 Admissions", x="Date", y="Count", caption = "data: https://govstatus.egov.com/OR-OHA-COVID-19 \n By: @PieRatio") + theme_ipsum() + theme(axis.text.x = element_text(angle = 90))
 ```
 
 ## Ventilators
 
 ```{r}
-OR.Hospital.Caps %>% filter(str_detect(Capacity, "Ventilators")) %>% ggplot(., aes(x=date, y=Number)) + geom_point() + geom_line() + labs(title="Ventilators in Oregon", x="Date", y="Count", caption = "data: https://govstatus.egov.com/OR-OHA-COVID-19 \n By: @PieRatio") + theme_ipsum() + theme(axis.text.x = element_text(angle = 90)) + facet_wrap(vars(Capacity), scales = "free_y")
+Vent1 <- OR.Hospital.Caps %>% filter(str_detect(Capacity, "Ventilators")) %>% filter(Type!="Total") %>% select(-Hospital.Capacity)
+Vent2 <- OR.COVID.Strain %>% filter(str_detect(COVID.19.Details, "ventilators")) %>% mutate(Capacity = COVID.19.Details) %>% select(-COVID.19.Details)
+Vents <- bind_rows(Vent1,Vent2)
+Vents %>% ggplot(., aes(x=date, y=Number)) + geom_point() + geom_line() + labs(title="Ventilators in Oregon", x="Date", y="Count", caption = "data: https://govstatus.egov.com/OR-OHA-COVID-19 \n By: @PieRatio") + theme_ipsum() + theme(axis.text.x = element_text(angle = 90)) + facet_wrap(vars(Capacity), scales = "free_y")
 ```
 
 ## Beds
 
 ```{r}
-OR.Hospital.Caps %>% filter(!(Capacity%in%c("Open ICU Beds","Open Non-ICU Beds"))) %>% filter(str_detect(Capacity, "Beds")) %>% ggplot(., aes(x=date, y=Number)) + geom_point() + geom_line() + labs(title="Available Beds in Oregon", x="Date", y="Count", caption = "data: https://govstatus.egov.com/OR-OHA-COVID-19 \n By: @PieRatio") + theme_ipsum() + theme(axis.text.x = element_text(angle = 90)) + facet_wrap(vars(Capacity), scales = "free_y")
+OR.Hospital.Caps %>% filter(Capacity!="Ventilators") %>% filter(Type!="Total") %>% ggplot(., aes(x=date, y=Number)) + geom_point() + geom_line() + labs(title="Available Beds in Oregon", x="Date", y="Count", caption = "data: https://govstatus.egov.com/OR-OHA-COVID-19 \n By: @PieRatio") + theme_ipsum() + theme(axis.text.x = element_text(angle = 90)) + facet_wrap(vars(Capacity), scales = "free_y")
 ```
 
 

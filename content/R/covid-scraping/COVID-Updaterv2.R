@@ -69,15 +69,19 @@ OHA.Corona <- function(website, date) {
     html_table(fill = TRUE) %>% # 3
     data.frame()  %>%  # 4
     mutate(date=as.Date(date), 
-           Scraped.date = as.Date(Scraped.date,"%m.%d.%y")) %>% 
-           pivot_longer(c(Available, Total), names_to = "Hospital.Capacity", values_to = "Number") # 5
+           Scraped.date = as.Date(Scraped.date,"%m.%d.%y"),
+           Available = comma.rm.to.numeric(Available), 
+           Total = comma.rm.to.numeric(Total)) %>% 
+           pivot_longer(., cols=c(Available, Total), names_to = "Type", values_to = "Number") # 5
   COVID.Strain <- webpage %>%
     html_nodes("table") %>% # 2
     .[7] %>%
     html_table(fill = TRUE) %>% # 3
     data.frame()  %>%  # 4
     mutate(date=as.Date(date), 
-           Scraped.date = as.Date(Scraped.date,"%m.%d.%y")) # 5
+           Scraped.date = as.Date(Scraped.date,"%m.%d.%y"),
+           Number = Total) %>% 
+    select(-Total) # 5
   return(list(Header=COVID.Head, Counties = COVID.County, Gender = COVID.Gender, Ages = COVID.Age, Hospitalized = COVID.Hospitalized, Hospital.Cap=COVID.Hospital.Cap, COVID.Strain = COVID.Strain))
 }
 Today <- OHA.Corona(website="https://govstatus.egov.com/OR-OHA-COVID-19", date=as.character(Sys.Date())) # 2
@@ -106,11 +110,18 @@ if(max(Oregon.COVID$Scraped.date) < as.Date(Today$Header$Scraped.date[[1]],"%m.%
   OR.Gender <- bind_rows(Today$Gender, OR.Gender) %>% distinct(.) # 5
 # Create the hospital capacity data
 #  OR.Hospital.Caps <- Today$Hospital.Cap
-  OR.Hospital.Caps <- bind_rows(Today$Hospital.Cap, OR.Hospital.Caps) %>% distinct(.) # 5 
-# Integrate the COVID Strain on Hospitals
-  OR.COVID.Strain <- bind_rows(Today$COVID.Strain, OR.Hospital.Caps) %>% distinct(.) # 5 
+  # Integrate the COVID Strain on Hospitals
+OR.COVID.Strain <- OR.Hospital.Caps %>% filter(str_detect(Hospital.Capacity, "COVID-19")) %>% mutate(COVID.19.Details = Hospital.Capacity) %>% select(-c(Hospital.Capacity))
+OR.COVID.Strain <- bind_rows(Today$COVID.Strain, OR.COVID.Strain) %>% distinct(.) # 5 
+  OR.Hospital.C <- OR.Hospital.Caps %>% 
+    filter(!str_detect(Hospital.Capacity, "COVID-19"))
+OR.Hospital.C <- OR.Hospital.C %>% 
+    mutate(Hospital.Capacity = Hmisc::capitalize(str_remove(Hospital.Capacity, "Available ")), Type = "Available") %>% 
+    mutate(Hospital.Capacity = str_replace(Hospital.Capacity, "Pediatric ICU", "Pediatric NICU/PICU")) %>% 
+    mutate(Hospital.Capacity = str_replace(Hospital.Capacity, "Pediatric beds", "Pediatric non-ICU beds"))
+OR.Hospital.Caps <- bind_rows(Today$Hospital.Cap, OR.Hospital.C) %>% distinct(.) # 5 
 # Save the imageformat(Sys.Date(), "%d")
-#  save.image(paste0("~/Sandbox/awful/content/R/COVID/data/OregonCOVID",Sys.Date(),".RData")) # Save the data with a date flag in the name.
+save.image(paste0("~/Sandbox/awful/content/R/COVID/data/OregonCOVID",Sys.Date(),".RData")) # Save the data with a date flag in the name.
   cat(paste0("Added new data... \n",Sys.time())) # Report the updates
 } else {
   cat(paste0("Nothing new to add; have a nice day! \n",Sys.time())) # Report no updates.
