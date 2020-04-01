@@ -99,6 +99,8 @@ The above code, which requires some supporting stuff [I used gifski], produces:
 
 # My Least Favorite Thing....
 
+The trend is good.
+
 ```{r}
 brewing_materials <- brewing_materials %>% mutate(date = as.Date(paste0("01/",month,"/",year), format="%d/%m/%Y"), Month.Pct.Chg = ((month_current - month_prior_year) / month_prior_year))
 brewing_materials %>% filter(str_detect(type, "Hops")) %>%  ggplot(., aes(x=date, y=Month.Pct.Chg, color=type)) + geom_line() + geom_point(alpha=0.1) + guides(color=FALSE) + facet_wrap(vars(type), scales = "free_y") + labs(title="Month to Month Last Year Percent Change in Hops")
@@ -109,14 +111,20 @@ There is something legitimately weird about December 2014.  Let me clear it up a
 ```{r}
 My.brewing_materials <- brewing_materials
 My.brewing_materials$Month.Pct.Chg[My.brewing_materials$Month.Pct.Chg > 10] <- 10
-Plot1 <- My.brewing_materials %>% filter(str_detect(type, "Hops")) %>%  ggplot(., aes(x=date, y=Month.Pct.Chg, color=type)) + geom_line() + guides(color=FALSE) + facet_wrap(vars(type), scales = "free_y") + labs(title="Month to Month Last Year Percent Change in Hops", caption = "Real value for maximum Hops(dry) is 120")
+Plot1 <- My.brewing_materials %>% 
+  filter(str_detect(type, "Hops")) %>%  
+  ggplot(., aes(x=date, y=Month.Pct.Chg, color=type)) + 
+  geom_line() + 
+  guides(color=FALSE) + 
+  facet_wrap(vars(type), scales = "free_y") + 
+  labs(title="Month to Month Last Year Percent Change in Hops", caption = "Real value for maximum Hops(dry) is 120")
 Plot1
 ```
 
 
 # A GeoFacet
 
-These are quite neat though I have yet to figure out how to normalize it
+These are quite neat though I have yet to figure out how to normalize it.  First, I will show the percent changes in total barrels by state and then I will show it in raw terms.
 
 ```{r}
 library(patchwork); library(geofacet)

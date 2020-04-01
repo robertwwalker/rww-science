@@ -252,19 +252,26 @@ brewer_sizeT %&gt;%
 </div>
 <div id="my-least-favorite-thing." class="section level1">
 <h1>My Least Favorite Thing….</h1>
+<p>The trend is good.</p>
 <pre class="r"><code>brewing_materials &lt;- brewing_materials %&gt;% mutate(date = as.Date(paste0(&quot;01/&quot;,month,&quot;/&quot;,year), format=&quot;%d/%m/%Y&quot;), Month.Pct.Chg = ((month_current - month_prior_year) / month_prior_year))
 brewing_materials %&gt;% filter(str_detect(type, &quot;Hops&quot;)) %&gt;%  ggplot(., aes(x=date, y=Month.Pct.Chg, color=type)) + geom_line() + geom_point(alpha=0.1) + guides(color=FALSE) + facet_wrap(vars(type), scales = &quot;free_y&quot;) + labs(title=&quot;Month to Month Last Year Percent Change in Hops&quot;)</code></pre>
 <p><img src="/post/2020-04-01-a-quick-tidytuesday-on-beer-breweries-and-ingredients/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 <p>There is something legitimately weird about December 2014. Let me clear it up a bit.</p>
 <pre class="r"><code>My.brewing_materials &lt;- brewing_materials
 My.brewing_materials$Month.Pct.Chg[My.brewing_materials$Month.Pct.Chg &gt; 10] &lt;- 10
-Plot1 &lt;- My.brewing_materials %&gt;% filter(str_detect(type, &quot;Hops&quot;)) %&gt;%  ggplot(., aes(x=date, y=Month.Pct.Chg, color=type)) + geom_line() + guides(color=FALSE) + facet_wrap(vars(type), scales = &quot;free_y&quot;) + labs(title=&quot;Month to Month Last Year Percent Change in Hops&quot;, caption = &quot;Real value for maximum Hops(dry) is 120&quot;)
+Plot1 &lt;- My.brewing_materials %&gt;% 
+  filter(str_detect(type, &quot;Hops&quot;)) %&gt;%  
+  ggplot(., aes(x=date, y=Month.Pct.Chg, color=type)) + 
+  geom_line() + 
+  guides(color=FALSE) + 
+  facet_wrap(vars(type), scales = &quot;free_y&quot;) + 
+  labs(title=&quot;Month to Month Last Year Percent Change in Hops&quot;, caption = &quot;Real value for maximum Hops(dry) is 120&quot;)
 Plot1</code></pre>
 <p><img src="/post/2020-04-01-a-quick-tidytuesday-on-beer-breweries-and-ingredients/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 </div>
 <div id="a-geofacet" class="section level1">
 <h1>A GeoFacet</h1>
-<p>These are quite neat though I have yet to figure out how to normalize it</p>
+<p>These are quite neat though I have yet to figure out how to normalize it. First, I will show the percent changes in total barrels by state and then I will show it in raw terms.</p>
 <pre class="r"><code>library(patchwork); library(geofacet)</code></pre>
 <pre><code>## Registered S3 method overwritten by &#39;geofacet&#39;:
 ##   method from   

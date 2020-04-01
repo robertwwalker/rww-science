@@ -247,19 +247,26 @@ brewer_sizeT %&amp;gt;%
 &lt;/div&gt;
 &lt;div id=&#34;my-least-favorite-thing.&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;My Least Favorite Thing….&lt;/h1&gt;
+&lt;p&gt;The trend is good.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;brewing_materials &amp;lt;- brewing_materials %&amp;gt;% mutate(date = as.Date(paste0(&amp;quot;01/&amp;quot;,month,&amp;quot;/&amp;quot;,year), format=&amp;quot;%d/%m/%Y&amp;quot;), Month.Pct.Chg = ((month_current - month_prior_year) / month_prior_year))
 brewing_materials %&amp;gt;% filter(str_detect(type, &amp;quot;Hops&amp;quot;)) %&amp;gt;%  ggplot(., aes(x=date, y=Month.Pct.Chg, color=type)) + geom_line() + geom_point(alpha=0.1) + guides(color=FALSE) + facet_wrap(vars(type), scales = &amp;quot;free_y&amp;quot;) + labs(title=&amp;quot;Month to Month Last Year Percent Change in Hops&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2020-04-01-a-quick-tidytuesday-on-beer-breweries-and-ingredients/index_files/figure-html/unnamed-chunk-3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;There is something legitimately weird about December 2014. Let me clear it up a bit.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;My.brewing_materials &amp;lt;- brewing_materials
 My.brewing_materials$Month.Pct.Chg[My.brewing_materials$Month.Pct.Chg &amp;gt; 10] &amp;lt;- 10
-Plot1 &amp;lt;- My.brewing_materials %&amp;gt;% filter(str_detect(type, &amp;quot;Hops&amp;quot;)) %&amp;gt;%  ggplot(., aes(x=date, y=Month.Pct.Chg, color=type)) + geom_line() + guides(color=FALSE) + facet_wrap(vars(type), scales = &amp;quot;free_y&amp;quot;) + labs(title=&amp;quot;Month to Month Last Year Percent Change in Hops&amp;quot;, caption = &amp;quot;Real value for maximum Hops(dry) is 120&amp;quot;)
+Plot1 &amp;lt;- My.brewing_materials %&amp;gt;% 
+  filter(str_detect(type, &amp;quot;Hops&amp;quot;)) %&amp;gt;%  
+  ggplot(., aes(x=date, y=Month.Pct.Chg, color=type)) + 
+  geom_line() + 
+  guides(color=FALSE) + 
+  facet_wrap(vars(type), scales = &amp;quot;free_y&amp;quot;) + 
+  labs(title=&amp;quot;Month to Month Last Year Percent Change in Hops&amp;quot;, caption = &amp;quot;Real value for maximum Hops(dry) is 120&amp;quot;)
 Plot1&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2020-04-01-a-quick-tidytuesday-on-beer-breweries-and-ingredients/index_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;a-geofacet&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;A GeoFacet&lt;/h1&gt;
-&lt;p&gt;These are quite neat though I have yet to figure out how to normalize it&lt;/p&gt;
+&lt;p&gt;These are quite neat though I have yet to figure out how to normalize it. First, I will show the percent changes in total barrels by state and then I will show it in raw terms.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(patchwork); library(geofacet)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## Registered S3 method overwritten by &amp;#39;geofacet&amp;#39;:
 ##   method from   

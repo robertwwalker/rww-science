@@ -27,7 +27,7 @@
 &lt;h1&gt;Oregon COVID data&lt;/h1&gt;
 &lt;p&gt;I wanted to visualize the data on COVID-19 in the state of Oregon. This updates, expands, and consolidates two previous posts &lt;a href=&#34;https://rww.science/2020/03/21/covid-19-in-oregon/&#34;&gt;here&lt;/a&gt; and &lt;a href=&#34;https://rww.science/2020/03/24/covid-19-county-maps-for-oregon/&#34;&gt;here&lt;/a&gt;. I now have almost two weeks of data on some things. The process of scraping it is detailed in &lt;a href=&#34;https://rww.science/r/covid-scraping/&#34;&gt;a separate file&lt;/a&gt;. These data are current as of March 31, 2020; this first bit of R code loads the current data from my github.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;load(url(paste0(&amp;quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&amp;quot;,Sys.Date(),&amp;quot;.RData&amp;quot;)))&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Verifying, these data are current as of 2020-03-31 according to the loaded dataset.&lt;/p&gt;
+&lt;p&gt;Verifying, these data are current as of 2020-04-01 according to the loaded dataset.&lt;/p&gt;
 &lt;div id=&#34;a-running-commentary-on-the-data&#34; class=&#34;section level3&#34;&gt;
 &lt;h3&gt;A running commentary on the data&lt;/h3&gt;
 &lt;p&gt;The central takeaway is that the underlying data reports are constantly changing over time. They are reporting new and different quantities and this destroys the comparability of data. Some of it can be reconstructed but much of it is only useful going forward and keeping the schema constant. I hope that will happen at some point.&lt;/p&gt;
@@ -72,14 +72,14 @@ Test1 &amp;lt;- Oregon.Tests %&amp;gt;%
   geom_col() + 
   geom_label(col=&amp;quot;magenta&amp;quot;, show.legend = FALSE, vjust=1, size=2.5) + 
   scale_fill_viridis_d() + 
-  labs(title=&amp;quot;COVID-19 Testing in Oregon&amp;quot;, y=&amp;quot;Completed Tests&amp;quot;, x=&amp;quot;Date&amp;quot;, subtitle=&amp;quot;Total appears in black and white&amp;quot;, caption = &amp;quot;data: https://govstatus.egov.com/OR-OHA-COVID-19&amp;quot;) + 
+  labs(title=&amp;quot;Cumulative [since January 2020] COVID-19 Testing in Oregon&amp;quot;, y=&amp;quot;Completed Tests&amp;quot;, x=&amp;quot;Date&amp;quot;, subtitle=&amp;quot;Total appears in black and white&amp;quot;, caption = &amp;quot;data: https://govstatus.egov.com/OR-OHA-COVID-19&amp;quot;) + 
   geom_label(data=OR.Testing, aes(x=date, y=Total+100, label=Total), fill=&amp;quot;white&amp;quot;, color=&amp;quot;black&amp;quot;, inherit.aes = FALSE, vjust = 0, size=2.5)
 Test1&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;div id=&#34;a-second-look-at-testing&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;A Second Look at Testing&lt;/h2&gt;
 &lt;p&gt;We should worry about the degree to which tests are applied at all randomly; they are surely not. As a result, what it means to calculate or break down probability based on having been tested is subject to so many important caveats that vary over time. It is important to note that this is also cumulative.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Test2 &amp;lt;- Oregon.Tests %&amp;gt;% ggplot(.) + aes(x=date, y=Outcome, fill=Category, label=Outcome) + geom_col(position = &amp;quot;fill&amp;quot;) + scale_fill_viridis_d() + labs(title=&amp;quot;COVID-19 Testing in Oregon&amp;quot;, y=&amp;quot;Proportion of Tests&amp;quot;, x=&amp;quot;Date&amp;quot;, caption = &amp;quot;data: https://govstatus.egov.com/OR-OHA-COVID-19&amp;quot;)
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Test2 &amp;lt;- Oregon.Tests %&amp;gt;% ggplot(.) + aes(x=date, y=Outcome, fill=Category, label=Outcome) + geom_col(position = &amp;quot;fill&amp;quot;) + scale_fill_viridis_d() + labs(title=&amp;quot;Cumulative Outcomes of COVID-19 Testing in Oregon&amp;quot;, y=&amp;quot;Proportion of Tests&amp;quot;, x=&amp;quot;Date&amp;quot;, caption = &amp;quot;data: https://govstatus.egov.com/OR-OHA-COVID-19&amp;quot;)
 Test2&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
@@ -136,7 +136,7 @@ Age1 + Age2&lt;/code&gt;&lt;/pre&gt;
 &lt;h1&gt;Males and Females&lt;/h1&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(hrbrthemes)
 OR.Sex.Reshape &amp;lt;- OR.Gender %&amp;gt;% filter(Sex %in% c(&amp;quot;Female&amp;quot;,&amp;quot;Male&amp;quot;)) %&amp;gt;% mutate(Actives = Cases - Deaths) %&amp;gt;% select(-Cases) %&amp;gt;%  pivot_longer(., c(Actives,Deaths), names_to = &amp;quot;Outcome&amp;quot;, values_to  = &amp;quot;Count&amp;quot;)
-OR.Sex.Reshape %&amp;gt;% mutate(Category = paste(Sex, Outcome, sep=&amp;quot;:&amp;quot;)) %&amp;gt;% ggplot(., aes(x=date, y=Count, fill=Outcome)) + geom_col(position=&amp;quot;stack&amp;quot;) + scale_fill_ipsum() + labs(x=&amp;quot;Date&amp;quot;, y=&amp;quot;Cases&amp;quot;, title=&amp;quot;Deaths and COVID-19 Cases in Oregon by Sex&amp;quot;) + facet_wrap(vars(Sex))&lt;/code&gt;&lt;/pre&gt;
+OR.Sex.Reshape %&amp;gt;% mutate(Category = paste(Sex, Outcome, sep=&amp;quot;:&amp;quot;)) %&amp;gt;% ggplot(., aes(x=date, y=Count, fill=Outcome)) + geom_col(position=&amp;quot;stack&amp;quot;) + scale_fill_ipsum() + labs(x=&amp;quot;Date&amp;quot;, y=&amp;quot;Cases&amp;quot;, title=&amp;quot;Cumulative Deaths and COVID-19 Cases in Oregon by Sex&amp;quot;) + facet_wrap(vars(Sex))&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;hospital-capacity-data&#34; class=&#34;section level1&#34;&gt;
@@ -256,6 +256,11 @@ data %&amp;gt;% filter(date==date1) %&amp;gt;%
 &lt;/div&gt;
 &lt;div id=&#34;the-result-for-03312020&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;The Result for 03/31/2020&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Plot.COVID(&amp;quot;2020-03-31&amp;quot;, Map.Me)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-30-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-result-for-04012020&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;The Result for 04/01/2020&lt;/h2&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(plotly); library(widgetframe); library(ggthemes); library(RColorBrewer)
 Map.Me &amp;lt;- Map.Me %&amp;gt;% mutate(TTip = paste0(&amp;quot;Deaths: &amp;quot;,Deaths,&amp;quot;&amp;lt;br&amp;gt; Negative Tests:&amp;quot;,Negative.test.results))
 Res.1 &amp;lt;- Map.Me %&amp;gt;% filter(date==Sys.Date()) %&amp;gt;%
@@ -267,7 +272,7 @@ Res.1 &amp;lt;- Map.Me %&amp;gt;% filter(date==Sys.Date()) %&amp;gt;%
 ggp &amp;lt;- ggplotly(Res.1)
 frameWidget(ggp)&lt;/code&gt;&lt;/pre&gt;
 &lt;div id=&#34;htmlwidget-1&#34; style=&#34;width:100%;height:480px;&#34; class=&#34;widgetframe html-widget&#34;&gt;&lt;/div&gt;
-&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-1&#34;&gt;{&#34;x&#34;:{&#34;url&#34;:&#34;/R/COVID/index_files/figure-html//widgets/widget_unnamed-chunk-30.html&#34;,&#34;options&#34;:{&#34;xdomain&#34;:&#34;*&#34;,&#34;allowfullscreen&#34;:false,&#34;lazyload&#34;:false}},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-1&#34;&gt;{&#34;x&#34;:{&#34;url&#34;:&#34;/R/COVID/index_files/figure-html//widgets/widget_unnamed-chunk-31.html&#34;,&#34;options&#34;:{&#34;xdomain&#34;:&#34;*&#34;,&#34;allowfullscreen&#34;:false,&#34;lazyload&#34;:false}},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 </description>

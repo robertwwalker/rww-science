@@ -13,7 +13,7 @@ date: '2020-03-31'
 <h1>Oregon COVID data</h1>
 <p>I wanted to visualize the data on COVID-19 in the state of Oregon. This updates, expands, and consolidates two previous posts <a href="https://rww.science/2020/03/21/covid-19-in-oregon/">here</a> and <a href="https://rww.science/2020/03/24/covid-19-county-maps-for-oregon/">here</a>. I now have almost two weeks of data on some things. The process of scraping it is detailed in <a href="https://rww.science/r/covid-scraping/">a separate file</a>. These data are current as of March 31, 2020; this first bit of R code loads the current data from my github.</p>
 <pre class="r"><code>load(url(paste0(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&quot;,Sys.Date(),&quot;.RData&quot;)))</code></pre>
-<p>Verifying, these data are current as of 2020-03-31 according to the loaded dataset.</p>
+<p>Verifying, these data are current as of 2020-04-01 according to the loaded dataset.</p>
 <div id="a-running-commentary-on-the-data" class="section level3">
 <h3>A running commentary on the data</h3>
 <p>The central takeaway is that the underlying data reports are constantly changing over time. They are reporting new and different quantities and this destroys the comparability of data. Some of it can be reconstructed but much of it is only useful going forward and keeping the schema constant. I hope that will happen at some point.</p>
@@ -58,14 +58,14 @@ Test1 &lt;- Oregon.Tests %&gt;%
   geom_col() + 
   geom_label(col=&quot;magenta&quot;, show.legend = FALSE, vjust=1, size=2.5) + 
   scale_fill_viridis_d() + 
-  labs(title=&quot;COVID-19 Testing in Oregon&quot;, y=&quot;Completed Tests&quot;, x=&quot;Date&quot;, subtitle=&quot;Total appears in black and white&quot;, caption = &quot;data: https://govstatus.egov.com/OR-OHA-COVID-19&quot;) + 
+  labs(title=&quot;Cumulative [since January 2020] COVID-19 Testing in Oregon&quot;, y=&quot;Completed Tests&quot;, x=&quot;Date&quot;, subtitle=&quot;Total appears in black and white&quot;, caption = &quot;data: https://govstatus.egov.com/OR-OHA-COVID-19&quot;) + 
   geom_label(data=OR.Testing, aes(x=date, y=Total+100, label=Total), fill=&quot;white&quot;, color=&quot;black&quot;, inherit.aes = FALSE, vjust = 0, size=2.5)
 Test1</code></pre>
 <p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <div id="a-second-look-at-testing" class="section level2">
 <h2>A Second Look at Testing</h2>
 <p>We should worry about the degree to which tests are applied at all randomly; they are surely not. As a result, what it means to calculate or break down probability based on having been tested is subject to so many important caveats that vary over time. It is important to note that this is also cumulative.</p>
-<pre class="r"><code>Test2 &lt;- Oregon.Tests %&gt;% ggplot(.) + aes(x=date, y=Outcome, fill=Category, label=Outcome) + geom_col(position = &quot;fill&quot;) + scale_fill_viridis_d() + labs(title=&quot;COVID-19 Testing in Oregon&quot;, y=&quot;Proportion of Tests&quot;, x=&quot;Date&quot;, caption = &quot;data: https://govstatus.egov.com/OR-OHA-COVID-19&quot;)
+<pre class="r"><code>Test2 &lt;- Oregon.Tests %&gt;% ggplot(.) + aes(x=date, y=Outcome, fill=Category, label=Outcome) + geom_col(position = &quot;fill&quot;) + scale_fill_viridis_d() + labs(title=&quot;Cumulative Outcomes of COVID-19 Testing in Oregon&quot;, y=&quot;Proportion of Tests&quot;, x=&quot;Date&quot;, caption = &quot;data: https://govstatus.egov.com/OR-OHA-COVID-19&quot;)
 Test2</code></pre>
 <p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 </div>
@@ -122,7 +122,7 @@ Age1 + Age2</code></pre>
 <h1>Males and Females</h1>
 <pre class="r"><code>library(hrbrthemes)
 OR.Sex.Reshape &lt;- OR.Gender %&gt;% filter(Sex %in% c(&quot;Female&quot;,&quot;Male&quot;)) %&gt;% mutate(Actives = Cases - Deaths) %&gt;% select(-Cases) %&gt;%  pivot_longer(., c(Actives,Deaths), names_to = &quot;Outcome&quot;, values_to  = &quot;Count&quot;)
-OR.Sex.Reshape %&gt;% mutate(Category = paste(Sex, Outcome, sep=&quot;:&quot;)) %&gt;% ggplot(., aes(x=date, y=Count, fill=Outcome)) + geom_col(position=&quot;stack&quot;) + scale_fill_ipsum() + labs(x=&quot;Date&quot;, y=&quot;Cases&quot;, title=&quot;Deaths and COVID-19 Cases in Oregon by Sex&quot;) + facet_wrap(vars(Sex))</code></pre>
+OR.Sex.Reshape %&gt;% mutate(Category = paste(Sex, Outcome, sep=&quot;:&quot;)) %&gt;% ggplot(., aes(x=date, y=Count, fill=Outcome)) + geom_col(position=&quot;stack&quot;) + scale_fill_ipsum() + labs(x=&quot;Date&quot;, y=&quot;Cases&quot;, title=&quot;Cumulative Deaths and COVID-19 Cases in Oregon by Sex&quot;) + facet_wrap(vars(Sex))</code></pre>
 <p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 </div>
 <div id="hospital-capacity-data" class="section level1">
@@ -242,6 +242,11 @@ data %&gt;% filter(date==date1) %&gt;%
 </div>
 <div id="the-result-for-03312020" class="section level2">
 <h2>The Result for 03/31/2020</h2>
+<pre class="r"><code>Plot.COVID(&quot;2020-03-31&quot;, Map.Me)</code></pre>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-30-1.png" width="672" /></p>
+</div>
+<div id="the-result-for-04012020" class="section level2">
+<h2>The Result for 04/01/2020</h2>
 <pre class="r"><code>library(plotly); library(widgetframe); library(ggthemes); library(RColorBrewer)
 Map.Me &lt;- Map.Me %&gt;% mutate(TTip = paste0(&quot;Deaths: &quot;,Deaths,&quot;&lt;br&gt; Negative Tests:&quot;,Negative.test.results))
 Res.1 &lt;- Map.Me %&gt;% filter(date==Sys.Date()) %&gt;%
@@ -253,6 +258,6 @@ Res.1 &lt;- Map.Me %&gt;% filter(date==Sys.Date()) %&gt;%
 ggp &lt;- ggplotly(Res.1)
 frameWidget(ggp)</code></pre>
 <div id="htmlwidget-1" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/R/COVID/index_files/figure-html//widgets/widget_unnamed-chunk-30.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/R/COVID/index_files/figure-html//widgets/widget_unnamed-chunk-31.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
