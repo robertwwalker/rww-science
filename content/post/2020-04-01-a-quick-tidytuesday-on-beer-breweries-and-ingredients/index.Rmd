@@ -112,3 +112,33 @@ My.brewing_materials$Month.Pct.Chg[My.brewing_materials$Month.Pct.Chg > 10] <- 1
 Plot1 <- My.brewing_materials %>% filter(str_detect(type, "Hops")) %>%  ggplot(., aes(x=date, y=Month.Pct.Chg, color=type)) + geom_line() + guides(color=FALSE) + facet_wrap(vars(type), scales = "free_y") + labs(title="Month to Month Last Year Percent Change in Hops", caption = "Real value for maximum Hops(dry) is 120")
 Plot1
 ```
+
+
+# A GeoFacet
+
+These are quite neat though I have yet to figure out how to normalize it
+
+```{r}
+library(patchwork); library(geofacet)
+dataBS <- beer_states %>% 
+  pivot_wider(names_from=type, values_from=barrels) %>% 
+  mutate(Total.Barrels = `On Premises` + `Bottles and Cans` + `Kegs and Barrels`)  %>%
+  select(-c(`On Premises`,`Bottles and Cans`,`Kegs and Barrels`)) %>% 
+  pivot_longer(., Total.Barrels, names_to = "Total.Barrels", values_to = "Barrels") %>%
+  group_by(state) %>% 
+  mutate(Percent.Change = (Barrels - lag(Barrels)) / lag(Barrels)) %>%
+  filter(state!="total") %>% ungroup()
+ggplot(dataBS, aes(x=year, y=Percent.Change, group=state)) +
+     geom_line(color="red") +
+     facet_geo(~ state) +
+     theme_bw() + theme(axis.text.x = element_text(size=4, angle=45), axis.text.y = element_text(size=6)) + labs(title="Change in Barrels [pct]")
+```
+
+
+```{r}
+ggplot(dataBS, aes(x=year, y=Barrels, group=state)) +
+     geom_line(color="red") +
+     facet_geo(~ state) +
+     theme_bw() + theme(axis.text.x = element_text(size=4, angle=45), axis.text.y = element_text(size=6))  + labs(title="Barrels")
+```
+

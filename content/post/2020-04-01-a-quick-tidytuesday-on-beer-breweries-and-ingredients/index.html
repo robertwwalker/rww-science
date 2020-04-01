@@ -262,3 +262,31 @@ Plot1 &lt;- My.brewing_materials %&gt;% filter(str_detect(type, &quot;Hops&quot;
 Plot1</code></pre>
 <p><img src="/post/2020-04-01-a-quick-tidytuesday-on-beer-breweries-and-ingredients/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 </div>
+<div id="a-geofacet" class="section level1">
+<h1>A GeoFacet</h1>
+<p>These are quite neat though I have yet to figure out how to normalize it</p>
+<pre class="r"><code>library(patchwork); library(geofacet)</code></pre>
+<pre><code>## Registered S3 method overwritten by &#39;geofacet&#39;:
+##   method from   
+##   +.gg   ggplot2</code></pre>
+<pre class="r"><code>dataBS &lt;- beer_states %&gt;% 
+  pivot_wider(names_from=type, values_from=barrels) %&gt;% 
+  mutate(Total.Barrels = `On Premises` + `Bottles and Cans` + `Kegs and Barrels`)  %&gt;%
+  select(-c(`On Premises`,`Bottles and Cans`,`Kegs and Barrels`)) %&gt;% 
+  pivot_longer(., Total.Barrels, names_to = &quot;Total.Barrels&quot;, values_to = &quot;Barrels&quot;) %&gt;%
+  group_by(state) %&gt;% 
+  mutate(Percent.Change = (Barrels - lag(Barrels)) / lag(Barrels)) %&gt;%
+  filter(state!=&quot;total&quot;) %&gt;% ungroup()
+ggplot(dataBS, aes(x=year, y=Percent.Change, group=state)) +
+     geom_line(color=&quot;red&quot;) +
+     facet_geo(~ state) +
+     theme_bw() + theme(axis.text.x = element_text(size=4, angle=45), axis.text.y = element_text(size=6)) + labs(title=&quot;Change in Barrels [pct]&quot;)</code></pre>
+<pre><code>## Warning: Removed 65 row(s) containing missing values (geom_path).</code></pre>
+<p><img src="/post/2020-04-01-a-quick-tidytuesday-on-beer-breweries-and-ingredients/index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<pre class="r"><code>ggplot(dataBS, aes(x=year, y=Barrels, group=state)) +
+     geom_line(color=&quot;red&quot;) +
+     facet_geo(~ state) +
+     theme_bw() + theme(axis.text.x = element_text(size=4, angle=45), axis.text.y = element_text(size=6))  + labs(title=&quot;Barrels&quot;)</code></pre>
+<pre><code>## Warning: Removed 14 row(s) containing missing values (geom_path).</code></pre>
+<p><img src="/post/2020-04-01-a-quick-tidytuesday-on-beer-breweries-and-ingredients/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+</div>
