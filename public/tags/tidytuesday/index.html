@@ -239,7 +239,7 @@
   <meta property="og:description" content="Associate Professor of Quantitative Methods"><meta property="og:image" content="/img/portrait.jpg">
   <meta property="twitter:image" content="/img/portrait.jpg"><meta property="og:locale" content="en-us">
   
-    <meta property="og:updated_time" content="2020-03-19T00:00:00&#43;00:00">
+    <meta property="og:updated_time" content="2020-04-01T00:00:00&#43;00:00">
   
 
   
@@ -654,6 +654,21 @@
     
     
     <div>
+      <h2><a href="/2020/04/01/a-quick-tidytuesday-on-beer-breweries-and-ingredients/" >A Quick tidyTuesday on Beer, Breweries, and Ingredients</a></h2>
+      <div class="article-style">
+        
+          Beer Distribution The #tidyTuesday for March 31, 2020 is on beer. The essential elements and a method for pulling the data are shown:
+Imgur
+ A Comment on Scraping .pdf The Tweet
+ The details on how the data were obtained are a nice overview of scraping .pdf files. The code for doing it is at the bottom of the page. @thomasmock has done a great job commenting his way through it.
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
       <h2><a href="/2020/03/19/tidytuesday-on-the-office/" >tidyTuesday on the Office</a></h2>
       <div class="article-style">
         
@@ -764,19 +779,6 @@ tickets &lt;- readr::read_csv(&quot;https://raw.githubusercontent.com/rfordatasc
         
           Searching and Mapping the Census  Searching for the Asian Population via the Census To use tidycensus, there are limitations imposed by the available tables. There is ACS – a survey of about 3 million people – and the two main decennial census files [SF1] and [SF2]. I will search SF1 for the Asian population.
 library(tidycensus); library(kableExtra) library(tidyverse); library(stringr) v10 &lt;- load_variables(2010, &quot;sf1&quot;, cache = TRUE) v10 %&gt;% filter(str_detect(concept, &quot;ASIAN&quot;)) %&gt;% filter(str_detect(label, &quot;Female&quot;)) %&gt;% kable() %&gt;% scroll_box(width = &quot;100%&quot;)    name  label  concept      P012D026  Total!
-        
-      </div>
-    </div>
-  
-    
-    
-    
-    <div>
-      <h2><a href="/2019/10/09/the-economist-s-visualization-errors/" >The Economist&#39;s Visualization Errors</a></h2>
-      <div class="article-style">
-        
-          The Economist’s Errors and Credit Where Credit is Due The Economist is serious about their use of data visualization and they have occasionally owned up to errors in their visualizations. They can be deceptive, uninformative, confusing, excessively busy, and present a host of other barriers to clean communication. Their blog post on their errors is great.
-I have drawn the following example from a #tidyTuesday earlier this year that explores this.
         
       </div>
     </div>

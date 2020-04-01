@@ -1,0 +1,114 @@
+---
+title: A Quick tidyTuesday on Beer, Breweries, and Ingredients
+author: Robert W. Walker
+date: '2020-04-01'
+slug: a-quick-tidytuesday-on-beer-breweries-and-ingredients
+categories:
+  - R
+  - tidyTuesday
+  - animation
+tags:
+  - gganimate
+  - tidyTuesday
+  - tidyverse
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2020-04-01T01:26:42-07:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+# Beer Distribution
+
+The [#tidyTuesday for March 31, 2020 is on beer](https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-03-31/readme.md).  The essential elements and a method for pulling the data are shown:
+
+![Imgur](https://i.imgur.com/Rhk8aSM.png)
+
+## A Comment on Scraping .pdf
+
+![The Tweet](https://i.imgur.com/Et6TenD.png)
+
+The details on how the data were obtained are a nice overview of scraping .pdf files.  The code for doing it is at the bottom of the page.  `@thomasmock` has done a great job commenting his way through it.
+
+![The footer](https://i.imgur.com/OBHaZZy.png)
+
+This is what one of the tables looks like.
+
+![December 2017](https://i.imgur.com/5Rf8SmZ.png)
+
+# Get Data
+
+We are shown two ways of getting the data.  We can install the `tidytuesdayR` package and get all of the collected data up to and including this week from the package or we can copy and paste the relevant code to download them.  I will take the latter approach.
+
+```{r DataAcq, warning=FALSE, message=FALSE, results='hide'}
+library(tidyverse)
+brewing_materials <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-03-31/brewing_materials.csv')
+beer_taxed <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-03-31/beer_taxed.csv')
+brewer_size <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-03-31/brewer_size.csv')
+beer_states <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-03-31/beer_states.csv')
+```
+
+# Brewers
+
+```{r, warning=FALSE, message=FALSE}
+library(skimr)
+skim(brewer_size)
+```
+
+
+## The Landscape of Brewers
+
+```{r, warning=FALSE, message=FALSE}
+brewer_sizeT <- brewer_size %>% filter(brewer_size!="Total") %>% group_by(year) %>% mutate(obs = row_number()) %>% ungroup()
+brewer_sizeT %>%  
+  ggplot(.) +
+  aes(x = fct_reorder(brewer_size, obs), y = n_of_brewers) +
+  geom_col(fill = "#fba29d") +
+  coord_flip() +
+  theme_minimal() + theme(axis.text.x = element_text(size=8, angle=45), axis.text.y = element_text(size=6)) +
+  facet_wrap(vars(year)) +
+  labs(x="", y="Number of Brewers")
+```
+
+
+# The Rise of Micro-Brews
+
+```
+library(tidyverse)
+brewer_size <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-03-31/brewer_size.csv')
+brewer_sizeT <- brewer_size %>% filter(brewer_size!="Total") %>% group_by(year) %>% mutate(obs = row_number()) %>% ungroup()
+# install.packages("gganimate")
+library(gganimate)
+brewer_sizeT %>%  
+  ggplot(.) +
+  aes(x = fct_reorder(brewer_size, obs), y = n_of_brewers, group=year) +
+  geom_col(fill = "#fba29d") +
+  coord_flip() +
+  theme_minimal() +
+  labs(x="", y="Number of Brewers", title="Brewers by Size", subtitle="{closest_state}") + transition_states(year, transition_length = 5, state_length = 10, wrap=FALSE) + enter_grow() + exit_shrink()
+```
+
+The above code, which requires some supporting stuff [I used gifski], produces:
+
+![Animation](https://github.com/robertwwalker/DADMStuff/raw/master/BrewerSize.gif)
+
+# My Least Favorite Thing....
+
+```{r}
+brewing_materials <- brewing_materials %>% mutate(date = as.Date(paste0("01/",month,"/",year), format="%d/%m/%Y"), Month.Pct.Chg = ((month_current - month_prior_year) / month_prior_year))
+brewing_materials %>% filter(str_detect(type, "Hops")) %>%  ggplot(., aes(x=date, y=Month.Pct.Chg, color=type)) + geom_line() + geom_point(alpha=0.1) + guides(color=FALSE) + facet_wrap(vars(type), scales = "free_y") + labs(title="Month to Month Last Year Percent Change in Hops")
+```
+
+There is something legitimately weird about December 2014.  Let me clear it up a bit.
+
+```{r}
+My.brewing_materials <- brewing_materials
+My.brewing_materials$Month.Pct.Chg[My.brewing_materials$Month.Pct.Chg > 10] <- 10
+Plot1 <- My.brewing_materials %>% filter(str_detect(type, "Hops")) %>%  ggplot(., aes(x=date, y=Month.Pct.Chg, color=type)) + geom_line() + guides(color=FALSE) + facet_wrap(vars(type), scales = "free_y") + labs(title="Month to Month Last Year Percent Change in Hops", caption = "Real value for maximum Hops(dry) is 120")
+Plot1
+```

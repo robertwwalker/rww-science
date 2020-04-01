@@ -239,7 +239,7 @@
   <meta property="og:description" content="Associate Professor of Quantitative Methods"><meta property="og:image" content="/img/portrait.jpg">
   <meta property="twitter:image" content="/img/portrait.jpg"><meta property="og:locale" content="en-us">
   
-    <meta property="og:updated_time" content="2020-03-31T00:00:00&#43;00:00">
+    <meta property="og:updated_time" content="2020-04-01T00:00:00&#43;00:00">
   
 
   
@@ -1159,6 +1159,90 @@
           Last updated on
       
     
+    Apr 1, 2020
+  </span>
+  
+
+  
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    3 min read
+  </span>
+  
+
+  
+  
+  
+
+  
+  
+  <span class="middot-divider"></span>
+  <span class="article-categories">
+    <i class="fas fa-folder mr-1"></i><a href="/categories/r/">R</a>, <a href="/categories/tidytuesday/">tidyTuesday</a>, <a href="/categories/animation/">animation</a></span>
+  
+
+</div>
+
+  
+
+  
+  
+  
+
+  <h3 class="article-title mb-1 mt-3">
+    <a href="/2020/04/01/a-quick-tidytuesday-on-beer-breweries-and-ingredients/">A Quick tidyTuesday on Beer, Breweries, and Ingredients</a>
+  </h3>
+
+  
+  <div class="article-style">
+    <p>Beer Distribution The #tidyTuesday for March 31, 2020 is on beer. The essential elements and a method for pulling the data are shown:
+Imgur
+ A Comment on Scraping .pdf The Tweet
+ The details on how the data were obtained are a nice overview of scraping .pdf files. The code for doing it is at the bottom of the page. @thomasmock has done a great job commenting his way through it.</p>
+  </div>
+  
+
+  
+
+</div>
+
+      
+    
+      
+        
+
+
+
+
+
+
+
+
+
+  
+
+
+<div class="card-simple">
+
+  
+    
+
+
+<div class="article-metadata">
+
+  
+  
+
+  
+  <span class="article-date">
+    
+    
+      
+          Last updated on
+      
+    
     Mar 31, 2020
   </span>
   
@@ -1359,89 +1443,6 @@ paste0(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/C
   <div class="article-style">
     <p>Oregon COVID data The Oregon data are available from OHA here. I cut and pasted the first two days because it was easy with datapasta. As it goes on, it was easier to write a script that I detail elsewhere that I can self-update.
  urbnmapr The Urban Institute has an excellent state and county mapping package. I want to make use of the county-level data and plot the starter map.</p>
-  </div>
-  
-
-  
-
-</div>
-
-      
-    
-      
-        
-
-
-
-
-
-
-
-
-
-  
-
-
-<div class="card-simple">
-
-  
-    
-
-
-<div class="article-metadata">
-
-  
-  
-
-  
-  <span class="article-date">
-    
-    
-      
-          Last updated on
-      
-    
-    Mar 19, 2020
-  </span>
-  
-
-  
-
-  
-  <span class="middot-divider"></span>
-  <span class="article-reading-time">
-    2 min read
-  </span>
-  
-
-  
-  
-  
-
-  
-  
-  <span class="middot-divider"></span>
-  <span class="article-categories">
-    <i class="fas fa-folder mr-1"></i><a href="/categories/r/">R</a>, <a href="/categories/tidytuesday/">tidyTuesday</a>, <a href="/categories/tidyverse/">tidyverse</a></span>
-  
-
-</div>
-
-  
-
-  
-  
-  
-
-  <h3 class="article-title mb-1 mt-3">
-    <a href="/2020/03/19/tidytuesday-on-the-office/">tidyTuesday on the Office</a>
-  </h3>
-
-  
-  <div class="article-style">
-    <p>The Office library(tidyverse) office_ratings &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-03-17/office_ratings.csv&#39;)  A First Plot The number of episodes for the Office by season.
-library(janitor) TableS &lt;- office_ratings %&gt;% tabyl(season) p1 &lt;- TableS %&gt;% ggplot(., aes(x=as.factor(season), y=n, fill=as.factor(season))) + geom_col() + labs(x=&quot;Season&quot;, y=&quot;Episodes&quot;, title=&quot;The Office: Episodes&quot;) + guides(fill=FALSE) p1  Ratings How are the various seasons and episodes rated?
-p2 &lt;- office_ratings %&gt;% ggplot(., aes(x=as.factor(season), y=imdb_rating, fill=as.factor(season), color=as.factor(season))) + geom_violin(alpha=0.3) + guides(fill=FALSE, color=FALSE) + labs(x=&quot;Season&quot;, y=&quot;IMDB Rating&quot;) + geom_point() p2  Patchwork Using patchwork, we can combine multiple plots.</p>
   </div>
   
 
@@ -2639,7 +2640,7 @@ p2 &lt;- office_ratings %&gt;% ggplot(., aes(x=as.factor(season), y=imdb_rating,
           
           
           
-          <a href="/tags/gganimate/" style="font-size:1.2110602438053388rem">gganimate</a>
+          <a href="/tags/gganimate/" style="font-size:1.2933225691358006rem">gganimate</a>
         
           
           
@@ -2704,12 +2705,12 @@ p2 &lt;- office_ratings %&gt;% ggplot(., aes(x=as.factor(season), y=imdb_rating,
           
           
           
-          <a href="/tags/tidytuesday/" style="font-size:1.6983282301562372rem">tidyTuesday</a>
+          <a href="/tags/tidytuesday/" style="font-size:1.7221204876106775rem">tidyTuesday</a>
         
           
           
           
-          <a href="/tags/tidyverse/" style="font-size:1.7854734353439425rem">tidyverse</a>
+          <a href="/tags/tidyverse/" style="font-size:1.8043828129411392rem">tidyverse</a>
         
       </div>
     

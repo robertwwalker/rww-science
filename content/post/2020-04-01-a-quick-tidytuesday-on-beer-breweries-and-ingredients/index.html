@@ -1,0 +1,264 @@
+---
+title: A Quick tidyTuesday on Beer, Breweries, and Ingredients
+author: Robert W. Walker
+date: '2020-04-01'
+slug: a-quick-tidytuesday-on-beer-breweries-and-ingredients
+categories:
+  - R
+  - tidyTuesday
+  - animation
+tags:
+  - gganimate
+  - tidyTuesday
+  - tidyverse
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2020-04-01T01:26:42-07:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+
+
+<div id="beer-distribution" class="section level1">
+<h1>Beer Distribution</h1>
+<p>The <a href="https://github.com/rfordatascience/tidytuesday/blob/master/data/2020/2020-03-31/readme.md">#tidyTuesday for March 31, 2020 is on beer</a>. The essential elements and a method for pulling the data are shown:</p>
+<div class="figure">
+<img src="https://i.imgur.com/Rhk8aSM.png" alt="Imgur" />
+<p class="caption">Imgur</p>
+</div>
+<div id="a-comment-on-scraping-.pdf" class="section level2">
+<h2>A Comment on Scraping .pdf</h2>
+<div class="figure">
+<img src="https://i.imgur.com/Et6TenD.png" alt="The Tweet" />
+<p class="caption">The Tweet</p>
+</div>
+<p>The details on how the data were obtained are a nice overview of scraping .pdf files. The code for doing it is at the bottom of the page. <code>@thomasmock</code> has done a great job commenting his way through it.</p>
+<div class="figure">
+<img src="https://i.imgur.com/OBHaZZy.png" alt="The footer" />
+<p class="caption">The footer</p>
+</div>
+<p>This is what one of the tables looks like.</p>
+<div class="figure">
+<img src="https://i.imgur.com/5Rf8SmZ.png" alt="December 2017" />
+<p class="caption">December 2017</p>
+</div>
+</div>
+</div>
+<div id="get-data" class="section level1">
+<h1>Get Data</h1>
+<p>We are shown two ways of getting the data. We can install the <code>tidytuesdayR</code> package and get all of the collected data up to and including this week from the package or we can copy and paste the relevant code to download them. I will take the latter approach.</p>
+<pre class="r"><code>library(tidyverse)
+brewing_materials &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-03-31/brewing_materials.csv&#39;)
+beer_taxed &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-03-31/beer_taxed.csv&#39;)
+brewer_size &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-03-31/brewer_size.csv&#39;)
+beer_states &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-03-31/beer_states.csv&#39;)</code></pre>
+</div>
+<div id="brewers" class="section level1">
+<h1>Brewers</h1>
+<pre class="r"><code>library(skimr)
+skim(brewer_size)</code></pre>
+<table>
+<caption><span id="tab:unnamed-chunk-1">Table 1: </span>Data summary</caption>
+<tbody>
+<tr class="odd">
+<td align="left">Name</td>
+<td align="left">brewer_size</td>
+</tr>
+<tr class="even">
+<td align="left">Number of rows</td>
+<td align="left">137</td>
+</tr>
+<tr class="odd">
+<td align="left">Number of columns</td>
+<td align="left">6</td>
+</tr>
+<tr class="even">
+<td align="left">_______________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Column type frequency:</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">character</td>
+<td align="left">1</td>
+</tr>
+<tr class="odd">
+<td align="left">numeric</td>
+<td align="left">5</td>
+</tr>
+<tr class="even">
+<td align="left">________________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Group variables</td>
+<td align="left">None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: character</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">min</th>
+<th align="right">max</th>
+<th align="right">empty</th>
+<th align="right">n_unique</th>
+<th align="right">whitespace</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">brewer_size</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">5</td>
+<td align="right">30</td>
+<td align="right">0</td>
+<td align="right">16</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">p0</th>
+<th align="right">p25</th>
+<th align="right">p50</th>
+<th align="right">p75</th>
+<th align="right">p100</th>
+<th align="left">hist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">year</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">2014.18</td>
+<td align="right">3.19</td>
+<td align="right">2009.00</td>
+<td align="right">2011.0</td>
+<td align="right">2014</td>
+<td align="right">2017.0</td>
+<td align="right">2019</td>
+<td align="left">▇▆▆▆▆</td>
+</tr>
+<tr class="even">
+<td align="left">n_of_brewers</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">612.35</td>
+<td align="right">1313.52</td>
+<td align="right">3.00</td>
+<td align="right">15.0</td>
+<td align="right">43</td>
+<td align="right">428.0</td>
+<td align="right">6400</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">total_barrels</td>
+<td align="right">1</td>
+<td align="right">0.99</td>
+<td align="right">30796075.13</td>
+<td align="right">61158938.00</td>
+<td align="right">0.00</td>
+<td align="right">1382425.8</td>
+<td align="right">3055305</td>
+<td align="right">10513168.2</td>
+<td align="right">196969275</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">taxable_removals</td>
+<td align="right">0</td>
+<td align="right">1.00</td>
+<td align="right">28247188.18</td>
+<td align="right">56377822.87</td>
+<td align="right">14711.36</td>
+<td align="right">1203851.8</td>
+<td align="right">2714929</td>
+<td align="right">8697815.6</td>
+<td align="right">182995469</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">total_shipped</td>
+<td align="right">2</td>
+<td align="right">0.99</td>
+<td align="right">885245.75</td>
+<td align="right">1854340.92</td>
+<td align="right">12.00</td>
+<td align="right">6544.5</td>
+<td align="right">39494</td>
+<td align="right">265117.5</td>
+<td align="right">6908958</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+</tbody>
+</table>
+<div id="the-landscape-of-brewers" class="section level2">
+<h2>The Landscape of Brewers</h2>
+<pre class="r"><code>brewer_sizeT &lt;- brewer_size %&gt;% filter(brewer_size!=&quot;Total&quot;) %&gt;% group_by(year) %&gt;% mutate(obs = row_number()) %&gt;% ungroup()
+brewer_sizeT %&gt;%  
+  ggplot(.) +
+  aes(x = fct_reorder(brewer_size, obs), y = n_of_brewers) +
+  geom_col(fill = &quot;#fba29d&quot;) +
+  coord_flip() +
+  theme_minimal() + theme(axis.text.x = element_text(size=8, angle=45), axis.text.y = element_text(size=6)) +
+  facet_wrap(vars(year)) +
+  labs(x=&quot;&quot;, y=&quot;Number of Brewers&quot;)</code></pre>
+<p><img src="/post/2020-04-01-a-quick-tidytuesday-on-beer-breweries-and-ingredients/index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+</div>
+</div>
+<div id="the-rise-of-micro-brews" class="section level1">
+<h1>The Rise of Micro-Brews</h1>
+<pre><code>library(tidyverse)
+brewer_size &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-03-31/brewer_size.csv&#39;)
+brewer_sizeT &lt;- brewer_size %&gt;% filter(brewer_size!=&quot;Total&quot;) %&gt;% group_by(year) %&gt;% mutate(obs = row_number()) %&gt;% ungroup()
+# install.packages(&quot;gganimate&quot;)
+library(gganimate)
+brewer_sizeT %&gt;%  
+  ggplot(.) +
+  aes(x = fct_reorder(brewer_size, obs), y = n_of_brewers, group=year) +
+  geom_col(fill = &quot;#fba29d&quot;) +
+  coord_flip() +
+  theme_minimal() +
+  labs(x=&quot;&quot;, y=&quot;Number of Brewers&quot;, title=&quot;Brewers by Size&quot;, subtitle=&quot;{closest_state}&quot;) + transition_states(year, transition_length = 5, state_length = 10, wrap=FALSE) + enter_grow() + exit_shrink()</code></pre>
+<p>The above code, which requires some supporting stuff [I used gifski], produces:</p>
+<div class="figure">
+<img src="https://github.com/robertwwalker/DADMStuff/raw/master/BrewerSize.gif" alt="Animation" />
+<p class="caption">Animation</p>
+</div>
+</div>
+<div id="my-least-favorite-thing." class="section level1">
+<h1>My Least Favorite Thing….</h1>
+<pre class="r"><code>brewing_materials &lt;- brewing_materials %&gt;% mutate(date = as.Date(paste0(&quot;01/&quot;,month,&quot;/&quot;,year), format=&quot;%d/%m/%Y&quot;), Month.Pct.Chg = ((month_current - month_prior_year) / month_prior_year))
+brewing_materials %&gt;% filter(str_detect(type, &quot;Hops&quot;)) %&gt;%  ggplot(., aes(x=date, y=Month.Pct.Chg, color=type)) + geom_line() + geom_point(alpha=0.1) + guides(color=FALSE) + facet_wrap(vars(type), scales = &quot;free_y&quot;) + labs(title=&quot;Month to Month Last Year Percent Change in Hops&quot;)</code></pre>
+<p><img src="/post/2020-04-01-a-quick-tidytuesday-on-beer-breweries-and-ingredients/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>There is something legitimately weird about December 2014. Let me clear it up a bit.</p>
+<pre class="r"><code>My.brewing_materials &lt;- brewing_materials
+My.brewing_materials$Month.Pct.Chg[My.brewing_materials$Month.Pct.Chg &gt; 10] &lt;- 10
+Plot1 &lt;- My.brewing_materials %&gt;% filter(str_detect(type, &quot;Hops&quot;)) %&gt;%  ggplot(., aes(x=date, y=Month.Pct.Chg, color=type)) + geom_line() + guides(color=FALSE) + facet_wrap(vars(type), scales = &quot;free_y&quot;) + labs(title=&quot;Month to Month Last Year Percent Change in Hops&quot;, caption = &quot;Real value for maximum Hops(dry) is 120&quot;)
+Plot1</code></pre>
+<p><img src="/post/2020-04-01-a-quick-tidytuesday-on-beer-breweries-and-ingredients/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
