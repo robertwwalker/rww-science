@@ -1,7 +1,7 @@
 ---
 title: COVID-19 in Oregon
 author: Robert W. Walker
-date: '2020-03-29'
+date: '2020-03-31'
 ---
 
 ```{r setup, include=FALSE}
@@ -11,7 +11,7 @@ library(tidyverse)
 
 # Oregon COVID data
 
-In this post, I want to visualize the data on COVID-19 in the state of Oregon.  I now have a few days of data that I want to scrape, separate, clean up, and plot.  The process of scraping it is detailed in [a separate file](https://rww.science/r/covid-scraping/).  These data are current as of March 30, 2020; this first bit of R code loads the current data from my github.
+I wanted to visualize the data on COVID-19 in the state of Oregon.  I now have almost two weeks of data on some things.  The process of scraping it is detailed in [a separate file](https://rww.science/r/covid-scraping/).  These data are current as of March 31, 2020; this first bit of R code loads the current data from my github.
 
 ```{r, eval=FALSE}
 load(url(paste0("https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID",Sys.Date(),".RData")))
@@ -21,16 +21,19 @@ load(url(paste0("https://github.com/robertwwalker/rww-science/raw/master/content
 load(paste0("~/Sandbox/awful/content/R/COVID/data/OregonCOVID",Sys.Date(),".RData"))
 ```
 
-
-Verifying, these data are current as of `r max(Oregon.COVID$Scraped.date)`.
+Verifying, these data are current as of `r max(Oregon.COVID$Scraped.date)` according to the loaded dataset.
 
 ### A running commentary on the data
 
-The central takeaway from doing this over the last week or so is that the underlying data reports are constantly changing over time.  They are reporting new and different quantities and this destroys the comparability of data.  Some of it can be reconstructed but much of it is only useful going forward and keeping the schema constant.  I hope that will happen.
+The central takeaway is that the underlying data reports are constantly changing over time.  They are reporting new and different quantities and this destroys the comparability of data.  Some of it can be reconstructed but much of it is only useful going forward and keeping the schema constant.  I hope that will happen at some point.
 
-*2020-03-20* Footnotes for some entries appear newly today.  That's irritating because it changes the variable names.
+*2020-03-23 and before* It started with only three tables.  Then four, then five, adding footnotes and rearranging the data structures became common.  Until the data structures solidify, maintaining comparability, and feeding appropriate data to the visualization tool continue to pose challenges and require a fair amount of tweaking.
 
-## Building a base map
+*2020-03-30* Footnotes for some entries appear newly today.  That's irritating because it changes the variable names.
+
+*2020-03-31* The status of COVID patients and available hospital details were previously in one table but now were split into two parts.  The underlying auto-scraper required changes.
+
+# A base map
 
 To build a map to work from, I need a map library.  Load the `tigris` library then grab the map as an `sf` object; there is a `geom_sf` that makes them easy to work with.  Finally, I join the map to the data.
 
@@ -60,7 +63,7 @@ ResA <- animate(Anim1, end_pause=100, nframes=200)
 ResA
 ```
 
-# Some Data on Testing
+# Testing in Oregon
 
 What is the status of testing?
 
@@ -71,14 +74,14 @@ Test1 <- Oregon.Tests %>%
   ggplot(.) + 
   aes(x=date, y=Result, fill=Category, label=Outcome) + 
   geom_col() + 
-  geom_label(col="magenta", show.legend = FALSE, vjust=1, size=3) + 
+  geom_label(col="magenta", show.legend = FALSE, vjust=1, size=2.5) + 
   scale_fill_viridis_d() + 
   labs(title="COVID-19 Testing in Oregon", y="Completed Tests", x="Date", subtitle="Total appears in black and white", caption = "data: https://govstatus.egov.com/OR-OHA-COVID-19") + 
-  geom_label(data=OR.Testing, aes(x=date, y=Total+100, label=Total), fill="white", color="black", inherit.aes = FALSE, vjust = 0, size=3)
+  geom_label(data=OR.Testing, aes(x=date, y=Total+100, label=Total), fill="white", color="black", inherit.aes = FALSE, vjust = 0, size=2.5)
 Test1
 ```
 
-# A Second Look at Testing
+## A Second Look at Testing
 
 We should worry about the degree to which tests are applied at all randomly; they are surely not.  As a result, what it means to calculate or break down probability based on having been tested is subject to so many important caveats that vary over time.  It is important to note that this is also cumulative.
 
@@ -104,13 +107,13 @@ ResultG
 ```
 
 
-# Hospitalization Data
+# Hospitalization Data for Oregon
 
 How do positive cases and hospitalization relate?
 
 ```{r}
-Hos1 <- OR.Hosp %>% filter(Hospitalized.!="Total") %>% ggplot(., aes(x=date, y=Number.of.cases,fill=Hospitalized.)) + geom_col() + scale_fill_ipsum() + labs(x="Date", y="Number of COVID Positives", fill="Hospitalized?", title="Hospitalization Status of COVID-19 Positives in Oregon") + coord_flip()
-Hos2 <- OR.Hosp %>% filter(Hospitalized.!="Total") %>% ggplot(., aes(x=date, y=Number.of.cases,fill=Hospitalized.)) + geom_col(position="fill") + scale_fill_ipsum() + labs(x="Date", y="Number of COVID Positives", fill="Hospitalized?", title="Hospitalization Status of COVID-19 Positives in Oregon") + coord_flip()
+Hos1 <- OR.Hosp %>% filter(Hospitalized.!="Total") %>% ggplot(., aes(x=date, y=Number.of.cases,fill=Hospitalized.)) + geom_col() + scale_fill_ipsum() + labs(x="Date", y="Number of COVID Positives", fill="Hospitalized?", title="Hospitalization and /n COVID-19 in Oregon") + coord_flip()
+Hos2 <- OR.Hosp %>% filter(Hospitalized.!="Total") %>% ggplot(., aes(x=date, y=Number.of.cases,fill=Hospitalized.)) + geom_col(position="fill") + scale_fill_ipsum() + labs(x="Date", y="Number of COVID Positives", fill="Hospitalized?") + coord_flip()
 Hos1 + Hos2
 ```
 
@@ -129,7 +132,7 @@ Age2 <- OR.Ages1 %>% ggplot(.) +
 Age1 + Age2
 ```
 
-### The Revision
+## The Revision
 
 ```{r}
 OR.Ages1 <- OR.Ages %>% filter(date > "2020-03-24")
@@ -142,26 +145,18 @@ Age2 <- OR.Ages1 %>% ggplot(.) +
 Age1 + Age2
 ```
 
-## Some Sex Data
 
-This table contains Sex, Cases, and Deaths.
+# Males and Females
 
 ```{r}
 library(hrbrthemes)
 OR.Sex.Reshape <- OR.Gender %>% filter(Sex %in% c("Female","Male")) %>% mutate(Actives = Cases - Deaths) %>% select(-Cases) %>%  pivot_longer(., c(Actives,Deaths), names_to = "Outcome", values_to  = "Count")
-ggplot(OR.Sex.Reshape, aes(x=Sex, y=Count, fill=Outcome)) + geom_col() + scale_fill_ipsum() + labs(x="Sex", y="COVID-19 Positives") + theme_economist()
-```
-## A Plan for This
-
-Separate the bar plots by Sex.
-
-```{r}
 OR.Sex.Reshape %>% mutate(Category = paste(Sex, Outcome, sep=":")) %>% ggplot(., aes(x=date, y=Count, fill=Outcome)) + geom_col(position="stack") + scale_fill_ipsum() + labs(x="Date", y="Cases", title="Deaths and COVID-19 Cases in Oregon by Sex") + facet_wrap(vars(Sex))
 ```
 
-## Hospital Capacity Data
+# Hospital Capacity Data
 
-There isn't really much to do with this yet; today is the first day of this data.  For tomorrow, a line graph to show what is happening with capacity.
+The reported entries here vary a lot over time; they seem not to have figured out exactly what they wish to report.
 
 ```{r}
 OR.Hospital.Caps <- OR.Hospital.Caps %>% mutate(Capacity = Hospital.Capacity) %>% filter(Capacity != "ICU beds") %>% filter(Capacity != "Non-ICU beds")
@@ -172,9 +167,9 @@ OR.Hospital.Caps  %>% ggplot() +
  facet_wrap(vars(Capacity), scales = "free_y")
 ```
 
-## Some Analysis over Time
+# Analysis over Time
 
-# Admissions
+## Admissions
 
 ```{r}
 OR.COVID.Strain %>% filter(COVID.19.Details=="COVID-19 admissions") %>% ggplot(., aes(x=date, y=Number)) + geom_point() + geom_line() + labs(title="COVID-19 Admissions", x="Date", y="Count", caption = "data: https://govstatus.egov.com/OR-OHA-COVID-19 \n By: @PieRatio") + theme_ipsum() + theme(axis.text.x = element_text(angle = 90))
@@ -292,9 +287,21 @@ Plot.COVID("2020-03-28", Map.Me)
 ## The Result for 03/29/2020
 
 ```{r}
+Plot.COVID("2020-03-29", Map.Me)
+```
+
+## The Result for 03/30/2020
+
+```{r}
+Plot.COVID("2020-03-30", Map.Me)
+```
+
+## The Result for 03/31/2020
+
+```{r}
 library(plotly); library(widgetframe); library(ggthemes); library(RColorBrewer)
 Map.Me <- Map.Me %>% mutate(TTip = paste0("Deaths: ",Deaths,"<br> Negative Tests:",Negative.test.results))
-Res.1 <- Map.Me %>% filter(date==Sys.Date()-1) %>%
+Res.1 <- Map.Me %>% filter(date==Sys.Date()) %>%
   ggplot(., aes(geometry=geometry, fill=Number.of.cases, label=NAME, text=TTip)) + 
   geom_sf() + 
   scale_fill_viridis_c(option = "A") + 
