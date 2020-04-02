@@ -11,7 +11,7 @@ library(tidyverse)
 
 # Oregon COVID data
 
-I wanted to visualize the data on COVID-19 in the state of Oregon.  This updates, expands, and consolidates two previous posts [here](https://rww.science/2020/03/21/covid-19-in-oregon/) and [here](https://rww.science/2020/03/24/covid-19-county-maps-for-oregon/).  I now have almost two weeks of data on some things.  The process of scraping it is detailed in [a separate file](https://rww.science/r/covid-scraping/).  These data are current as of March 31, 2020; this first bit of R code loads the current data from my github.
+I wanted to visualize the data on COVID-19 in the state of Oregon.  This updates, expands, and consolidates two previous posts [here](https://rww.science/2020/03/21/covid-19-in-oregon/) and [here](https://rww.science/2020/03/24/covid-19-county-maps-for-oregon/).  I now have almost two weeks of data on some things.  The process of scraping it is detailed in [a separate file](https://rww.science/r/covid-scraping/).  These data are current as of April 2, 2020; this first bit of R code loads the current data from my github.
 
 ```{r, eval=FALSE}
 load(url(paste0("https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID",Sys.Date(),".RData")))
@@ -32,6 +32,8 @@ The central takeaway is that the underlying data reports are constantly changing
 *2020-03-30* Footnotes for some entries appear newly today.  That's irritating because it changes the variable names.
 
 *2020-03-31* The status of COVID patients and available hospital details were previously in one table but now were split into two parts.  The underlying auto-scraper required changes.
+
+*2020-04-02* The status of COVID patients and available hospital details are pending in the report.  I have updated the rest.
 
 # A base map
 
@@ -65,7 +67,7 @@ ResA
 
 # Testing in Oregon
 
-What is the status of testing?
+What is the cumulative status of testing?  These data, updated daily, render a count of all tests performed since January of 2020.
 
 ```{r}
 Oregon.Tests <- Oregon.Tests %>% mutate(Result = Outcome) %>% filter(Category!="Pending")
@@ -83,7 +85,7 @@ Test1
 
 ## A Second Look at Testing
 
-We should worry about the degree to which tests are applied at all randomly; they are surely not.  As a result, what it means to calculate or break down probability based on having been tested is subject to so many important caveats that vary over time.  It is important to note that this is also cumulative.
+We should worry about the degree to which tests are applied at all randomly; they are surely not.  As a result, what it means to calculate or break down probability based on having been tested is subject to so many important caveats that vary over time.  It is important to note that this is also cumulative test percentages/proportions.
 
 ```{r}
 Test2 <- Oregon.Tests %>% ggplot(.) + aes(x=date, y=Outcome, fill=Category, label=Outcome) + geom_col(position = "fill") + scale_fill_viridis_d() + labs(title="Cumulative Outcomes of COVID-19 Testing in Oregon", y="Proportion of Tests", x="Date", caption = "data: https://govstatus.egov.com/OR-OHA-COVID-19")
@@ -92,9 +94,11 @@ Test2
 
 ## A Better Look at This
 
+Cumulative results are perhaps more informative when viewed alongside the marginal changes from day to day.  Here, I show the proportion of test outcomes just considering those test results reported for that day -- the daily distribution of test outcomes.
+
 ```{r, warning=FALSE, message=FALSE}
 library(hrbrthemes)
-MyDat <- Oregon.Tests %>% select(-Result) %>%
+MyDat <- Oregon.Tests %>% 
   pivot_wider(., names_from = Category, values_from = Outcome) %>% 
   mutate(Positive.Chg = Positive - lag(Positive, order_by = date), 
          Negative.Chg = Negative - lag(Negative, order_by = date)) %>% 
@@ -102,7 +106,7 @@ MyDat <- Oregon.Tests %>% select(-Result) %>%
   mutate(Positive.Pct = round(Positive.Chg / Total, digits=3)) %>% 
   select(date, Positive.Chg, Negative.Chg, Positive.Pct) %>% 
   pivot_longer(., c(Negative.Chg, Positive.Chg), names_to = "Outcome", values_to = "Test.Changes")
-ResultG <- MyDat %>% ggplot(., aes(x=date, y=Test.Changes, fill=Outcome)) + geom_col(position="fill") + geom_label(data=MyDat, aes(x=date, y=Positive.Pct, label=Positive.Pct), size=3.5, inherit.aes = TRUE, show.legend=FALSE) + scale_fill_ipsum() + labs(title="Daily Distribution of Test Outcomes", subtitle="Percent of Positive Tests Shown")
+ResultG <- MyDat %>% ggplot(., aes(x=date, y=Test.Changes, fill=Outcome)) + geom_col(position="fill") + geom_label(data=MyDat, aes(x=date, y=Positive.Pct, label=Positive.Pct), size=2.5, inherit.aes = TRUE, show.legend=FALSE) + scale_fill_ipsum() + labs(title="Daily Distribution of Test Outcomes", subtitle="Percent of Positive Tests Shown")
 ResultG
 ```
 

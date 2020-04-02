@@ -16,7 +16,7 @@ OHA.Corona <- function(website, date) {
     html_table(fill = TRUE) %>%  # 3
     data.frame()  # 4 
   # Acquire the scraped date from the heading on the page.  The rest is 5
-  Scraped.date <- names(COVID.Head)[1] %>% str_remove(.,"X.As.of.") %>% str_remove(., "..8.00.a.m..Updated.daily.")
+  Scraped.date <- names(COVID.Head)[1] %>% str_remove(.,"X.Data.current.as.of.") %>% str_remove(., "..8.00.a.m..Updated.daily.")
   names(COVID.Head) <- c("Category","Outcome") # Change the names
   COVID.Head <- COVID.Head %>% 
     mutate(Outcome = comma.rm.to.numeric(Outcome), date=as.Date(date), Scraped.date = as.Date(Scraped.date,"%m.%d.%y")) # Create a few variables including the date for checking
@@ -110,9 +110,9 @@ if(max(Oregon.COVID$Scraped.date) < as.Date(Today$Header$Scraped.date[[1]],"%m.%
   OR.Gender <- bind_rows(Today$Gender, OR.Gender) %>% distinct(.) # 5
 # Create the hospital capacity data
 #  OR.Hospital.Caps <- Today$Hospital.Cap
-  OR.Hospital.Caps <- bind_rows(Today$Hospital.Cap, OR.Hospital.Caps) %>% distinct(.) # 5 
+#  OR.Hospital.Caps <- bind_rows(Today$Hospital.Cap, OR.Hospital.Caps) %>% distinct(.) # 5 
 # Integrate the COVID Strain on Hospitals
-  OR.COVID.Strain <- bind_rows(Today$COVID.Strain, OR.COVID.Strain) %>% distinct(.) # 5 
+#  OR.COVID.Strain <- bind_rows(Today$COVID.Strain, OR.COVID.Strain) %>% distinct(.) # 5 
 # Save the imageformat(Sys.Date(), "%d")
 save.image(paste0("~/Sandbox/awful/content/R/COVID/data/OregonCOVID",Sys.Date(),".RData")) # Save the data with a date flag in the name.
   cat(paste0("Added new data... \n",Sys.time())) # Report the updates
