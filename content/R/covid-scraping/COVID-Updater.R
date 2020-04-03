@@ -16,10 +16,12 @@ OHA.Corona <- function(website, date) {
     html_table(fill = TRUE) %>%  # 3
     data.frame()  # 4 
   # Acquire the scraped date from the heading on the page.  The rest is 5
-  Scraped.date <- names(COVID.Head)[1] %>% str_remove(.,"X.Data.current.as.of.") %>% str_remove(., "..8.00.a.m..Updated.daily.")
+  Scraped.date <- names(COVID.Head)[1] %>% 
+    str_remove(.,"X.Data.current.as.of.") %>% 
+    str_remove(., "..8.00.a.m..Updated.daily.")
   names(COVID.Head) <- c("Category","Outcome") # Change the names
   COVID.Head <- COVID.Head %>% 
-    mutate(Outcome = comma.rm.to.numeric(Outcome), 
+    mutate(Outcome = parse_number(Outcome), 
            date=as.Date(date), 
            Scraped.date = as.Date(Scraped.date,"%m.%d.%y")) # Create a few variables including the date for checking
   # Extract the county data
@@ -54,7 +56,8 @@ OHA.Corona <- function(website, date) {
     data.frame()  %>%   # 4
     mutate(date=as.Date(date), 
            Scraped.date = as.Date(Scraped.date,"%m.%d.%y"), 
-           Deaths = dash.rm.to.numeric(Deaths.)) %>% select(-Deaths.) # 5
+           Deaths = dash.rm.to.numeric(Deaths.)) %>% 
+    select(-Deaths.) # 5
   # Extract the hospitalization data
   COVID.Hospitalized <- webpage %>%
     html_nodes("table") %>% # 2
@@ -72,9 +75,10 @@ OHA.Corona <- function(website, date) {
     data.frame()  %>%  # 4
     mutate(date=as.Date(date), 
            Scraped.date = as.Date(Scraped.date,"%m.%d.%y"),
-           Available = comma.rm.to.numeric(Available),
-           Total = comma.rm.to.numeric(Total)) %>% 
+           Available = comma.rm.to.numeric(na_if(Available, "pending")),
+           Total = comma.rm.to.numeric(na_if(Total, "pending"))) %>% 
            pivot_longer(c(Available, Total), names_to = "Type", values_to = "Number") # 5
+  # Extract the COVID data
   COVID.Strain <- webpage %>%
     html_nodes("table") %>% # 2
     .[7] %>%
@@ -82,8 +86,8 @@ OHA.Corona <- function(website, date) {
     data.frame()  %>%  # 4
     mutate(date=as.Date(date), 
            Scraped.date = as.Date(Scraped.date,"%m.%d.%y"),
-           Number = Total) %>%
-    select(-Total) # 5
+           Number = comma.rm.to.numeric(na_if(Total, "pending"))) %>%
+  select(-Total) # 5
   return(list(Header=COVID.Head, Counties = COVID.County, Gender = COVID.Gender, Ages = COVID.Age, Hospitalized = COVID.Hospitalized, Hospital.Cap=COVID.Hospital.Cap, COVID.Strain = COVID.Strain))
 }
 Today <- OHA.Corona(website="https://govstatus.egov.com/OR-OHA-COVID-19", date=as.character(Sys.Date())) # 2
