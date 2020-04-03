@@ -126,22 +126,25 @@ Plot1
 
 These are quite neat though I have yet to figure out how to normalize it.  First, I will show the percent changes in total barrels by state and then I will show it in raw terms.
 
+## Changes
+
 ```{r}
 library(patchwork); library(geofacet)
 dataBS <- beer_states %>% 
-  pivot_wider(names_from=type, values_from=barrels) %>% 
-  mutate(Total.Barrels = `On Premises` + `Bottles and Cans` + `Kegs and Barrels`)  %>%
-  select(-c(`On Premises`,`Bottles and Cans`,`Kegs and Barrels`)) %>% 
-  pivot_longer(., Total.Barrels, names_to = "Total.Barrels", values_to = "Barrels") %>%
-  group_by(state) %>% 
-  mutate(Percent.Change = (Barrels - lag(Barrels)) / lag(Barrels)) %>%
-  filter(state!="total") %>% ungroup()
+  pivot_wider(names_from=type, values_from=barrels) %>% # Pivot to wide by type
+  mutate(Total.Barrels = `On Premises` + `Bottles and Cans` + `Kegs and Barrels`)  %>% # Sum
+  select(-c(`On Premises`,`Bottles and Cans`,`Kegs and Barrels`)) %>% # Drop components
+  pivot_longer(., Total.Barrels, names_to = "Total.Barrels", values_to = "Barrels") %>% # Back to long
+  group_by(state) %>%  # Group the data to calculate changes
+  mutate(Percent.Change = (Barrels - lag(Barrels)) / lag(Barrels)) %>% # Calculate changes
+  filter(state!="total") %>% ungroup() # Drop totals and ungroup the data.
 ggplot(dataBS, aes(x=year, y=Percent.Change, group=state)) +
      geom_line(color="red") +
      facet_geo(~ state) +
      theme_bw() + theme(axis.text.x = element_text(size=4, angle=45), axis.text.y = element_text(size=6)) + labs(title="Change in Barrels [pct]")
 ```
 
+# Plot Barrels
 
 ```{r}
 ggplot(dataBS, aes(x=year, y=Barrels, group=state)) +

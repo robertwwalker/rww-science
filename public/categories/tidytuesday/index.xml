@@ -267,24 +267,30 @@ Plot1&lt;/code&gt;&lt;/pre&gt;
 &lt;div id=&#34;a-geofacet&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;A GeoFacet&lt;/h1&gt;
 &lt;p&gt;These are quite neat though I have yet to figure out how to normalize it. First, I will show the percent changes in total barrels by state and then I will show it in raw terms.&lt;/p&gt;
+&lt;div id=&#34;changes&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Changes&lt;/h2&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(patchwork); library(geofacet)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## Registered S3 method overwritten by &amp;#39;geofacet&amp;#39;:
 ##   method from   
 ##   +.gg   ggplot2&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;dataBS &amp;lt;- beer_states %&amp;gt;% 
-  pivot_wider(names_from=type, values_from=barrels) %&amp;gt;% 
-  mutate(Total.Barrels = `On Premises` + `Bottles and Cans` + `Kegs and Barrels`)  %&amp;gt;%
-  select(-c(`On Premises`,`Bottles and Cans`,`Kegs and Barrels`)) %&amp;gt;% 
-  pivot_longer(., Total.Barrels, names_to = &amp;quot;Total.Barrels&amp;quot;, values_to = &amp;quot;Barrels&amp;quot;) %&amp;gt;%
-  group_by(state) %&amp;gt;% 
-  mutate(Percent.Change = (Barrels - lag(Barrels)) / lag(Barrels)) %&amp;gt;%
-  filter(state!=&amp;quot;total&amp;quot;) %&amp;gt;% ungroup()
+  pivot_wider(names_from=type, values_from=barrels) %&amp;gt;% # Pivot to wide by type
+  mutate(Total.Barrels = `On Premises` + `Bottles and Cans` + `Kegs and Barrels`)  %&amp;gt;% # Sum
+  select(-c(`On Premises`,`Bottles and Cans`,`Kegs and Barrels`)) %&amp;gt;% # Drop components
+  pivot_longer(., Total.Barrels, names_to = &amp;quot;Total.Barrels&amp;quot;, values_to = &amp;quot;Barrels&amp;quot;) %&amp;gt;% # Back to long
+  group_by(state) %&amp;gt;%  # Group the data to calculate changes
+  mutate(Percent.Change = (Barrels - lag(Barrels)) / lag(Barrels)) %&amp;gt;% # Calculate changes
+  filter(state!=&amp;quot;total&amp;quot;) %&amp;gt;% ungroup() # Drop totals and ungroup the data.
 ggplot(dataBS, aes(x=year, y=Percent.Change, group=state)) +
      geom_line(color=&amp;quot;red&amp;quot;) +
      facet_geo(~ state) +
      theme_bw() + theme(axis.text.x = element_text(size=4, angle=45), axis.text.y = element_text(size=6)) + labs(title=&amp;quot;Change in Barrels [pct]&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## Warning: Removed 65 row(s) containing missing values (geom_path).&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2020-04-01-a-quick-tidytuesday-on-beer-breweries-and-ingredients/index_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;plot-barrels&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Plot Barrels&lt;/h1&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggplot(dataBS, aes(x=year, y=Barrels, group=state)) +
      geom_line(color=&amp;quot;red&amp;quot;) +
      facet_geo(~ state) +

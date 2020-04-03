@@ -98,7 +98,7 @@ Cumulative results are perhaps more informative when viewed alongside the margin
 
 ```{r, warning=FALSE, message=FALSE}
 library(hrbrthemes)
-MyDat <- Oregon.Tests %>% 
+MyDat <- Oregon.Tests %>% select(-Result) %>%
   pivot_wider(., names_from = Category, values_from = Outcome) %>% 
   mutate(Positive.Chg = Positive - lag(Positive, order_by = date), 
          Negative.Chg = Negative - lag(Negative, order_by = date)) %>% 
@@ -106,8 +106,7 @@ MyDat <- Oregon.Tests %>%
   mutate(Positive.Pct = round(Positive.Chg / Total, digits=3)) %>% 
   select(date, Positive.Chg, Negative.Chg, Positive.Pct) %>% 
   pivot_longer(., c(Negative.Chg, Positive.Chg), names_to = "Outcome", values_to = "Test.Changes")
-ResultG <- MyDat %>% ggplot(., aes(x=date, y=Test.Changes, fill=Outcome)) + geom_col(position="fill") + geom_label(data=MyDat, aes(x=date, y=Positive.Pct, label=Positive.Pct), size=2.5, inherit.aes = TRUE, show.legend=FALSE) + scale_fill_ipsum() + labs(title="Daily Distribution of Test Outcomes", subtitle="Percent of Positive Tests Shown")
-ResultG
+MyDat %>% ggplot(., aes(x=date, y=Test.Changes, fill=Outcome)) + geom_col(position="fill") + geom_label(data=MyDat, aes(x=date, y=Positive.Pct, label=Positive.Pct), size=2.5, inherit.aes = TRUE, show.legend=FALSE) + scale_fill_ipsum() + labs(title="Daily Distribution of Test Outcomes", subtitle="Percent of Positive Tests Shown")
 ```
 
 
@@ -306,9 +305,14 @@ Plot.COVID("2020-03-30", Map.Me)
 Plot.COVID("2020-03-31", Map.Me)
 ```
 
-
-
 ## The Result for 04/01/2020
+
+```{r}
+Plot.COVID("2020-04-01", Map.Me)
+```
+
+
+## The Result for 04/02/2020
 
 ```{r}
 library(plotly); library(widgetframe); library(ggthemes); library(RColorBrewer)

@@ -272,24 +272,30 @@ Plot1</code></pre>
 <div id="a-geofacet" class="section level1">
 <h1>A GeoFacet</h1>
 <p>These are quite neat though I have yet to figure out how to normalize it. First, I will show the percent changes in total barrels by state and then I will show it in raw terms.</p>
+<div id="changes" class="section level2">
+<h2>Changes</h2>
 <pre class="r"><code>library(patchwork); library(geofacet)</code></pre>
 <pre><code>## Registered S3 method overwritten by &#39;geofacet&#39;:
 ##   method from   
 ##   +.gg   ggplot2</code></pre>
 <pre class="r"><code>dataBS &lt;- beer_states %&gt;% 
-  pivot_wider(names_from=type, values_from=barrels) %&gt;% 
-  mutate(Total.Barrels = `On Premises` + `Bottles and Cans` + `Kegs and Barrels`)  %&gt;%
-  select(-c(`On Premises`,`Bottles and Cans`,`Kegs and Barrels`)) %&gt;% 
-  pivot_longer(., Total.Barrels, names_to = &quot;Total.Barrels&quot;, values_to = &quot;Barrels&quot;) %&gt;%
-  group_by(state) %&gt;% 
-  mutate(Percent.Change = (Barrels - lag(Barrels)) / lag(Barrels)) %&gt;%
-  filter(state!=&quot;total&quot;) %&gt;% ungroup()
+  pivot_wider(names_from=type, values_from=barrels) %&gt;% # Pivot to wide by type
+  mutate(Total.Barrels = `On Premises` + `Bottles and Cans` + `Kegs and Barrels`)  %&gt;% # Sum
+  select(-c(`On Premises`,`Bottles and Cans`,`Kegs and Barrels`)) %&gt;% # Drop components
+  pivot_longer(., Total.Barrels, names_to = &quot;Total.Barrels&quot;, values_to = &quot;Barrels&quot;) %&gt;% # Back to long
+  group_by(state) %&gt;%  # Group the data to calculate changes
+  mutate(Percent.Change = (Barrels - lag(Barrels)) / lag(Barrels)) %&gt;% # Calculate changes
+  filter(state!=&quot;total&quot;) %&gt;% ungroup() # Drop totals and ungroup the data.
 ggplot(dataBS, aes(x=year, y=Percent.Change, group=state)) +
      geom_line(color=&quot;red&quot;) +
      facet_geo(~ state) +
      theme_bw() + theme(axis.text.x = element_text(size=4, angle=45), axis.text.y = element_text(size=6)) + labs(title=&quot;Change in Barrels [pct]&quot;)</code></pre>
 <pre><code>## Warning: Removed 65 row(s) containing missing values (geom_path).</code></pre>
 <p><img src="/post/2020-04-01-a-quick-tidytuesday-on-beer-breweries-and-ingredients/index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+</div>
+</div>
+<div id="plot-barrels" class="section level1">
+<h1>Plot Barrels</h1>
 <pre class="r"><code>ggplot(dataBS, aes(x=year, y=Barrels, group=state)) +
      geom_line(color=&quot;red&quot;) +
      facet_geo(~ state) +
