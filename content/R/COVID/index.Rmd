@@ -11,7 +11,9 @@ library(tidyverse)
 
 # Oregon COVID data
 
-I wanted to visualize the data on COVID-19 in the state of Oregon.  This updates, expands, and consolidates two previous posts [here](https://rww.science/2020/03/21/covid-19-in-oregon/) and [here](https://rww.science/2020/03/24/covid-19-county-maps-for-oregon/).  I now have almost two weeks of data on some things.  The process of scraping it is detailed in [a separate file](https://rww.science/r/covid-scraping/).  These data are current as of April 2, 2020; this first bit of R code loads the current data from my github.
+I wanted to create a self-updating visualization of [the data on COVID-19 in the state of Oregon provided by OHA](https://govstatus.egov.com/OR-OHA-COVID-19).  Oregon reports a set of daily snapshots while progression requires ingesting new data each day so  I began tracking it March 20; the process of scraping it is detailed in [a separate file](https://rww.science/r/covid-scraping/).  This updates, expands, and consolidates two previous posts [here](https://rww.science/2020/03/21/covid-19-in-oregon/) and [here](https://rww.science/2020/03/24/covid-19-county-maps-for-oregon/).  A few cautionary notes.  First, these are cumulative case counts that are almost certainly incomplete  
+
+These data are current as of April 2, 2020; this first bit of R code loads the current data from my github.
 
 ```{r, eval=FALSE}
 load(url(paste0("https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID",Sys.Date(),".RData")))
@@ -39,7 +41,7 @@ The central takeaway is that the underlying data reports are constantly changing
 
 To build a map to work from, I need a map library.  Load the `tigris` library then grab the map as an `sf` object; there is a `geom_sf` that makes them easy to work with.  Finally, I join the map to the data.
 
-```{r, message=FALSE, warning=FALSE, results='hide'}
+```{r, message=FALSE, warning=FALSE, results='hide', cache=TRUE}
 library(tigris); library(rgdal); library(htmltools); library(viridis); library(sf); library(viridis)
 counties.t <- counties(state = "41", resolution = "500k", class="sf")
 Map.Me <- left_join(counties.t,Oregon.COVID, by=c("NAME" = "County"))
@@ -70,11 +72,11 @@ ResA
 What is the cumulative status of testing?  These data, updated daily, render a count of all tests performed since January of 2020.
 
 ```{r}
-Oregon.Tests <- Oregon.Tests %>% mutate(Result = Outcome) %>% filter(Category!="Pending")
+Oregon.Tests <- Oregon.Tests %>% filter(Category!="Pending")
 OR.Testing <- Oregon.Tests %>% group_by(date) %>% summarise(Total = sum(Outcome, na.rm=TRUE))
 Test1 <- Oregon.Tests %>% 
   ggplot(.) + 
-  aes(x=date, y=Result, fill=Category, label=Outcome) + 
+  aes(x=date, y=Outcome, fill=Category, label=Outcome) + 
   geom_col() + 
   geom_label(col="magenta", show.legend = FALSE, vjust=1, size=2.5) + 
   scale_fill_viridis_d() + 
@@ -98,7 +100,7 @@ Cumulative results are perhaps more informative when viewed alongside the margin
 
 ```{r, warning=FALSE, message=FALSE}
 library(hrbrthemes)
-MyDat <- Oregon.Tests %>% select(-Result) %>%
+MyDat <- Oregon.Tests %>%
   pivot_wider(., names_from = Category, values_from = Outcome) %>% 
   mutate(Positive.Chg = Positive - lag(Positive, order_by = date), 
          Negative.Chg = Negative - lag(Negative, order_by = date)) %>% 
@@ -106,7 +108,12 @@ MyDat <- Oregon.Tests %>% select(-Result) %>%
   mutate(Positive.Pct = round(Positive.Chg / Total, digits=3)) %>% 
   select(date, Positive.Chg, Negative.Chg, Positive.Pct) %>% 
   pivot_longer(., c(Negative.Chg, Positive.Chg), names_to = "Outcome", values_to = "Test.Changes")
-MyDat %>% ggplot(., aes(x=date, y=Test.Changes, fill=Outcome)) + geom_col(position="fill") + geom_label(data=MyDat, aes(x=date, y=Positive.Pct, label=Positive.Pct), size=2.5, inherit.aes = TRUE, show.legend=FALSE) + scale_fill_ipsum() + labs(title="Daily Distribution of Test Outcomes", subtitle="Percent of Positive Tests Shown")
+MyDat %>% 
+  ggplot(., aes(x=date, y=Test.Changes, fill=Outcome)) + 
+  geom_col(position="fill") + 
+  geom_label(data=MyDat, aes(x=date, y=Positive.Pct, label=Positive.Pct), size=2.5, inherit.aes = TRUE, show.legend=FALSE) + 
+  scale_fill_ipsum() + 
+  labs(title="Daily Distribution of Test Outcomes", subtitle="Percent of Positive Tests Shown")
 ```
 
 
@@ -115,8 +122,20 @@ MyDat %>% ggplot(., aes(x=date, y=Test.Changes, fill=Outcome)) + geom_col(positi
 How do positive cases and hospitalization relate?
 
 ```{r}
-Hos1 <- OR.Hosp %>% filter(Hospitalized.!="Total") %>% ggplot(., aes(x=date, y=Number.of.cases,fill=Hospitalized.)) + geom_col() + scale_fill_ipsum() + labs(x="Date", y="Number of COVID Positives", fill="Hospitalized?", title="Hospitalization and /n COVID-19 in Oregon") + coord_flip()
-Hos2 <- OR.Hosp %>% filter(Hospitalized.!="Total") %>% ggplot(., aes(x=date, y=Number.of.cases,fill=Hospitalized.)) + geom_col(position="fill") + scale_fill_ipsum() + labs(x="Date", y="Number of COVID Positives", fill="Hospitalized?") + coord_flip()
+Hos1 <- OR.Hosp %>% 
+  filter(Hospitalized.!="Total") %>% 
+  ggplot(., aes(x=date, y=Number.of.cases,fill=Hospitalized.)) + 
+  geom_col() + 
+  scale_fill_ipsum() + 
+  labs(x="Date", y="Number of COVID Positives", fill="Hospitalized?", title="Hospitalization and /n COVID-19 in Oregon") + 
+  coord_flip()
+Hos2 <- OR.Hosp %>% 
+  filter(Hospitalized.!="Total") %>% 
+  ggplot(., aes(x=date, y=Number.of.cases,fill=Hospitalized.)) + 
+  geom_col(position="fill") + 
+  scale_fill_ipsum() + 
+  labs(x="Date", y="Number of COVID Positives", fill="Hospitalized?") + 
+  coord_flip()
 Hos1 + Hos2
 ```
 
@@ -125,8 +144,15 @@ Hos1 + Hos2
 How does this break down by age?  *I had to break this into two parts.  They changed the classification method on March 25, 2020.*
 
 ```{r}
-OR.Ages1 <- OR.Ages %>% filter(date < "2020-03-25")
-Age1 <- OR.Ages1 %>% ggplot(., aes(x=date, y=Number.of.cases, fill=Age.group)) + geom_col() + scale_fill_ipsum() + labs(x="Date", y="Number of COVID-19 Positives") + theme_economist() + guides(fill=FALSE)
+OR.Ages1 <- OR.Ages %>% 
+  filter(date < "2020-03-25")
+Age1 <- OR.Ages1 %>% 
+  ggplot(., aes(x=date, y=Number.of.cases, fill=Age.group)) + 
+  geom_col() + 
+  scale_fill_ipsum() + 
+  labs(x="Date", y="Number of COVID-19 Positives") + 
+  theme_economist() + 
+  guides(fill=FALSE)
 Age2 <- OR.Ages1 %>% ggplot(.) +
  aes(x = date, fill = Age.group, weight = Number.of.cases) +
  geom_bar(position = "fill") +
@@ -139,7 +165,11 @@ Age1 + Age2
 
 ```{r}
 OR.Ages1 <- OR.Ages %>% filter(date > "2020-03-24")
-Age1 <- OR.Ages1 %>% ggplot(., aes(x=date, y=Number.of.cases, fill=Age.group)) + geom_col() + scale_fill_viridis(discrete = TRUE) + labs(x="Date", y="Number of COVID-19 Positives") + theme_economist() + guides(fill=FALSE)
+Age1 <- OR.Ages1 %>% 
+  ggplot(., aes(x=date, y=Number.of.cases, fill=Age.group)) + geom_col() +
+  scale_fill_viridis(discrete = TRUE) + labs(x="Date", y="Number of COVID-19 Positives") +
+  theme_economist() + 
+  guides(fill=FALSE)
 Age2 <- OR.Ages1 %>% ggplot(.) +
  aes(x = date, fill = Age.group, weight = Number.of.cases) +
  geom_bar(position = "fill") +
@@ -153,8 +183,18 @@ Age1 + Age2
 
 ```{r}
 library(hrbrthemes)
-OR.Sex.Reshape <- OR.Gender %>% filter(Sex %in% c("Female","Male")) %>% mutate(Actives = Cases - Deaths) %>% select(-Cases) %>%  pivot_longer(., c(Actives,Deaths), names_to = "Outcome", values_to  = "Count")
-OR.Sex.Reshape %>% mutate(Category = paste(Sex, Outcome, sep=":")) %>% ggplot(., aes(x=date, y=Count, fill=Outcome)) + geom_col(position="stack") + scale_fill_ipsum() + labs(x="Date", y="Cases", title="Cumulative Deaths and COVID-19 Cases in Oregon by Sex") + facet_wrap(vars(Sex))
+OR.Sex.Reshape <- OR.Gender %>% 
+  filter(Sex %in% c("Female","Male")) %>% 
+  mutate(Actives = Cases - Deaths) %>% 
+  select(-Cases) %>%  
+  pivot_longer(., c(Actives,Deaths), names_to = "Outcome", values_to  = "Count")
+OR.Sex.Reshape %>% 
+  mutate(Category = paste(Sex, Outcome, sep=":")) %>% 
+  ggplot(., aes(x=date, y=Count, fill=Outcome)) + 
+  geom_col(position="stack") + 
+  scale_fill_ipsum() + 
+  labs(x="Date", y="Cases", title="Cumulative Deaths and COVID-19 Cases in Oregon by Sex") +
+  facet_wrap(vars(Sex))
 ```
 
 # Hospital Capacity Data
@@ -162,7 +202,10 @@ OR.Sex.Reshape %>% mutate(Category = paste(Sex, Outcome, sep=":")) %>% ggplot(.,
 The reported entries here vary a lot over time; they seem not to have figured out exactly what they wish to report.
 
 ```{r}
-OR.Hospital.Caps <- OR.Hospital.Caps %>% mutate(Capacity = Hospital.Capacity) %>% filter(Capacity != "ICU beds") %>% filter(Capacity != "Non-ICU beds")
+OR.Hospital.Caps <- OR.Hospital.Caps %>% 
+  mutate(Capacity = Hospital.Capacity) %>% 
+  filter(Capacity != "ICU beds") %>% 
+  filter(Capacity != "Non-ICU beds")
 OR.Hospital.Caps  %>% ggplot() +
  aes(x = date, y = Number) +
  geom_col(position = "dodge", fill="purple") +
@@ -181,16 +224,37 @@ OR.COVID.Strain %>% filter(COVID.19.Details=="COVID-19 admissions") %>% ggplot(.
 ## Ventilators
 
 ```{r}
-Vent1 <- OR.Hospital.Caps %>% filter(str_detect(Capacity, "Ventilators")) %>% filter(Type!="Total") %>% select(-Hospital.Capacity)
-Vent2 <- OR.COVID.Strain %>% filter(str_detect(COVID.19.Details, "ventilators")) %>% mutate(Capacity = COVID.19.Details) %>% select(-COVID.19.Details)
+Vent1 <- OR.Hospital.Caps %>% 
+  filter(str_detect(Capacity, "Ventilators")) %>% 
+  filter(Type!="Total") %>% 
+  select(-Hospital.Capacity)
+Vent2 <- OR.COVID.Strain %>% 
+  filter(str_detect(COVID.19.Details, "ventilators")) %>% 
+  mutate(Capacity = COVID.19.Details) %>% 
+  select(-COVID.19.Details)
 Vents <- bind_rows(Vent1,Vent2)
-Vents %>% ggplot(., aes(x=date, y=Number)) + geom_point() + geom_line() + labs(title="Ventilators in Oregon", x="Date", y="Count", caption = "data: https://govstatus.egov.com/OR-OHA-COVID-19 \n By: @PieRatio") + theme_ipsum() + theme(axis.text.x = element_text(angle = 90)) + facet_wrap(vars(Capacity), scales = "free_y")
+Vents %>% 
+  ggplot(., aes(x=date, y=Number)) + 
+  geom_point() + 
+  geom_line() + 
+  labs(title="Ventilators in Oregon", x="Date", y="Count", caption = "data: https://govstatus.egov.com/OR-OHA-COVID-19 \n By: @PieRatio") + 
+  theme_ipsum() + theme(axis.text.x = element_text(angle = 90)) + 
+  facet_wrap(vars(Capacity), scales = "free_y")
 ```
 
 ## Beds
 
 ```{r}
-OR.Hospital.Caps %>% filter(Capacity!="Ventilators") %>% filter(Type!="Total") %>% ggplot(., aes(x=date, y=Number)) + geom_point() + geom_line() + labs(title="Available Beds in Oregon", x="Date", y="Count", caption = "data: https://govstatus.egov.com/OR-OHA-COVID-19 \n By: @PieRatio") + theme_ipsum() + theme(axis.text.x = element_text(angle = 90)) + facet_wrap(vars(Capacity), scales = "free_y")
+OR.Hospital.Caps %>% 
+  filter(Capacity!="Ventilators") %>% 
+  filter(Type!="Total") %>% 
+  ggplot(., aes(x=date, y=Number)) + 
+  geom_point() + 
+  geom_line() + 
+  labs(title="Available Beds in Oregon", x="Date", y="Count", caption = "data: https://govstatus.egov.com/OR-OHA-COVID-19 \n By: @PieRatio") + 
+  theme_ipsum() + 
+  theme(axis.text.x = element_text(angle = 90)) + 
+  facet_wrap(vars(Capacity), scales = "free_y")
 ```
 
 
@@ -316,8 +380,10 @@ Plot.COVID("2020-04-01", Map.Me)
 
 ```{r}
 library(plotly); library(widgetframe); library(ggthemes); library(RColorBrewer)
-Map.Me <- Map.Me %>% mutate(TTip = paste0("Deaths: ",Deaths,"<br> Negative Tests:",Negative.test.results))
-Res.1 <- Map.Me %>% filter(date==Sys.Date()) %>%
+Map.Me <- Map.Me %>% 
+  mutate(TTip = paste0("Deaths: ",Deaths,"<br> Negative Tests:",Negative.test.results))
+Res.1 <- Map.Me %>% 
+  filter(date==Sys.Date()) %>%
   ggplot(., aes(geometry=geometry, fill=Number.of.cases, label=NAME, text=TTip)) + 
   geom_sf() + 
   scale_fill_viridis_c(option = "A") + 

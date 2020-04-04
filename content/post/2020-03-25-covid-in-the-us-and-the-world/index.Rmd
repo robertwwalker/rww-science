@@ -17,6 +17,41 @@ image:
 projects: []
 ---
 
+# New York Times data for the US
+
+```{r, message=FALSE, warning=FALSE}
+library(tidyverse); library(hrbrthemes)
+state.data <- read_csv(url("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv"))
+Rect.NYT <- complete(state.data, state,date)
+Rect.NYT <- Rect.NYT %>% group_by(state) %>% mutate(New.Cases = cases - lag(cases, order_by = date), New.Deaths = deaths - lag(deaths, order_by = date)) %>% ungroup()
+ggplot(Rect.NYT, aes(x=date, y=New.Cases, color=state)) + geom_line() + guides(color=FALSE)
+```
+
+```{r}
+NYT.Totals <- Rect.NYT %>% group_by(date) %>% summarise(Deaths = sum(deaths, na.rm=TRUE), New.Deaths = sum(New.Deaths, na.rm = TRUE), Cases = sum(cases, na.rm=TRUE), New.Cases = sum(New.Cases, na.rm = TRUE))
+library(patchwork)
+ggplot(NYT.Totals, aes(x=date, y=New.Cases)) + geom_line() + labs(x="Date", y="New COVID-19 Cases", title="Daily: New COVID-19 Cases") + theme_ipsum() + theme(axis.text.x = element_text(size=8, angle=45))+ ggplot(NYT.Totals, aes(x=date, y=New.Deaths)) + geom_line() + labs(x="Date", y="New COVID-19 Deaths", title="Daily: New COVID-19 Deaths") + theme_ipsum() + theme(axis.text.x = element_text(size=8, angle=45)) 
+```
+
+
+## Totals
+
+```{r}
+ggplot(NYT.Totals, aes(x=date, y=Cases)) + geom_line() + labs(x="Date", y="Total COVID-19 Cases", title="Total COVID-19 Cases") + theme_ipsum() + theme(axis.text.x = element_text(size=8, angle=45))+ ggplot(NYT.Totals, aes(x=date, y=Deaths)) + geom_line() + labs(x="Date", y="Total COVID-19 Deaths", title="Total COVID-19 Deaths") + theme_ipsum() + theme(axis.text.x = element_text(size=8, angle=45))
+```
+
+## US Death Rate
+
+Given the data, what does the US Case Fatality Rate look like at this point?  Two caveats for this.  The first, uncertainty in the numerator.  The number of deaths is surely undercounted, probably dramatically based on anecdotes from non-medical first responders.  Second, we know the numerator is also undercounted.  Assuming asymptomatic cases, the rules prohibited testing them for a substantial period of time on top of the existing scarcity of tests. 
+
+```{r}
+library(hrbrthemes); library(plotly)
+CFR <- NYT.Totals %>% mutate(CFR = round(Deaths / Cases, digits=3)) %>% ggplot(., aes(x=date, y=CFR)) + geom_line() + geom_point(color="skyblue") + labs(title = "Case Fatality Rate of COVID-19 in the US", caption="Very uncertain estimate... Numerator and denominator uncertain \n Data: NY Times GitHub")
+ggplotly(CFR)
+```
+
+
+
 # The Johns Hopkins dashboard
 
 This is what [Johns Hopkins has provided as a dashboard using ARCGIS](https://coronavirus.jhu.edu/map.html).  They have essentially layered out the data into national and subnational data and then used the arcgis dashboard to cycle through them.
