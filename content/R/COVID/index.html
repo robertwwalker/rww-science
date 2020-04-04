@@ -13,7 +13,17 @@ date: '2020-03-31'
 <h1>Oregon COVID data</h1>
 <p>I wanted to create a self-updating visualization of <a href="https://govstatus.egov.com/OR-OHA-COVID-19">the data on COVID-19 in the state of Oregon provided by OHA</a>. Oregon reports a set of daily snapshots while progression requires ingesting new data each day so I began tracking it March 20; the process of scraping it is detailed in <a href="https://rww.science/r/covid-scraping/">a separate file</a>. This updates, expands, and consolidates two previous posts <a href="https://rww.science/2020/03/21/covid-19-in-oregon/">here</a> and <a href="https://rww.science/2020/03/24/covid-19-county-maps-for-oregon/">here</a>. A few cautionary notes. First, these are cumulative case counts that are almost certainly incomplete</p>
 <p>These data are current as of April 2, 2020; this first bit of R code loads the current data from my github.</p>
-<pre class="r"><code>load(url(paste0(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&quot;,Sys.Date(),&quot;.RData&quot;)))</code></pre>
+<pre class="r"><code>library(tigris)
+library(rgdal)
+library(htmltools)
+library(viridis) 
+library(sf)
+library(ggrepel)
+library(ggthemes)
+library(gganimate)
+library(patchwork)
+library(hrbrthemes)
+load(url(paste0(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&quot;,Sys.Date(),&quot;.RData&quot;)))</code></pre>
 <p>Verifying, these data are current as of 2020-04-03 according to the loaded dataset.</p>
 <div id="a-running-commentary-on-the-data" class="section level3">
 <h3>A running commentary on the data</h3>
@@ -27,16 +37,13 @@ date: '2020-03-31'
 <div id="a-base-map" class="section level1">
 <h1>A base map</h1>
 <p>To build a map to work from, I need a map library. Load the <code>tigris</code> library then grab the map as an <code>sf</code> object; there is a <code>geom_sf</code> that makes them easy to work with. Finally, I join the map to the data.</p>
-<pre class="r"><code>library(tigris); library(rgdal); library(htmltools); library(viridis); library(sf); library(viridis)
-counties.t &lt;- counties(state = &quot;41&quot;, resolution = &quot;500k&quot;, class=&quot;sf&quot;)
+<pre class="r"><code>counties.t &lt;- counties(state = &quot;41&quot;, resolution = &quot;500k&quot;, class=&quot;sf&quot;)
 Map.Me &lt;- left_join(counties.t,Oregon.COVID, by=c(&quot;NAME&quot; = &quot;County&quot;))</code></pre>
 </div>
 <div id="summarising-the-county-data-an-animation" class="section level1">
 <h1>Summarising the County Data: An Animation</h1>
 <p>I will use a ggplot to build Oregon’s map and fill it with case numbers. <code>geom_sf()</code> plots the geometry. I have to repel the labels to prevent print overlap, and scheme the colors. The last step is to animate it by time. If I stop the label repelling, they will not bounce but it adds excitement.</p>
-<pre class="r"><code>library(ggrepel); library(ggthemes); library(gganimate)
-library(patchwork); library(hrbrthemes)
-Anim1 &lt;- Map.Me %&gt;% 
+<pre class="r"><code>Anim1 &lt;- Map.Me %&gt;% 
   ggplot(., aes(geometry=geometry, fill=Number.of.cases, label=NAME, group=NAME)) + 
   geom_sf() +
   geom_label_repel(stat = &quot;sf_coordinates&quot;,
@@ -314,8 +321,13 @@ data %&gt;% filter(date==date1) %&gt;%
 <pre class="r"><code>Plot.COVID(&quot;2020-04-01&quot;, Map.Me)</code></pre>
 <p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-31-1.png" width="672" /></p>
 </div>
-<div id="the-result-for-04022020" class="section level2">
-<h2>The Result for 04/02/2020</h2>
+<div id="the-result-for-04012020-1" class="section level2">
+<h2>The Result for 04/01/2020</h2>
+<pre class="r"><code>Plot.COVID(&quot;2020-04-02&quot;, Map.Me)</code></pre>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-32-1.png" width="672" /></p>
+</div>
+<div id="the-result-for-04032020" class="section level2">
+<h2>The Result for 04/03/2020</h2>
 <pre class="r"><code>library(plotly); library(widgetframe); library(ggthemes); library(RColorBrewer)
 Map.Me &lt;- Map.Me %&gt;% 
   mutate(TTip = paste0(&quot;Deaths: &quot;,Deaths,&quot;&lt;br&gt; Negative Tests:&quot;,Negative.test.results))
@@ -329,6 +341,6 @@ Res.1 &lt;- Map.Me %&gt;%
 ggp &lt;- ggplotly(Res.1)
 frameWidget(ggp)</code></pre>
 <div id="htmlwidget-1" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/R/COVID/index_files/figure-html//widgets/widget_unnamed-chunk-32.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/R/COVID/index_files/figure-html//widgets/widget_unnamed-chunk-33.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>

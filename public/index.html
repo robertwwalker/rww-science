@@ -239,7 +239,7 @@
   <meta property="og:description" content="Associate Professor of Quantitative Methods"><meta property="og:image" content="/img/portrait.jpg">
   <meta property="twitter:image" content="/img/portrait.jpg"><meta property="og:locale" content="en-us">
   
-    <meta property="og:updated_time" content="2020-04-01T00:00:00&#43;00:00">
+    <meta property="og:updated_time" content="2020-04-03T00:00:00&#43;00:00">
   
 
   
@@ -1159,6 +1159,88 @@
           Last updated on
       
     
+    Apr 3, 2020
+  </span>
+  
+
+  
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    4 min read
+  </span>
+  
+
+  
+  
+  
+
+  
+  
+  <span class="middot-divider"></span>
+  <span class="article-categories">
+    <i class="fas fa-folder mr-1"></i><a href="/categories/r/">R</a></span>
+  
+
+</div>
+
+  
+
+  
+  
+  
+
+  <h3 class="article-title mb-1 mt-3">
+    <a href="/2020/04/03/new-york-times-data-on-covid/">New York Times Data on COVID</a>
+  </h3>
+
+  
+  <div class="article-style">
+    <p>New York Times data for the US The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-04-03 21:05:33.
+ The @jburnmurdoch graphics for US States Deaths library(tidyverse); library(hrbrthemes); library(patchwork) state.data &lt;- read_csv(url(&quot;https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv&quot;)) Rect.NYT &lt;- complete(state.data, state,date) Rect.NYT &lt;- Rect.NYT %&gt;% group_by(state) %&gt;% mutate(New.Cases = cases - lag(cases, order_by = date), New.</p>
+  </div>
+  
+
+  
+
+</div>
+
+      
+    
+      
+        
+
+
+
+
+
+
+
+
+
+  
+
+
+<div class="card-simple">
+
+  
+    
+
+
+<div class="article-metadata">
+
+  
+  
+
+  
+  <span class="article-date">
+    
+    
+      
+          Last updated on
+      
+    
     Apr 2, 2020
   </span>
   
@@ -1243,7 +1325,7 @@ Imgur
           Last updated on
       
     
-    Mar 31, 2020
+    Apr 3, 2020
   </span>
   
 
@@ -1252,7 +1334,7 @@ Imgur
   
   <span class="middot-divider"></span>
   <span class="article-reading-time">
-    51 min read
+    49 min read
   </span>
   
 
@@ -1277,7 +1359,8 @@ Imgur
 
   
   <div class="article-style">
-    <p>New York Times data for the US library(tidyverse); library(hrbrthemes) state.data &lt;- read_csv(url(&quot;https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv&quot;)) Rect.NYT &lt;- complete(state.data, state,date) Rect.NYT &lt;- Rect.NYT %&gt;% group_by(state) %&gt;% mutate(New.Cases = cases - lag(cases, order_by = date), New.Deaths = deaths - lag(deaths, order_by = date)) %&gt;% ungroup() ggplot(Rect.NYT, aes(x=date, y=New.Cases, color=state)) + geom_line() + guides(color=FALSE) NYT.Totals &lt;- Rect.NYT %&gt;% group_by(date) %&gt;% summarise(Deaths = sum(deaths, na.</p>
+    <p>The Johns Hopkins dashboard This is what Johns Hopkins has provided as a dashboard using ARCGIS. They have essentially layered out the data into national and subnational data and then used the arcgis dashboard to cycle through them.
+  The data There are a few different types of data available. I am relying on the same sources that Johns Hopkins is using for the county level incident data.</p>
   </div>
   
 
@@ -1442,87 +1525,6 @@ paste0(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/C
   <div class="article-style">
     <p>Oregon COVID data The Oregon data are available from OHA here. I cut and pasted the first two days because it was easy with datapasta. As it goes on, it was easier to write a script that I detail elsewhere that I can self-update.
  urbnmapr The Urban Institute has an excellent state and county mapping package. I want to make use of the county-level data and plot the starter map.</p>
-  </div>
-  
-
-  
-
-</div>
-
-      
-    
-      
-        
-
-
-
-
-
-
-
-
-
-  
-
-
-<div class="card-simple">
-
-  
-    
-
-
-<div class="article-metadata">
-
-  
-  
-
-  
-  <span class="article-date">
-    
-    
-      
-          Last updated on
-      
-    
-    Mar 24, 2020
-  </span>
-  
-
-  
-
-  
-  <span class="middot-divider"></span>
-  <span class="article-reading-time">
-    614 min read
-  </span>
-  
-
-  
-  
-  
-
-  
-  
-  <span class="middot-divider"></span>
-  <span class="article-categories">
-    <i class="fas fa-folder mr-1"></i><a href="/categories/tidyverse/">tidyverse</a>, <a href="/categories/r/">R</a>, <a href="/categories/animation/">animation</a></span>
-  
-
-</div>
-
-  
-
-  
-  
-  
-
-  <h3 class="article-title mb-1 mt-3">
-    <a href="/2020/03/19/tracking-covid-19/">Tracking COVID-19 2020-03-24</a>
-  </h3>
-
-  
-  <div class="article-style">
-    <p>R to Import COVID Data library(tidyverse) library(gganimate) COVID.states &lt;- read.csv(url(&quot;http://covidtracking.com/api/states/daily.csv&quot;)) COVID.states &lt;- COVID.states %&gt;% mutate(Date = as.Date(as.character(date), format = &quot;%Y%m%d&quot;))  The Raw Testing Incidence I want to use patchwork to show the testing rate by state in the United States. Then I want to show where things currently stand. In both cases, a base-10 log is used on the number of tests.</p>
   </div>
   
 
@@ -2639,7 +2641,7 @@ paste0(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/C
           
           
           
-          <a href="/tags/gganimate/" style="font-size:1.2933225691358006rem">gganimate</a>
+          <a href="/tags/gganimate/" style="font-size:1.360535782923106rem">gganimate</a>
         
           
           
@@ -2669,7 +2671,7 @@ paste0(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/C
           
           
           
-          <a href="/tags/plot/" style="font-size:1.4665903657080082rem">plot</a>
+          <a href="/tags/plot/" style="font-size:1.5100113220408735rem">plot</a>
         
           
           
