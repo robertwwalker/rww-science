@@ -102,6 +102,7 @@ if(max(Oregon.COVID$Scraped.date) < as.Date(Today$Header$Scraped.date[[1]],"%m.%
   OR.Testing <- Oregon.Tests %>% group_by(date) %>% summarise(Total = sum(Outcome)) # 6
   # Create county data
   Oregon.COVID.All <- bind_rows(Today$Counties,Oregon.COVID.All) %>% distinct(.) # 5
+  Oregon.COVID.All <- Oregon.COVID.All %>% mutate(Positive = Positive.)
   # Split the county data into one that is exclusively totals and one without the totals
   Oregon.COVID.Total <- Oregon.COVID.All %>% filter(County=="Total") # 6
   Oregon.COVID <- Oregon.COVID.All %>% filter(County!="Total")  # 6

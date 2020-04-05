@@ -30,7 +30,7 @@ The New York Times has a wonderful compilation of United States on the novel cor
 ## Deaths
 
 ```{r, message=FALSE, warning=FALSE}
-library(tidyverse); library(hrbrthemes); library(patchwork)
+library(tidyverse); library(hrbrthemes); library(patchwork); library(plotly)
 state.data <- read_csv(url("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv"))
 Rect.NYT <- complete(state.data, state,date)
 Rect.NYT <- Rect.NYT %>% group_by(state) %>% mutate(New.Cases = cases - lag(cases, order_by = date), New.Deaths = deaths - lag(deaths, order_by = date)) %>% ungroup()
@@ -43,8 +43,9 @@ R2.NYT <- Rect.NYT %>%
   ungroup()
 OR.R2 <- R2.NYT %>% filter(fips=="41")
 OR.R2A <- R2.NYT %>% filter(fips=="41" & Counter == max(OR.R2$Counter))
-R2.NYT %>% ggplot(., aes(x=Counter, y=deaths, color=state)) + geom_line(alpha=0.3) + guides(color=FALSE) + scale_y_log10() + geom_line(data=OR.R2, color="black") + geom_text(data=OR.R2A, aes(x=Counter, y=deaths, label=state), inherit.aes = FALSE) + 
-  labs(x="Days since 10th Death", y="Cumulative Deaths") + theme_ipsum_rc()
+PlotA <- R2.NYT %>% ggplot(., aes(x=Counter, y=deaths, color=state)) + geom_line(alpha=0.3) + guides(color=FALSE) + scale_y_log10() + geom_line(data=OR.R2, color="black") + geom_text(data=OR.R2A, aes(x=Counter, y=deaths, label=state), inherit.aes = FALSE) + 
+  labs(x="Days since 10th Death", y="log(Cumulative Deaths)", title="Log-Deaths [Cumulative] given Days Since 10th Death", caption = "data from nytimes/covid-19 on github \n design mimics @jburnmurdoch") + theme_ipsum_rc()
+PlotA
 ```
 
 ## A Combined Comparison
@@ -58,8 +59,15 @@ R2.NYT <- Rect.NYT %>%
   ungroup()
 OR.R2 <- R2.NYT %>% filter(fips=="41")
 OR.R2A <- R2.NYT %>% filter(fips=="41" & Counter == max(OR.R2$Counter))
-Plot1 <- R2.NYT %>% ggplot(., aes(x=Counter, y=deaths, color=state)) + geom_line(alpha=0.3) + guides(color=FALSE) + geom_line(data=OR.R2, color="black") + geom_text(data=OR.R2A, aes(x=Counter, y=deaths, label=state), inherit.aes = FALSE) +  scale_y_log10() + 
-  labs(x="Days since 10th Death", y="Cumulative Deaths", title="Oregon in Comparison") + theme_ipsum()
+Plot1 <- R2.NYT %>% ggplot(., aes(x=Counter, y=deaths, color=state)) + geom_line(alpha=0.3) + guides(color=FALSE) + geom_line(data=OR.R2, color="black") + geom_text(data=OR.R2A, aes(x=Counter, y=deaths, label=state), inherit.aes = FALSE) + labs(x="Days since 10th Death", y="log(Cumulative Deaths)",subtitle="Note logarithm", title="Oregon in Comparison to US States") + theme_ipsum() + 
+  #geom_abline(intercept = c(1,1,1), slope=c(1/2,1/3,1/7), color="red") + 
+  lims(y=c(10,5000)) +  
+  scale_y_log10()
+Plot1
+```
+
+```{r}
+options(scipen=8)
 R2.NYT <- Rect.NYT %>% 
   mutate(SelMe = (cases > 99)) %>% 
   filter(SelMe==TRUE) %>% 
@@ -69,7 +77,7 @@ R2.NYT <- Rect.NYT %>%
 OR.R2 <- R2.NYT %>% filter(fips=="41")
 OR.R2A <- R2.NYT %>% filter(fips=="41" & Counter == max(OR.R2$Counter))
 Plot2 <- R2.NYT %>% ggplot(., aes(x=Counter, y=cases, color=state)) + geom_line(alpha=0.3) + guides(color=FALSE) + scale_y_log10() + geom_line(data=OR.R2, color="black") + geom_text(data=OR.R2A, aes(x=Counter, y=cases, label=state), inherit.aes = FALSE) + 
-  labs(subtitle="Note logarithm", x="Days since 100th Case", y="Log(Cumulative Cases)") + theme_ipsum()
+  labs(subtitle="Note logarithm", x="Days since 100th Case", y="Log(Cumulative Cases)")
 Plot1 + Plot2
 ```
 
@@ -94,7 +102,9 @@ ggplot(NYT.Totals, aes(x=date, y=New.Cases)) + geom_line() + labs(x="Date", y="N
 ## Totals
 
 ```{r}
-ggplot(NYT.Totals, aes(x=date, y=Cases)) + geom_line() + labs(x="Date", y="Total COVID-19 Cases", title="Total COVID-19 Cases") + theme_ipsum() + theme(axis.text.x = element_text(size=8, angle=45))+ ggplot(NYT.Totals, aes(x=date, y=Deaths)) + geom_line() + labs(x="Date", y="Total COVID-19 Deaths", title="Total COVID-19 Deaths", subtitle="Note the logarithmic scale.", caption="Data from nytimes/covid-19-data on guthub.") + theme_ipsum() + theme(axis.text.x = element_text(size=8, angle=45))
+# A patchwork
+ggplot(NYT.Totals, aes(x=date, y=Cases)) + geom_line() + labs(x="Date", y="Total COVID-19 Cases", title="Total COVID-19 Cases") + theme_ipsum() + theme(axis.text.x = element_text(size=8, angle=45))+ 
+ggplot(NYT.Totals, aes(x=date, y=Deaths)) + geom_line() + labs(x="Date", y="Total COVID-19 Deaths", title="Total COVID-19 Deaths", subtitle="Note the logarithmic scale.", caption="Data from nytimes/covid-19-data on guthub.") + theme(axis.text.x = element_text(size=8, angle=45))
 ```
 
 ## US Death Rate
@@ -102,7 +112,6 @@ ggplot(NYT.Totals, aes(x=date, y=Cases)) + geom_line() + labs(x="Date", y="Total
 Given the data, what does the US Case Fatality Rate look like at this point?  Two caveats for this.  The first, uncertainty in the numerator.  The number of deaths is surely undercounted, probably dramatically based on anecdotes from non-medical first responders.  Second, we know the numerator is also undercounted.  Assuming asymptomatic cases, the rules prohibited testing them for a substantial period of time on top of the existing scarcity of tests. 
 
 ```{r}
-library(hrbrthemes); library(plotly)
 CFR <- NYT.Totals %>% mutate(CFR = round(Deaths / Cases, digits=3)) %>% ggplot(., aes(x=date, y=CFR)) + geom_line() + geom_point(color="skyblue") + labs(title = "Case Fatality Rate of COVID-19 in the US", subtitle="Very uncertain estimate... Numerator and denominator uncertain \n Data: NY Times GitHub", caption="Data from nytimes/covid-19-data on guthub.")
 GPCFR <- ggplotly(CFR)
 library(widgetframe)

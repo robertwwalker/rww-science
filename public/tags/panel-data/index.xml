@@ -5,12 +5,70 @@
     <link>/tags/panel-data/</link>
       <atom:link href="/tags/panel-data/index.xml" rel="self" type="application/rss+xml" />
     <description>panel data</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© 2018</copyright><lastBuildDate>Mon, 24 Feb 2020 00:00:00 +0000</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© 2018</copyright><lastBuildDate>Fri, 03 Apr 2020 00:00:00 +0000</lastBuildDate>
     <image>
       <url>/img/portrait.jpg</url>
       <title>panel data</title>
       <link>/tags/panel-data/</link>
     </image>
+    
+    <item>
+      <title>A GeoFacet of Credit Quality</title>
+      <link>/2020/04/03/a-geofacet-of-credit-quality/</link>
+      <pubDate>Fri, 03 Apr 2020 00:00:00 +0000</pubDate>
+      <guid>/2020/04/03/a-geofacet-of-credit-quality/</guid>
+      <description>
+
+
+&lt;p&gt;In previous work with Skip Krueger, we conceptualized bond ratings as a multiple rater problem and extracted measure of state level creditworthiness. I had always had it on my list to do something like this and recently ran across a package called &lt;code&gt;geofacet&lt;/code&gt; that makes it simply to easy to do. So here goes. The code is below the post.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-04-03-a-geofacet-of-credit-quality/index_files/figure-html/unnamed-chunk-1-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(haven)
+library(dplyr)
+Pew.Data &amp;lt;- read_dta(url(&amp;quot;https://github.com/robertwwalker/academic-mymod/raw/master/data/Pew/modeledforprediction.dta&amp;quot;))
+library(tidyverse)
+load(url(&amp;quot;https://github.com/robertwwalker/academic-mymod/raw/master/data/Pew/Scaled-BR-Pew.RData&amp;quot;))
+state.ratings &amp;lt;- data.frame(state_name=Pew.Data$state, statefips=Pew.Data$statefips, year=Pew.Data$fyear, BR.Data)
+state.ratings.long &amp;lt;- tidyr::gather(state.ratings, sampleno, value, -statefips, -year, -state_name)
+state.SE &amp;lt;- state.ratings.long %&amp;gt;% group_by(state_name,year) %&amp;gt;% summarise(Credit.Quality=mean(value), t1=quantile(value, probs=0.025), t2=quantile(value, probs=0.975))
+fips &amp;lt;-  data.frame(
+stringsAsFactors = FALSE,
+state_name = c(&amp;quot;Alabama&amp;quot;,&amp;quot;Alaska&amp;quot;,&amp;quot;Arizona&amp;quot;,
+         &amp;quot;Arkansas&amp;quot;,&amp;quot;California&amp;quot;,&amp;quot;Colorado&amp;quot;,&amp;quot;Connecticut&amp;quot;,
+         &amp;quot;Delaware&amp;quot;,&amp;quot;Florida&amp;quot;,&amp;quot;Georgia&amp;quot;,&amp;quot;Hawaii&amp;quot;,&amp;quot;Idaho&amp;quot;,
+         &amp;quot;Illinois&amp;quot;,&amp;quot;Indiana&amp;quot;,&amp;quot;Iowa&amp;quot;,&amp;quot;Kansas&amp;quot;,&amp;quot;Kentucky&amp;quot;,&amp;quot;Louisiana&amp;quot;,
+         &amp;quot;Maine&amp;quot;,&amp;quot;Maryland&amp;quot;,&amp;quot;Massachusetts&amp;quot;,&amp;quot;Michigan&amp;quot;,
+         &amp;quot;Minnesota&amp;quot;,&amp;quot;Mississippi&amp;quot;,&amp;quot;Missouri&amp;quot;,&amp;quot;Montana&amp;quot;,&amp;quot;Nebraska&amp;quot;,
+         &amp;quot;Nevada&amp;quot;,&amp;quot;New Hampshire&amp;quot;,&amp;quot;New Jersey&amp;quot;,&amp;quot;New Mexico&amp;quot;,
+         &amp;quot;New York&amp;quot;,&amp;quot;North Carolina&amp;quot;,&amp;quot;North Dakota&amp;quot;,&amp;quot;Ohio&amp;quot;,
+         &amp;quot;Oklahoma&amp;quot;,&amp;quot;Oregon&amp;quot;,&amp;quot;Pennsylvania&amp;quot;,&amp;quot;Rhode Island&amp;quot;,
+         &amp;quot;South Carolina&amp;quot;,&amp;quot;South Dakota&amp;quot;,&amp;quot;Tennessee&amp;quot;,&amp;quot;Texas&amp;quot;,&amp;quot;Utah&amp;quot;,
+         &amp;quot;Vermont&amp;quot;,&amp;quot;Virginia&amp;quot;,&amp;quot;Washington&amp;quot;,&amp;quot;West Virginia&amp;quot;,
+         &amp;quot;Wisconsin&amp;quot;,&amp;quot;Wyoming&amp;quot;,&amp;quot;American Samoa&amp;quot;,&amp;quot;Guam&amp;quot;,
+         &amp;quot;Northern Mariana Islands&amp;quot;,&amp;quot;Puerto Rico&amp;quot;,&amp;quot;Virgin Islands&amp;quot;),
+state = c(&amp;quot;AL&amp;quot;,&amp;quot;AK&amp;quot;,&amp;quot;AZ&amp;quot;,&amp;quot;AR&amp;quot;,&amp;quot;CA&amp;quot;,
+                &amp;quot;CO&amp;quot;,&amp;quot;CT&amp;quot;,&amp;quot;DE&amp;quot;,&amp;quot;FL&amp;quot;,&amp;quot;GA&amp;quot;,&amp;quot;HI&amp;quot;,&amp;quot;ID&amp;quot;,&amp;quot;IL&amp;quot;,&amp;quot;IN&amp;quot;,&amp;quot;IA&amp;quot;,
+                &amp;quot;KS&amp;quot;,&amp;quot;KY&amp;quot;,&amp;quot;LA&amp;quot;,&amp;quot;ME&amp;quot;,&amp;quot;MD&amp;quot;,&amp;quot;MA&amp;quot;,&amp;quot;MI&amp;quot;,&amp;quot;MN&amp;quot;,&amp;quot;MS&amp;quot;,
+                &amp;quot;MO&amp;quot;,&amp;quot;MT&amp;quot;,&amp;quot;NE&amp;quot;,&amp;quot;NV&amp;quot;,&amp;quot;NH&amp;quot;,&amp;quot;NJ&amp;quot;,&amp;quot;NM&amp;quot;,&amp;quot;NY&amp;quot;,&amp;quot;NC&amp;quot;,&amp;quot;ND&amp;quot;,
+                &amp;quot;OH&amp;quot;,&amp;quot;OK&amp;quot;,&amp;quot;OR&amp;quot;,&amp;quot;PA&amp;quot;,&amp;quot;RI&amp;quot;,&amp;quot;SC&amp;quot;,&amp;quot;SD&amp;quot;,&amp;quot;TN&amp;quot;,&amp;quot;TX&amp;quot;,
+                &amp;quot;UT&amp;quot;,&amp;quot;VT&amp;quot;,&amp;quot;VA&amp;quot;,&amp;quot;WA&amp;quot;,&amp;quot;WV&amp;quot;,&amp;quot;WI&amp;quot;,&amp;quot;WY&amp;quot;,&amp;quot;AS&amp;quot;,&amp;quot;GU&amp;quot;,&amp;quot;MP&amp;quot;,
+                &amp;quot;PR&amp;quot;,&amp;quot;VI&amp;quot;),
+fips = c(&amp;quot;01&amp;quot;,&amp;quot;02&amp;quot;,&amp;quot;04&amp;quot;,&amp;quot;05&amp;quot;,&amp;quot;06&amp;quot;,
+         &amp;quot;08&amp;quot;,&amp;quot;09&amp;quot;,&amp;quot;10&amp;quot;,&amp;quot;12&amp;quot;,&amp;quot;13&amp;quot;,&amp;quot;15&amp;quot;,&amp;quot;16&amp;quot;,&amp;quot;17&amp;quot;,&amp;quot;18&amp;quot;,&amp;quot;19&amp;quot;,
+         &amp;quot;20&amp;quot;,&amp;quot;21&amp;quot;,&amp;quot;22&amp;quot;,&amp;quot;23&amp;quot;,&amp;quot;24&amp;quot;,&amp;quot;25&amp;quot;,&amp;quot;26&amp;quot;,&amp;quot;27&amp;quot;,&amp;quot;28&amp;quot;,
+         &amp;quot;29&amp;quot;,&amp;quot;30&amp;quot;,&amp;quot;31&amp;quot;,&amp;quot;32&amp;quot;,&amp;quot;33&amp;quot;,&amp;quot;34&amp;quot;,&amp;quot;35&amp;quot;,&amp;quot;36&amp;quot;,&amp;quot;37&amp;quot;,&amp;quot;38&amp;quot;,
+         &amp;quot;39&amp;quot;,&amp;quot;40&amp;quot;,&amp;quot;41&amp;quot;,&amp;quot;42&amp;quot;,&amp;quot;44&amp;quot;,&amp;quot;45&amp;quot;,&amp;quot;46&amp;quot;,&amp;quot;47&amp;quot;,&amp;quot;48&amp;quot;,
+         &amp;quot;49&amp;quot;,&amp;quot;50&amp;quot;,&amp;quot;51&amp;quot;,&amp;quot;53&amp;quot;,&amp;quot;54&amp;quot;,&amp;quot;55&amp;quot;,&amp;quot;56&amp;quot;,&amp;quot;60&amp;quot;,&amp;quot;66&amp;quot;,&amp;quot;69&amp;quot;,
+         &amp;quot;72&amp;quot;,&amp;quot;78&amp;quot;))  
+Res1 &amp;lt;- left_join(state.SE, fips, by=c(&amp;quot;state_name&amp;quot; = &amp;quot;state_name&amp;quot;))
+Res1 %&amp;gt;% ggplot(., aes(x=year, y=Credit.Quality, group=state)) +
+  geom_pointrange(aes(ymin=t1, ymax=t2, colour=state, fill=state), alpha=0.1) + 
+  geom_line(aes(colour=state)) +
+  guides(color=&amp;quot;none&amp;quot;, fill=&amp;quot;none&amp;quot;) +
+  facet_geo(~ state) +
+  theme_minimal() + 
+  theme(axis.text.x = element_text(size=4, angle=45), axis.text.y = element_text(size=6)) + labs(title=&amp;quot;Credit Quality in the US States&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+</description>
+    </item>
     
     <item>
       <title>Quick and Dirty Fredr</title>

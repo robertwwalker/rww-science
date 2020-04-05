@@ -11,9 +11,9 @@ library(tidyverse)
 
 # Oregon COVID data
 
-I wanted to create a self-updating visualization of [the data on COVID-19 in the state of Oregon provided by OHA](https://govstatus.egov.com/OR-OHA-COVID-19).  Oregon reports a set of daily snapshots while progression requires ingesting new data each day so  I began tracking it March 20; the process of scraping it is detailed in [a separate file](https://rww.science/r/covid-scraping/).  This updates, expands, and consolidates two previous posts [here](https://rww.science/2020/03/21/covid-19-in-oregon/) and [here](https://rww.science/2020/03/24/covid-19-county-maps-for-oregon/).  A few cautionary notes.  First, these are cumulative case counts that are almost certainly incomplete  
+I wanted to create a self-updating visualization of [the data on COVID-19 in the state of Oregon provided by OHA](https://govstatus.egov.com/OR-OHA-COVID-19).  Oregon reports a set of daily snapshots while progression requires ingesting new data each day so  I began tracking it March 20; the process of scraping it is detailed in [a separate file](https://rww.science/r/covid-scraping/).  This updates, expands, and consolidates two previous posts [here](https://rww.science/2020/03/21/covid-19-in-oregon/) and [here](https://rww.science/2020/03/24/covid-19-county-maps-for-oregon/).  A few cautionary notes.  First, these are cumulative case counts that are almost certainly incomplete.  Second, there is reason to believe that the death numbers may also be incomplete because it is dangerous to police and first responders are spread thinly.  
 
-These data are current as of April 2, 2020; this first bit of R code loads the current data from my github.
+These data are current as of April 4, 2020; this first bit of R code loads the current data from my github.
 
 ```{r, eval=FALSE}
 library(tigris)
@@ -55,7 +55,7 @@ The central takeaway is that the underlying data reports are constantly changing
 
 *2020-03-31* The status of COVID patients and available hospital details were previously in one table but now were split into two parts.  The underlying auto-scraper required changes.
 
-*2020-04-02* The status of COVID patients and available hospital details are pending in the report.  I have updated the rest.
+*2020-04-02* The status of COVID patients and available hospital details are pending in the report.  I have updated the rest.  This remains true as of April 4, 2020.
 
 # A base map
 
@@ -68,7 +68,7 @@ Map.Me <- left_join(counties.t,Oregon.COVID, by=c("NAME" = "County"))
 
 # Summarising the County Data: An Animation
 
-I will use a ggplot to build Oregon's map and fill it with case numbers.  `geom_sf()` plots the geometry.  I have to repel the labels to prevent print overlap, and scheme the colors.  The last step is to animate it by time. If I stop the label repelling, they will not bounce but it adds excitement.
+I will use a ggplot to build Oregon's map and fill it with case numbers.  `geom_sf()` plots the geometry.  I have to repel the labels to prevent print overlap, and scheme the colors.  The last step is to animate it by time. If I stop the label repelling, they will not bounce but it adds excitement.  There is a [separate page of daily maps](https://rww.science/r/covid/maps/).
 
 ```{r, message=FALSE, warning=FALSE}
 Anim1 <- Map.Me %>% 
@@ -275,145 +275,4 @@ OR.Hospital.Caps %>%
 ```
 
 
-# Daily Maps
-
-## A Mapping Function
-
-To save time later, I turned the plots into a function so that I can use to reproduce each frame.  Two inputs to the function, the dataset that is always the merged data from above and the date that I want to plot located in `date1` in a `YYYY-MM-DD` format.
-
-```{r}
-Plot.COVID <- function(date1, data) {
-data %>% filter(date==date1) %>%
-  ggplot(., aes(geometry=geometry, fill=Number.of.cases, label=NAME)) + 
-  geom_sf() +
-  geom_label_repel(stat = "sf_coordinates",
-    min.segment.length = 0,
-    colour = "white",
-    segment.colour = "white",
-    size = 3,
-    box.padding = unit(0.05, "lines"))  + scale_fill_continuous_tableau("Red") + theme_minimal() + labs(title="COVID-19 in Oregon", subtitle=date1, x="", y="", caption="Made with R, ggplot2, and ggrepel by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19")
-}
-```
-
-## The Result for 03/18/2020
-
-This is the first date for which I can find data.  The `waybackmachine` was crucial.
-
-```{r}
-Plot.COVID("2020-03-18", Map.Me)
-```
-
-
-## The Result for 03/19/2020
-
-```{r}
-Plot.COVID("2020-03-19", Map.Me)
-```
-
-
-## The Result for 03/20/2020
-
-```{r}
-Plot.COVID("2020-03-20", Map.Me)
-```
-
-
-## The Result for 03/21/2020
-
-```{r}
-Plot.COVID("2020-03-21", Map.Me)
-```
-
-## The Result for 03/22/2020
-
-```{r}
-Plot.COVID("2020-03-22", Map.Me)
-```
-
-
-## The Result for 03/23/2020
-
-```{r}
-Plot.COVID("2020-03-23", Map.Me)
-```
-
-## The Result for 03/24/2020
-
-```{r}
-Plot.COVID("2020-03-24", Map.Me)
-```
-
-## The Result for 03/25/2020
-
-```{r}
-Plot.COVID("2020-03-25", Map.Me)
-```
-
-## The Result for 03/26/2020
-
-```{r}
-Plot.COVID("2020-03-26", Map.Me)
-```
-
-## The Result for 03/27/2020
-
-```{r}
-Plot.COVID("2020-03-27", Map.Me)
-```
-
-## The Result for 03/28/2020
-
-```{r}
-Plot.COVID("2020-03-28", Map.Me)
-```
-
-
-## The Result for 03/29/2020
-
-```{r}
-Plot.COVID("2020-03-29", Map.Me)
-```
-
-## The Result for 03/30/2020
-
-```{r}
-Plot.COVID("2020-03-30", Map.Me)
-```
-
-## The Result for 03/31/2020
-
-```{r}
-Plot.COVID("2020-03-31", Map.Me)
-```
-
-## The Result for 04/01/2020
-
-```{r}
-Plot.COVID("2020-04-01", Map.Me)
-```
-
-
-## The Result for 04/01/2020
-
-```{r}
-Plot.COVID("2020-04-02", Map.Me)
-```
-
-
-## The Result for 04/03/2020
-
-```{r}
-library(plotly); library(widgetframe); library(ggthemes); library(RColorBrewer)
-Map.Me <- Map.Me %>% 
-  mutate(TTip = paste0("Deaths: ",Deaths,"<br> Negative Tests:",Negative.test.results))
-Res.1 <- Map.Me %>% 
-  filter(date==Sys.Date()) %>%
-  ggplot(., aes(geometry=geometry, fill=Number.of.cases, label=NAME, text=TTip)) + 
-  geom_sf() + 
-  scale_fill_viridis_c(option = "A") + 
-  theme_map() + 
-  labs(title="COVID-19 in Oregon", subtitle=Sys.Date()-1, x="", y="", caption="Made with R, ggplot2, and ggrepel by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19", fill="COVID-19 Cases")
-ggp <- ggplotly(Res.1)
-frameWidget(ggp)
-```
 

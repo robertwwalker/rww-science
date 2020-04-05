@@ -27,13 +27,13 @@ projects: []
 
 <div id="new-york-times-data-for-the-us" class="section level1">
 <h1>New York Times data for the US</h1>
-<p>The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-04-03 21:05:33.</p>
+<p>The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-04-04 17:29:38.</p>
 </div>
 <div id="the-jburnmurdoch-graphics-for-us-states" class="section level1">
 <h1>The <code>@jburnmurdoch</code> graphics for US States</h1>
 <div id="deaths" class="section level2">
 <h2>Deaths</h2>
-<pre class="r"><code>library(tidyverse); library(hrbrthemes); library(patchwork)
+<pre class="r"><code>library(tidyverse); library(hrbrthemes); library(patchwork); library(plotly)
 state.data &lt;- read_csv(url(&quot;https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv&quot;))
 Rect.NYT &lt;- complete(state.data, state,date)
 Rect.NYT &lt;- Rect.NYT %&gt;% group_by(state) %&gt;% mutate(New.Cases = cases - lag(cases, order_by = date), New.Deaths = deaths - lag(deaths, order_by = date)) %&gt;% ungroup()
@@ -46,8 +46,9 @@ R2.NYT &lt;- Rect.NYT %&gt;%
   ungroup()
 OR.R2 &lt;- R2.NYT %&gt;% filter(fips==&quot;41&quot;)
 OR.R2A &lt;- R2.NYT %&gt;% filter(fips==&quot;41&quot; &amp; Counter == max(OR.R2$Counter))
-R2.NYT %&gt;% ggplot(., aes(x=Counter, y=deaths, color=state)) + geom_line(alpha=0.3) + guides(color=FALSE) + scale_y_log10() + geom_line(data=OR.R2, color=&quot;black&quot;) + geom_text(data=OR.R2A, aes(x=Counter, y=deaths, label=state), inherit.aes = FALSE) + 
-  labs(x=&quot;Days since 10th Death&quot;, y=&quot;Cumulative Deaths&quot;) + theme_ipsum_rc()</code></pre>
+PlotA &lt;- R2.NYT %&gt;% ggplot(., aes(x=Counter, y=deaths, color=state)) + geom_line(alpha=0.3) + guides(color=FALSE) + scale_y_log10() + geom_line(data=OR.R2, color=&quot;black&quot;) + geom_text(data=OR.R2A, aes(x=Counter, y=deaths, label=state), inherit.aes = FALSE) + 
+  labs(x=&quot;Days since 10th Death&quot;, y=&quot;log(Cumulative Deaths)&quot;, title=&quot;Log-Deaths [Cumulative] given Days Since 10th Death&quot;, caption = &quot;data from nytimes/covid-19 on github \n design mimics @jburnmurdoch&quot;) + theme_ipsum_rc()
+PlotA</code></pre>
 <p><img src="/post/2020-04-03-new-york-times-data-on-covid/index_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
 </div>
 <div id="a-combined-comparison" class="section level2">
@@ -60,8 +61,15 @@ R2.NYT %&gt;% ggplot(., aes(x=Counter, y=deaths, color=state)) + geom_line(alpha
   ungroup()
 OR.R2 &lt;- R2.NYT %&gt;% filter(fips==&quot;41&quot;)
 OR.R2A &lt;- R2.NYT %&gt;% filter(fips==&quot;41&quot; &amp; Counter == max(OR.R2$Counter))
-Plot1 &lt;- R2.NYT %&gt;% ggplot(., aes(x=Counter, y=deaths, color=state)) + geom_line(alpha=0.3) + guides(color=FALSE) + geom_line(data=OR.R2, color=&quot;black&quot;) + geom_text(data=OR.R2A, aes(x=Counter, y=deaths, label=state), inherit.aes = FALSE) +  scale_y_log10() + 
-  labs(x=&quot;Days since 10th Death&quot;, y=&quot;Cumulative Deaths&quot;, title=&quot;Oregon in Comparison&quot;) + theme_ipsum()
+Plot1 &lt;- R2.NYT %&gt;% ggplot(., aes(x=Counter, y=deaths, color=state)) + geom_line(alpha=0.3) + guides(color=FALSE) + geom_line(data=OR.R2, color=&quot;black&quot;) + geom_text(data=OR.R2A, aes(x=Counter, y=deaths, label=state), inherit.aes = FALSE) + labs(x=&quot;Days since 10th Death&quot;, y=&quot;log(Cumulative Deaths)&quot;,subtitle=&quot;Note logarithm&quot;, title=&quot;Oregon in Comparison to US States&quot;) + theme_ipsum() + 
+  #geom_abline(intercept = c(1,1,1), slope=c(1/2,1/3,1/7), color=&quot;red&quot;) + 
+  lims(y=c(10,5000)) +  
+  scale_y_log10()</code></pre>
+<pre><code>## Scale for &#39;y&#39; is already present. Adding another scale for &#39;y&#39;, which will
+## replace the existing scale.</code></pre>
+<pre class="r"><code>Plot1</code></pre>
+<p><img src="/post/2020-04-03-new-york-times-data-on-covid/index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<pre class="r"><code>options(scipen=8)
 R2.NYT &lt;- Rect.NYT %&gt;% 
   mutate(SelMe = (cases &gt; 99)) %&gt;% 
   filter(SelMe==TRUE) %&gt;% 
@@ -71,9 +79,9 @@ R2.NYT &lt;- Rect.NYT %&gt;%
 OR.R2 &lt;- R2.NYT %&gt;% filter(fips==&quot;41&quot;)
 OR.R2A &lt;- R2.NYT %&gt;% filter(fips==&quot;41&quot; &amp; Counter == max(OR.R2$Counter))
 Plot2 &lt;- R2.NYT %&gt;% ggplot(., aes(x=Counter, y=cases, color=state)) + geom_line(alpha=0.3) + guides(color=FALSE) + scale_y_log10() + geom_line(data=OR.R2, color=&quot;black&quot;) + geom_text(data=OR.R2A, aes(x=Counter, y=cases, label=state), inherit.aes = FALSE) + 
-  labs(subtitle=&quot;Note logarithm&quot;, x=&quot;Days since 100th Case&quot;, y=&quot;Log(Cumulative Cases)&quot;) + theme_ipsum()
+  labs(subtitle=&quot;Note logarithm&quot;, x=&quot;Days since 100th Case&quot;, y=&quot;Log(Cumulative Cases)&quot;)
 Plot1 + Plot2</code></pre>
-<p><img src="/post/2020-04-03-new-york-times-data-on-covid/index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p><img src="/post/2020-04-03-new-york-times-data-on-covid/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 </div>
 <div id="new-cases-by-state-over-time" class="section level2">
 <h2>New Cases by State over Time</h2>
@@ -81,41 +89,31 @@ Plot1 + Plot2</code></pre>
 <pre class="r"><code>ggplot(Rect.NYT, aes(x=date, y=New.Cases, color=state)) + geom_line() + guides(color=FALSE) + scale_y_log10() + labs(title=&quot;New Cases by State&quot;, y=&quot;log(New Cases)&quot;, subtitle=&quot;Note the logarithmic scale.&quot;, caption=&quot;Data from nytimes/covid-19-data on guthub.&quot;)</code></pre>
 <pre><code>## Warning: Transformation introduced infinite values in continuous y-axis</code></pre>
 <pre><code>## Warning: Removed 2351 row(s) containing missing values (geom_path).</code></pre>
-<p><img src="/post/2020-04-03-new-york-times-data-on-covid/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p><img src="/post/2020-04-03-new-york-times-data-on-covid/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 </div>
 <div id="aggregate-data-over-the-united-states" class="section level2">
 <h2>Aggregate Data over the United States</h2>
 <pre class="r"><code>NYT.Totals &lt;- Rect.NYT %&gt;% group_by(date) %&gt;% summarise(Deaths = sum(deaths, na.rm=TRUE), New.Deaths = sum(New.Deaths, na.rm = TRUE), Cases = sum(cases, na.rm=TRUE), New.Cases = sum(New.Cases, na.rm = TRUE))
 library(patchwork)
 ggplot(NYT.Totals, aes(x=date, y=New.Cases)) + geom_line() + labs(x=&quot;Date&quot;, y=&quot;New COVID-19 Cases&quot;, title=&quot;Daily: New COVID-19 Cases&quot;) + theme_ipsum() + theme(axis.text.x = element_text(size=8, angle=45))+ ggplot(NYT.Totals, aes(x=date, y=New.Deaths)) + geom_line() + labs(x=&quot;Date&quot;, y=&quot;New COVID-19 Deaths&quot;, title=&quot;Daily: New COVID-19 Deaths&quot;, subtitle=&quot;Note the logarithmic scale.&quot;, caption=&quot;Data from nytimes/covid-19-data on guthub.&quot;) + theme_ipsum() + theme(axis.text.x = element_text(size=8, angle=45)) </code></pre>
-<p><img src="/post/2020-04-03-new-york-times-data-on-covid/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="/post/2020-04-03-new-york-times-data-on-covid/index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 </div>
 <div id="totals" class="section level2">
 <h2>Totals</h2>
-<pre class="r"><code>ggplot(NYT.Totals, aes(x=date, y=Cases)) + geom_line() + labs(x=&quot;Date&quot;, y=&quot;Total COVID-19 Cases&quot;, title=&quot;Total COVID-19 Cases&quot;) + theme_ipsum() + theme(axis.text.x = element_text(size=8, angle=45))+ ggplot(NYT.Totals, aes(x=date, y=Deaths)) + geom_line() + labs(x=&quot;Date&quot;, y=&quot;Total COVID-19 Deaths&quot;, title=&quot;Total COVID-19 Deaths&quot;, subtitle=&quot;Note the logarithmic scale.&quot;, caption=&quot;Data from nytimes/covid-19-data on guthub.&quot;) + theme_ipsum() + theme(axis.text.x = element_text(size=8, angle=45))</code></pre>
-<p><img src="/post/2020-04-03-new-york-times-data-on-covid/index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<pre class="r"><code># A patchwork
+ggplot(NYT.Totals, aes(x=date, y=Cases)) + geom_line() + labs(x=&quot;Date&quot;, y=&quot;Total COVID-19 Cases&quot;, title=&quot;Total COVID-19 Cases&quot;) + theme_ipsum() + theme(axis.text.x = element_text(size=8, angle=45))+ 
+ggplot(NYT.Totals, aes(x=date, y=Deaths)) + geom_line() + labs(x=&quot;Date&quot;, y=&quot;Total COVID-19 Deaths&quot;, title=&quot;Total COVID-19 Deaths&quot;, subtitle=&quot;Note the logarithmic scale.&quot;, caption=&quot;Data from nytimes/covid-19-data on guthub.&quot;) + theme(axis.text.x = element_text(size=8, angle=45))</code></pre>
+<p><img src="/post/2020-04-03-new-york-times-data-on-covid/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 </div>
 <div id="us-death-rate" class="section level2">
 <h2>US Death Rate</h2>
 <p>Given the data, what does the US Case Fatality Rate look like at this point? Two caveats for this. The first, uncertainty in the numerator. The number of deaths is surely undercounted, probably dramatically based on anecdotes from non-medical first responders. Second, we know the numerator is also undercounted. Assuming asymptomatic cases, the rules prohibited testing them for a substantial period of time on top of the existing scarcity of tests.</p>
-<pre class="r"><code>library(hrbrthemes); library(plotly)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;plotly&#39;</code></pre>
-<pre><code>## The following object is masked from &#39;package:ggplot2&#39;:
-## 
-##     last_plot</code></pre>
-<pre><code>## The following object is masked from &#39;package:stats&#39;:
-## 
-##     filter</code></pre>
-<pre><code>## The following object is masked from &#39;package:graphics&#39;:
-## 
-##     layout</code></pre>
 <pre class="r"><code>CFR &lt;- NYT.Totals %&gt;% mutate(CFR = round(Deaths / Cases, digits=3)) %&gt;% ggplot(., aes(x=date, y=CFR)) + geom_line() + geom_point(color=&quot;skyblue&quot;) + labs(title = &quot;Case Fatality Rate of COVID-19 in the US&quot;, subtitle=&quot;Very uncertain estimate... Numerator and denominator uncertain \n Data: NY Times GitHub&quot;, caption=&quot;Data from nytimes/covid-19-data on guthub.&quot;)
 GPCFR &lt;- ggplotly(CFR)
 library(widgetframe)</code></pre>
 <pre><code>## Loading required package: htmlwidgets</code></pre>
 <pre class="r"><code>frameWidget(GPCFR)</code></pre>
 <div id="htmlwidget-1" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/post/2020-04-03-new-york-times-data-on-covid/index_files/figure-html//widgets/widget_unnamed-chunk-6.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/post/2020-04-03-new-york-times-data-on-covid/index_files/figure-html//widgets/widget_unnamed-chunk-7.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>

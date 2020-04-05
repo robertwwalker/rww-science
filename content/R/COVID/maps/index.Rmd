@@ -1,0 +1,207 @@
+---
+title: COVID-19 in Oregon
+author: Robert W. Walker
+date: '2020-03-31'
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning = FALSE)
+library(tidyverse)
+```
+
+```{r, eval=FALSE}
+library(tigris)
+library(rgdal)
+library(htmltools)
+library(viridis) 
+library(sf)
+library(ggrepel)
+library(ggthemes)
+library(gganimate)
+library(patchwork)
+library(hrbrthemes)
+load(url(paste0("https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID",Sys.Date(),".RData")))
+```
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(tigris)
+library(rgdal)
+library(htmltools)
+library(viridis) 
+library(sf)
+library(ggrepel)
+library(ggthemes)
+library(gganimate)
+library(patchwork)
+library(hrbrthemes)
+load(paste0("~/Sandbox/awful/content/R/COVID/data/OregonCOVID",Sys.Date(),".RData"))
+```
+
+Verifying, these data are current as of `r max(Oregon.COVID$Scraped.date)` according to the loaded dataset.
+
+# A base map
+
+To build a map to work from, I need a map library.  Load the `tigris` library then grab the map as an `sf` object; there is a `geom_sf` that makes them easy to work with.  Finally, I join the map to the data.
+
+```{r, message=FALSE, warning=FALSE, results='hide'}
+counties.t <- counties(state = "41", resolution = "500k", class="sf")
+Map.Me <- left_join(counties.t,Oregon.COVID, by=c("NAME" = "County"))
+```
+
+# Daily Maps
+
+The main visualization page has an animation of COVID in Oregon.  These are snapshot images that are combined; animation by frames.  The individual frames look like this.
+
+## A Mapping Function
+
+To save time later, I turned the plots into a function so that I can use to reproduce each frame.  Two inputs to the function, the dataset that is always the merged data from above and the date that I want to plot located in `date1` in a `YYYY-MM-DD` format.
+
+```{r}
+Plot.COVID <- function(date1, data) {
+data %>% filter(date==date1) %>%
+  ggplot(., aes(geometry=geometry, fill=Number.of.cases, label=NAME)) + 
+  geom_sf() +
+  geom_label_repel(stat = "sf_coordinates",
+    min.segment.length = 0,
+    colour = "white",
+    segment.colour = "white",
+    size = 3,
+    box.padding = unit(0.05, "lines"))  + scale_fill_continuous_tableau("Red") + theme_minimal() + labs(title="COVID-19 in Oregon", subtitle=date1, x="", y="", caption="Made with R, ggplot2, and ggrepel by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19")
+}
+```
+
+## The Result for 03/18/2020
+
+This is the first date for which I can find data.  The `waybackmachine` was crucial.
+
+```{r}
+Plot.COVID("2020-03-18", Map.Me)
+```
+
+
+## The Result for 03/19/2020
+
+```{r}
+Plot.COVID("2020-03-19", Map.Me)
+```
+
+
+## The Result for 03/20/2020
+
+```{r}
+Plot.COVID("2020-03-20", Map.Me)
+```
+
+
+## The Result for 03/21/2020
+
+```{r}
+Plot.COVID("2020-03-21", Map.Me)
+```
+
+## The Result for 03/22/2020
+
+```{r}
+Plot.COVID("2020-03-22", Map.Me)
+```
+
+
+## The Result for 03/23/2020
+
+```{r}
+Plot.COVID("2020-03-23", Map.Me)
+```
+
+## The Result for 03/24/2020
+
+```{r}
+Plot.COVID("2020-03-24", Map.Me)
+```
+
+## The Result for 03/25/2020
+
+```{r}
+Plot.COVID("2020-03-25", Map.Me)
+```
+
+## The Result for 03/26/2020
+
+```{r}
+Plot.COVID("2020-03-26", Map.Me)
+```
+
+## The Result for 03/27/2020
+
+```{r}
+Plot.COVID("2020-03-27", Map.Me)
+```
+
+## The Result for 03/28/2020
+
+```{r}
+Plot.COVID("2020-03-28", Map.Me)
+```
+
+
+## The Result for 03/29/2020
+
+```{r}
+Plot.COVID("2020-03-29", Map.Me)
+```
+
+## The Result for 03/30/2020
+
+```{r}
+Plot.COVID("2020-03-30", Map.Me)
+```
+
+## The Result for 03/31/2020
+
+```{r}
+Plot.COVID("2020-03-31", Map.Me)
+```
+
+## The Result for 04/01/2020
+
+```{r}
+Plot.COVID("2020-04-01", Map.Me)
+```
+
+
+## The Result for 04/02/2020
+
+```{r}
+Plot.COVID("2020-04-02", Map.Me)
+```
+
+## The Result for 04/03/2020
+
+```{r}
+Plot.COVID("2020-04-03", Map.Me)
+```
+
+
+## The Result for 04/04/2020
+
+
+```{r, warning=FALSE, message=FALSE}
+library(widgetframe); library(ggthemes); library(RColorBrewer)
+Map.Me <- Map.Me %>% 
+  mutate(TTip = paste0("Deaths: ",Deaths,"<br> Negative Tests:",Negative.test.results))
+Res.1 <- Map.Me %>% 
+  filter(date==Sys.Date())
+Res1 <- ggplot(Res.1, aes(geometry=geometry, fill=Number.of.cases, label=NAME, text=TTip)) + 
+  geom_sf() + 
+  scale_fill_viridis_c(option = "A") + 
+  theme_map() + 
+  labs(title="COVID-19 in Oregon", subtitle=Sys.Date()-1, x="", y="", caption="Made with R, ggplot2, and ggrepel by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19", fill="COVID-19 Cases")
+```
+
+## A Plotly
+
+```{r, warning=FALSE, message=FALSE}
+library(plotly)
+ggp <- ggplotly(Res1)
+frameWidget(ggp)
+```
+

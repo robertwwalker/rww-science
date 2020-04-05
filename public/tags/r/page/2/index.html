@@ -239,7 +239,7 @@
   <meta property="og:description" content="Associate Professor of Quantitative Methods"><meta property="og:image" content="/img/portrait.jpg">
   <meta property="twitter:image" content="/img/portrait.jpg"><meta property="og:locale" content="en-us">
   
-    <meta property="og:updated_time" content="2020-03-24T00:00:00&#43;00:00">
+    <meta property="og:updated_time" content="2020-04-03T00:00:00&#43;00:00">
   
 
   
@@ -654,6 +654,19 @@
     
     
     <div>
+      <h2><a href="/2019/12/16/trying-out-leaflet/" >Trying out Leaflet</a></h2>
+      <div class="article-style">
+        
+          International Murders Are among the data for analysis in the tidyTuesday for December 10, 2019. These are made for a map.
+library(tidyverse) library(leaflet) library(stringr) library(sf) library(here) library(widgetframe) library(htmlwidgets) library(htmltools) options(digits = 3) set.seed(1234) theme_set(theme_minimal()) library(tidytuesdayR) tuesdata &lt;- tt_load(2019, week = 50) murders &lt;- tuesdata$gun_murders There isn’t much data so it should make this a bit easier. Now for some data. As it happens, the best way I currently know how to do this is going to involve acquiring a spatial frame.
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
       <h2><a href="/2019/12/09/philadelphia-parking-tickets-a-tidytuesday/" >Philadelphia Parking Tickets: a tidyTuesday</a></h2>
       <div class="article-style">
         
@@ -767,20 +780,6 @@ library(tidyverse) library(pdftools) # Download report from link above mueller_r
         
           Scraping NFL data Note: An original version of this post had issues induced by overtime games. There is a better way to handle all of this that I learned from a brief analysis of a tie game between Cleveland and Pittsburgh in Week One.
 The nflscrapR package is designed to make data on NFL games more easily available. To install the package, we need to grab it from github.
-        
-      </div>
-    </div>
-  
-    
-    
-    
-    <div>
-      <h2><a href="/r/nflscrapr-test/" >NFL ScrapR</a></h2>
-      <div class="article-style">
-        
-          Scraping NFL data with nflscrapr The nflscrapR package is designed to make data on NFL games more easily available. To install the package, we need to grab it from github.
-devtools::install_github(repo = &quot;maksimhorowitz/nflscrapR&quot;) The github page for nflscrapR is quite informative. It has a lot of useful insight for working with the data; the set itself is quite large.
-Getting Some Data Following the guide to the package on GitHub, let me try their example.
         
       </div>
     </div>

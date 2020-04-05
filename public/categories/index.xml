@@ -13,10 +13,26 @@
     </image>
     
     <item>
+      <title>Public Finance</title>
+      <link>/categories/public-finance/</link>
+      <pubDate>Fri, 03 Apr 2020 00:00:00 +0000</pubDate>
+      <guid>/categories/public-finance/</guid>
+      <description></description>
+    </item>
+    
+    <item>
       <title>R</title>
       <link>/categories/r/</link>
       <pubDate>Fri, 03 Apr 2020 00:00:00 +0000</pubDate>
       <guid>/categories/r/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>tidyverse</title>
+      <link>/categories/tidyverse/</link>
+      <pubDate>Fri, 03 Apr 2020 00:00:00 +0000</pubDate>
+      <guid>/categories/tidyverse/</guid>
       <description></description>
     </item>
     
@@ -33,14 +49,6 @@
       <link>/categories/tidytuesday/</link>
       <pubDate>Wed, 01 Apr 2020 00:00:00 +0000</pubDate>
       <guid>/categories/tidytuesday/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>tidyverse</title>
-      <link>/categories/tidyverse/</link>
-      <pubDate>Tue, 24 Mar 2020 00:00:00 +0000</pubDate>
-      <guid>/categories/tidyverse/</guid>
       <description></description>
     </item>
     
@@ -129,14 +137,6 @@
       <link>/categories/twitter/</link>
       <pubDate>Wed, 19 Dec 2018 00:00:00 +0000</pubDate>
       <guid>/categories/twitter/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>Public Finance</title>
-      <link>/categories/public-finance/</link>
-      <pubDate>Wed, 07 Mar 2018 00:00:00 +0000</pubDate>
-      <guid>/categories/public-finance/</guid>
       <description></description>
     </item>
     

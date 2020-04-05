@@ -1168,6 +1168,88 @@
   
   <span class="middot-divider"></span>
   <span class="article-reading-time">
+    1 min read
+  </span>
+  
+
+  
+  
+  
+
+  
+  
+  <span class="middot-divider"></span>
+  <span class="article-categories">
+    <i class="fas fa-folder mr-1"></i><a href="/categories/tidyverse/">tidyverse</a>, <a href="/categories/r/">R</a>, <a href="/categories/public-finance/">Public Finance</a></span>
+  
+
+</div>
+
+  
+
+  
+  
+  
+
+  <h3 class="article-title mb-1 mt-3">
+    <a href="/2020/04/03/a-geofacet-of-credit-quality/">A GeoFacet of Credit Quality</a>
+  </h3>
+
+  
+  <div class="article-style">
+    <p>In previous work with Skip Krueger, we conceptualized bond ratings as a multiple rater problem and extracted measure of state level creditworthiness. I had always had it on my list to do something like this and recently ran across a package called geofacet that makes it simply to easy to do. So here goes. The code is below the post.
+library(haven) library(dplyr) Pew.Data &lt;- read_dta(url(&quot;https://github.com/robertwwalker/academic-mymod/raw/master/data/Pew/modeledforprediction.dta&quot;)) library(tidyverse) load(url(&quot;https://github.com/robertwwalker/academic-mymod/raw/master/data/Pew/Scaled-BR-Pew.RData&quot;)) state.ratings &lt;- data.</p>
+  </div>
+  
+
+  
+
+</div>
+
+      
+    
+      
+        
+
+
+
+
+
+
+
+
+
+  
+
+
+<div class="card-simple">
+
+  
+    
+
+
+<div class="article-metadata">
+
+  
+  
+
+  
+  <span class="article-date">
+    
+    
+      
+          Last updated on
+      
+    
+    Apr 3, 2020
+  </span>
+  
+
+  
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
     4 min read
   </span>
   
@@ -1197,8 +1279,8 @@
 
   
   <div class="article-style">
-    <p>New York Times data for the US The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-04-03 21:05:33.
- The @jburnmurdoch graphics for US States Deaths library(tidyverse); library(hrbrthemes); library(patchwork) state.data &lt;- read_csv(url(&quot;https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv&quot;)) Rect.NYT &lt;- complete(state.data, state,date) Rect.NYT &lt;- Rect.NYT %&gt;% group_by(state) %&gt;% mutate(New.Cases = cases - lag(cases, order_by = date), New.</p>
+    <p>New York Times data for the US The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-04-04 17:29:38.
+ The @jburnmurdoch graphics for US States Deaths library(tidyverse); library(hrbrthemes); library(patchwork); library(plotly) state.data &lt;- read_csv(url(&quot;https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv&quot;)) Rect.NYT &lt;- complete(state.data, state,date) Rect.NYT &lt;- Rect.NYT %&gt;% group_by(state) %&gt;% mutate(New.Cases = cases - lag(cases, order_by = date), New.</p>
   </div>
   
 
@@ -1443,88 +1525,6 @@ Imgur
   <div class="article-style">
     <p>Oregon COVID data I now have a few days of data. These data are current as of March 24, 2020. I will present the first version of these visualizations here and then move the auto-update to a different location. A messy first version of the scraping exercise is at the bottom of this post.
 paste0(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&quot;,Sys.Date(),&quot;.RData&quot;) ## [1] &quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID2020-03-24.RData&quot; load(url(paste0(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&quot;,Sys.Date(),&quot;.RData&quot;)))  A base map Load the tigris library then grab the map as an sf object; there is a geom_sf that makes them easy to work with.</p>
-  </div>
-  
-
-  
-
-</div>
-
-      
-    
-      
-        
-
-
-
-
-
-
-
-
-
-  
-
-
-<div class="card-simple">
-
-  
-    
-
-
-<div class="article-metadata">
-
-  
-  
-
-  
-  <span class="article-date">
-    
-    
-      
-          Last updated on
-      
-    
-    Mar 24, 2020
-  </span>
-  
-
-  
-
-  
-  <span class="middot-divider"></span>
-  <span class="article-reading-time">
-    4 min read
-  </span>
-  
-
-  
-  
-  
-
-  
-  
-  <span class="middot-divider"></span>
-  <span class="article-categories">
-    <i class="fas fa-folder mr-1"></i><a href="/categories/r/">R</a>, <a href="/categories/tidyverse/">tidyverse</a></span>
-  
-
-</div>
-
-  
-
-  
-  
-  
-
-  <h3 class="article-title mb-1 mt-3">
-    <a href="/2020/03/21/covid-19-in-oregon/">Mapping COVID-19 in Oregon</a>
-  </h3>
-
-  
-  <div class="article-style">
-    <p>Oregon COVID data The Oregon data are available from OHA here. I cut and pasted the first two days because it was easy with datapasta. As it goes on, it was easier to write a script that I detail elsewhere that I can self-update.
- urbnmapr The Urban Institute has an excellent state and county mapping package. I want to make use of the county-level data and plot the starter map.</p>
   </div>
   
 
@@ -2631,7 +2631,7 @@ paste0(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/C
           
           
           
-          <a href="/tags/essex/" style="font-size:0.9555301219026693rem">Essex</a>
+          <a href="/tags/essex/" style="font-size:0.9534467284619221rem">Essex</a>
         
           
           
@@ -2641,7 +2641,7 @@ paste0(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/C
           
           
           
-          <a href="/tags/gganimate/" style="font-size:1.360535782923106rem">gganimate</a>
+          <a href="/tags/gganimate/" style="font-size:1.3551502890045262rem">gganimate</a>
         
           
           
@@ -2656,7 +2656,7 @@ paste0(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/C
           
           
           
-          <a href="/tags/maps/" style="font-size:1.6455738122700727rem">Maps</a>
+          <a href="/tags/maps/" style="font-size:1.6649616490888968rem">Maps</a>
         
           
           
@@ -2666,12 +2666,12 @@ paste0(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/C
           
           
           
-          <a href="/tags/panel-data/" style="font-size:1.2110602438053388rem">panel data</a>
+          <a href="/tags/panel-data/" style="font-size:1.2884850793730256rem">panel data</a>
         
           
           
           
-          <a href="/tags/plot/" style="font-size:1.5100113220408735rem">plot</a>
+          <a href="/tags/plot/" style="font-size:1.5419318078349478rem">plot</a>
         
           
           
@@ -2681,37 +2681,37 @@ paste0(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/C
           
           
           
-          <a href="/tags/python/" style="font-size:0.9555301219026693rem">python</a>
+          <a href="/tags/python/" style="font-size:0.9534467284619221rem">python</a>
         
           
           
           
-          <a href="/tags/r/" style="font-size:1.9889946442447741rem">R</a>
+          <a href="/tags/r/" style="font-size:1.989400813286494rem">R</a>
         
           
           
           
-          <a href="/tags/r-markdown/" style="font-size:1.6455738122700727rem">R Markdown</a>
+          <a href="/tags/r-markdown/" style="font-size:1.6378643404334174rem">R Markdown</a>
         
           
           
           
-          <a href="/tags/reticulate/" style="font-size:0.9555301219026693rem">reticulate</a>
+          <a href="/tags/reticulate/" style="font-size:0.9534467284619221rem">reticulate</a>
         
           
           
           
-          <a href="/tags/tidytext/" style="font-size:1.2933225691358006rem">tidytext</a>
+          <a href="/tags/tidytext/" style="font-size:1.2884850793730256rem">tidytext</a>
         
           
           
           
-          <a href="/tags/tidytuesday/" style="font-size:1.7221204876106775rem">tidyTuesday</a>
+          <a href="/tags/tidytuesday/" style="font-size:1.7137869138476889rem">tidyTuesday</a>
         
           
           
           
-          <a href="/tags/tidyverse/" style="font-size:1.8043828129411392rem">tidyverse</a>
+          <a href="/tags/tidyverse/" style="font-size:1.79537853629687rem">tidyverse</a>
         
       </div>
     
