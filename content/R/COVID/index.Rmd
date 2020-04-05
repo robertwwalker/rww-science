@@ -1,7 +1,7 @@
 ---
 title: COVID-19 in Oregon
 author: Robert W. Walker
-date: '2020-03-31'
+date: '2020-04-05'
 ---
 
 ```{r setup, include=FALSE}
@@ -11,9 +11,9 @@ library(tidyverse)
 
 # Oregon COVID data
 
-I wanted to create a self-updating visualization of [the data on COVID-19 in the state of Oregon provided by OHA](https://govstatus.egov.com/OR-OHA-COVID-19).  Oregon reports a set of daily snapshots while progression requires ingesting new data each day so  I began tracking it March 20; the process of scraping it is detailed in [a separate file](https://rww.science/r/covid-scraping/).  This updates, expands, and consolidates two previous posts [here](https://rww.science/2020/03/21/covid-19-in-oregon/) and [here](https://rww.science/2020/03/24/covid-19-county-maps-for-oregon/).  A few cautionary notes.  First, these are cumulative case counts that are almost certainly incomplete.  Second, there is reason to believe that the death numbers may also be incomplete because it is dangerous to police and first responders are spread thinly.  
+I wanted to create a self-updating visualization of [the data on COVID-19 in the state of Oregon provided by OHA](https://govstatus.egov.com/OR-OHA-COVID-19).  There is a [separate page of daily maps](https://rww.science/r/covid/maps/).  Oregon reports a set of daily snapshots while progression requires ingesting new data each day so  I began tracking it March 20; the process of scraping it is detailed in [a separate file](https://rww.science/r/covid-scraping/).  This updates, expands, and consolidates two previous posts [here](https://rww.science/2020/03/21/covid-19-in-oregon/) and [here](https://rww.science/2020/03/24/covid-19-county-maps-for-oregon/).  A few cautionary notes.  First, these are cumulative case counts that are almost certainly incomplete.  Second, there is reason to believe that the death numbers may also be incomplete because it is dangerous to police and first responders are spread thinly.
 
-These data are current as of April 4, 2020; this first bit of R code loads the current data from my github.
+These data are current as of April 5, 2020; this first bit of R code loads the current data from my github.
 
 ```{r, eval=FALSE}
 library(tigris)
@@ -55,7 +55,7 @@ The central takeaway is that the underlying data reports are constantly changing
 
 *2020-03-31* The status of COVID patients and available hospital details were previously in one table but now were split into two parts.  The underlying auto-scraper required changes.
 
-*2020-04-02* The status of COVID patients and available hospital details are pending in the report.  I have updated the rest.  This remains true as of April 4, 2020.
+*2020-04-02* The status of COVID patients and available hospital details are pending in the report.  I have updated the rest.  This remains true as of April 5, 2020.
 
 # A base map
 

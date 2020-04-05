@@ -15,15 +15,15 @@
     <item>
       <title>COVID-19 in Oregon</title>
       <link>/r/covid/</link>
-      <pubDate>Tue, 31 Mar 2020 00:00:00 +0000</pubDate>
+      <pubDate>Sun, 05 Apr 2020 00:00:00 +0000</pubDate>
       <guid>/r/covid/</guid>
       <description>
 
 
 &lt;div id=&#34;oregon-covid-data&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;Oregon COVID data&lt;/h1&gt;
-&lt;p&gt;I wanted to create a self-updating visualization of &lt;a href=&#34;https://govstatus.egov.com/OR-OHA-COVID-19&#34;&gt;the data on COVID-19 in the state of Oregon provided by OHA&lt;/a&gt;. Oregon reports a set of daily snapshots while progression requires ingesting new data each day so I began tracking it March 20; the process of scraping it is detailed in &lt;a href=&#34;https://rww.science/r/covid-scraping/&#34;&gt;a separate file&lt;/a&gt;. This updates, expands, and consolidates two previous posts &lt;a href=&#34;https://rww.science/2020/03/21/covid-19-in-oregon/&#34;&gt;here&lt;/a&gt; and &lt;a href=&#34;https://rww.science/2020/03/24/covid-19-county-maps-for-oregon/&#34;&gt;here&lt;/a&gt;. A few cautionary notes. First, these are cumulative case counts that are almost certainly incomplete. Second, there is reason to believe that the death numbers may also be incomplete because it is dangerous to police and first responders are spread thinly.&lt;/p&gt;
-&lt;p&gt;These data are current as of April 4, 2020; this first bit of R code loads the current data from my github.&lt;/p&gt;
+&lt;p&gt;I wanted to create a self-updating visualization of &lt;a href=&#34;https://govstatus.egov.com/OR-OHA-COVID-19&#34;&gt;the data on COVID-19 in the state of Oregon provided by OHA&lt;/a&gt;. There is a &lt;a href=&#34;https://rww.science/r/covid/maps/&#34;&gt;separate page of daily maps&lt;/a&gt;. Oregon reports a set of daily snapshots while progression requires ingesting new data each day so I began tracking it March 20; the process of scraping it is detailed in &lt;a href=&#34;https://rww.science/r/covid-scraping/&#34;&gt;a separate file&lt;/a&gt;. This updates, expands, and consolidates two previous posts &lt;a href=&#34;https://rww.science/2020/03/21/covid-19-in-oregon/&#34;&gt;here&lt;/a&gt; and &lt;a href=&#34;https://rww.science/2020/03/24/covid-19-county-maps-for-oregon/&#34;&gt;here&lt;/a&gt;. A few cautionary notes. First, these are cumulative case counts that are almost certainly incomplete. Second, there is reason to believe that the death numbers may also be incomplete because it is dangerous to police and first responders are spread thinly.&lt;/p&gt;
+&lt;p&gt;These data are current as of April 5, 2020; this first bit of R code loads the current data from my github.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(tigris)
 library(rgdal)
 library(htmltools)
@@ -35,14 +35,14 @@ library(gganimate)
 library(patchwork)
 library(hrbrthemes)
 load(url(paste0(&amp;quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&amp;quot;,Sys.Date(),&amp;quot;.RData&amp;quot;)))&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Verifying, these data are current as of 2020-04-04 according to the loaded dataset.&lt;/p&gt;
+&lt;p&gt;Verifying, these data are current as of 2020-04-05 according to the loaded dataset.&lt;/p&gt;
 &lt;div id=&#34;a-running-commentary-on-the-data&#34; class=&#34;section level3&#34;&gt;
 &lt;h3&gt;A running commentary on the data&lt;/h3&gt;
 &lt;p&gt;The central takeaway is that the underlying data reports are constantly changing over time. They are reporting new and different quantities and this destroys the comparability of data. Some of it can be reconstructed but much of it is only useful going forward and keeping the schema constant. I hope that will happen at some point.&lt;/p&gt;
 &lt;p&gt;&lt;em&gt;2020-03-23 and before&lt;/em&gt; It started with only three tables. Then four, then five, adding footnotes and rearranging the data structures became common. Until the data structures solidify, maintaining comparability, and feeding appropriate data to the visualization tool continue to pose challenges and require a fair amount of tweaking.&lt;/p&gt;
 &lt;p&gt;&lt;em&gt;2020-03-30&lt;/em&gt; Footnotes for some entries appear newly today. That’s irritating because it changes the variable names.&lt;/p&gt;
 &lt;p&gt;&lt;em&gt;2020-03-31&lt;/em&gt; The status of COVID patients and available hospital details were previously in one table but now were split into two parts. The underlying auto-scraper required changes.&lt;/p&gt;
-&lt;p&gt;&lt;em&gt;2020-04-02&lt;/em&gt; The status of COVID patients and available hospital details are pending in the report. I have updated the rest. This remains true as of April 4, 2020.&lt;/p&gt;
+&lt;p&gt;&lt;em&gt;2020-04-02&lt;/em&gt; The status of COVID patients and available hospital details are pending in the report. I have updated the rest. This remains true as of April 5, 2020.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;div id=&#34;a-base-map&#34; class=&#34;section level1&#34;&gt;

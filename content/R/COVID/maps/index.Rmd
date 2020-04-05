@@ -179,9 +179,13 @@ Plot.COVID("2020-04-02", Map.Me)
 ```{r}
 Plot.COVID("2020-04-03", Map.Me)
 ```
-
-
 ## The Result for 04/04/2020
+
+```{r}
+Plot.COVID("2020-04-04", Map.Me)
+```
+
+## The Result for 04/05/2020
 
 
 ```{r, warning=FALSE, message=FALSE}
