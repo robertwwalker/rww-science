@@ -657,8 +657,8 @@
       <h2><a href="/2020/04/03/new-york-times-data-on-covid/" >New York Times Data on COVID</a></h2>
       <div class="article-style">
         
-          New York Times data for the US The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-04-05 14:14:28.
- The @jburnmurdoch graphics for US States Deaths library(tidyverse); library(hrbrthemes); library(patchwork); library(plotly); library(ggdark) state.data &lt;- read_csv(url(&quot;https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv&quot;)) Rect.NYT &lt;- complete(state.data, state,date) Rect.NYT &lt;- Rect.NYT %&gt;% group_by(state) %&gt;% mutate(New.Cases = cases - lag(cases, order_by = date), New.
+          New York Times data for the US The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-04-05 20:03:49.
+ The @jburnmurdoch graphics for US States Deaths options(scipen=9) library(tidyverse); library(hrbrthemes); library(patchwork); library(plotly); library(ggdark); library(ggrepel) state.data &lt;- read_csv(url(&quot;https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv&quot;)) Rect.NYT &lt;- complete(state.data, state,date) Rect.NYT &lt;- Rect.NYT %&gt;% group_by(state) %&gt;% mutate(New.
         
       </div>
     </div>

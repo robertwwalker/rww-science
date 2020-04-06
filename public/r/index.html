@@ -666,7 +666,20 @@
       <h2><a href="/r/covid/" >COVID-19 in Oregon</a></h2>
       <div class="article-style">
         
-          Oregon COVID data I wanted to create a self-updating visualization of the data on COVID-19 in the state of Oregon provided by OHA. There is a separate page of daily maps. Oregon reports a set of daily snapshots while progression requires ingesting new data each day so I began tracking it March 20; the process of scraping it is detailed in a separate file. This updates, expands, and consolidates two previous posts here and here.
+          Oregon COVID data I wanted to create a self-updating visualization of the data on COVID-19 in the state of Oregon provided by OHA. There is a separate page of daily maps. Oregon reports a set of daily snapshots while progression requires ingesting new data each day so I began tracking it March 20; the process of scraping it is detailed in a separate file.
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
+      <h2><a href="/r/covid-maps/" >COVID-19 in Oregon</a></h2>
+      <div class="article-style">
+        
+          library(tigris) library(rgdal) library(htmltools) library(viridis) library(sf) library(ggrepel) library(ggthemes) library(gganimate) library(patchwork) library(hrbrthemes) load(url(paste0(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&quot;,Sys.Date(),&quot;.RData&quot;))) Verifying, these data are current as of 2020-04-05 according to the loaded dataset.
+A base map To build a map to work from, I need a map library. Load the tigris library then grab the map as an sf object; there is a geom_sf that makes them easy to work with. Finally, I join the map to the data.
         
       </div>
     </div>
@@ -773,18 +786,6 @@ plot(cars) An Hypothesis Test I will work with the speed variable. The hypothesi
         
           A Citation I found a starting point on local maps in Seattle.
 library(ggmap) library(osmdata) library(tidyverse) # SLE &lt;- get_map(getbb(&quot;Salem, OR&quot;), source=&quot;osm&quot;) # SLE %&gt;% ggmap() An Oregon Map of Liquor Stores The setup for a Google Cloud account is kind of a pain and it requires a billing option. That was annoying but eventually fixed. It is required for geocoding addresses as OSM doesn’t do that anymore.
-        
-      </div>
-    </div>
-  
-    
-    
-    
-    <div>
-      <h2><a href="/r/tables-pivots-bars-and-mosaics/" >Tables, Pivots, Bars, and Mosaics</a></h2>
-      <div class="article-style">
-        
-          R Markdown There is detailed help for all that Markdown can do under Help in the RStudio. The key to it is knitting documents with the Knit button in the RStudio. If we use helpers like the R Commander, Radiant, or esquisse, we will need the R code implanted in the Markdown document in particular ways. I will use Markdown for everything. I even use a close relation of Markdown in my scholarly pursuits.
         
       </div>
     </div>

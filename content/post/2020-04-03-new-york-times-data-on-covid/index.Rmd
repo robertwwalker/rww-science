@@ -30,7 +30,8 @@ The New York Times has a wonderful compilation of United States on the novel cor
 ## Deaths
 
 ```{r, message=FALSE, warning=FALSE}
-library(tidyverse); library(hrbrthemes); library(patchwork); library(plotly); library(ggdark)
+options(scipen=9)
+library(tidyverse); library(hrbrthemes); library(patchwork); library(plotly); library(ggdark); library(ggrepel)
 state.data <- read_csv(url("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv"))
 Rect.NYT <- complete(state.data, state,date)
 Rect.NYT <- Rect.NYT %>% group_by(state) %>% mutate(New.Cases = cases - lag(cases, order_by = date), New.Deaths = deaths - lag(deaths, order_by = date)) %>% ungroup()
@@ -53,7 +54,7 @@ PlotA <- R2.NYT %>%
 PlotA
 ```
 
-## A Combined Comparison
+##  Cases
 
 ```{r}
 R2.NYT <- Rect.NYT %>% 
@@ -64,12 +65,15 @@ R2.NYT <- Rect.NYT %>%
   ungroup()
 OR.R2 <- R2.NYT %>% filter(fips=="41")
 OR.R2A <- R2.NYT %>% filter(fips=="41" & Counter == max(OR.R2$Counter))
-Plot1 <- R2.NYT %>% ggplot(., aes(x=Counter, y=deaths, color=state)) + geom_line(alpha=0.3) + guides(color=FALSE) + geom_line(data=OR.R2, color="white") + geom_text(data=OR.R2A, aes(x=Counter, y=deaths, label=state), color="white", inherit.aes = FALSE) + labs(x="Days since 10th Death", y="log(Cumulative Deaths)",subtitle="Note logarithm", title="Oregon in Comparison to US States") + dark_theme_linedraw() + 
-  #geom_abline(intercept = c(1,1,1), slope=c(1/2,1/3,1/7), color="red") + 
-  lims(y=c(10,5000)) +  
-  scale_y_log10()
+Plot1 <- R2.NYT %>% ggplot(., aes(x=Counter, y=cases, color=state)) + 
+  geom_line(alpha=0.3) + guides(color=FALSE) + geom_line(data=OR.R2, color="white") + 
+  geom_text(data=OR.R2A, aes(x=Counter, y=cases, label=state), color="white", inherit.aes = FALSE) +   scale_y_log10() +
+  labs(x="Days since 10th Death", y="log(Cumulative Cases)", title="Log-Cases [Cumulative] given Days Since 10th Death", caption = "data from nytimes/covid-19 on github \n design mimics @jburnmurdoch") + 
+  dark_theme_linedraw()
 Plot1
 ```
+
+# A Different Definition: Days since 100th Case
 
 ```{r}
 options(scipen=8)
@@ -81,7 +85,21 @@ R2.NYT <- Rect.NYT %>%
   ungroup()
 OR.R2 <- R2.NYT %>% filter(fips=="41")
 OR.R2A <- R2.NYT %>% filter(fips=="41" & Counter == max(OR.R2$Counter))
-Plot2 <- R2.NYT %>% ggplot(., aes(x=Counter, y=cases, color=state)) + geom_line(alpha=0.3) + guides(color=FALSE) + scale_y_log10() + geom_line(data=OR.R2, color="white") + geom_text(data=OR.R2A, aes(x=Counter, y=cases, label=state), color="white", inherit.aes = FALSE) + dark_theme_linedraw() +
+Plot1 <- R2.NYT %>% ggplot(., aes(x=Counter, y=deaths, color=state)) + 
+  geom_line(alpha=0.3) + guides(color=FALSE) + 
+  scale_y_log10() + 
+  geom_line(data=OR.R2, color="white") + 
+  geom_text(data=OR.R2A, aes(x=Counter, y=deaths, label=state), color="white", inherit.aes = FALSE) + 
+  dark_theme_linedraw() + 
+  labs(subtitle="Note logarithm", x="Days since 100th Case", y="Log(Cumulative Deaths)")
+Plot2 <- R2.NYT %>% 
+  ggplot(., aes(x=Counter, y=cases, color=state)) + 
+  geom_line(alpha=0.3) + 
+  guides(color=FALSE) + 
+  scale_y_log10() + 
+  geom_line(data=OR.R2, color="white") + 
+  geom_text(data=OR.R2A, aes(x=Counter, y=cases, label=state), color="white", inherit.aes = FALSE) + 
+  dark_theme_linedraw() +
   labs(subtitle="Note logarithm", x="Days since 100th Case", y="Log(Cumulative Cases)")
 Plot1 + Plot2
 ```
@@ -92,8 +110,15 @@ Plot1 + Plot2
 
 Let me first track the incidence of new cases by state.  There is no particularly good way to visualize this because New York is wildly different.
 
-```{r}
-ggplot(Rect.NYT, aes(x=date, y=New.Cases, color=state)) + geom_line(alpha=0.25) + guides(color=FALSE) + scale_y_log10() + geom_smooth() + labs(title="New Cases by State", y="log(New Cases)", subtitle="Note the logarithmic scale.", caption="Data from nytimes/covid-19-data on guthub.") + dark_theme_linedraw()
+```{r, warning=FALSE, message=FALSE}
+WCStates <- Rect.NYT %>% filter(date=="2020-04-04") %>% top_n(5, wt=New.Cases) %>% mutate(Top5 = 1)
+Rect.NYT %>% ggplot(., aes(x=date, y=New.Cases, color=state)) + 
+  geom_line(alpha=0.25) + 
+  geom_label_repel(data=WCStates, aes(label=state), inherit.aes = TRUE) +
+  guides(color=FALSE) + 
+  scale_y_log10() + 
+  labs(title="New Cases by State", y="log(New Cases)", subtitle="Note the logarithmic scale.", caption="Data from nytimes/covid-19-data on guthub.") + 
+  dark_theme_linedraw()
 ```
 
 ## Aggregate Data over the United States

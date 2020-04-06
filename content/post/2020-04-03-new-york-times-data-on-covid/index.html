@@ -27,13 +27,14 @@ projects: []
 
 <div id="new-york-times-data-for-the-us" class="section level1">
 <h1>New York Times data for the US</h1>
-<p>The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-04-05 14:14:28.</p>
+<p>The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-04-05 20:03:49.</p>
 </div>
 <div id="the-jburnmurdoch-graphics-for-us-states" class="section level1">
 <h1>The <code>@jburnmurdoch</code> graphics for US States</h1>
 <div id="deaths" class="section level2">
 <h2>Deaths</h2>
-<pre class="r"><code>library(tidyverse); library(hrbrthemes); library(patchwork); library(plotly); library(ggdark)
+<pre class="r"><code>options(scipen=9)
+library(tidyverse); library(hrbrthemes); library(patchwork); library(plotly); library(ggdark); library(ggrepel)
 state.data &lt;- read_csv(url(&quot;https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv&quot;))
 Rect.NYT &lt;- complete(state.data, state,date)
 Rect.NYT &lt;- Rect.NYT %&gt;% group_by(state) %&gt;% mutate(New.Cases = cases - lag(cases, order_by = date), New.Deaths = deaths - lag(deaths, order_by = date)) %&gt;% ungroup()
@@ -56,8 +57,8 @@ PlotA &lt;- R2.NYT %&gt;%
 PlotA</code></pre>
 <p><img src="/post/2020-04-03-new-york-times-data-on-covid/index_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
 </div>
-<div id="a-combined-comparison" class="section level2">
-<h2>A Combined Comparison</h2>
+<div id="cases" class="section level2">
+<h2>Cases</h2>
 <pre class="r"><code>R2.NYT &lt;- Rect.NYT %&gt;% 
   mutate(SelMe = (deaths &gt; 9)) %&gt;% 
   filter(SelMe==TRUE) %&gt;% 
@@ -66,14 +67,17 @@ PlotA</code></pre>
   ungroup()
 OR.R2 &lt;- R2.NYT %&gt;% filter(fips==&quot;41&quot;)
 OR.R2A &lt;- R2.NYT %&gt;% filter(fips==&quot;41&quot; &amp; Counter == max(OR.R2$Counter))
-Plot1 &lt;- R2.NYT %&gt;% ggplot(., aes(x=Counter, y=deaths, color=state)) + geom_line(alpha=0.3) + guides(color=FALSE) + geom_line(data=OR.R2, color=&quot;white&quot;) + geom_text(data=OR.R2A, aes(x=Counter, y=deaths, label=state), color=&quot;white&quot;, inherit.aes = FALSE) + labs(x=&quot;Days since 10th Death&quot;, y=&quot;log(Cumulative Deaths)&quot;,subtitle=&quot;Note logarithm&quot;, title=&quot;Oregon in Comparison to US States&quot;) + dark_theme_linedraw() + 
-  #geom_abline(intercept = c(1,1,1), slope=c(1/2,1/3,1/7), color=&quot;red&quot;) + 
-  lims(y=c(10,5000)) +  
-  scale_y_log10()</code></pre>
-<pre><code>## Scale for &#39;y&#39; is already present. Adding another scale for &#39;y&#39;, which will
-## replace the existing scale.</code></pre>
-<pre class="r"><code>Plot1</code></pre>
+Plot1 &lt;- R2.NYT %&gt;% ggplot(., aes(x=Counter, y=cases, color=state)) + 
+  geom_line(alpha=0.3) + guides(color=FALSE) + geom_line(data=OR.R2, color=&quot;white&quot;) + 
+  geom_text(data=OR.R2A, aes(x=Counter, y=cases, label=state), color=&quot;white&quot;, inherit.aes = FALSE) +   scale_y_log10() +
+  labs(x=&quot;Days since 10th Death&quot;, y=&quot;log(Cumulative Cases)&quot;, title=&quot;Log-Cases [Cumulative] given Days Since 10th Death&quot;, caption = &quot;data from nytimes/covid-19 on github \n design mimics @jburnmurdoch&quot;) + 
+  dark_theme_linedraw()
+Plot1</code></pre>
 <p><img src="/post/2020-04-03-new-york-times-data-on-covid/index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+</div>
+</div>
+<div id="a-different-definition-days-since-100th-case" class="section level1">
+<h1>A Different Definition: Days since 100th Case</h1>
 <pre class="r"><code>options(scipen=8)
 R2.NYT &lt;- Rect.NYT %&gt;% 
   mutate(SelMe = (cases &gt; 99)) %&gt;% 
@@ -83,50 +87,36 @@ R2.NYT &lt;- Rect.NYT %&gt;%
   ungroup()
 OR.R2 &lt;- R2.NYT %&gt;% filter(fips==&quot;41&quot;)
 OR.R2A &lt;- R2.NYT %&gt;% filter(fips==&quot;41&quot; &amp; Counter == max(OR.R2$Counter))
-Plot2 &lt;- R2.NYT %&gt;% ggplot(., aes(x=Counter, y=cases, color=state)) + geom_line(alpha=0.3) + guides(color=FALSE) + scale_y_log10() + geom_line(data=OR.R2, color=&quot;white&quot;) + geom_text(data=OR.R2A, aes(x=Counter, y=cases, label=state), color=&quot;white&quot;, inherit.aes = FALSE) + dark_theme_linedraw() +
+Plot1 &lt;- R2.NYT %&gt;% ggplot(., aes(x=Counter, y=deaths, color=state)) + 
+  geom_line(alpha=0.3) + guides(color=FALSE) + 
+  scale_y_log10() + 
+  geom_line(data=OR.R2, color=&quot;white&quot;) + 
+  geom_text(data=OR.R2A, aes(x=Counter, y=deaths, label=state), color=&quot;white&quot;, inherit.aes = FALSE) + 
+  dark_theme_linedraw() + 
+  labs(subtitle=&quot;Note logarithm&quot;, x=&quot;Days since 100th Case&quot;, y=&quot;Log(Cumulative Deaths)&quot;)
+Plot2 &lt;- R2.NYT %&gt;% 
+  ggplot(., aes(x=Counter, y=cases, color=state)) + 
+  geom_line(alpha=0.3) + 
+  guides(color=FALSE) + 
+  scale_y_log10() + 
+  geom_line(data=OR.R2, color=&quot;white&quot;) + 
+  geom_text(data=OR.R2A, aes(x=Counter, y=cases, label=state), color=&quot;white&quot;, inherit.aes = FALSE) + 
+  dark_theme_linedraw() +
   labs(subtitle=&quot;Note logarithm&quot;, x=&quot;Days since 100th Case&quot;, y=&quot;Log(Cumulative Cases)&quot;)
 Plot1 + Plot2</code></pre>
+<pre><code>## Warning: Transformation introduced infinite values in continuous y-axis</code></pre>
 <p><img src="/post/2020-04-03-new-york-times-data-on-covid/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
-</div>
 <div id="new-cases-by-state-over-time" class="section level2">
 <h2>New Cases by State over Time</h2>
 <p>Let me first track the incidence of new cases by state. There is no particularly good way to visualize this because New York is wildly different.</p>
-<pre class="r"><code>ggplot(Rect.NYT, aes(x=date, y=New.Cases, color=state)) + geom_line(alpha=0.25) + guides(color=FALSE) + scale_y_log10() + geom_smooth() + labs(title=&quot;New Cases by State&quot;, y=&quot;log(New Cases)&quot;, subtitle=&quot;Note the logarithmic scale.&quot;, caption=&quot;Data from nytimes/covid-19-data on guthub.&quot;) + dark_theme_linedraw()</code></pre>
-<pre><code>## Warning: Transformation introduced infinite values in continuous y-axis
-
-## Warning: Transformation introduced infinite values in continuous y-axis</code></pre>
-<pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
-<pre><code>## Warning: Removed 2746 rows containing non-finite values (stat_smooth).</code></pre>
-<pre><code>## Warning in simpleLoess(y, x, w, span, degree = degree, parametric =
-## parametric, : span too small. fewer data values than degrees of freedom.</code></pre>
-<pre><code>## Warning in simpleLoess(y, x, w, span, degree = degree, parametric =
-## parametric, : at 18353</code></pre>
-<pre><code>## Warning in simpleLoess(y, x, w, span, degree = degree, parametric =
-## parametric, : radius 2.5e-05</code></pre>
-<pre><code>## Warning in simpleLoess(y, x, w, span, degree = degree, parametric =
-## parametric, : all data on boundary of neighborhood. make span bigger</code></pre>
-<pre><code>## Warning in simpleLoess(y, x, w, span, degree = degree, parametric =
-## parametric, : pseudoinverse used at 18353</code></pre>
-<pre><code>## Warning in simpleLoess(y, x, w, span, degree = degree, parametric =
-## parametric, : neighborhood radius 0.005</code></pre>
-<pre><code>## Warning in simpleLoess(y, x, w, span, degree = degree, parametric =
-## parametric, : reciprocal condition number 1</code></pre>
-<pre><code>## Warning in simpleLoess(y, x, w, span, degree = degree, parametric =
-## parametric, : at 18354</code></pre>
-<pre><code>## Warning in simpleLoess(y, x, w, span, degree = degree, parametric =
-## parametric, : radius 2.5e-05</code></pre>
-<pre><code>## Warning in simpleLoess(y, x, w, span, degree = degree, parametric =
-## parametric, : all data on boundary of neighborhood. make span bigger</code></pre>
-<pre><code>## Warning in simpleLoess(y, x, w, span, degree = degree, parametric =
-## parametric, : There are other near singularities as well. 2.5e-05</code></pre>
-<pre><code>## Warning in simpleLoess(y, x, w, span, degree = degree, parametric =
-## parametric, : zero-width neighborhood. make span bigger
-
-## Warning in simpleLoess(y, x, w, span, degree = degree, parametric =
-## parametric, : zero-width neighborhood. make span bigger</code></pre>
-<pre><code>## Warning: Computation failed in `stat_smooth()`:
-## NA/NaN/Inf in foreign function call (arg 5)</code></pre>
-<pre><code>## Warning: Removed 2351 row(s) containing missing values (geom_path).</code></pre>
+<pre class="r"><code>WCStates &lt;- Rect.NYT %&gt;% filter(date==&quot;2020-04-04&quot;) %&gt;% top_n(5, wt=New.Cases) %&gt;% mutate(Top5 = 1)
+Rect.NYT %&gt;% ggplot(., aes(x=date, y=New.Cases, color=state)) + 
+  geom_line(alpha=0.25) + 
+  geom_label_repel(data=WCStates, aes(label=state), inherit.aes = TRUE) +
+  guides(color=FALSE) + 
+  scale_y_log10() + 
+  labs(title=&quot;New Cases by State&quot;, y=&quot;log(New Cases)&quot;, subtitle=&quot;Note the logarithmic scale.&quot;, caption=&quot;Data from nytimes/covid-19-data on guthub.&quot;) + 
+  dark_theme_linedraw()</code></pre>
 <p><img src="/post/2020-04-03-new-york-times-data-on-covid/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 </div>
 <div id="aggregate-data-over-the-united-states" class="section level2">

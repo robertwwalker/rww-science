@@ -4,12 +4,12 @@
   
   <url>
     <loc>/r/covid/</loc>
-    <lastmod>2020-04-04T19:55:04-07:00</lastmod>
+    <lastmod>2020-04-05T14:38:49-07:00</lastmod>
   </url>
   
   <url>
     <loc>/</loc>
-    <lastmod>2020-04-04T19:55:04-07:00</lastmod>
+    <lastmod>2020-04-05T14:38:49-07:00</lastmod>
   </url>
   
   <url>
@@ -19,12 +19,12 @@
   
   <url>
     <loc>/categories/</loc>
-    <lastmod>2020-04-04T19:55:04-07:00</lastmod>
+    <lastmod>2020-04-05T14:38:49-07:00</lastmod>
   </url>
   
   <url>
     <loc>/tags/gganimate/</loc>
-    <lastmod>2020-04-04T19:55:04-07:00</lastmod>
+    <lastmod>2020-04-05T14:38:49-07:00</lastmod>
   </url>
   
   <url>
@@ -34,7 +34,7 @@
   
   <url>
     <loc>/2020/04/03/new-york-times-data-on-covid/</loc>
-    <lastmod>2020-04-04T19:55:04-07:00</lastmod>
+    <lastmod>2020-04-05T14:38:49-07:00</lastmod>
   </url>
   
   <url>
@@ -44,7 +44,7 @@
   
   <url>
     <loc>/tags/plot/</loc>
-    <lastmod>2020-04-04T19:55:04-07:00</lastmod>
+    <lastmod>2020-04-05T14:38:49-07:00</lastmod>
   </url>
   
   <url>
@@ -53,18 +53,18 @@
   </url>
   
   <url>
+    <loc>/categories/r/</loc>
+    <lastmod>2020-04-05T14:38:49-07:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/tags/r/</loc>
     <lastmod>2020-04-04T19:55:04-07:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/r/</loc>
-    <lastmod>2020-04-04T19:55:04-07:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/tags/</loc>
-    <lastmod>2020-04-04T19:55:04-07:00</lastmod>
+    <lastmod>2020-04-05T14:38:49-07:00</lastmod>
   </url>
   
   <url>
@@ -95,6 +95,11 @@
   <url>
     <loc>/tags/tidyverse/</loc>
     <lastmod>2020-04-02T17:36:37-07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/r/covid-maps/</loc>
+    <lastmod>2020-03-31T00:00:00+00:00</lastmod>
   </url>
   
   <url>
@@ -153,22 +158,22 @@
   </url>
   
   <url>
-    <loc>/categories/python/</loc>
-    <lastmod>2020-02-24T00:09:44-08:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/tags/python/</loc>
     <lastmod>2020-02-24T00:09:44-08:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/reticulate/</loc>
+    <loc>/categories/python/</loc>
     <lastmod>2020-02-24T00:09:44-08:00</lastmod>
   </url>
   
   <url>
     <loc>/tags/reticulate/</loc>
+    <lastmod>2020-02-24T00:09:44-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/reticulate/</loc>
     <lastmod>2020-02-24T00:09:44-08:00</lastmod>
   </url>
   
