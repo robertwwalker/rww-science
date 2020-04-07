@@ -25,7 +25,7 @@ library(patchwork)
 library(hrbrthemes)
 library(widgetframe)
 load(url(paste0(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&quot;,Sys.Date(),&quot;.RData&quot;)))</code></pre>
-<p>Verifying, these data are current as of 2020-04-06 according to the loaded dataset.</p>
+<p>Verifying, these data are current as of 2020-04-07 according to the loaded dataset.</p>
 <div id="a-running-commentary-on-the-data" class="section level3">
 <h3>A running commentary on the data</h3>
 <p>The central takeaway is that the underlying data reports are constantly changing over time. They are reporting new and different quantities and this destroys the comparability of data. Some of it can be reconstructed but much of it is only useful going forward and keeping the schema constant. I hope that will happen at some point.</p>
@@ -43,7 +43,7 @@ Map.Me &lt;- left_join(counties.t,Oregon.COVID, by=c(&quot;NAME&quot; = &quot;Co
 Res.1 &lt;- Map.Me %&gt;% 
   filter(date==Sys.Date()) %&gt;% 
   mutate(Percent.Positive = Number.of.cases / Negative.test.results, 
-         TTip = paste0(&quot;Percent Positive: &quot;, Percent.Positive, &quot;\n Positive Tests: &quot;, Number.of.cases, &quot;\n Negative Tests: &quot;, Negative.test.results, &quot;\n Deaths: &quot;, Deaths))</code></pre>
+         TTip = paste0(&quot;Percent Positive: &quot;, Percent.Positive, &quot;&lt;br&gt; Positive Tests: &quot;, Number.of.cases, &quot;&lt;br&gt; Negative Tests: &quot;, Negative.test.results, &quot;&lt;br&gt; Deaths: &quot;, Deaths))</code></pre>
 </div>
 <div id="summarising-the-county-data-an-animation" class="section level1">
 <h1>Summarising the County Data: An Animation</h1>

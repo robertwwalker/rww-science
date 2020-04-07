@@ -116,7 +116,7 @@ frameWidget(m)</code></pre>
 <p>Merge the relevant data together after using TIGER to grab the spatial definitions.</p>
 <pre class="r"><code>library(widgetframe); library(leaflet); library(here); library(htmlwidgets)
 library(tigris); library(rgdal); library(htmltools); library(viridis)
-counties.t &lt;- counties(state = &quot;41&quot;, resolution = &quot;500k&quot;)
+counties.t &lt;- counties(state = &quot;41&quot;, resolution = &quot;500k&quot;, class=&quot;sf&quot;)
 OC22 &lt;- Oregon.COVID %&gt;% filter(date==&quot;2020-03-22&quot;)
 Map.L &lt;- merge(counties.t, OC22, by.x=&quot;NAME&quot;, by.y= &quot;County&quot;)</code></pre>
 <p>Build the final plot. The first line creates a palette. Then I build the leaflet</p>

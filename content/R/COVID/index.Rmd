@@ -69,7 +69,7 @@ Map.Me <- left_join(counties.t,Oregon.COVID, by=c("NAME" = "County"))
 Res.1 <- Map.Me %>% 
   filter(date==Sys.Date()) %>% 
   mutate(Percent.Positive = Number.of.cases / Negative.test.results, 
-         TTip = paste0("Percent Positive: ", Percent.Positive, "\n Positive Tests: ", Number.of.cases, "\n Negative Tests: ", Negative.test.results, "\n Deaths: ", Deaths))
+         TTip = paste0("Percent Positive: ", Percent.Positive, "<br> Positive Tests: ", Number.of.cases, "<br> Negative Tests: ", Negative.test.results, "<br> Deaths: ", Deaths))
 ```
 
 # Summarising the County Data: An Animation

@@ -188,7 +188,7 @@ Merge the relevant data together after using TIGER to grab the spatial definitio
 ```{r, results='hide'}
 library(widgetframe); library(leaflet); library(here); library(htmlwidgets)
 library(tigris); library(rgdal); library(htmltools); library(viridis)
-counties.t <- counties(state = "41", resolution = "500k")
+counties.t <- counties(state = "41", resolution = "500k", class="sf")
 OC22 <- Oregon.COVID %>% filter(date=="2020-03-22")
 Map.L <- merge(counties.t, OC22, by.x="NAME", by.y= "County")
 ```
