@@ -250,13 +250,13 @@ There are four main `dplyr` verbs that we will play with, and some helpers.
 - Valid with `==`
 - Can use `%in%` with a vector `c()`.
 
-<small>
+
 ```{r}
-FastFood %>% filter(restaurant=="Taco Bell")
-FastFood %>% filter(restaurant%in%c("Taco Bell","Burger King"))
+FastFood %>% filter(restaurant == "Taco Bell")
+FastFood %>% filter(restaurant %in% c("Taco Bell","Burger King"))
 FastFood %>% filter(startsWith(restaurant,"S")==TRUE) %>% group_by(restaurant) %>% skim()
 ```
-</small>
+
 
 ---
 ## filter [2 of 3]

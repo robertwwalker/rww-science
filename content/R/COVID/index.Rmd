@@ -1,7 +1,7 @@
 ---
 title: COVID-19 in Oregon
 author: Robert W. Walker
-date: '2020-04-05'
+date: '2020-04-08'
 ---
 
 ```{r setup, include=FALSE}
@@ -13,7 +13,7 @@ library(tidyverse)
 
 I wanted to create a self-updating visualization of [the data on COVID-19 in the state of Oregon provided by OHA](https://govstatus.egov.com/OR-OHA-COVID-19).  There is a [separate page of daily maps](https://rww.science/r/covid-maps/).  Oregon reports a set of daily snapshots while progression requires ingesting new data each day so  I began tracking it March 20; the process of scraping it is detailed in [a separate file](https://rww.science/r/covid-scraping/).  This updates, expands, and consolidates two previous posts [here](https://rww.science/2020/03/21/covid-19-in-oregon/) and [here](https://rww.science/2020/03/24/covid-19-county-maps-for-oregon/).  A few cautionary notes.  First, these are cumulative case counts that are almost certainly incomplete.  Second, there is reason to believe that the death numbers may also be incomplete because it is dangerous to police and first responders are spread thinly.
 
-These data are current as of April 5, 2020; this first bit of R code loads the current data from my github.
+This post is current as of April 8, 2020; this first bit of R code loads the current data from my github.
 
 ```{r, eval=FALSE}
 library(tigris)
@@ -57,7 +57,9 @@ The central takeaway is that the underlying data reports are constantly changing
 
 *2020-03-31* The status of COVID patients and available hospital details were previously in one table but now were split into two parts.  The underlying auto-scraper required changes.
 
-*2020-04-02* The status of COVID patients and available hospital details are pending in the report.  I have updated the rest.  This remains true as of April 5, 2020.
+*2020-04-02* The status of COVID patients and available hospital details are pending in the report.  I have updated the rest.  This remains true as of April 5, 2020.  
+
+*2020-04-08* It came back yesterday.
 
 # A base map
 
@@ -95,7 +97,7 @@ ResA
 ```{r, warning=FALSE, message=FALSE}
 library(plotly)
 Res1 <- Res.1 %>% 
-  mutate(Percent.Positive = Number.of.cases / Negative.test.results) %>%
+  mutate(Percent.Positive = Number.of.cases / (Number.of.cases + Negative.test.results) ) %>%
   filter(Negative.test.results > 10) %>% 
   ggplot(., aes(geometry=geometry, fill=Percent.Positive, label=NAME, text=TTip)) + 
    geom_sf() + 
@@ -117,10 +119,10 @@ Test1 <- Oregon.Tests %>%
   ggplot(.) + 
   aes(x=date, y=Outcome, fill=Category, label=Outcome) + 
   geom_col() + 
-  geom_label(col="magenta", show.legend = FALSE, vjust=1, size=2.5) + 
+  geom_label(col="magenta", show.legend = FALSE, vjust=1, size=2) + 
   scale_fill_viridis_d() + 
   labs(title="Cumulative [since January 2020] COVID-19 Testing in Oregon", y="Completed Tests", x="Date", subtitle="Total appears in black and white", caption = "data: https://govstatus.egov.com/OR-OHA-COVID-19") + 
-  geom_label(data=OR.Testing, aes(x=date, y=Total+100, label=Total), fill="white", color="black", inherit.aes = FALSE, vjust = 0, size=2.5)
+  geom_label(data=OR.Testing, aes(x=date, y=Total+100, label=Total), fill="white", color="black", inherit.aes = FALSE, vjust = 0, size=2)
 Test1
 ```
 
@@ -150,10 +152,27 @@ MyDat <- Oregon.Tests %>%
 MyDat %>% 
   ggplot(., aes(x=date, y=Test.Changes, fill=Outcome)) + 
   geom_col(position="fill") + 
-  geom_label(data=MyDat, aes(x=date, y=Positive.Pct, label=Positive.Pct), size=2.5, inherit.aes = TRUE, show.legend=FALSE) + 
+  geom_label(data=MyDat, aes(x=date, y=Positive.Pct, label=Positive.Pct), size=2, inherit.aes = TRUE, show.legend=FALSE) + 
   scale_fill_ipsum() + 
   labs(title="Daily Distribution of Test Outcomes", subtitle="Percent of Positive Tests Shown")
 ```
+
+## Testing by County
+
+```{r, warning=FALSE, message=FALSE}
+library(rvest); library(htmltools)
+read_html("https://www.oregon-demographics.com/counties_by_population") %>% html_nodes("table") %>% .[1] %>% html_table(fill=TRUE) %>% data.frame() -> ORPOP
+ORPOP[1:36,] %>% mutate(county = str_remove(County, " County"), Population = as.numeric(str_remove(Population,","))) -> ORPOP
+Res.2 <- left_join(Res.1,ORPOP, by= c( "NAME" = "county")) %>% mutate(PerCap.Tests = (Number.of.cases + Negative.test.results) / Population)
+R2GPM <- Res.2 %>% ggplot(., aes(geometry=geometry, fill=PerCap.Tests, label=NAME, text=TTip)) + 
+   geom_sf() + 
+   scale_fill_viridis_c(option = "A") + 
+   theme_map() + 
+   labs(title="Per capita testing in Oregon", subtitle=Sys.Date(), fill="Percent Tested")
+R2GPM3 <- ggplotly(R2GPM)
+frameWidget(R2GPM3)
+```
+
 
 
 # Hospitalization Data for Oregon

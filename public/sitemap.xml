@@ -3,27 +3,17 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>/categories/</loc>
+    <lastmod>2020-04-07T16:53:35-07:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/r/covid/</loc>
-    <lastmod>2020-04-06T14:50:35-07:00</lastmod>
+    <lastmod>2020-04-07T16:53:35-07:00</lastmod>
   </url>
   
   <url>
     <loc>/r/covid-maps/</loc>
-    <lastmod>2020-04-06T14:50:35-07:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/</loc>
-    <lastmod>2020-04-06T14:50:35-07:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/2020/04/03/a-geofacet-of-credit-quality/</loc>
-    <lastmod>2020-04-04T19:55:04-07:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/categories/</loc>
     <lastmod>2020-04-06T14:50:35-07:00</lastmod>
   </url>
   
@@ -33,23 +23,43 @@
   </url>
   
   <url>
-    <loc>/tags/maps/</loc>
-    <lastmod>2020-04-04T19:55:04-07:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/2020/04/03/new-york-times-data-on-covid/</loc>
+    <loc>/2020/04/08/new-york-times-data-on-covid/</loc>
     <lastmod>2020-04-06T14:50:35-07:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/panel-data/</loc>
-    <lastmod>2020-04-04T19:55:04-07:00</lastmod>
   </url>
   
   <url>
     <loc>/tags/plot/</loc>
     <lastmod>2020-04-06T14:50:35-07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/r/</loc>
+    <lastmod>2020-04-07T16:53:35-07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/</loc>
+    <lastmod>2020-04-07T16:53:35-07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/</loc>
+    <lastmod>2020-04-07T16:53:35-07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/2020/04/03/a-geofacet-of-credit-quality/</loc>
+    <lastmod>2020-04-04T19:55:04-07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/maps/</loc>
+    <lastmod>2020-04-07T16:53:35-07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/panel-data/</loc>
+    <lastmod>2020-04-04T19:55:04-07:00</lastmod>
   </url>
   
   <url>
@@ -63,18 +73,8 @@
   </url>
   
   <url>
-    <loc>/categories/r/</loc>
-    <lastmod>2020-04-06T14:50:35-07:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/</loc>
-    <lastmod>2020-04-06T14:50:35-07:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/categories/tidyverse/</loc>
-    <lastmod>2020-04-04T19:55:04-07:00</lastmod>
+    <lastmod>2020-04-07T16:53:35-07:00</lastmod>
   </url>
   
   <url>
@@ -88,12 +88,12 @@
   </url>
   
   <url>
-    <loc>/tags/tidytuesday/</loc>
+    <loc>/categories/tidytuesday/</loc>
     <lastmod>2020-04-02T17:36:37-07:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/tidytuesday/</loc>
+    <loc>/tags/tidytuesday/</loc>
     <lastmod>2020-04-02T17:36:37-07:00</lastmod>
   </url>
   
@@ -124,7 +124,7 @@
   
   <url>
     <loc>/2020/03/21/covid-19-in-oregon/</loc>
-    <lastmod>2020-03-24T21:41:05-07:00</lastmod>
+    <lastmod>2020-04-07T16:53:35-07:00</lastmod>
   </url>
   
   <url>
@@ -158,22 +158,22 @@
   </url>
   
   <url>
-    <loc>/tags/python/</loc>
-    <lastmod>2020-02-24T00:09:44-08:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/categories/python/</loc>
     <lastmod>2020-02-24T00:09:44-08:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/reticulate/</loc>
+    <loc>/tags/python/</loc>
     <lastmod>2020-02-24T00:09:44-08:00</lastmod>
   </url>
   
   <url>
     <loc>/tags/reticulate/</loc>
+    <lastmod>2020-02-24T00:09:44-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/reticulate/</loc>
     <lastmod>2020-02-24T00:09:44-08:00</lastmod>
   </url>
   
@@ -208,12 +208,12 @@
   </url>
   
   <url>
-    <loc>/tags/blogdown/</loc>
+    <loc>/categories/blogdown/</loc>
     <lastmod>2020-02-04T14:46:56-08:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/blogdown/</loc>
+    <loc>/tags/blogdown/</loc>
     <lastmod>2020-02-04T14:46:56-08:00</lastmod>
   </url>
   

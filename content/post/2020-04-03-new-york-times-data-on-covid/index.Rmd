@@ -1,7 +1,7 @@
 ---
 title: New York Times Data on COVID
 author: Robert W. Walker
-date: '2020-04-03'
+date: '2020-04-08'
 slug: new-york-times-data-on-covid
 categories:
   - R
@@ -11,7 +11,7 @@ tags:
 subtitle: ''
 summary: ''
 authors: []
-lastmod: '2020-04-03T20:04:06-07:00'
+lastmod: '2020-04-07T20:04:06-07:00'
 featured: no
 image:
   caption: ''
@@ -111,7 +111,7 @@ Plot1 + Plot2
 Let me first track the incidence of new cases by state.  There is no particularly good way to visualize this because New York is wildly different.
 
 ```{r, warning=FALSE, message=FALSE}
-WCStates <- Rect.NYT %>% filter(date=="2020-04-04") %>% top_n(5, wt=New.Cases) %>% mutate(Top5 = 1)
+WCStates <- Rect.NYT %>% filter(date=="2020-04-06") %>% top_n(5, wt=New.Cases) %>% mutate(Top5 = 1)
 Rect.NYT %>% ggplot(., aes(x=date, y=New.Cases, color=state)) + 
   geom_line(alpha=0.25) + 
   geom_label_repel(data=WCStates, aes(label=state), inherit.aes = TRUE) +
@@ -152,5 +152,19 @@ ggplot(., aes(x=date, y=CFR)) +
 GPCFR <- ggplotly(CFR)
 library(widgetframe)
 frameWidget(GPCFR)
+```
+
+# 50 States?
+
+```{r, message=FALSE, warning=FALSE}
+library(fiftystater); library(maptools); library(ggthemes); library(ggmap)
+CFR2 <- Rect.NYT %>% filter(date == "2020-04-06") %>% mutate(CFR = round(deaths / cases, digits=3), State = state, state = tolower(State))
+CFR2 %>% filter(!(state %in% c("puerto rico","northern mariana islands", "virgin islands", "guam"))) %>% ggplot(., aes(fill=CFR, map_id=state)) + 
+  geom_map(map = fifty_states) + 
+    expand_limits(x = fifty_states$long, y = fifty_states$lat) +
+    coord_map() + scale_fill_continuous_tableau(palette="Classic Red", guide="colourbar") + theme_map() + labs(title="US Case Fatality Rate by State: April 6")
+#  geom_point(aes(color=CFR.D)) + 
+#  labs(title = "Case Fatality Rate of COVID-19 in the US", subtitle="Very uncertain estimate... Numerator and denominator uncertain \n Data: NY Times GitHub", caption="Data from nytimes/covid-19-data on guthub.", color="Greater \n than 0.02") + 
+#  dark_theme_bw()
 ```
 

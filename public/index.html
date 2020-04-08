@@ -239,7 +239,7 @@
   <meta property="og:description" content="Associate Professor of Quantitative Methods"><meta property="og:image" content="/img/portrait.jpg">
   <meta property="twitter:image" content="/img/portrait.jpg"><meta property="og:locale" content="en-us">
   
-    <meta property="og:updated_time" content="2020-04-05T00:00:00&#43;00:00">
+    <meta property="og:updated_time" content="2020-04-08T00:00:00&#43;00:00">
   
 
   
@@ -1159,7 +1159,7 @@
           Last updated on
       
     
-    Apr 4, 2020
+    Apr 6, 2020
   </span>
   
 
@@ -1168,7 +1168,7 @@
   
   <span class="middot-divider"></span>
   <span class="article-reading-time">
-    1 min read
+    5 min read
   </span>
   
 
@@ -1180,7 +1180,7 @@
   
   <span class="middot-divider"></span>
   <span class="article-categories">
-    <i class="fas fa-folder mr-1"></i><a href="/categories/tidyverse/">tidyverse</a>, <a href="/categories/r/">R</a>, <a href="/categories/public-finance/">Public Finance</a></span>
+    <i class="fas fa-folder mr-1"></i><a href="/categories/r/">R</a></span>
   
 
 </div>
@@ -1192,13 +1192,13 @@
   
 
   <h3 class="article-title mb-1 mt-3">
-    <a href="/2020/04/03/a-geofacet-of-credit-quality/">A GeoFacet of Credit Quality</a>
+    <a href="/2020/04/08/new-york-times-data-on-covid/">New York Times Data on COVID</a>
   </h3>
 
   
   <div class="article-style">
-    <p>In previous work with Skip Krueger, we conceptualized bond ratings as a multiple rater problem and extracted measure of state level creditworthiness. I had always had it on my list to do something like this and recently ran across a package called geofacet that makes it simply to easy to do. So here goes. The code is below the post.
-library(haven) library(dplyr) Pew.Data &lt;- read_dta(url(&quot;https://github.com/robertwwalker/academic-mymod/raw/master/data/Pew/modeledforprediction.dta&quot;)) library(tidyverse) load(url(&quot;https://github.com/robertwwalker/academic-mymod/raw/master/data/Pew/Scaled-BR-Pew.RData&quot;)) state.ratings &lt;- data.</p>
+    <p>New York Times data for the US The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-04-08 16:04:30.
+ The @jburnmurdoch graphics for US States Deaths options(scipen=9) library(tidyverse); library(hrbrthemes); library(patchwork); library(plotly); library(ggdark); library(ggrepel) state.data &lt;- read_csv(url(&quot;https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv&quot;)) Rect.NYT &lt;- complete(state.data, state,date) Rect.NYT &lt;- Rect.NYT %&gt;% group_by(state) %&gt;% mutate(New.</p>
   </div>
   
 
@@ -1241,7 +1241,7 @@ library(haven) library(dplyr) Pew.Data &lt;- read_dta(url(&quot;https://github.c
           Last updated on
       
     
-    Apr 6, 2020
+    Apr 4, 2020
   </span>
   
 
@@ -1250,7 +1250,7 @@ library(haven) library(dplyr) Pew.Data &lt;- read_dta(url(&quot;https://github.c
   
   <span class="middot-divider"></span>
   <span class="article-reading-time">
-    4 min read
+    1 min read
   </span>
   
 
@@ -1262,7 +1262,7 @@ library(haven) library(dplyr) Pew.Data &lt;- read_dta(url(&quot;https://github.c
   
   <span class="middot-divider"></span>
   <span class="article-categories">
-    <i class="fas fa-folder mr-1"></i><a href="/categories/r/">R</a></span>
+    <i class="fas fa-folder mr-1"></i><a href="/categories/tidyverse/">tidyverse</a>, <a href="/categories/r/">R</a>, <a href="/categories/public-finance/">Public Finance</a></span>
   
 
 </div>
@@ -1274,13 +1274,13 @@ library(haven) library(dplyr) Pew.Data &lt;- read_dta(url(&quot;https://github.c
   
 
   <h3 class="article-title mb-1 mt-3">
-    <a href="/2020/04/03/new-york-times-data-on-covid/">New York Times Data on COVID</a>
+    <a href="/2020/04/03/a-geofacet-of-credit-quality/">A GeoFacet of Credit Quality</a>
   </h3>
 
   
   <div class="article-style">
-    <p>New York Times data for the US The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-04-06 14:13:24.
- The @jburnmurdoch graphics for US States Deaths options(scipen=9) library(tidyverse); library(hrbrthemes); library(patchwork); library(plotly); library(ggdark); library(ggrepel) state.data &lt;- read_csv(url(&quot;https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv&quot;)) Rect.NYT &lt;- complete(state.data, state,date) Rect.NYT &lt;- Rect.NYT %&gt;% group_by(state) %&gt;% mutate(New.</p>
+    <p>In previous work with Skip Krueger, we conceptualized bond ratings as a multiple rater problem and extracted measure of state level creditworthiness. I had always had it on my list to do something like this and recently ran across a package called geofacet that makes it simply to easy to do. So here goes. The code is below the post.
+library(haven) library(dplyr) Pew.Data &lt;- read_dta(url(&quot;https://github.com/robertwwalker/academic-mymod/raw/master/data/Pew/modeledforprediction.dta&quot;)) library(tidyverse) load(url(&quot;https://github.com/robertwwalker/academic-mymod/raw/master/data/Pew/Scaled-BR-Pew.RData&quot;)) state.ratings &lt;- data.</p>
   </div>
   
 
