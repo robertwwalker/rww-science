@@ -83,9 +83,11 @@ OHA.Corona <- function(website, date) {
     html_nodes("table") %>% # 2
     .[7] %>%
     html_table(fill = TRUE) %>% # 3
-    data.frame()  %>%  # 4
-    mutate(date=as.Date(date), 
-           Scraped.date = as.Date(Scraped.date,"%m.%d.%y"))
+    data.frame() %>% filter(row_number() < 4) %>% 
+    mutate(date=as.Date(date),  
+           Scraped.date = as.Date(Scraped.date,"%m.%d.%y"),
+           COVID19.Patients = Currently.hospitalized.COVID.19.patients., 
+           COVID19.Positives = Currently.hospitalized.COVID.19.positive.patients..)  
   return(list(Header=COVID.Head, Counties = COVID.County, Gender = COVID.Gender, Ages = COVID.Age, Hospitalized = COVID.Hospitalized, Hospital.Cap=COVID.Hospital.Cap, COVID.Strain = COVID.Strain))
 }
 Today <- OHA.Corona(website="https://govstatus.egov.com/OR-OHA-COVID-19", date=as.character(Sys.Date())) # 2

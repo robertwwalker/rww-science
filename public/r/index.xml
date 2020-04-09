@@ -39,7 +39,7 @@ library(patchwork)
 library(hrbrthemes)
 library(widgetframe)
 load(url(paste0(&amp;quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&amp;quot;,Sys.Date(),&amp;quot;.RData&amp;quot;)))&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Verifying, these data are current as of 2020-04-08 according to the loaded dataset.&lt;/p&gt;
+&lt;p&gt;Verifying, these data are current as of 2020-04-09 according to the loaded dataset.&lt;/p&gt;
 &lt;div id=&#34;a-running-commentary-on-the-data&#34; class=&#34;section level3&#34;&gt;
 &lt;h3&gt;A running commentary on the data&lt;/h3&gt;
 &lt;p&gt;The central takeaway is that the underlying data reports are constantly changing over time. They are reporting new and different quantities and this destroys the comparability of data. Some of it can be reconstructed but much of it is only useful going forward and keeping the schema constant. I hope that will happen at some point.&lt;/p&gt;
@@ -318,7 +318,7 @@ library(gganimate)
 library(patchwork)
 library(hrbrthemes)
 load(url(paste0(&amp;quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&amp;quot;,Sys.Date(),&amp;quot;.RData&amp;quot;)))&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Verifying, these data are current as of 2020-04-08 according to the loaded dataset.&lt;/p&gt;
+&lt;p&gt;Verifying, these data are current as of 2020-04-09 according to the loaded dataset.&lt;/p&gt;
 &lt;div id=&#34;a-base-map&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;A base map&lt;/h1&gt;
 &lt;p&gt;To build a map to work from, I need a map library. Load the &lt;code&gt;tigris&lt;/code&gt; library then grab the map as an &lt;code&gt;sf&lt;/code&gt; object; there is a &lt;code&gt;geom_sf&lt;/code&gt; that makes them easy to work with. Finally, I join the map to the data.&lt;/p&gt;
@@ -441,6 +441,21 @@ data %&amp;gt;% filter(date==date1) %&amp;gt;%
 &lt;/div&gt;
 &lt;div id=&#34;the-result-for-04062020&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;The Result for 04/06/2020&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Plot.COVID(&amp;quot;2020-04-06&amp;quot;, Map.Me)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/covid-maps/index_files/figure-html/unnamed-chunk-24-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-result-for-04072020&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;The Result for 04/07/2020&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Plot.COVID(&amp;quot;2020-04-07&amp;quot;, Map.Me)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/covid-maps/index_files/figure-html/unnamed-chunk-25-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-result-for-04082020&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;The Result for 04/08/2020&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Plot.COVID(&amp;quot;2020-04-08&amp;quot;, Map.Me)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/covid-maps/index_files/figure-html/unnamed-chunk-26-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-result-for-04092020&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;The Result for 04/09/2020&lt;/h2&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(widgetframe); library(ggthemes); library(RColorBrewer)
 Map.Me &amp;lt;- Map.Me %&amp;gt;% 
   mutate(TTip = paste0(&amp;quot;Deaths: &amp;quot;,Deaths,&amp;quot;&amp;lt;br&amp;gt; Negative Tests:&amp;quot;,Negative.test.results))
@@ -458,7 +473,7 @@ Res1 &amp;lt;- ggplot(Res.1, aes(geometry=geometry, fill=Number.of.cases, label=
 ggp &amp;lt;- ggplotly(Res1)
 frameWidget(ggp)&lt;/code&gt;&lt;/pre&gt;
 &lt;div id=&#34;htmlwidget-1&#34; style=&#34;width:100%;height:480px;&#34; class=&#34;widgetframe html-widget&#34;&gt;&lt;/div&gt;
-&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-1&#34;&gt;{&#34;x&#34;:{&#34;url&#34;:&#34;/R/covid-maps/index_files/figure-html//widgets/widget_unnamed-chunk-25.html&#34;,&#34;options&#34;:{&#34;xdomain&#34;:&#34;*&#34;,&#34;allowfullscreen&#34;:false,&#34;lazyload&#34;:false}},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-1&#34;&gt;{&#34;x&#34;:{&#34;url&#34;:&#34;/R/covid-maps/index_files/figure-html//widgets/widget_unnamed-chunk-28.html&#34;,&#34;options&#34;:{&#34;xdomain&#34;:&#34;*&#34;,&#34;allowfullscreen&#34;:false,&#34;lazyload&#34;:false}},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 </description>
