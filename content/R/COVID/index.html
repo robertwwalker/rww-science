@@ -1,7 +1,7 @@
 ---
 title: COVID-19 in Oregon
 author: Robert W. Walker
-date: '2020-04-08'
+date: '2020-04-09'
 ---
 
 <script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
@@ -12,7 +12,7 @@ date: '2020-04-08'
 <div id="oregon-covid-data" class="section level1">
 <h1>Oregon COVID data</h1>
 <p>I wanted to create a self-updating visualization of <a href="https://govstatus.egov.com/OR-OHA-COVID-19">the data on COVID-19 in the state of Oregon provided by OHA</a>. There is a <a href="https://rww.science/r/covid-maps/">separate page of daily maps</a>. Oregon reports a set of daily snapshots while progression requires ingesting new data each day so I began tracking it March 20; the process of scraping it is detailed in <a href="https://rww.science/r/covid-scraping/">a separate file</a>. This updates, expands, and consolidates two previous posts <a href="https://rww.science/2020/03/21/covid-19-in-oregon/">here</a> and <a href="https://rww.science/2020/03/24/covid-19-county-maps-for-oregon/">here</a>. A few cautionary notes. First, these are cumulative case counts that are almost certainly incomplete. Second, there is reason to believe that the death numbers may also be incomplete because it is dangerous to police and first responders are spread thinly.</p>
-<p>This post is current as of April 8, 2020; this first bit of R code loads the current data from my github.</p>
+<p>This post is current as of April 9, 2020; this first bit of R code loads the current data from my github.</p>
 <pre class="r"><code>library(tigris)
 library(rgdal)
 library(htmltools)
@@ -58,7 +58,7 @@ Res.1 &lt;- Map.Me %&gt;%
     segment.colour = &quot;white&quot;,
     size = 3,
     box.padding = unit(0.05, &quot;lines&quot;))  + scale_fill_continuous_tableau(&quot;Red&quot;) + theme_minimal() + labs(title=&quot;COVID-19 in Oregon&quot;, subtitle=&quot;{frame_time}&quot;, x=&quot;&quot;, y=&quot;&quot;, caption=&quot;Made with R, ggplot2, and ggrepel by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19&quot;) + transition_time(date)
-ResA &lt;- animate(Anim1, end_pause=100, nframes=200)
+ResA &lt;- animate(Anim1, end_pause=80, nframes=200)
 ResA</code></pre>
 <p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-4-1.gif" /><!-- --></p>
 </div>

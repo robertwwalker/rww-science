@@ -15,7 +15,7 @@
     <item>
       <title>COVID-19 in Oregon</title>
       <link>/r/covid/</link>
-      <pubDate>Wed, 08 Apr 2020 00:00:00 +0000</pubDate>
+      <pubDate>Thu, 09 Apr 2020 00:00:00 +0000</pubDate>
       <guid>/r/covid/</guid>
       <description>
 &lt;script src=&#34;/rmarkdown-libs/htmlwidgets/htmlwidgets.js&#34;&gt;&lt;/script&gt;
@@ -26,7 +26,7 @@
 &lt;div id=&#34;oregon-covid-data&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;Oregon COVID data&lt;/h1&gt;
 &lt;p&gt;I wanted to create a self-updating visualization of &lt;a href=&#34;https://govstatus.egov.com/OR-OHA-COVID-19&#34;&gt;the data on COVID-19 in the state of Oregon provided by OHA&lt;/a&gt;. There is a &lt;a href=&#34;https://rww.science/r/covid-maps/&#34;&gt;separate page of daily maps&lt;/a&gt;. Oregon reports a set of daily snapshots while progression requires ingesting new data each day so I began tracking it March 20; the process of scraping it is detailed in &lt;a href=&#34;https://rww.science/r/covid-scraping/&#34;&gt;a separate file&lt;/a&gt;. This updates, expands, and consolidates two previous posts &lt;a href=&#34;https://rww.science/2020/03/21/covid-19-in-oregon/&#34;&gt;here&lt;/a&gt; and &lt;a href=&#34;https://rww.science/2020/03/24/covid-19-county-maps-for-oregon/&#34;&gt;here&lt;/a&gt;. A few cautionary notes. First, these are cumulative case counts that are almost certainly incomplete. Second, there is reason to believe that the death numbers may also be incomplete because it is dangerous to police and first responders are spread thinly.&lt;/p&gt;
-&lt;p&gt;This post is current as of April 8, 2020; this first bit of R code loads the current data from my github.&lt;/p&gt;
+&lt;p&gt;This post is current as of April 9, 2020; this first bit of R code loads the current data from my github.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(tigris)
 library(rgdal)
 library(htmltools)
@@ -72,7 +72,7 @@ Res.1 &amp;lt;- Map.Me %&amp;gt;%
     segment.colour = &amp;quot;white&amp;quot;,
     size = 3,
     box.padding = unit(0.05, &amp;quot;lines&amp;quot;))  + scale_fill_continuous_tableau(&amp;quot;Red&amp;quot;) + theme_minimal() + labs(title=&amp;quot;COVID-19 in Oregon&amp;quot;, subtitle=&amp;quot;{frame_time}&amp;quot;, x=&amp;quot;&amp;quot;, y=&amp;quot;&amp;quot;, caption=&amp;quot;Made with R, ggplot2, and ggrepel by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19&amp;quot;) + transition_time(date)
-ResA &amp;lt;- animate(Anim1, end_pause=100, nframes=200)
+ResA &amp;lt;- animate(Anim1, end_pause=80, nframes=200)
 ResA&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-4-1.gif&#34; /&gt;&lt;!-- --&gt;&lt;/p&gt;
 &lt;/div&gt;
