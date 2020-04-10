@@ -88,10 +88,10 @@ Anim1 <- Map.Me %>%
     segment.colour = "white",
     size = 3,
     box.padding = unit(0.05, "lines"))  + scale_fill_continuous_tableau("Red") + theme_minimal() + labs(title="COVID-19 in Oregon", subtitle="{frame_time}", x="", y="", caption="Made with R, ggplot2, and ggrepel by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19") + transition_time(date)
-ResA <- animate(Anim1, end_pause=80, nframes=200)
-ResA
+GGAnim <- animate(Anim1, end_pause=100, nframes=300)
+save_animation(GGAnim, file="./MapAnim.gif")
 ```
-
+![County animation](./MapAnim.gif)
 # Percent Positive by State
 
 ```{r, warning=FALSE, message=FALSE}
@@ -164,7 +164,7 @@ library(rvest); library(htmltools)
 read_html("https://www.oregon-demographics.com/counties_by_population") %>% html_nodes("table") %>% .[1] %>% html_table(fill=TRUE) %>% data.frame() -> ORPOP
 ORPOP[1:36,] %>% mutate(county = str_remove(County, " County"), Population = as.numeric(str_remove(Population,","))) -> ORPOP
 Res.2 <- left_join(Res.1,ORPOP, by= c( "NAME" = "county")) %>% mutate(PerCap.Tests = (Number.of.cases + Negative.test.results) / Population)
-R2GPM <- Res.2 %>% ggplot(., aes(geometry=geometry, fill=PerCap.Tests, label=NAME, text=TTip)) + 
+R2GPM <- Res.2 %>% ggplot(., aes(geometry=geometry, fill=PerCap.Tests, label=NAME, text=TTip)) +
    geom_sf() + 
    scale_fill_viridis_c(option = "A") + 
    theme_map() + 

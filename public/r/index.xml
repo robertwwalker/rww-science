@@ -72,12 +72,10 @@ Res.1 &amp;lt;- Map.Me %&amp;gt;%
     segment.colour = &amp;quot;white&amp;quot;,
     size = 3,
     box.padding = unit(0.05, &amp;quot;lines&amp;quot;))  + scale_fill_continuous_tableau(&amp;quot;Red&amp;quot;) + theme_minimal() + labs(title=&amp;quot;COVID-19 in Oregon&amp;quot;, subtitle=&amp;quot;{frame_time}&amp;quot;, x=&amp;quot;&amp;quot;, y=&amp;quot;&amp;quot;, caption=&amp;quot;Made with R, ggplot2, and ggrepel by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19&amp;quot;) + transition_time(date)
-ResA &amp;lt;- animate(Anim1, end_pause=80, nframes=200)
-ResA&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-4-1.gif&#34; /&gt;&lt;!-- --&gt;&lt;/p&gt;
-&lt;/div&gt;
-&lt;div id=&#34;percent-positive-by-state&#34; class=&#34;section level1&#34;&gt;
-&lt;h1&gt;Percent Positive by State&lt;/h1&gt;
+GGAnim &amp;lt;- animate(Anim1, end_pause=100, nframes=300)
+save_animation(GGAnim, file=&amp;quot;./MapAnim.gif&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;MapAnim.gif&#34; alt=&#34;County animation&#34; /&gt;
+# Percent Positive by State&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(plotly)
 Res1 &amp;lt;- Res.1 %&amp;gt;% 
   mutate(Percent.Positive = Number.of.cases / (Number.of.cases + Negative.test.results) ) %&amp;gt;%
@@ -140,7 +138,7 @@ MyDat %&amp;gt;%
 read_html(&amp;quot;https://www.oregon-demographics.com/counties_by_population&amp;quot;) %&amp;gt;% html_nodes(&amp;quot;table&amp;quot;) %&amp;gt;% .[1] %&amp;gt;% html_table(fill=TRUE) %&amp;gt;% data.frame() -&amp;gt; ORPOP
 ORPOP[1:36,] %&amp;gt;% mutate(county = str_remove(County, &amp;quot; County&amp;quot;), Population = as.numeric(str_remove(Population,&amp;quot;,&amp;quot;))) -&amp;gt; ORPOP
 Res.2 &amp;lt;- left_join(Res.1,ORPOP, by= c( &amp;quot;NAME&amp;quot; = &amp;quot;county&amp;quot;)) %&amp;gt;% mutate(PerCap.Tests = (Number.of.cases + Negative.test.results) / Population)
-R2GPM &amp;lt;- Res.2 %&amp;gt;% ggplot(., aes(geometry=geometry, fill=PerCap.Tests, label=NAME, text=TTip)) + 
+R2GPM &amp;lt;- Res.2 %&amp;gt;% ggplot(., aes(geometry=geometry, fill=PerCap.Tests, label=NAME, text=TTip)) +
    geom_sf() + 
    scale_fill_viridis_c(option = &amp;quot;A&amp;quot;) + 
    theme_map() + 

@@ -58,12 +58,10 @@ Res.1 &lt;- Map.Me %&gt;%
     segment.colour = &quot;white&quot;,
     size = 3,
     box.padding = unit(0.05, &quot;lines&quot;))  + scale_fill_continuous_tableau(&quot;Red&quot;) + theme_minimal() + labs(title=&quot;COVID-19 in Oregon&quot;, subtitle=&quot;{frame_time}&quot;, x=&quot;&quot;, y=&quot;&quot;, caption=&quot;Made with R, ggplot2, and ggrepel by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19&quot;) + transition_time(date)
-ResA &lt;- animate(Anim1, end_pause=80, nframes=200)
-ResA</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-4-1.gif" /><!-- --></p>
-</div>
-<div id="percent-positive-by-state" class="section level1">
-<h1>Percent Positive by State</h1>
+GGAnim &lt;- animate(Anim1, end_pause=100, nframes=300)
+save_animation(GGAnim, file=&quot;./MapAnim.gif&quot;)</code></pre>
+<p><img src="MapAnim.gif" alt="County animation" />
+# Percent Positive by State</p>
 <pre class="r"><code>library(plotly)
 Res1 &lt;- Res.1 %&gt;% 
   mutate(Percent.Positive = Number.of.cases / (Number.of.cases + Negative.test.results) ) %&gt;%
@@ -126,7 +124,7 @@ MyDat %&gt;%
 read_html(&quot;https://www.oregon-demographics.com/counties_by_population&quot;) %&gt;% html_nodes(&quot;table&quot;) %&gt;% .[1] %&gt;% html_table(fill=TRUE) %&gt;% data.frame() -&gt; ORPOP
 ORPOP[1:36,] %&gt;% mutate(county = str_remove(County, &quot; County&quot;), Population = as.numeric(str_remove(Population,&quot;,&quot;))) -&gt; ORPOP
 Res.2 &lt;- left_join(Res.1,ORPOP, by= c( &quot;NAME&quot; = &quot;county&quot;)) %&gt;% mutate(PerCap.Tests = (Number.of.cases + Negative.test.results) / Population)
-R2GPM &lt;- Res.2 %&gt;% ggplot(., aes(geometry=geometry, fill=PerCap.Tests, label=NAME, text=TTip)) + 
+R2GPM &lt;- Res.2 %&gt;% ggplot(., aes(geometry=geometry, fill=PerCap.Tests, label=NAME, text=TTip)) +
    geom_sf() + 
    scale_fill_viridis_c(option = &quot;A&quot;) + 
    theme_map() + 
