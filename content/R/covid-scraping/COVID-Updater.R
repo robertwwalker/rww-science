@@ -84,10 +84,11 @@ OHA.Corona <- function(website, date) {
     .[7] %>%
     html_table(fill = TRUE) %>% # 3
     data.frame() %>% filter(row_number() < 4) %>% 
-    mutate(date=as.Date(date),  
+    mutate(COVID.19.Details = COVID.19.details.,
+           date=as.Date(date),  
            Scraped.date = as.Date(Scraped.date,"%m.%d.%y"),
-           COVID19.Patients = Currently.hospitalized.COVID.19.patients., 
-           COVID19.Positives = Currently.hospitalized.COVID.19.positive.patients..)  
+           COVID19.Patients = Patients.with.suspected.or.confirmed.COVID.19, 
+           COVID19.Positives = Only.patients.with.confirmed.COVID.19)  
   return(list(Header=COVID.Head, Counties = COVID.County, Gender = COVID.Gender, Ages = COVID.Age, Hospitalized = COVID.Hospitalized, Hospital.Cap=COVID.Hospital.Cap, COVID.Strain = COVID.Strain))
 }
 Today <- OHA.Corona(website="https://govstatus.egov.com/OR-OHA-COVID-19", date=as.character(Sys.Date())) # 2
@@ -119,6 +120,8 @@ if(max(Oregon.COVID$Scraped.date) < as.Date(Today$Header$Scraped.date[[1]],"%m.%
 #  OR.Hospital.Caps <- Today$Hospital.Cap
   OR.Hospital.Caps <- bind_rows(Today$Hospital.Cap, OR.Hospital.Caps) %>% distinct(.) # 5 
 # Integrate the COVID Strain on Hospitals
+  OR.COVID.Strain$COVID19.Patients <- as.numeric(OR.COVID.Strain$COVID19.Patients)
+  OR.COVID.Strain$COVID19.Positives <- as.numeric(OR.COVID.Strain$COVID19.Positives)
   OR.COVID.Strain <- bind_rows(Today$COVID.Strain, OR.COVID.Strain) %>% distinct(.) # 5 
 # Save the imageformat(Sys.Date(), "%d")
 save.image(paste0("~/Sandbox/awful/content/R/COVID/data/OregonCOVID",Sys.Date(),".RData")) # Save the data with a date flag in the name.
