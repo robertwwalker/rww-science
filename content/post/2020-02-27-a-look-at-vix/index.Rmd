@@ -21,7 +21,7 @@ projects: []
 
 # Get Some VIX data
 
-**NB:  I originally wrote this on February 27, 2020 so there is commentary surrounding that date.  It was done on the quick for curiosity.**
+**NB:  I originally wrote this on February 27, 2020 so there is commentary surrounding that date.  It was done on the quick for curiosity.**  I will update it by recompiling it with new data and will update the commentary noting when it took place.
 
 Chicago Board Of Exchange (CBOE) makes data available regularly. To judge the currency of the data, I have tailed it below after converting the dates to a valid date format.  
 

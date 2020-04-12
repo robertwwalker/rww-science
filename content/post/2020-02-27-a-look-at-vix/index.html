@@ -1,5 +1,5 @@
 ---
-title: "A Look at VIX :2020-03-24"
+title: "A Look at VIX :2020-04-12"
 author: Robert W. Walker
 date: '2020-02-27'
 slug: a-look-at-vix
@@ -10,7 +10,7 @@ tags: []
 subtitle: ''
 summary: ''
 authors: []
-lastmod: "2020-03-24 21:17:35"
+lastmod: "2020-04-12 12:55:00"
 featured: no
 image:
   caption: ''
@@ -26,7 +26,7 @@ projects: []
 
 <div id="get-some-vix-data" class="section level1">
 <h1>Get Some VIX data</h1>
-<p><strong>NB: I originally wrote this on February 27, 2020 so there is commentary surrounding that date. It was done on the quick for curiosity.</strong></p>
+<p><strong>NB: I originally wrote this on February 27, 2020 so there is commentary surrounding that date. It was done on the quick for curiosity.</strong> I will update it by recompiling it with new data and will update the commentary noting when it took place.</p>
 <p>Chicago Board Of Exchange (CBOE) makes data available regularly. To judge the currency of the data, I have tailed it below after converting the dates to a valid date format.</p>
 <pre class="r"><code>library(tidyverse)
 VIX &lt;- read.csv(url(&quot;http://www.cboe.com/publish/scheduledtask/mktdata/datahouse/vixcurrent.csv&quot;), skip = 1)
@@ -34,12 +34,12 @@ VIX$Dates &lt;- as.Date(VIX$Date,
   format = &quot;%m/%d/%Y&quot;)
 tail(VIX)</code></pre>
 <pre><code>##            Date VIX.Open VIX.High VIX.Low VIX.Close      Dates
-## 4079 03/17/2020    82.69    84.83   70.37     75.91 2020-03-17
-## 4080 03/18/2020    69.37    85.47   69.37     76.45 2020-03-18
-## 4081 03/19/2020    80.62    84.26   68.57     72.00 2020-03-19
-## 4082 03/20/2020    67.86    69.51   57.42     66.04 2020-03-20
-## 4083 03/23/2020    74.08    76.74   60.46     61.59 2020-03-23
-## 4084 03/24/2020    58.76    61.88   36.24     61.67 2020-03-24</code></pre>
+## 4091 04/02/2020    54.46    57.24   50.45     50.91 2020-04-02
+## 4092 04/03/2020    51.11    52.29   46.74     46.80 2020-04-03
+## 4093 04/06/2020    44.17    45.73   43.45     45.24 2020-04-06
+## 4094 04/07/2020    44.83    47.51   43.51     46.70 2020-04-07
+## 4095 04/08/2020    45.90    47.28   42.53     43.35 2020-04-08
+## 4096 04/09/2020    43.00    45.73   41.39     41.67 2020-04-09</code></pre>
 <p>The data was straightforward to get a hold of. Now let me plot it. I want to do this with a candlestick plot – a way of displaying intra-day volatility. There’s so much data that the views aren’t great.</p>
 <pre class="r"><code>library(plotly)
 # create the candlestick plot

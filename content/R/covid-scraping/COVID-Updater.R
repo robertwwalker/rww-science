@@ -1,4 +1,4 @@
-# load(url(paste0("https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID",Sys.Date()-1,".RData"))) # 1
+load(url(paste0("https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID",Sys.Date()-1,".RData"))) # 1
 library(rvest); library(htmltools); library(tidyverse); library(rlang)
 # A function to remove commas from numbers.
 comma.rm.to.numeric <- function(variable) {
