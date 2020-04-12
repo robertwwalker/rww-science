@@ -213,12 +213,25 @@ Plot.COVID("2020-04-08", Map.Me)
 
 ## The Result for 04/09/2020
 
+```{r}
+Plot.COVID("2020-04-09", Map.Me)
+```
+
+## The Result for 04/10/2020
+
+```{r}
+Plot.COVID("2020-04-10", Map.Me)
+```
+
+
+## The Result for 04/11/2020
+
 ```{r, warning=FALSE, message=FALSE}
 library(widgetframe); library(ggthemes); library(RColorBrewer)
 Map.Me <- Map.Me %>% 
   mutate(TTip = paste0("Deaths: ",Deaths,"<br> Negative Tests:",Negative.test.results))
 Res.1 <- Map.Me %>% 
-  filter(date==Sys.Date())
+  filter(date==max(date))
 Res1 <- ggplot(Res.1, aes(geometry=geometry, fill=Number.of.cases, label=NAME, text=TTip)) + 
   geom_sf() + 
   scale_fill_viridis_c(option = "A") + 

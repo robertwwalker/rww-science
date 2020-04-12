@@ -25,7 +25,7 @@ library(patchwork)
 library(hrbrthemes)
 library(widgetframe)
 load(url(paste0(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&quot;,Sys.Date(),&quot;.RData&quot;)))</code></pre>
-<p>Verifying, these data are current as of 2020-04-10 according to the loaded dataset.</p>
+<p>Verifying, these data are current as of 2020-04-11 according to the loaded dataset.</p>
 <div id="a-running-commentary-on-the-data" class="section level3">
 <h3>A running commentary on the data</h3>
 <p>The central takeaway is that the underlying data reports are constantly changing over time. They are reporting new and different quantities and this destroys the comparability of data. Some of it can be reconstructed but much of it is only useful going forward and keeping the schema constant. I hope that will happen at some point.</p>
@@ -49,7 +49,7 @@ Res.1 &lt;- Map.Me %&gt;%
 <div id="summarising-the-county-data-an-animation" class="section level1">
 <h1>Summarising the County Data: An Animation</h1>
 <p>I will use a ggplot to build Oregon’s map and fill it with case numbers. <code>geom_sf()</code> plots the geometry. I have to repel the labels to prevent print overlap, and scheme the colors. The last step is to animate it by time. If I stop the label repelling, they will not bounce but it adds excitement. There is a <a href="https://rww.science/r/covid/maps/">separate page of daily maps</a>.</p>
-<pre class="r"><code>Anim1 &lt;- Map.Me %&gt;% filter(date &gt; &quot;2020-04-01&quot;) %&gt;% 
+<pre class="r"><code>Anim1 &lt;- Map.Me %&gt;% 
   ggplot(., aes(geometry=geometry, fill=Number.of.cases, label=NAME, group=NAME)) + 
   geom_sf() +
   geom_label_repel(stat = &quot;sf_coordinates&quot;,
@@ -221,59 +221,39 @@ OR.Sex.Reshape %&gt;%
   labs(x=&quot;Date&quot;, y=&quot;Case Fatality Ratio&quot;, title=&quot;Oregon&#39;s Cumulative Case Fatality Ratio by Sex&quot;)</code></pre>
 <p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 </div>
-<div id="hospital-capacity-data" class="section level1">
-<h1>Hospital Capacity Data</h1>
-<p>The reported entries here vary a lot over time; they seem not to have figured out exactly what they wish to report.</p>
-<pre class="r"><code>OR.Hospital.Caps &lt;- OR.Hospital.Caps %&gt;% 
-  mutate(Capacity = Hospital.Capacity) %&gt;% 
-  filter(Capacity != &quot;ICU beds&quot;) %&gt;% 
-  filter(Capacity != &quot;Non-ICU beds&quot;)
-OR.Hospital.Caps  %&gt;% ggplot() +
- aes(x = date, y = Number) +
- geom_col(position = &quot;dodge&quot;, fill=&quot;purple&quot;) +
- theme_economist() +
- facet_wrap(vars(Capacity), scales = &quot;free_y&quot;)</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
-</div>
 <div id="analysis-over-time" class="section level1">
 <h1>Analysis over Time</h1>
 <div id="admissions" class="section level2">
 <h2>Admissions</h2>
-<pre class="r"><code>OR.COVID.Strain %&gt;% filter(COVID.19.Details==&quot;COVID-19 admissions&quot;) %&gt;% ggplot(., aes(x=date, y=Number)) + geom_point() + geom_line() + labs(title=&quot;COVID-19 Admissions&quot;, x=&quot;Date&quot;, y=&quot;Count&quot;, caption = &quot;data: https://govstatus.egov.com/OR-OHA-COVID-19 \n By: @PieRatio&quot;) + theme_ipsum() + theme(axis.text.x = element_text(angle = 90))</code></pre>
+<pre class="r"><code>OR.COVID.Strain %&gt;% filter(COVID.19.Details==&quot;COVID-19 admissions&quot;) %&gt;% ggplot(., aes(x=date, y=COVID19.Patients)) + geom_point() + geom_line() + labs(title=&quot;COVID-19 Admissions&quot;, x=&quot;Date&quot;, y=&quot;Count&quot;, caption = &quot;data: https://govstatus.egov.com/OR-OHA-COVID-19 \n By: @PieRatio&quot;) + theme_ipsum() + theme(axis.text.x = element_text(angle = 90))</code></pre>
+<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+</div>
+<div id="hospital-capacity" class="section level2">
+<h2>Hospital Capacity</h2>
+<pre class="r"><code>OR.Hospital.Caps %&gt;% filter(date &gt; &quot;2020-03-28&quot;) %&gt;%
+  filter(Hospital.Capacity != &quot;Ventilators&quot;) %&gt;% 
+  ggplot(.) +
+    aes(x = date, fill = Type, colour = Type, y = Number) +
+    geom_area(alpha=0.2) +
+    hrbrthemes::scale_fill_ipsum() +
+    hrbrthemes::scale_color_ipsum() +
+    theme_minimal() +
+    facet_wrap(vars(Hospital.Capacity), scales = &quot;free_y&quot;)</code></pre>
 <p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
 </div>
 <div id="ventilators" class="section level2">
 <h2>Ventilators</h2>
-<pre class="r"><code>Vent1 &lt;- OR.Hospital.Caps %&gt;% 
-  filter(str_detect(Capacity, &quot;Ventilators&quot;)) %&gt;% 
-  filter(Type!=&quot;Total&quot;) %&gt;% 
-  select(-Hospital.Capacity)
-Vent2 &lt;- OR.COVID.Strain %&gt;% 
+<pre class="r"><code>Vents &lt;- OR.COVID.Strain %&gt;% 
   filter(str_detect(COVID.19.Details, &quot;ventilators&quot;)) %&gt;% 
   mutate(Capacity = COVID.19.Details) %&gt;% 
   select(-COVID.19.Details)
-Vents &lt;- bind_rows(Vent1,Vent2)
 Vents %&gt;% 
-  ggplot(., aes(x=date, y=Number)) + 
+  ggplot(., aes(x=date, y=COVID19.Patients)) + 
   geom_point() + 
   geom_line() + 
   labs(title=&quot;Ventilators in Oregon&quot;, x=&quot;Date&quot;, y=&quot;Count&quot;, caption = &quot;data: https://govstatus.egov.com/OR-OHA-COVID-19 \n By: @PieRatio&quot;) + 
   theme_ipsum() + theme(axis.text.x = element_text(angle = 90)) + 
   facet_wrap(vars(Capacity), scales = &quot;free_y&quot;)</code></pre>
 <p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
-</div>
-<div id="beds" class="section level2">
-<h2>Beds</h2>
-<pre class="r"><code>OR.Hospital.Caps %&gt;% 
-  filter(Capacity!=&quot;Ventilators&quot;) %&gt;% 
-  filter(Type!=&quot;Total&quot;) %&gt;% 
-  ggplot(., aes(x=date, y=Number)) + 
-  geom_point() + 
-  geom_line() + 
-  labs(title=&quot;Available Beds in Oregon&quot;, x=&quot;Date&quot;, y=&quot;Count&quot;, caption = &quot;data: https://govstatus.egov.com/OR-OHA-COVID-19 \n By: @PieRatio&quot;) + 
-  theme_ipsum() + 
-  theme(axis.text.x = element_text(angle = 90)) + 
-  facet_wrap(vars(Capacity), scales = &quot;free_y&quot;)</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
 </div>
 </div>

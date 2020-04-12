@@ -1,4 +1,4 @@
-load(url(paste0("https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID",Sys.Date()-1,".RData"))) # 1
+# load(url(paste0("https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID",Sys.Date()-1,".RData"))) # 1
 library(rvest); library(htmltools); library(tidyverse); library(rlang)
 # A function to remove commas from numbers.
 comma.rm.to.numeric <- function(variable) {
@@ -77,7 +77,8 @@ OHA.Corona <- function(website, date) {
            Scraped.date = as.Date(Scraped.date,"%m.%d.%y"),
            Available = comma.rm.to.numeric(na_if(Available, "pending")),
            Total = comma.rm.to.numeric(na_if(Total, "pending"))) %>% 
-           pivot_longer(c(Available, Total), names_to = "Type", values_to = "Number") # 5
+           pivot_longer(c(Available, Total), names_to = "Type", values_to = "Number") %>% 
+    mutate(Hospital.Capacity = Hospital.capacity.and.usage.as.reported.to.HOSCAP.) %>% select(-Hospital.capacity.and.usage.as.reported.to.HOSCAP.) # 5
   # Extract the COVID data
   COVID.Strain <- webpage %>%
     html_nodes("table") %>% # 2
@@ -88,7 +89,10 @@ OHA.Corona <- function(website, date) {
            date=as.Date(date),  
            Scraped.date = as.Date(Scraped.date,"%m.%d.%y"),
            COVID19.Patients = Patients.with.suspected.or.confirmed.COVID.19, 
-           COVID19.Positives = Only.patients.with.confirmed.COVID.19)  
+           COVID19.Positives = Only.patients.with.confirmed.COVID.19) %>% 
+    select(COVID.19.Details,date,Scraped.date,COVID19.Patients,COVID19.Positives) %>% 
+    mutate(COVID.19.Details = str_replace(COVID.19.Details, "Current hospitalized patients", "COVID-19 admissions")) %>%
+    mutate(COVID.19.Details = str_replace(COVID.19.Details, "Current patients", "COVID-19 patients"))
   return(list(Header=COVID.Head, Counties = COVID.County, Gender = COVID.Gender, Ages = COVID.Age, Hospitalized = COVID.Hospitalized, Hospital.Cap=COVID.Hospital.Cap, COVID.Strain = COVID.Strain))
 }
 Today <- OHA.Corona(website="https://govstatus.egov.com/OR-OHA-COVID-19", date=as.character(Sys.Date())) # 2
@@ -120,8 +124,9 @@ if(max(Oregon.COVID$Scraped.date) < as.Date(Today$Header$Scraped.date[[1]],"%m.%
 #  OR.Hospital.Caps <- Today$Hospital.Cap
   OR.Hospital.Caps <- bind_rows(Today$Hospital.Cap, OR.Hospital.Caps) %>% distinct(.) # 5 
 # Integrate the COVID Strain on Hospitals
-  OR.COVID.Strain$COVID19.Patients <- as.numeric(OR.COVID.Strain$COVID19.Patients)
-  OR.COVID.Strain$COVID19.Positives <- as.numeric(OR.COVID.Strain$COVID19.Positives)
+#  OR.COVID.Strain$COVID19.Patients <- as.numeric(OR.COVID.Strain$COVID19.Patients)
+#  OR.COVID.Strain$COVID19.Positives <- as.numeric(OR.COVID.Strain$COVID19.Positives)
+#  OR.COVID.Strain <- OR.COVID.Strain %>% mutate(date = as.Date(as.character(date), format = "%Y-%m-%d"), Scraped.date = as.Date(as.character(Scraped.date), format = "%Y-%m-%d"))
   OR.COVID.Strain <- bind_rows(Today$COVID.Strain, OR.COVID.Strain) %>% distinct(.) # 5 
 # Save the imageformat(Sys.Date(), "%d")
 save.image(paste0("~/Sandbox/awful/content/R/COVID/data/OregonCOVID",Sys.Date(),".RData")) # Save the data with a date flag in the name.

@@ -78,8 +78,8 @@ Res.1 <- Map.Me %>%
 
 I will use a ggplot to build Oregon's map and fill it with case numbers.  `geom_sf()` plots the geometry.  I have to repel the labels to prevent print overlap, and scheme the colors.  The last step is to animate it by time. If I stop the label repelling, they will not bounce but it adds excitement.  There is a [separate page of daily maps](https://rww.science/r/covid/maps/).
 
-```{r, message=FALSE, warning=FALSE}
-Anim1 <- Map.Me %>% filter(date > "2020-04-01") %>% 
+```{r, message=FALSE, warning=FALSE, eval=FALSE}
+Anim1 <- Map.Me %>% 
   ggplot(., aes(geometry=geometry, fill=Number.of.cases, label=NAME, group=NAME)) + 
   geom_sf() +
   geom_label_repel(stat = "sf_coordinates",
@@ -273,65 +273,41 @@ OR.Gender %>%
 ```
 
 
-# Hospital Capacity Data
-
-The reported entries here vary a lot over time; they seem not to have figured out exactly what they wish to report.
-
-```{r}
-OR.Hospital.Caps <- OR.Hospital.Caps %>% 
-  mutate(Capacity = Hospital.Capacity) %>% 
-  filter(Capacity != "ICU beds") %>% 
-  filter(Capacity != "Non-ICU beds")
-OR.Hospital.Caps  %>% ggplot() +
- aes(x = date, y = Number) +
- geom_col(position = "dodge", fill="purple") +
- theme_economist() +
- facet_wrap(vars(Capacity), scales = "free_y")
-```
-
 # Analysis over Time
 
 ## Admissions
 
 ```{r}
-OR.COVID.Strain %>% filter(COVID.19.Details=="COVID-19 admissions") %>% ggplot(., aes(x=date, y=Number)) + geom_point() + geom_line() + labs(title="COVID-19 Admissions", x="Date", y="Count", caption = "data: https://govstatus.egov.com/OR-OHA-COVID-19 \n By: @PieRatio") + theme_ipsum() + theme(axis.text.x = element_text(angle = 90))
+OR.COVID.Strain %>% filter(COVID.19.Details=="COVID-19 admissions") %>% ggplot(., aes(x=date, y=COVID19.Patients)) + geom_point() + geom_line() + labs(title="COVID-19 Admissions", x="Date", y="Count", caption = "data: https://govstatus.egov.com/OR-OHA-COVID-19 \n By: @PieRatio") + theme_ipsum() + theme(axis.text.x = element_text(angle = 90))
 ```
+
+## Hospital Capacity
+
+```{r}
+OR.Hospital.Caps %>% filter(date > "2020-03-28") %>%
+  filter(Hospital.Capacity != "Ventilators") %>% 
+  ggplot(.) +
+    aes(x = date, fill = Type, colour = Type, y = Number) +
+    geom_area(alpha=0.2) +
+    hrbrthemes::scale_fill_ipsum() +
+    hrbrthemes::scale_color_ipsum() +
+    theme_ipsum() +
+    facet_wrap(vars(Hospital.Capacity), scales = "free_y")
+```
+
 
 ## Ventilators
 
 ```{r}
-Vent1 <- OR.Hospital.Caps %>% 
-  filter(str_detect(Capacity, "Ventilators")) %>% 
-  filter(Type!="Total") %>% 
-  select(-Hospital.Capacity)
-Vent2 <- OR.COVID.Strain %>% 
+Vents <- OR.COVID.Strain %>% 
   filter(str_detect(COVID.19.Details, "ventilators")) %>% 
   mutate(Capacity = COVID.19.Details) %>% 
   select(-COVID.19.Details)
-Vents <- bind_rows(Vent1,Vent2)
 Vents %>% 
-  ggplot(., aes(x=date, y=Number)) + 
+  ggplot(., aes(x=date, y=COVID19.Patients)) + 
   geom_point() + 
   geom_line() + 
   labs(title="Ventilators in Oregon", x="Date", y="Count", caption = "data: https://govstatus.egov.com/OR-OHA-COVID-19 \n By: @PieRatio") + 
   theme_ipsum() + theme(axis.text.x = element_text(angle = 90)) + 
   facet_wrap(vars(Capacity), scales = "free_y")
 ```
-
-## Beds
-
-```{r}
-OR.Hospital.Caps %>% 
-  filter(Capacity!="Ventilators") %>% 
-  filter(Type!="Total") %>% 
-  ggplot(., aes(x=date, y=Number)) + 
-  geom_point() + 
-  geom_line() + 
-  labs(title="Available Beds in Oregon", x="Date", y="Count", caption = "data: https://govstatus.egov.com/OR-OHA-COVID-19 \n By: @PieRatio") + 
-  theme_ipsum() + 
-  theme(axis.text.x = element_text(angle = 90)) + 
-  facet_wrap(vars(Capacity), scales = "free_y")
-```
-
-
-
