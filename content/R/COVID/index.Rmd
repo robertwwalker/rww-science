@@ -41,8 +41,8 @@ library(ggthemes)
 library(gganimate)
 library(patchwork)
 library(hrbrthemes)
-library(widgetframe)
-load(paste0("~/Sandbox/awful/content/R/COVID/data/OregonCOVID",Sys.Date(),".RData"))
+library(widgetframe); library(here)
+load(paste0(here(),"/content/R/COVID/data/OregonCOVID",Sys.Date(),".RData"))
 ```
 
 Verifying, these data are current as of `r max(Oregon.COVID$Scraped.date)` according to the loaded dataset.
@@ -294,6 +294,34 @@ OR.Hospital.Caps %>% filter(date > "2020-03-28") %>%
     hrbrthemes::scale_color_ipsum() +
     theme_ipsum() +
     facet_wrap(vars(Hospital.Capacity), scales = "free_y")
+```
+
+```{r}
+OR.Hospital.Caps %>% filter(date > "2020-03-28") %>% pivot_wider(., names_from = Type, values_from = Number, id_cols = c(date, Scraped.date, Hospital.Capacity)) %>%
+    filter(Hospital.Capacity != "Ventilators") %>% 
+    mutate(Hospital.Capacity = as.character(Hospital.Capacity)) %>%
+    ggplot(.) +
+    aes(x = date, ymin=Available, ymax=Total) +
+    geom_ribbon(, alpha=0.1) +
+    hrbrthemes::scale_fill_ipsum() +
+    hrbrthemes::scale_color_ipsum() +
+    theme_ipsum() +
+    facet_wrap(vars(Hospital.Capacity), scales = "free_y") + labs(title="Oregon's Critical Resource Use")
+```
+
+## ICU Beds
+
+```{r}
+ICUB <- OR.COVID.Strain %>% 
+  filter(str_detect(COVID.19.Details, "ICU beds")) %>% 
+  mutate(Capacity = COVID.19.Details) %>% 
+  select(-COVID.19.Details)
+ICUB %>% 
+  ggplot(., aes(x=date, y=COVID19.Patients)) + 
+  geom_point() + 
+  geom_line() + 
+  labs(title="COVID-19 ICU Beds Consumed in Oregon", x="Date", y="Count", caption = "data: https://govstatus.egov.com/OR-OHA-COVID-19 \n By: @PieRatio") + 
+  theme_ipsum() + theme(axis.text.x = element_text(angle = 90))
 ```
 
 

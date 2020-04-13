@@ -129,7 +129,8 @@ if(max(Oregon.COVID$Scraped.date) < as.Date(Today$Header$Scraped.date[[1]],"%m.%
 #  OR.COVID.Strain <- OR.COVID.Strain %>% mutate(date = as.Date(as.character(date), format = "%Y-%m-%d"), Scraped.date = as.Date(as.character(Scraped.date), format = "%Y-%m-%d"))
   OR.COVID.Strain <- bind_rows(Today$COVID.Strain, OR.COVID.Strain) %>% distinct(.) # 5 
 # Save the imageformat(Sys.Date(), "%d")
-save.image(paste0("~/Sandbox/awful/content/R/COVID/data/OregonCOVID",Sys.Date(),".RData")) # Save the data with a date flag in the name.
+ save.image(paste0("~/Sandbox/awful/content/R/COVID/data/OregonCOVID",Sys.Date(),".RData")) # Save the data with a date flag in the name.
+#  save.image(paste0("content/R/COVID/data/OregonCOVID",Sys.Date(),".RData")) # Save the data with a date flag in the name.
   cat(paste0("Added new data... \n",Sys.time())) # Report the updates
 } else {
   cat(paste0("Nothing new to add; have a nice day! \n",Sys.time())) # Report no updates.
