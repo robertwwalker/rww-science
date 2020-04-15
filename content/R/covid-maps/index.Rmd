@@ -236,7 +236,6 @@ Plot.COVID("2020-04-12", Map.Me)
 ```
 
 
-
 ## The Result for 04/13/2020
 
 ```{r}
@@ -246,6 +245,13 @@ Plot.COVID("2020-04-13", Map.Me)
 
 
 ## The Result for 04/14/2020
+
+```{r}
+Plot.COVID("2020-04-14", Map.Me)
+```
+
+
+## The Result for 04/15/2020
 
 ```{r, warning=FALSE, message=FALSE}
 library(widgetframe); library(ggthemes); library(RColorBrewer)

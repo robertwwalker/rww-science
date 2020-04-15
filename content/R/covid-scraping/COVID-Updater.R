@@ -78,7 +78,7 @@ OHA.Corona <- function(website, date) {
            Available = comma.rm.to.numeric(na_if(Available, "pending")),
            Total = comma.rm.to.numeric(na_if(Total, "pending"))) %>% 
            pivot_longer(c(Available, Total), names_to = "Type", values_to = "Number") %>% 
-    mutate(Hospital.Capacity = Hospital.capacity.and.usage.as.reported.to.HOSCAP.) %>% select(-Hospital.capacity.and.usage.as.reported.to.HOSCAP.) # 5
+    mutate(Hospital.Capacity = Hospital.capacity.and.usage.) %>% select(-Hospital.capacity.and.usage.) # 5
   # Extract the COVID data
   COVID.Strain <- webpage %>%
     html_nodes("table") %>% # 2
