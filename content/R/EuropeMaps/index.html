@@ -1,0 +1,37 @@
+---
+title: "Mapping Europe"
+author: "Robert W. Walker"
+date: '2020-04-18'
+header:
+  caption: ''
+  image: ''
+  preview: yes
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<div id="r-natural-earth-map-of-europe" class="section level2">
+<h2>R Natural Earth Map of Europe</h2>
+<pre class="r"><code>library(tidyverse)
+library(rnaturalearth)
+Europe &lt;- ne_countries(scale = &#39;medium&#39;, type = &#39;map_units&#39;, returnclass = &#39;sf&#39;, continent=&quot;Europe&quot;)
+ggplot(Europe) + geom_sf()</code></pre>
+<p><img src="/R/EuropeMaps/index_files/figure-html/cars-1.png" width="672" /></p>
+<p>Woops. Because they come from an entire world map, latitude and longitude are too big. To cut them off, we need to crop the map. The returnclass above means we need a tool for <code>sf</code> data, that tool is <code>st_crop</code> out of the <code>sf</code> library.</p>
+<pre class="r"><code>library(sf)
+Europe &lt;- sf::st_crop(Europe, xmin = -20, xmax = 45, ymin = 30, ymax = 73)
+Europe.Map &lt;- ggplot(Europe) + geom_sf()
+Europe.Map</code></pre>
+<p><img src="/R/EuropeMaps/index_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<p>And to fill it.</p>
+<pre class="r"><code>ggplot(Europe, aes(fill=income_grp)) + geom_sf() + labs(fill = &quot;Income Group&quot;)</code></pre>
+<p><img src="/R/EuropeMaps/index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+</div>
+<div id="merging-data" class="section level1">
+<h1>Merging data</h1>
+<p>Let me put London on the map. I need a latitude, a longitude, and a label.</p>
+<pre class="r"><code>London &lt;- data.frame(latitude=51.5074, longitude=-0.1278, label=&quot;London&quot;)
+Europe.Map + geom_text(data=London, aes(x=longitude, y=latitude, label=label)) + geom_point(data=London, aes(x=longitude, y=latitude), color=&quot;red&quot;)</code></pre>
+<p><img src="/R/EuropeMaps/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+</div>

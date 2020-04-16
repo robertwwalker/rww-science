@@ -1,0 +1,48 @@
+---
+title: "Mapping Europe"
+author: "Robert W. Walker"
+date: '2020-04-18'
+header:
+  caption: ''
+  image: ''
+  preview: yes
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
+```
+
+## R Natural Earth Map of Europe
+
+```{r cars}
+library(tidyverse)
+library(rnaturalearth)
+Europe <- ne_countries(scale = 'medium', type = 'map_units', returnclass = 'sf', continent="Europe")
+ggplot(Europe) + geom_sf()
+```
+
+Woops.  Because they come from an entire world map, latitude and longitude are too big.  To cut them off, we need to crop the map.  The returnclass above means we need a tool for `sf` data, that tool is `st_crop` out of the `sf` library.
+
+```{r}
+library(sf)
+Europe <- sf::st_crop(Europe, xmin = -20, xmax = 45, ymin = 30, ymax = 73)
+Europe.Map <- ggplot(Europe) + geom_sf()
+Europe.Map
+```
+
+And to fill it.
+
+```{r}
+ggplot(Europe, aes(fill=income_grp)) + geom_sf() + labs(fill = "Income Group")
+```
+
+# Merging data
+
+Let me put London on the map.  I need a latitude, a longitude, and a label.
+
+```{r}
+London <- data.frame(latitude=51.5074, longitude=-0.1278, label="London")
+Europe.Map + geom_text(data=London, aes(x=longitude, y=latitude, label=label)) + geom_point(data=London, aes(x=longitude, y=latitude), color="red")
+```
+
