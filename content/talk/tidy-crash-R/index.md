@@ -38,4 +38,4 @@ caption = ":smile:"
 
 +++
 
-Slides in [xaringan](https://rww.science/talk/tidy/tidy.html)
+Slides in [xaringan](https://rww.science/xaringan/tidy/tidy.html)

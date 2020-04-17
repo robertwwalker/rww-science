@@ -698,6 +698,23 @@ Layers
 ---
 class: inverse, flash
 
+# A starter
+
+```{r, echo=TRUE, eval=FALSE}
+Archigos <- Archigos %>% 
+  mutate(startYear=year(startdate), endYear=year(enddate))
+Archigos %>% 
+  ggplot(aes(x=endYear, y=tenureY)) + 
+  geom_point() + 
+  theme_dark() + 
+  labs(x="Year Leader's Spell Ended", 
+       y="Tenure of Leader (not cumulative)")
+```
+
+
+---
+class: inverse, flash
+
 # Tenure by Year Spells End
 
 It's messy.  In many ways, that's perfect.
@@ -926,18 +943,20 @@ class: inverse
 class: inverse
 
 # But Seriously....
+
 x is the ending year of the leader's spell with tenure mapped to y.  We color entry by the key, fill exit by a key, label by gender, and make it evolve by entry time of the leader.  Six dimensions.
 
-```{r, echo=FALSE, fig.width=7, fig.height=5, warning=FALSE, message-FALSE}
+```{r, echo=FALSE, fig.width=7, fig.height=5, warning=FALSE, message=FALSE, results='hide'}
 Archigos %>% ggplot(aes(x=endYear, y=tenureY, color=entry, label=gender, fill=exit)) + 
   geom_text(size=0.75) + scale_fill_viridis_d()+  theme(legend.text = element_text(size=8)) + 
   labs(x="Year Leader's Spell Ended", y="Tenure of Leader (not cumulative)", color="Entry Type", fill="Exit Type", label="Gender", title="Tenure and Year Spell Ended: geom_text", subtitle = "Entered : {ceiling(frame_time)}") -> p
 panim <- p  + transition_time(startYear) +
 # + shadow_wake(0.1)  
 shadow_mark(alpha = 0.2, size=0.6)   #<<
-animate(panim, nframes=400) #<<
+ANME <- animate(panim, nframes=400) #<<
+save_animation(ANME, file="img/ANME.gif")
 ```
-
+![](img/ANME.gif)
 
 ---
 class: inverse

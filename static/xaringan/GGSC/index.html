@@ -1,9 +1,10 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<html lang="" xml:lang="">
   <head>
     <title>Visualising Leaders</title>
     <meta charset="utf-8" />
     <meta name="author" content="Robert W. Walker" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
     <link href="libs/remark-css/default.css" rel="stylesheet" />
     <link href="libs/remark-css/rladies.css" rel="stylesheet" />
     <link href="libs/remark-css/rladies-fonts.css" rel="stylesheet" />
@@ -179,7 +180,7 @@ Chiozza, Gleditsch, and Goemans have collected and maintained an encyclopedia of
 - Entry and exit including types
 
 --
-- Real date formats 😭
+- Real date formats 😞
 
 ```r
 Archigos &lt;- read_dta(url("http://www.rochester.edu/college/faculty/hgoemans/Archigos_4.1_stata14.dta"))
@@ -491,12 +492,6 @@ How did leaders enter? [Probability]
 
 ```r
 Archigos %&gt;% ggplot(.) + geom_mosaic(aes(x=product(entry), fill=entry)) + labs(title="How did the Leader Enter?", y="", x="", fill="Method of Entry")  + coord_flip()
-```
-
-```
-## Warning in grid.Call.graphics(C_rect, x$x, x$y, x$width, x$height,
-## resolveHJust(x$just, : semi-transparency is not supported on this device:
-## reported only once per page
 ```
 
 ![](index_files/figure-html/unnamed-chunk-14-1.png)&lt;!-- --&gt;
@@ -852,12 +847,30 @@ Layers
 ---
 class: inverse, flash
 
+# A starter
+
+
+```r
+Archigos &lt;- Archigos %&gt;% 
+  mutate(startYear=year(startdate), endYear=year(enddate))
+Archigos %&gt;% 
+  ggplot(aes(x=endYear, y=tenureY)) + 
+  geom_point() + 
+  theme_dark() + 
+  labs(x="Year Leader's Spell Ended", 
+       y="Tenure of Leader (not cumulative)")
+```
+
+
+---
+class: inverse, flash
+
 # Tenure by Year Spells End
 
 It's messy.  In many ways, that's perfect.
 - geom_point() makes it worse, they're stacked
 
-![](index_files/figure-html/unnamed-chunk-31-1.png)&lt;!-- --&gt;
+![](index_files/figure-html/unnamed-chunk-32-1.png)&lt;!-- --&gt;
 
 ---
 class: inverse
@@ -876,7 +889,7 @@ Archigos %&gt;% ggplot(aes(x=endYear, y=tenureY)) +
   theme_dark() + labs(x="Year Leader's Spell Ended", y="Tenure of Leader (not cumulative)")
 ```
 
-![](index_files/figure-html/unnamed-chunk-32-1.png)&lt;!-- --&gt;
+![](index_files/figure-html/unnamed-chunk-33-1.png)&lt;!-- --&gt;
 
 
 
@@ -908,13 +921,7 @@ Archigos %&gt;% ggplot(aes(x=endYear, y=tenureY)) +
 
 .pull-right[
 
-
-```
-## Warning in grid.Call.graphics(C_points, x$x, x$y, x$pch, x$size): semi-
-## transparency is not supported on this device: reported only once per page
-```
-
-![](index_files/figure-html/unnamed-chunk-34-1.png)&lt;!-- --&gt;
+![](index_files/figure-html/unnamed-chunk-35-1.png)&lt;!-- --&gt;
 
 ]
 
@@ -950,13 +957,7 @@ Archigos %&gt;%
 
 .pull-right[
 
-
-```
-## Warning in grid.Call.graphics(C_points, x$x, x$y, x$pch, x$size): semi-
-## transparency is not supported on this device: reported only once per page
-```
-
-![](index_files/figure-html/unnamed-chunk-36-1.png)&lt;!-- --&gt;
+![](index_files/figure-html/unnamed-chunk-37-1.png)&lt;!-- --&gt;
 
 ]
 
@@ -988,13 +989,7 @@ geom_jitter(alpha=0.3) +
 
 .pull-right[
 
-
-```
-## Warning in grid.Call.graphics(C_points, x$x, x$y, x$pch, x$size): semi-
-## transparency is not supported on this device: reported only once per page
-```
-
-![](index_files/figure-html/unnamed-chunk-38-1.png)&lt;!-- --&gt;
+![](index_files/figure-html/unnamed-chunk-39-1.png)&lt;!-- --&gt;
 
 ]
 
@@ -1024,7 +1019,7 @@ geom_label(alpha=0.2) + theme_economist_white() + theme(legend.text = element_te
 
 .pull-right[
 
-![](index_files/figure-html/unnamed-chunk-40-1.png)&lt;!-- --&gt;
+![](index_files/figure-html/unnamed-chunk-41-1.png)&lt;!-- --&gt;
 
 ]
 
@@ -1050,7 +1045,7 @@ Frequency determines the size.
 
 Size is the number of previous times in office.
 
-![](index_files/figure-html/unnamed-chunk-41-1.png)&lt;!-- --&gt;
+![](index_files/figure-html/unnamed-chunk-42-1.png)&lt;!-- --&gt;
 
 ---
 class: inverse
@@ -1084,533 +1079,11 @@ class: inverse
 class: inverse
 
 # But Seriously....
+
 x is the ending year of the leader's spell with tenure mapped to y.  We color entry by the key, fill exit by a key, label by gender, and make it evolve by entry time of the leader.  Six dimensions.
 
 
-```
-## 
-Rendering [--------------------------------------------] at 6.1 fps ~ eta:  1m
-Rendering [--------------------------------------------] at 5.9 fps ~ eta:  1m
-Rendering [&gt;---------------------------------------------] at 6 fps ~ eta:  1m
-Rendering [&gt;-------------------------------------------] at 5.9 fps ~ eta:  1m
-Rendering [&gt;-------------------------------------------] at 5.8 fps ~ eta:  1m
-Rendering [=&gt;------------------------------------------] at 5.8 fps ~ eta:  1m
-Rendering [=&gt;------------------------------------------] at 5.7 fps ~ eta:  1m
-Rendering [=&gt;------------------------------------------] at 5.8 fps ~ eta:  1m
-Rendering [=&gt;------------------------------------------] at 5.7 fps ~ eta:  1m
-Rendering [=&gt;------------------------------------------] at 5.8 fps ~ eta:  1m
-Rendering [==&gt;-----------------------------------------] at 5.6 fps ~ eta:  1m
-Rendering [==&gt;-----------------------------------------] at 5.5 fps ~ eta:  1m
-Rendering [==&gt;-----------------------------------------] at 5.6 fps ~ eta:  1m
-Rendering [===&gt;----------------------------------------] at 5.6 fps ~ eta:  1m
-Rendering [====&gt;---------------------------------------] at 5.6 fps ~ eta:  1m
-Rendering [====&gt;---------------------------------------] at 5.7 fps ~ eta:  1m
-Rendering [====&gt;---------------------------------------] at 5.6 fps ~ eta:  1m
-Rendering [====&gt;---------------------------------------] at 5.7 fps ~ eta:  1m
-Rendering [=====&gt;--------------------------------------] at 5.7 fps ~ eta:  1m
-Rendering [=====&gt;--------------------------------------] at 5.6 fps ~ eta:  1m
-Rendering [======&gt;-------------------------------------] at 5.6 fps ~ eta:  1m
-Rendering [=======&gt;------------------------------------] at 5.6 fps ~ eta:  1m
-Rendering [========&gt;-----------------------------------] at 5.6 fps ~ eta:  1m
-Rendering [=========&gt;----------------------------------] at 5.6 fps ~ eta:  1m
-Rendering [=========&gt;----------------------------------] at 5.5 fps ~ eta:  1m
-Rendering [==========&gt;---------------------------------] at 5.5 fps ~ eta:  1m
-Rendering [===========&gt;--------------------------------] at 5.5 fps ~ eta:  1m
-Rendering [============&gt;-------------------------------] at 5.5 fps ~ eta:  1m
-Rendering [=============&gt;------------------------------] at 5.5 fps ~ eta:  1m
-Rendering [=============&gt;------------------------------] at 5.5 fps ~ eta: 50s
-Rendering [=============&gt;------------------------------] at 5.5 fps ~ eta: 49s
-Rendering [==============&gt;-----------------------------] at 5.5 fps ~ eta: 49s
-Rendering [==============&gt;-----------------------------] at 5.5 fps ~ eta: 48s
-Rendering [==============&gt;-----------------------------] at 5.4 fps ~ eta: 48s
-Rendering [===============&gt;----------------------------] at 5.4 fps ~ eta: 48s
-Rendering [===============&gt;----------------------------] at 5.4 fps ~ eta: 47s
-Rendering [===============&gt;----------------------------] at 5.4 fps ~ eta: 46s
-Rendering [================&gt;---------------------------] at 5.4 fps ~ eta: 46s
-Rendering [================&gt;---------------------------] at 5.4 fps ~ eta: 45s
-Rendering [=================&gt;--------------------------] at 5.4 fps ~ eta: 45s
-Rendering [=================&gt;--------------------------] at 5.4 fps ~ eta: 44s
-Rendering [=================&gt;--------------------------] at 5.4 fps ~ eta: 43s
-Rendering [==================&gt;-------------------------] at 5.4 fps ~ eta: 43s
-Rendering [==================&gt;-------------------------] at 5.3 fps ~ eta: 43s
-Rendering [==================&gt;-------------------------] at 5.3 fps ~ eta: 42s
-Rendering [===================&gt;------------------------] at 5.3 fps ~ eta: 42s
-Rendering [===================&gt;------------------------] at 5.3 fps ~ eta: 41s
-Rendering [===================&gt;------------------------] at 5.3 fps ~ eta: 40s
-Rendering [====================&gt;-----------------------] at 5.3 fps ~ eta: 40s
-Rendering [====================&gt;-----------------------] at 5.3 fps ~ eta: 39s
-Rendering [=====================&gt;----------------------] at 5.3 fps ~ eta: 39s
-Rendering [=====================&gt;----------------------] at 5.3 fps ~ eta: 38s
-Rendering [=====================&gt;----------------------] at 5.2 fps ~ eta: 37s
-Rendering [======================&gt;---------------------] at 5.2 fps ~ eta: 37s
-Rendering [======================&gt;---------------------] at 5.2 fps ~ eta: 36s
-Rendering [=======================&gt;--------------------] at 5.2 fps ~ eta: 36s
-Rendering [=======================&gt;--------------------] at 5.2 fps ~ eta: 35s
-Rendering [========================&gt;-------------------] at 5.1 fps ~ eta: 34s
-Rendering [========================&gt;-------------------] at 5.1 fps ~ eta: 33s
-Rendering [=========================&gt;------------------] at 5.1 fps ~ eta: 33s
-Rendering [=========================&gt;------------------] at 5.1 fps ~ eta: 32s
-Rendering [==========================&gt;-----------------] at 5.1 fps ~ eta: 31s
-Rendering [===========================&gt;------------------] at 5 fps ~ eta: 31s
-Rendering [===========================&gt;------------------] at 5 fps ~ eta: 30s
-Rendering [============================&gt;-----------------] at 5 fps ~ eta: 30s
-Rendering [============================&gt;-----------------] at 5 fps ~ eta: 29s
-Rendering [=============================&gt;----------------] at 5 fps ~ eta: 29s
-Rendering [=============================&gt;----------------] at 5 fps ~ eta: 28s
-Rendering [============================&gt;---------------] at 4.9 fps ~ eta: 28s
-Rendering [============================&gt;---------------] at 4.9 fps ~ eta: 27s
-Rendering [=============================&gt;--------------] at 4.9 fps ~ eta: 27s
-Rendering [=============================&gt;--------------] at 4.9 fps ~ eta: 26s
-Rendering [=============================&gt;--------------] at 4.9 fps ~ eta: 25s
-Rendering [==============================&gt;-------------] at 4.9 fps ~ eta: 25s
-Rendering [==============================&gt;-------------] at 4.9 fps ~ eta: 24s
-Rendering [==============================&gt;-------------] at 4.9 fps ~ eta: 23s
-Rendering [===============================&gt;------------] at 4.9 fps ~ eta: 23s
-Rendering [===============================&gt;------------] at 4.9 fps ~ eta: 22s
-Rendering [===============================&gt;------------] at 4.9 fps ~ eta: 21s
-Rendering [================================&gt;-----------] at 4.9 fps ~ eta: 21s
-Rendering [================================&gt;-----------] at 4.9 fps ~ eta: 20s
-Rendering [=================================&gt;----------] at 4.9 fps ~ eta: 19s
-Rendering [=================================&gt;----------] at 4.9 fps ~ eta: 18s
-Rendering [==================================&gt;---------] at 4.9 fps ~ eta: 18s
-Rendering [==================================&gt;---------] at 4.9 fps ~ eta: 17s
-Rendering [==================================&gt;---------] at 4.9 fps ~ eta: 16s
-Rendering [===================================&gt;--------] at 4.9 fps ~ eta: 16s
-Rendering [===================================&gt;--------] at 4.8 fps ~ eta: 15s
-Rendering [===================================&gt;--------] at 4.8 fps ~ eta: 14s
-Rendering [====================================&gt;-------] at 4.8 fps ~ eta: 14s
-Rendering [====================================&gt;-------] at 4.8 fps ~ eta: 13s
-Rendering [====================================&gt;-------] at 4.8 fps ~ eta: 12s
-Rendering [=====================================&gt;------] at 4.8 fps ~ eta: 12s
-Rendering [=====================================&gt;------] at 4.8 fps ~ eta: 11s
-Rendering [=====================================&gt;------] at 4.8 fps ~ eta: 10s
-Rendering [======================================&gt;-----] at 4.8 fps ~ eta: 10s
-Rendering [======================================&gt;-----] at 4.8 fps ~ eta:  9s
-Rendering [=======================================&gt;----] at 4.8 fps ~ eta:  8s
-Rendering [=======================================&gt;----] at 4.8 fps ~ eta:  7s
-Rendering [========================================&gt;---] at 4.8 fps ~ eta:  7s
-Rendering [========================================&gt;---] at 4.8 fps ~ eta:  6s
-Rendering [========================================&gt;---] at 4.8 fps ~ eta:  5s
-Rendering [========================================&gt;---] at 4.7 fps ~ eta:  5s
-Rendering [=========================================&gt;--] at 4.7 fps ~ eta:  5s
-Rendering [=========================================&gt;--] at 4.7 fps ~ eta:  4s
-Rendering [=========================================&gt;--] at 4.7 fps ~ eta:  3s
-Rendering [==========================================&gt;-] at 4.7 fps ~ eta:  3s
-Rendering [==========================================&gt;-] at 4.7 fps ~ eta:  2s
-Rendering [==========================================&gt;-] at 4.7 fps ~ eta:  1s
-Rendering [===========================================&gt;] at 4.7 fps ~ eta:  1s
-Rendering [===========================================&gt;] at 4.7 fps ~ eta:  0s
-Rendering [============================================] at 4.7 fps ~ eta:  0s
-                                                                              
-```
-
-```
-## 
-Frame 1 (0%)
-Frame 2 (0%)
-Frame 3 (0%)
-Frame 4 (1%)
-Frame 5 (1%)
-Frame 6 (1%)
-Frame 7 (1%)
-Frame 8 (2%)
-Frame 9 (2%)
-Frame 10 (2%)
-Frame 11 (2%)
-Frame 12 (3%)
-Frame 13 (3%)
-Frame 14 (3%)
-Frame 15 (3%)
-Frame 16 (4%)
-Frame 17 (4%)
-Frame 18 (4%)
-Frame 19 (4%)
-Frame 20 (5%)
-Frame 21 (5%)
-Frame 22 (5%)
-Frame 23 (5%)
-Frame 24 (6%)
-Frame 25 (6%)
-Frame 26 (6%)
-Frame 27 (6%)
-Frame 28 (7%)
-Frame 29 (7%)
-Frame 30 (7%)
-Frame 31 (7%)
-Frame 32 (8%)
-Frame 33 (8%)
-Frame 34 (8%)
-Frame 35 (8%)
-Frame 36 (9%)
-Frame 37 (9%)
-Frame 38 (9%)
-Frame 39 (9%)
-Frame 40 (10%)
-Frame 41 (10%)
-Frame 42 (10%)
-Frame 43 (10%)
-Frame 44 (11%)
-Frame 45 (11%)
-Frame 46 (11%)
-Frame 47 (11%)
-Frame 48 (12%)
-Frame 49 (12%)
-Frame 50 (12%)
-Frame 51 (12%)
-Frame 52 (13%)
-Frame 53 (13%)
-Frame 54 (13%)
-Frame 55 (13%)
-Frame 56 (14%)
-Frame 57 (14%)
-Frame 58 (14%)
-Frame 59 (14%)
-Frame 60 (15%)
-Frame 61 (15%)
-Frame 62 (15%)
-Frame 63 (15%)
-Frame 64 (16%)
-Frame 65 (16%)
-Frame 66 (16%)
-Frame 67 (16%)
-Frame 68 (17%)
-Frame 69 (17%)
-Frame 70 (17%)
-Frame 71 (17%)
-Frame 72 (18%)
-Frame 73 (18%)
-Frame 74 (18%)
-Frame 75 (18%)
-Frame 76 (19%)
-Frame 77 (19%)
-Frame 78 (19%)
-Frame 79 (19%)
-Frame 80 (20%)
-Frame 81 (20%)
-Frame 82 (20%)
-Frame 83 (20%)
-Frame 84 (21%)
-Frame 85 (21%)
-Frame 86 (21%)
-Frame 87 (21%)
-Frame 88 (22%)
-Frame 89 (22%)
-Frame 90 (22%)
-Frame 91 (22%)
-Frame 92 (23%)
-Frame 93 (23%)
-Frame 94 (23%)
-Frame 95 (23%)
-Frame 96 (24%)
-Frame 97 (24%)
-Frame 98 (24%)
-Frame 99 (24%)
-Frame 100 (25%)
-Frame 101 (25%)
-Frame 102 (25%)
-Frame 103 (25%)
-Frame 104 (26%)
-Frame 105 (26%)
-Frame 106 (26%)
-Frame 107 (26%)
-Frame 108 (27%)
-Frame 109 (27%)
-Frame 110 (27%)
-Frame 111 (27%)
-Frame 112 (28%)
-Frame 113 (28%)
-Frame 114 (28%)
-Frame 115 (28%)
-Frame 116 (29%)
-Frame 117 (29%)
-Frame 118 (29%)
-Frame 119 (29%)
-Frame 120 (30%)
-Frame 121 (30%)
-Frame 122 (30%)
-Frame 123 (30%)
-Frame 124 (31%)
-Frame 125 (31%)
-Frame 126 (31%)
-Frame 127 (31%)
-Frame 128 (32%)
-Frame 129 (32%)
-Frame 130 (32%)
-Frame 131 (32%)
-Frame 132 (33%)
-Frame 133 (33%)
-Frame 134 (33%)
-Frame 135 (33%)
-Frame 136 (34%)
-Frame 137 (34%)
-Frame 138 (34%)
-Frame 139 (34%)
-Frame 140 (35%)
-Frame 141 (35%)
-Frame 142 (35%)
-Frame 143 (35%)
-Frame 144 (36%)
-Frame 145 (36%)
-Frame 146 (36%)
-Frame 147 (36%)
-Frame 148 (37%)
-Frame 149 (37%)
-Frame 150 (37%)
-Frame 151 (37%)
-Frame 152 (38%)
-Frame 153 (38%)
-Frame 154 (38%)
-Frame 155 (38%)
-Frame 156 (39%)
-Frame 157 (39%)
-Frame 158 (39%)
-Frame 159 (39%)
-Frame 160 (40%)
-Frame 161 (40%)
-Frame 162 (40%)
-Frame 163 (40%)
-Frame 164 (41%)
-Frame 165 (41%)
-Frame 166 (41%)
-Frame 167 (41%)
-Frame 168 (42%)
-Frame 169 (42%)
-Frame 170 (42%)
-Frame 171 (42%)
-Frame 172 (43%)
-Frame 173 (43%)
-Frame 174 (43%)
-Frame 175 (43%)
-Frame 176 (44%)
-Frame 177 (44%)
-Frame 178 (44%)
-Frame 179 (44%)
-Frame 180 (45%)
-Frame 181 (45%)
-Frame 182 (45%)
-Frame 183 (45%)
-Frame 184 (46%)
-Frame 185 (46%)
-Frame 186 (46%)
-Frame 187 (46%)
-Frame 188 (47%)
-Frame 189 (47%)
-Frame 190 (47%)
-Frame 191 (47%)
-Frame 192 (48%)
-Frame 193 (48%)
-Frame 194 (48%)
-Frame 195 (48%)
-Frame 196 (49%)
-Frame 197 (49%)
-Frame 198 (49%)
-Frame 199 (49%)
-Frame 200 (50%)
-Frame 201 (50%)
-Frame 202 (50%)
-Frame 203 (50%)
-Frame 204 (51%)
-Frame 205 (51%)
-Frame 206 (51%)
-Frame 207 (51%)
-Frame 208 (52%)
-Frame 209 (52%)
-Frame 210 (52%)
-Frame 211 (52%)
-Frame 212 (53%)
-Frame 213 (53%)
-Frame 214 (53%)
-Frame 215 (53%)
-Frame 216 (54%)
-Frame 217 (54%)
-Frame 218 (54%)
-Frame 219 (54%)
-Frame 220 (55%)
-Frame 221 (55%)
-Frame 222 (55%)
-Frame 223 (55%)
-Frame 224 (56%)
-Frame 225 (56%)
-Frame 226 (56%)
-Frame 227 (56%)
-Frame 228 (57%)
-Frame 229 (57%)
-Frame 230 (57%)
-Frame 231 (57%)
-Frame 232 (58%)
-Frame 233 (58%)
-Frame 234 (58%)
-Frame 235 (58%)
-Frame 236 (59%)
-Frame 237 (59%)
-Frame 238 (59%)
-Frame 239 (59%)
-Frame 240 (60%)
-Frame 241 (60%)
-Frame 242 (60%)
-Frame 243 (60%)
-Frame 244 (61%)
-Frame 245 (61%)
-Frame 246 (61%)
-Frame 247 (61%)
-Frame 248 (62%)
-Frame 249 (62%)
-Frame 250 (62%)
-Frame 251 (62%)
-Frame 252 (63%)
-Frame 253 (63%)
-Frame 254 (63%)
-Frame 255 (63%)
-Frame 256 (64%)
-Frame 257 (64%)
-Frame 258 (64%)
-Frame 259 (64%)
-Frame 260 (65%)
-Frame 261 (65%)
-Frame 262 (65%)
-Frame 263 (65%)
-Frame 264 (66%)
-Frame 265 (66%)
-Frame 266 (66%)
-Frame 267 (66%)
-Frame 268 (67%)
-Frame 269 (67%)
-Frame 270 (67%)
-Frame 271 (67%)
-Frame 272 (68%)
-Frame 273 (68%)
-Frame 274 (68%)
-Frame 275 (68%)
-Frame 276 (69%)
-Frame 277 (69%)
-Frame 278 (69%)
-Frame 279 (69%)
-Frame 280 (70%)
-Frame 281 (70%)
-Frame 282 (70%)
-Frame 283 (70%)
-Frame 284 (71%)
-Frame 285 (71%)
-Frame 286 (71%)
-Frame 287 (71%)
-Frame 288 (72%)
-Frame 289 (72%)
-Frame 290 (72%)
-Frame 291 (72%)
-Frame 292 (73%)
-Frame 293 (73%)
-Frame 294 (73%)
-Frame 295 (73%)
-Frame 296 (74%)
-Frame 297 (74%)
-Frame 298 (74%)
-Frame 299 (74%)
-Frame 300 (75%)
-Frame 301 (75%)
-Frame 302 (75%)
-Frame 303 (75%)
-Frame 304 (76%)
-Frame 305 (76%)
-Frame 306 (76%)
-Frame 307 (76%)
-Frame 308 (77%)
-Frame 309 (77%)
-Frame 310 (77%)
-Frame 311 (77%)
-Frame 312 (78%)
-Frame 313 (78%)
-Frame 314 (78%)
-Frame 315 (78%)
-Frame 316 (79%)
-Frame 317 (79%)
-Frame 318 (79%)
-Frame 319 (79%)
-Frame 320 (80%)
-Frame 321 (80%)
-Frame 322 (80%)
-Frame 323 (80%)
-Frame 324 (81%)
-Frame 325 (81%)
-Frame 326 (81%)
-Frame 327 (81%)
-Frame 328 (82%)
-Frame 329 (82%)
-Frame 330 (82%)
-Frame 331 (82%)
-Frame 332 (83%)
-Frame 333 (83%)
-Frame 334 (83%)
-Frame 335 (83%)
-Frame 336 (84%)
-Frame 337 (84%)
-Frame 338 (84%)
-Frame 339 (84%)
-Frame 340 (85%)
-Frame 341 (85%)
-Frame 342 (85%)
-Frame 343 (85%)
-Frame 344 (86%)
-Frame 345 (86%)
-Frame 346 (86%)
-Frame 347 (86%)
-Frame 348 (87%)
-Frame 349 (87%)
-Frame 350 (87%)
-Frame 351 (87%)
-Frame 352 (88%)
-Frame 353 (88%)
-Frame 354 (88%)
-Frame 355 (88%)
-Frame 356 (89%)
-Frame 357 (89%)
-Frame 358 (89%)
-Frame 359 (89%)
-Frame 360 (90%)
-Frame 361 (90%)
-Frame 362 (90%)
-Frame 363 (90%)
-Frame 364 (91%)
-Frame 365 (91%)
-Frame 366 (91%)
-Frame 367 (91%)
-Frame 368 (92%)
-Frame 369 (92%)
-Frame 370 (92%)
-Frame 371 (92%)
-Frame 372 (93%)
-Frame 373 (93%)
-Frame 374 (93%)
-Frame 375 (93%)
-Frame 376 (94%)
-Frame 377 (94%)
-Frame 378 (94%)
-Frame 379 (94%)
-Frame 380 (95%)
-Frame 381 (95%)
-Frame 382 (95%)
-Frame 383 (95%)
-Frame 384 (96%)
-Frame 385 (96%)
-Frame 386 (96%)
-Frame 387 (96%)
-Frame 388 (97%)
-Frame 389 (97%)
-Frame 390 (97%)
-Frame 391 (97%)
-Frame 392 (98%)
-Frame 393 (98%)
-Frame 394 (98%)
-Frame 395 (98%)
-Frame 396 (99%)
-Frame 397 (99%)
-Frame 398 (99%)
-Frame 399 (99%)
-Frame 400 (100%)
-## Finalizing encoding... done!
-```
-
-![](index_files/figure-html/message-FALSE-1.gif)&lt;!-- --&gt;
-
+![](img/ANME.gif)
 
 ---
 class: inverse
@@ -1631,6 +1104,7 @@ background-position: 65% 8%
 Slides created via the R package [**xaringan**](https://github.com/yihui/xaringan).
 
 Theme borrowed from `@apreshill` and her `r-ladies` theme.
+
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
@@ -1678,6 +1152,32 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
     deleted = true;
   });
 })();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
 // adds .remark-code-has-line-highlighted class to <pre> parent elements
 // of code chunks containing highlighted lines with class .remark-code-line-highlighted
 (function(d) {
@@ -1695,17 +1195,6 @@ if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   }
   preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
 })(document);</script>
-
-<script>
-(function() {
-  var links = document.getElementsByTagName('a');
-  for (var i = 0; i < links.length; i++) {
-    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
-      links[i].target = '_blank';
-    }
-  }
-})();
-</script>
 
 <script>
 slideshow._releaseMath = function(el) {
