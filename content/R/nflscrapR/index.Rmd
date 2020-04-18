@@ -57,7 +57,7 @@ full_season_2018 <- scrape_season_play_by_play(2018, "reg")
 saveRDS(full_season_2018, file="../../../data/2018NFLSeason.rds")
 ```
 
-That gets the data though it took over an hour to acquire it all and it threw two error messages.  I do not yet know if they are conseequential.  My goal here is to use this package and the ability to plot the win probability charts to try to summarise an entire Dallas Cowboys season -- the team I grew up with along with the former Houston Oilers and I was never really okay about them moving.  `r emo::ji("down")`
+That gets the data though it took over an hour to acquire it all and it threw two error messages.  I do not yet know if they are consequential.  My goal here is to use this package and the ability to plot the win probability charts to try to summarise an entire Dallas Cowboys season -- the team I grew up with along with the former Houston Oilers and I was never really okay about them moving.  `r emo::ji("down")`
 
 ```{r}
 full_season_2018 <- readRDS(url("https://github.com/robertwwalker/academic-mymod/raw/master/data/2018NFLSeason.rds")) # Downloaded it once.  It sits in rww.science/data
@@ -66,9 +66,9 @@ full_season_2018 <- readRDS(url("https://github.com/robertwwalker/academic-mymod
 Let me skim the data for an idea of what it looks like.  I will also pull in three packages that I am deploying or will.
 
 ```{r, message=FALSE, warning=FALSE, results='markup'}
-library(skimr)
-library(teamcolors)
-library(gganimate)
+library(skimr)  # Summary
+library(teamcolors)  # NFL Team Colors
+library(gganimate)  # Animation made easy
 full_season_2018  %>% head() %>% kableExtra::kable() %>% kable_styling() %>%
   scroll_box(width = "700px", height = "400px")
 ```
@@ -117,10 +117,10 @@ cardal_wp %>%  ggplot(aes(x = game_seconds_remaining, y = wpa, color = team)) +
   scale_x_reverse(breaks = seq(0, 3600, 300)) + 
   annotate("text", x = 3000, y = .75, label = "CAR", color = car_color, size = 8) + 
   annotate("text", x = 3000, y = .25, label = "DAL", color = dal_color, size = 8) +
-  geom_vline(xintercept = 900, linetype = "dashed", black) + 
-  geom_vline(xintercept = 1800, linetype = "dashed", black) + 
-  geom_vline(xintercept = 2700, linetype = "dashed", black) + 
-  geom_vline(xintercept = 0, linetype = "dashed", black) + 
+  geom_vline(xintercept = 900, linetype = "dashed", color="black") + 
+  geom_vline(xintercept = 1800, linetype = "dashed", color="black") + 
+  geom_vline(xintercept = 2700, linetype = "dashed", color="black") + 
+  geom_vline(xintercept = 0, linetype = "dashed", color="black") + 
   labs(
     x = "Time Remaining (seconds)",
     y = "Win Probability",
@@ -166,7 +166,7 @@ dal_wp <- dal_wp %>% dplyr::select(GIDGSR,
   gather(team, wpa, -GIDGSR) %>% separate(., GIDGSR, c("GSR", "game_id"), sep=":") %>% 
   mutate(game_seconds_remaining = as.integer(GSR))
 dal_plt <- dal_wp %>% left_join(My.NFL.Table)
-dal_plt$colors1 <- NA
+# dal_plt$colors1 <- NA
 dal_plt[dal_plt$team=="home_wp","colors1"] <- dal_plt[dal_plt$team=="home_wp","Home_primary"]
 dal_plt[dal_plt$team=="away_wp","colors1"] <- dal_plt[dal_plt$team=="away_wp","Away_primary"]
 dal_plt[dal_plt$team=="home_wp","team"] <- dal_plt[dal_plt$team=="home_wp","home_team"]
@@ -180,10 +180,10 @@ p <- dal_plt %>% ggplot() + aes(x = game_seconds_remaining, y = wpa, color = tea
   scale_x_reverse(breaks = seq(0, 3600, 300)) + 
   annotate("text", x = 3000, y = .75, label = "Home", size = 8) + 
   annotate("text", x = 3000, y = .25, label = "Away", size = 8) +
-  geom_vline(xintercept = 900, linetype = "dashed", black) + 
-  geom_vline(xintercept = 1800, linetype = "dashed", black) + 
-  geom_vline(xintercept = 2700, linetype = "dashed", black) + 
-  geom_vline(xintercept = 0, linetype = "dashed", black) + 
+  geom_vline(xintercept = 900, linetype = "dashed", color="black") + 
+  geom_vline(xintercept = 1800, linetype = "dashed", color="black") + 
+  geom_vline(xintercept = 2700, linetype = "dashed", color="black") + 
+  geom_vline(xintercept = 0, linetype = "dashed", color="black") + 
   labs(
     x = "Time Remaining (seconds)",
     y = "Win Probability",
@@ -194,4 +194,4 @@ p <- dal_plt %>% ggplot() + aes(x = game_seconds_remaining, y = wpa, color = tea
 animate(p, nframes=400)
 ```
 
-I will stop with that.  In a blog post, I did a bit more with this and also [built a shiny app for doing it for all of the teams](https://rwalkerwu.shinyapps.io/NFL-Scrapr/) that is linked there.
+I will stop with that for this blog post, I did a bit more with this and also [built a shiny app for doing it for all of the teams](https://rwalkerwu.shinyapps.io/NFL-Scrapr/) that is linked there.

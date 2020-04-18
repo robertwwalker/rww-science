@@ -180,7 +180,7 @@ Chiozza, Gleditsch, and Goemans have collected and maintained an encyclopedia of
 - Entry and exit including types
 
 --
-- Real date formats 😞
+- Real date formats 😢
 
 ```r
 Archigos &lt;- read_dta(url("http://www.rochester.edu/college/faculty/hgoemans/Archigos_4.1_stata14.dta"))
@@ -458,7 +458,7 @@ class: inverse, hinge
 
 
 ```r
-Archigos %&gt;% group_by(leader) %&gt;% mutate(count = n()) %&gt;% filter(count &gt; 3) %&gt;% ggplot(., aes(x=leader)) + geom_bar(fill="#88398A") + labs(x="Leader", y="Leadership Spells", title="The Frequency of Leaders", subtitle = "Leaders with more than three tenures") + coord_flip()
+Archigos %&gt;% group_by(leader) %&gt;% mutate(count = n()) %&gt;% filter(count &gt; 3) %&gt;% ggplot(., aes(x=leader)) + geom_bar(fill="#88398A") + labs(x="Leader", y="Leadership Spells", title="The Frequency of Leaders", subtitle = "Leaders with more than three tenures") + coord_flip() + theme(axis.text.x = element_text(size=8))
 ```
 
 ![](index_files/figure-html/unnamed-chunk-12-1.png)&lt;!-- --&gt;
@@ -475,7 +475,7 @@ How did leaders enter?
 
 
 ```r
-Archigos %&gt;% ggplot(., aes(x=entry)) + geom_bar(fill="#88398A") + labs(title="How did the Leader Enter?", y="Count of Leaders", x="") + coord_flip() + theme_economist_white()
+Archigos %&gt;% ggplot(., aes(x=entry)) + geom_bar(fill="#88398A") + labs(title="How did the Leader Enter?", y="Count of Leaders", x="") + coord_flip()
 ```
 
 ![](index_files/figure-html/unnamed-chunk-13-1.png)&lt;!-- --&gt;

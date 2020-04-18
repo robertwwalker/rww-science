@@ -274,7 +274,8 @@ Archigos %>% ggplot(., aes(x=leader)) +
   geom_bar(fill="#88398A") + 
   labs(x="Leader", y="Frequency", 
        title="The Frequency of Leaders", 
-       subtitle = "Leaders had as many as six tenures")
+       subtitle = "Leaders had as many as six tenures") +
+  theme(axis.text.x=element_text(size=6))
 ```
 
 
@@ -285,8 +286,8 @@ class: inverse, hinge
 ## Show More than Three Spells
 
 
-```{r, fig.height=4.5, fig.width=6}
-Archigos %>% group_by(leader) %>% mutate(count = n()) %>% filter(count > 3) %>% ggplot(., aes(x=leader)) + geom_bar(fill="#88398A") + labs(x="Leader", y="Leadership Spells", title="The Frequency of Leaders", subtitle = "Leaders with more than three tenures") + coord_flip()
+```{r, fig.height=6, fig.width=8}
+Archigos %>% group_by(leader) %>% mutate(count = n()) %>% filter(count > 3) %>% ggplot(., aes(x=leader)) + geom_bar(fill="#88398A") + labs(x="Leader", y="Leadership Spells", title="The Frequency of Leaders", subtitle = "Leaders with more than three tenures") + coord_flip() + theme(axis.text.x = element_text(size=8))
 ```
 
 
@@ -299,8 +300,8 @@ class: inverse
 
 How did leaders enter?
 
-```{r, fig.height=3.5, fig.width=5}
-Archigos %>% ggplot(., aes(x=entry)) + geom_bar(fill="#88398A") + labs(title="How did the Leader Enter?", y="Count of Leaders", x="") + coord_flip() + theme_economist_white()
+```{r, fig.height=5, fig.width=8}
+Archigos %>% ggplot(., aes(x=entry)) + geom_bar(fill="#88398A") + labs(title="How did the Leader Enter?", y="Count of Leaders", x="") + coord_flip()
 ```
 
 ---

@@ -12260,6 +12260,7 @@ animate(p)&lt;/code&gt;&lt;/pre&gt;
       <pubDate>Fri, 19 Apr 2019 00:00:00 +0000</pubDate>
       <guid>/r/nflscrapr-test/</guid>
       <description>
+&lt;script src=&#34;/rmarkdown-libs/header-attrs/header-attrs.js&#34;&gt;&lt;/script&gt;
 &lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
 
 
@@ -17433,12 +17434,12 @@ IND
 &lt;p&gt;That’s all the regular season games in the 2018 season. They suggest that it is straightforward to grab an entire season of play by play data and it is. 👏.&lt;/p&gt;
 &lt;pre&gt;&lt;code&gt;full_season_2018 &amp;lt;- scrape_season_play_by_play(2018, &amp;quot;reg&amp;quot;)
 saveRDS(full_season_2018, file=&amp;quot;../../../data/2018NFLSeason.rds&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;That gets the data though it took over an hour to acquire it all and it threw two error messages. I do not yet know if they are conseequential. My goal here is to use this package and the ability to plot the win probability charts to try to summarise an entire Dallas Cowboys season – the team I grew up with along with the former Houston Oilers and I was never really okay about them moving. ⏬&lt;/p&gt;
+&lt;p&gt;That gets the data though it took over an hour to acquire it all and it threw two error messages. I do not yet know if they are consequential. My goal here is to use this package and the ability to plot the win probability charts to try to summarise an entire Dallas Cowboys season – the team I grew up with along with the former Houston Oilers and I was never really okay about them moving. 🔻&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;full_season_2018 &amp;lt;- readRDS(url(&amp;quot;https://github.com/robertwwalker/academic-mymod/raw/master/data/2018NFLSeason.rds&amp;quot;))  # Downloaded it once.  It sits in rww.science/data&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;Let me skim the data for an idea of what it looks like. I will also pull in three packages that I am deploying or will.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(skimr)
-library(teamcolors)
-library(gganimate)
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(skimr)  # Summary
+library(teamcolors)  # NFL Team Colors
+library(gganimate)  # Animation made easy
 full_season_2018 %&amp;gt;% head() %&amp;gt;% kableExtra::kable() %&amp;gt;% kable_styling() %&amp;gt;% scroll_box(width = &amp;quot;700px&amp;quot;, 
     height = &amp;quot;400px&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
 &lt;div style=&#34;border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:400px; overflow-x: scroll; width:700px; &#34;&gt;
@@ -22863,10 +22864,11 @@ cardal_wp %&amp;gt;% ggplot(aes(x = game_seconds_remaining, y = wpa, color = tea
     &amp;quot;DAL&amp;quot;), values = c(car_color, dal_color), guide = FALSE) + scale_x_reverse(breaks = seq(0, 
     3600, 300)) + annotate(&amp;quot;text&amp;quot;, x = 3000, y = 0.75, label = &amp;quot;CAR&amp;quot;, color = car_color, 
     size = 8) + annotate(&amp;quot;text&amp;quot;, x = 3000, y = 0.25, label = &amp;quot;DAL&amp;quot;, color = dal_color, 
-    size = 8) + geom_vline(xintercept = 900, linetype = &amp;quot;dashed&amp;quot;, black) + geom_vline(xintercept = 1800, 
-    linetype = &amp;quot;dashed&amp;quot;, black) + geom_vline(xintercept = 2700, linetype = &amp;quot;dashed&amp;quot;, 
-    black) + geom_vline(xintercept = 0, linetype = &amp;quot;dashed&amp;quot;, black) + labs(x = &amp;quot;Time Remaining (seconds)&amp;quot;, 
-    y = &amp;quot;Win Probability&amp;quot;, title = &amp;quot;Week 1 Win Probability Chart&amp;quot;, subtitle = &amp;quot;Carolina Panthers vs. Dallas Cowboys&amp;quot;, 
+    size = 8) + geom_vline(xintercept = 900, linetype = &amp;quot;dashed&amp;quot;, color = &amp;quot;black&amp;quot;) + 
+    geom_vline(xintercept = 1800, linetype = &amp;quot;dashed&amp;quot;, color = &amp;quot;black&amp;quot;) + geom_vline(xintercept = 2700, 
+    linetype = &amp;quot;dashed&amp;quot;, color = &amp;quot;black&amp;quot;) + geom_vline(xintercept = 0, linetype = &amp;quot;dashed&amp;quot;, 
+    color = &amp;quot;black&amp;quot;) + labs(x = &amp;quot;Time Remaining (seconds)&amp;quot;, y = &amp;quot;Win Probability&amp;quot;, 
+    title = &amp;quot;Week 1 Win Probability Chart&amp;quot;, subtitle = &amp;quot;Carolina Panthers vs. Dallas Cowboys&amp;quot;, 
     caption = &amp;quot;Data from nflscrapR&amp;quot;) + theme_bw()&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/R/nflscrapR/index_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;Now I want to try and build a plot of all of Dallas Cowboys games for the season. Here are the steps. First, I am going to make a table that contains all of the names and colors for all of the game IDs. Even though I only need those for Dallas, building a shiny app for this would mean that I could select by teams above and make it extensible. At the end, I will only need those for Dallas so I will separate them off.&lt;/p&gt;
@@ -22929,7 +22931,7 @@ dal_wp &amp;lt;- dal_wp %&amp;gt;% dplyr::select(GIDGSR,
   gather(team, wpa, -GIDGSR) %&amp;gt;% separate(., GIDGSR, c(&amp;quot;GSR&amp;quot;, &amp;quot;game_id&amp;quot;), sep=&amp;quot;:&amp;quot;) %&amp;gt;% 
   mutate(game_seconds_remaining = as.integer(GSR))
 dal_plt &amp;lt;- dal_wp %&amp;gt;% left_join(My.NFL.Table)
-dal_plt$colors1 &amp;lt;- NA
+# dal_plt$colors1 &amp;lt;- NA
 dal_plt[dal_plt$team==&amp;quot;home_wp&amp;quot;,&amp;quot;colors1&amp;quot;] &amp;lt;- dal_plt[dal_plt$team==&amp;quot;home_wp&amp;quot;,&amp;quot;Home_primary&amp;quot;]
 dal_plt[dal_plt$team==&amp;quot;away_wp&amp;quot;,&amp;quot;colors1&amp;quot;] &amp;lt;- dal_plt[dal_plt$team==&amp;quot;away_wp&amp;quot;,&amp;quot;Away_primary&amp;quot;]
 dal_plt[dal_plt$team==&amp;quot;home_wp&amp;quot;,&amp;quot;team&amp;quot;] &amp;lt;- dal_plt[dal_plt$team==&amp;quot;home_wp&amp;quot;,&amp;quot;home_team&amp;quot;]
@@ -22943,10 +22945,10 @@ p &amp;lt;- dal_plt %&amp;gt;% ggplot() + aes(x = game_seconds_remaining, y = wp
   scale_x_reverse(breaks = seq(0, 3600, 300)) + 
   annotate(&amp;quot;text&amp;quot;, x = 3000, y = .75, label = &amp;quot;Home&amp;quot;, size = 8) + 
   annotate(&amp;quot;text&amp;quot;, x = 3000, y = .25, label = &amp;quot;Away&amp;quot;, size = 8) +
-  geom_vline(xintercept = 900, linetype = &amp;quot;dashed&amp;quot;, black) + 
-  geom_vline(xintercept = 1800, linetype = &amp;quot;dashed&amp;quot;, black) + 
-  geom_vline(xintercept = 2700, linetype = &amp;quot;dashed&amp;quot;, black) + 
-  geom_vline(xintercept = 0, linetype = &amp;quot;dashed&amp;quot;, black) + 
+  geom_vline(xintercept = 900, linetype = &amp;quot;dashed&amp;quot;, color=&amp;quot;black&amp;quot;) + 
+  geom_vline(xintercept = 1800, linetype = &amp;quot;dashed&amp;quot;, color=&amp;quot;black&amp;quot;) + 
+  geom_vline(xintercept = 2700, linetype = &amp;quot;dashed&amp;quot;, color=&amp;quot;black&amp;quot;) + 
+  geom_vline(xintercept = 0, linetype = &amp;quot;dashed&amp;quot;, color=&amp;quot;black&amp;quot;) + 
   labs(
     x = &amp;quot;Time Remaining (seconds)&amp;quot;,
     y = &amp;quot;Win Probability&amp;quot;,
@@ -22956,7 +22958,7 @@ p &amp;lt;- dal_plt %&amp;gt;% ggplot() + aes(x = game_seconds_remaining, y = wp
   ) + theme_bw() + transition_states(titleS, transition_length=6, state_length = 10)
 animate(p, nframes=400)&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/R/nflscrapR/index_files/figure-html/unnamed-chunk-9-1.gif&#34; /&gt;&lt;!-- --&gt;&lt;/p&gt;
-&lt;p&gt;I will stop with that. In a blog post, I did a bit more with this and also &lt;a href=&#34;https://rwalkerwu.shinyapps.io/NFL-Scrapr/&#34;&gt;built a shiny app for doing it for all of the teams&lt;/a&gt; that is linked there.&lt;/p&gt;
+&lt;p&gt;I will stop with that for this blog post, I did a bit more with this and also &lt;a href=&#34;https://rwalkerwu.shinyapps.io/NFL-Scrapr/&#34;&gt;built a shiny app for doing it for all of the teams&lt;/a&gt; that is linked there.&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 </description>

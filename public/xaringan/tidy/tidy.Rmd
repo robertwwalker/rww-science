@@ -243,6 +243,13 @@ There are four main `dplyr` verbs that we will play with, and some helpers.
 --
 - summarize or summarise  
 
+
+---
+class: center
+
+# `filter()`
+
+
 ---
 ## filter [1 of 3]
 
@@ -285,6 +292,12 @@ FastFood %>% filter(startsWith(restaurant,"S")==TRUE) %>% group_by(restaurant) %
 
 
 ---
+class: center, middle
+
+# `select()`
+
+
+---
 class: inverse
 ## select [1/2]
 
@@ -308,6 +321,12 @@ FastFood %>% select(restaurant,starts_with("vit"))
 
 
 ---
+class: center, middle
+
+# `mutate()`
+
+
+---
 # mutate [and transmute]
 
 `mutate()` and `transmute()` are the core method for adding variables [columns] to existing data.  The key difference is that `mutate()` retains existing variables while `transmute()` drops them.  Let's see it for sodium, rescaled to grams.
@@ -321,6 +340,12 @@ FastFood %>%
   select(restaurant,Sodium.Grams,sodium,everything())
 ```
 </small>
+
+
+---
+class: center, middle
+
+# `transmute()`
 
 
 ---
@@ -347,6 +372,38 @@ FastFood <- FastFood %>% mutate(Sodium.Grams = sodium / 1000)
 My.Fast.Food <- FastFood %>% mutate(Sodium.Grams = sodium / 1000)
 ```
 
+---
+
+# `mutate()` and `transmute()` can be fancy
+## Fixing a Frustration and a little Visual
+
+Virtually all of these functions can embed other functions.  We can use mutate with functions to do pretty fancy things.  Let me isolate the chicken items.
+
+```{r}
+FastFood <- FastFood %>% mutate(Chicken = stringr::str_detect(item, 'Chicken|Chick-n'))
+```
+
+---
+
+# What's the distribution of Chicken items by chain?
+
+```{r}
+ggplot(FastFood) +
+ aes(x = restaurant, fill = Chicken) +
+ geom_bar(position = "dodge") +
+ coord_flip() +
+ theme_minimal() +
+ labs(x="", y="Menu Items", title="Chicken Menu Items by Fast Food Chain")
+```
+
+
+
+
+---
+class: center, middle
+
+# `group_by()`
+
 
 ---
 # The Magic of `group_by`
@@ -364,17 +421,9 @@ My.Fast.Food <- FastFood %>% mutate(Sodium.Grams = sodium / 1000)
 ```{r, results='markup'}
 FastFood %>% group_by(restaurant) %>% skim() %>% kable() %>% kable_styling() %>%
   scroll_box(width = "100%", height = "500px")
-
 ```
 </small>
 
----
-
-# Fixing a Frustration
-
-```{r}
-FastFood <- FastFood %>% mutate(Chicken = grepl('Chicken|Chick-n',item))
-```
 
 ---
 # A Two Variable Pivot
@@ -407,7 +456,7 @@ FastFood %>% group_by(restaurant, Chicken) %>% summarise(Mean.Protein = mean(pro
 ---
 # ungroup()
 
-We need `ungroup()` when we want to combine `mutate()` and `group_by()` to calculate aggregate statistics for all relevant rows.
+We need `ungroup()` when we want to combine `mutate()` and `group_by()` to calculate aggregate statistics for all relevant rows.  Objects retain their `grouped` status unless we actively remove it.
 
 <small>
 ```{r}
@@ -417,6 +466,12 @@ FastFood <- FastFood %>%
   ungroup()
 ```
 </small>
+
+---
+class: center, middle
+
+# `arrange()`
+
 
 ---
 # arrange() [1/2]
@@ -456,13 +511,6 @@ FastFood %>%
 ( Rest.Chicken.Table <- FastFood %>% group_by(restaurant,Chicken) %>% summarise(Count = n()) )
 ```
 
----
-# Visualising Restaurants and Chicken
-
-```{r}
-Rest.Chicken.Table %>% ggplot() + aes(x=restaurant, y=Count, fill=Chicken) + geom_col() + coord_flip()
-```
-
 
 ---
 # A First Data Visualisation [Chained]
@@ -475,6 +523,16 @@ FastFood %>%
 ```
 
 ---
+# Adding in Chicken
+
+```{r}
+FastFood %>% 
+    group_by(restaurant, Chicken) %>% #<<
+    summarise(Count = n()) %>%
+    ggplot() + aes(x=restaurant, y=Count, fill=Chicken) + geom_col() #<<
+```
+
+---
 # More Chaining [`fct_reorder()`]
 
 ```{r}
@@ -484,7 +542,7 @@ FastFood %>% group_by(restaurant) %>% summarise(Count = n()) %>% ggplot() + aes(
 ---
 # Even More Chaining
 
-```{r}
+```{r, fig.height=6}
 FastFood %>% group_by(restaurant) %>% summarise(Count = n()) %>% ggplot() + aes(x=fct_reorder(restaurant, desc(Count)), y=Count) + geom_col() + labs(x="Chain", y="Count") + coord_flip() 
 ```
 
@@ -509,10 +567,40 @@ class: inverse
 
 # A Recap
 
-Four `dplyr` verbs:  
-- filter  
-- select  
-- mutate / transmute  
-- summarise  
-- `group_by` and `ungroup`
-- helpers: arrange and desc
+.pull-left[
+**Four `dplyr` verbs:**  
+- `filter()`  
+- `select()`  
+- `mutate()` / `transmute()`  
+- `summarise()`  
+]
+
+.pull-right[
+**Two helpers:**  
+- `group_by()` and `ungroup()`  
+- `arrange()` and `desc()`  
+]
+
+---
+class: inverse
+
+### Something A Little Bit **Crazy** `r emo::ji("shrug")`
+
+Take our summary function from above.  But now let me embed it in a function so that it will do it for any variable.  Though it will work with any name [calories would do], I will be explicit.  There are some [highlighted] programming tricks here but this could be adapted to any functions we might want.
+
+```{r}
+library(rlang)
+summarise.me <- function(data, var) {   #<<
+  data <- as.data.frame(data); var <- ensym(var)  #<<
+Res <- data %>% summarise(Mean = mean(!! var, na.rm=TRUE), #<<
+            SD = sd(!! var, na.rm=TRUE),
+            Min = min(!! var, na.rm=TRUE), 
+            Q1 = quantile(!! var, 0.25, na.rm=TRUE), 
+            Median = median(!! var, na.rm=TRUE), 
+            Q3 = quantile(!! var, 0.75, na.rm=TRUE),
+            Max = max(!! var, na.rm=TRUE))
+return(Res)
+}
+FastFood %>% summarise.me(., protein)
+```
+

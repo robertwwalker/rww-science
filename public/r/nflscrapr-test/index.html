@@ -710,6 +710,7 @@ Getting Some Data Following the guide to the package on GitHub, let me try their
 
     <div class="article-style">
       
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 <script src="/rmarkdown-libs/kePrint/kePrint.js"></script>
 
 
@@ -5883,12 +5884,12 @@ IND
 <p>That’s all the regular season games in the 2018 season. They suggest that it is straightforward to grab an entire season of play by play data and it is. 👏.</p>
 <pre><code>full_season_2018 &lt;- scrape_season_play_by_play(2018, &quot;reg&quot;)
 saveRDS(full_season_2018, file=&quot;../../../data/2018NFLSeason.rds&quot;)</code></pre>
-<p>That gets the data though it took over an hour to acquire it all and it threw two error messages. I do not yet know if they are conseequential. My goal here is to use this package and the ability to plot the win probability charts to try to summarise an entire Dallas Cowboys season – the team I grew up with along with the former Houston Oilers and I was never really okay about them moving. ⏬</p>
+<p>That gets the data though it took over an hour to acquire it all and it threw two error messages. I do not yet know if they are consequential. My goal here is to use this package and the ability to plot the win probability charts to try to summarise an entire Dallas Cowboys season – the team I grew up with along with the former Houston Oilers and I was never really okay about them moving. 🔻</p>
 <pre class="r"><code>full_season_2018 &lt;- readRDS(url(&quot;https://github.com/robertwwalker/academic-mymod/raw/master/data/2018NFLSeason.rds&quot;))  # Downloaded it once.  It sits in rww.science/data</code></pre>
 <p>Let me skim the data for an idea of what it looks like. I will also pull in three packages that I am deploying or will.</p>
-<pre class="r"><code>library(skimr)
-library(teamcolors)
-library(gganimate)
+<pre class="r"><code>library(skimr)  # Summary
+library(teamcolors)  # NFL Team Colors
+library(gganimate)  # Animation made easy
 full_season_2018 %&gt;% head() %&gt;% kableExtra::kable() %&gt;% kable_styling() %&gt;% scroll_box(width = &quot;700px&quot;, 
     height = &quot;400px&quot;)</code></pre>
 <div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:400px; overflow-x: scroll; width:700px; ">
@@ -11313,10 +11314,11 @@ cardal_wp %&gt;% ggplot(aes(x = game_seconds_remaining, y = wpa, color = team)) 
     &quot;DAL&quot;), values = c(car_color, dal_color), guide = FALSE) + scale_x_reverse(breaks = seq(0, 
     3600, 300)) + annotate(&quot;text&quot;, x = 3000, y = 0.75, label = &quot;CAR&quot;, color = car_color, 
     size = 8) + annotate(&quot;text&quot;, x = 3000, y = 0.25, label = &quot;DAL&quot;, color = dal_color, 
-    size = 8) + geom_vline(xintercept = 900, linetype = &quot;dashed&quot;, black) + geom_vline(xintercept = 1800, 
-    linetype = &quot;dashed&quot;, black) + geom_vline(xintercept = 2700, linetype = &quot;dashed&quot;, 
-    black) + geom_vline(xintercept = 0, linetype = &quot;dashed&quot;, black) + labs(x = &quot;Time Remaining (seconds)&quot;, 
-    y = &quot;Win Probability&quot;, title = &quot;Week 1 Win Probability Chart&quot;, subtitle = &quot;Carolina Panthers vs. Dallas Cowboys&quot;, 
+    size = 8) + geom_vline(xintercept = 900, linetype = &quot;dashed&quot;, color = &quot;black&quot;) + 
+    geom_vline(xintercept = 1800, linetype = &quot;dashed&quot;, color = &quot;black&quot;) + geom_vline(xintercept = 2700, 
+    linetype = &quot;dashed&quot;, color = &quot;black&quot;) + geom_vline(xintercept = 0, linetype = &quot;dashed&quot;, 
+    color = &quot;black&quot;) + labs(x = &quot;Time Remaining (seconds)&quot;, y = &quot;Win Probability&quot;, 
+    title = &quot;Week 1 Win Probability Chart&quot;, subtitle = &quot;Carolina Panthers vs. Dallas Cowboys&quot;, 
     caption = &quot;Data from nflscrapR&quot;) + theme_bw()</code></pre>
 <p><img src="/R/nflscrapR/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <p>Now I want to try and build a plot of all of Dallas Cowboys games for the season. Here are the steps. First, I am going to make a table that contains all of the names and colors for all of the game IDs. Even though I only need those for Dallas, building a shiny app for this would mean that I could select by teams above and make it extensible. At the end, I will only need those for Dallas so I will separate them off.</p>
@@ -11379,7 +11381,7 @@ dal_wp &lt;- dal_wp %&gt;% dplyr::select(GIDGSR,
   gather(team, wpa, -GIDGSR) %&gt;% separate(., GIDGSR, c(&quot;GSR&quot;, &quot;game_id&quot;), sep=&quot;:&quot;) %&gt;% 
   mutate(game_seconds_remaining = as.integer(GSR))
 dal_plt &lt;- dal_wp %&gt;% left_join(My.NFL.Table)
-dal_plt$colors1 &lt;- NA
+# dal_plt$colors1 &lt;- NA
 dal_plt[dal_plt$team==&quot;home_wp&quot;,&quot;colors1&quot;] &lt;- dal_plt[dal_plt$team==&quot;home_wp&quot;,&quot;Home_primary&quot;]
 dal_plt[dal_plt$team==&quot;away_wp&quot;,&quot;colors1&quot;] &lt;- dal_plt[dal_plt$team==&quot;away_wp&quot;,&quot;Away_primary&quot;]
 dal_plt[dal_plt$team==&quot;home_wp&quot;,&quot;team&quot;] &lt;- dal_plt[dal_plt$team==&quot;home_wp&quot;,&quot;home_team&quot;]
@@ -11393,10 +11395,10 @@ p &lt;- dal_plt %&gt;% ggplot() + aes(x = game_seconds_remaining, y = wpa, color
   scale_x_reverse(breaks = seq(0, 3600, 300)) + 
   annotate(&quot;text&quot;, x = 3000, y = .75, label = &quot;Home&quot;, size = 8) + 
   annotate(&quot;text&quot;, x = 3000, y = .25, label = &quot;Away&quot;, size = 8) +
-  geom_vline(xintercept = 900, linetype = &quot;dashed&quot;, black) + 
-  geom_vline(xintercept = 1800, linetype = &quot;dashed&quot;, black) + 
-  geom_vline(xintercept = 2700, linetype = &quot;dashed&quot;, black) + 
-  geom_vline(xintercept = 0, linetype = &quot;dashed&quot;, black) + 
+  geom_vline(xintercept = 900, linetype = &quot;dashed&quot;, color=&quot;black&quot;) + 
+  geom_vline(xintercept = 1800, linetype = &quot;dashed&quot;, color=&quot;black&quot;) + 
+  geom_vline(xintercept = 2700, linetype = &quot;dashed&quot;, color=&quot;black&quot;) + 
+  geom_vline(xintercept = 0, linetype = &quot;dashed&quot;, color=&quot;black&quot;) + 
   labs(
     x = &quot;Time Remaining (seconds)&quot;,
     y = &quot;Win Probability&quot;,
@@ -11406,7 +11408,7 @@ p &lt;- dal_plt %&gt;% ggplot() + aes(x = game_seconds_remaining, y = wpa, color
   ) + theme_bw() + transition_states(titleS, transition_length=6, state_length = 10)
 animate(p, nframes=400)</code></pre>
 <p><img src="/R/nflscrapR/index_files/figure-html/unnamed-chunk-9-1.gif" /><!-- --></p>
-<p>I will stop with that. In a blog post, I did a bit more with this and also <a href="https://rwalkerwu.shinyapps.io/NFL-Scrapr/">built a shiny app for doing it for all of the teams</a> that is linked there.</p>
+<p>I will stop with that for this blog post, I did a bit more with this and also <a href="https://rwalkerwu.shinyapps.io/NFL-Scrapr/">built a shiny app for doing it for all of the teams</a> that is linked there.</p>
 </div>
 </div>
 
