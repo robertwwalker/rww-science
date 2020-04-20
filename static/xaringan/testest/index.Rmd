@@ -27,11 +27,13 @@ It is probably better posed as, what can we learn from data?
 
 ```{r setup, include=FALSE}
 options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(warning=FALSE, message=FALSE, fig.height=6, fig.showtext =
+TRUE)
 ```
 
 ```{r xaringan-themer, include=FALSE}
-library(xaringanthemer); library(kableExtra)
-solarized_dark(
+library(xaringanthemer); library(kableExtra); library(tidyverse)
+style_solarized_light(
   code_font_family = "Fira Code",
   code_font_url    = "https://cdn.rawgit.com/tonsky/FiraCode/1.204/distr/fira_code.css"
 )
@@ -39,7 +41,17 @@ solarized_dark(
 
 
 ---
-# To Some Data
+
+# The Big Idea
+
+Inference.
+
+In the most basic form, learning something about data that we do not have from data that we do.  In the jargon of statistics, we characterize the probability distribution of some feature of the population of interest from a sample drawn randomly from that population.  
+
+**Describe some key feature with appropriate uncertainty derived from a sample of data.**
+
+---
+# Inference for Data
 
 Of two forms:
 
@@ -50,7 +62,7 @@ Of two forms:
 2. Quantitative
 
 ---
-# The Binomial
+# Qualitative: The Binomial
 
 Is entirely defined by two parameters, $n$ -- the number of subjects -- and $\pi$ -- the probability of a positive response.  The probability of exactly $x$ positive responses is given by:
 
@@ -60,7 +72,7 @@ The binomial is the `canonical` distribution for binary outcomes.  Assuming all 
 
 ---
 
-# Berkeley Admissions
+## Berkeley Admissions
 
 What is the probability of being admitted to Berkeley?<sup>1</sup>
 
@@ -71,7 +83,7 @@ UCBTab <- data.frame(UCBAdmissions) %>% reshape::untable(., .$Freq) %>% select(-
 table(UCBTab$Admit)
 ```
 
-`r table(UCBTab$Admit)[[1]]` of `r sum(table(UCBTab$Admit))` were admitted.
+`r table(UCBTab$Admit)[[1]]` of `r sum(table(UCBTab$Admit))` were admitted.  Now let's calculate the probability of admission just based on the data.  This proportion will later appear as $\hat{p}$.
 
 --
 
@@ -83,10 +95,24 @@ prop.table(table(UCBTab$Admit))
 .footnote[<sup>1</sup> **We probably think this depends on a bunch of applicant specific features but we will put that to the side for now.**]
 
 ---
+class: inverse
+
+## A Visual
+
+```{r}
+ggplot(UCBTab) +
+ aes(x = Gender, fill = Admit) +
+ geom_bar() +
+ scale_fill_hue() +
+ theme_minimal()
+```
+
+
+---
 
 # The Idea
 
-Suppose we want to know $\pi(Admit)$ -- the probability of being admitted -- with 90% probability.  We want to take the data that we saw and use it to infer the likely values of $\pi(Admit)$.  
+Suppose we want to know $\pi(Admit)$ -- the probability of being admitted -- with 90% probability.  We want to take the data that we saw and use it to **infer** the likely values of $\pi(Admit)$.  
 
 ---
 
@@ -100,7 +126,7 @@ and pick them up, one at a time,
 
 --
 
-record the value, 
+record the value [green/red], 
 
 --
 
@@ -108,7 +134,7 @@ put the chip back, and repeat 4526 times.
 
 --
 
-I put it back or I would also get exactly the same `sample`.  Each time, I am getting an estimate of the probability of Admit.
+I put it back or I would also get exactly the same `sample`.  Each sample of 4526 chips constitutes an estimate of the probability of Admit.
 
 --
 
@@ -123,7 +149,7 @@ remotes::install_github("robertwwalker/ResampleProps")
 
 ```{r}
 library(ResampleProps)
-RSMP <- ResampleProp(UCBTab$Admit, k = 10000, tab.col = 1) %>% data.frame(Pi.Admit=.) 
+RSMP <- ResampleProp(UCBTab$Admit, k = 10000, tab.col = 1) %>% data.frame(Pi.Admit=., Gender=as.character("All")) 
 quantile(RSMP$Pi.Admit, probs = c(0.05,0.95))
 ```
 
@@ -133,15 +159,39 @@ What is our estimate of $\pi$ with 90% confidence?  The probability of admission
 
 # A Plot
 
-```{r}
-RSMP %>%  ggplot(., aes(x=Pi.Admit)) + geom_density() + labs(x=expression(pi)) + theme_clean()
+```{r, fig.height= 5}
+library(ggthemes)
+RSMP %>%  ggplot(., aes(x=Pi.Admit)) + geom_density(outline.type = "upper", color="blue") +labs(x=expression(pi)) + theme_minimal() + theme_xaringan()
 ```
 
-## Another Way
+
+---
+class: inverse
+
+## There are three interchangeable methods
+
+1. Resampling/Simulation
+--
+2. Exact binomial computation
+--
+3. A normal approximation
+
+---
+
+## Another Way: Exact binomial
 
 That last procedure is correct but it is overkill.
 
 With probability of 0.95, how small could $\pi$ be to have gotten `r table(UCBTab$Admit)[[1]]` of `r sum(table(UCBTab$Admit))` or more?  With probability 0.05, how big could $\pi$ to have gotten `r table(UCBTab$Admit)[[1]]` of `r sum(table(UCBTab$Admit))` or fewer?
+
+```{r}
+binom.test(table(UCBTab$Admit), conf.level=0.9)
+```
+
+
+---
+
+## Verifying the Result
 
 ```{r}
 table(UCBTab$Admit)
@@ -151,7 +201,7 @@ pbinom(1754, 1755+2771, 0.3757924)
 
 ---
 
-# binom.test()
+## binom.test()
 
 ```{r}
 binom.test(1755, 1755+2771, conf.level=0.9)
@@ -164,8 +214,31 @@ With 90% probability, now often referred to as 90% confidence to avoid using the
 
 ```{r, fig.width=10}
 Binomial.Search <- data.frame(x=seq(0.33,0.43, by=0.001)) %>% mutate(Too.Low = pbinom(1755, 1755+2771, x), Too.High = 1-pbinom(1754, 1755+2771, x))
-Binomial.Search %>% pivot_longer(cols=c(Too.Low,Too.High)) %>% ggplot(., aes(x=x, y=value, color=name)) + geom_line() + geom_hline(aes(yintercept=0.05)) + geom_hline(aes(yintercept=0.95))  + geom_vline(data=Plot.Me, aes(xintercept=.), linetype=3) + labs(title="Using the Binomial to Search", color="Greater/Lesser", x=expression(pi), y="Probability") + theme_minimal()
+Binomial.Search %>% pivot_longer(cols=c(Too.Low,Too.High)) %>% ggplot(., aes(x=x, y=value, color=name)) + geom_line() + geom_hline(aes(yintercept=0.05)) + geom_hline(aes(yintercept=0.95))  + geom_vline(data=Plot.Me, aes(xintercept=.), linetype=3) + labs(title="Using the Binomial to Search", color="Greater/Lesser", x=expression(pi), y="Probability") + theme_xaringan() + scale_xaringan_color_discrete()
 ```
+
+---
+## A Third Way: The normal approximation
+
+As long as $n$ and $\pi$ are sufficiently large, we can approximate this with a normal distribution.  **This was also prove handy for a related reason.**  As long as $n*\pi$ > 10, we can write that a standard normal $z$ describes the distribution of $\pi$, given $n$ -- the sample size and $\hat{p}$ -- the proportion of yes's/true's in the sample.
+
+$$
+Pr(\pi) = \hat{p} \pm z*\left(\sqrt{\frac{\hat{p}*(1-\hat{p})}{n}}\right)
+$$
+
+$R$ implements this in `prop.test`.
+
+---
+class: inverse
+
+# The normal approximation estimates
+
+```{r}
+prop.test(table(UCBTab$Admit), conf.level = 0.9)
+```
+
+$R$ reports the result as $z^2$ not $z$ which is $\chi^2$ not normal.  This approximation yields an estimate of $\pi$, with 90% confidence, that ranges between 0.37 and 0.48.
+
 ---
 
 # Give It a Rough Try for Men
@@ -187,9 +260,9 @@ binom.test(1198,2691, conf.level = 0.9)
 ## The Thought Experiment
 
 ```{r}
-ResampleProp(UCBTM$Admit, k = 10000) %>% 
-  data.frame(Pi.Admit=.) %>% 
-  ggplot(., aes(x=Pi.Admit)) + geom_density() + 
+UCBTM <- UCBTab %>% filter(Gender=="Male")
+UCBTM.Pi <- ResampleProp(UCBTM$Admit, k = 10000) %>%  data.frame(Pi.Admit=., Gender = as.character("Male")) 
+UCBTM.Pi %>%  ggplot(., aes(x=Pi.Admit)) + geom_density(color="blue") + 
   labs(x=expression(pi)) + theme_clean()
 ```
 
@@ -200,15 +273,18 @@ ResampleProp(UCBTM$Admit, k = 10000) %>%
 
 ```{r}
 UCBTab %>% tabyl(Gender,Admit) %>% adorn_totals("col")
+UCBTF <- UCBTab %>% filter(Gender=="Female")
+UCBTF.Pi <- ResampleProp(UCBTF$Admit, k = 10000) %>%  data.frame(Pi.Admit=., Gender=as.character("Female")) 
 ```
 
 --
 
-The probability of being of Admitted, given a Woman, ranges from 0.286 to 0.322 with 90% confidence.
-
 ```{r}
 binom.test(557,1835, conf.level = 0.9)
 ```
+
+The probability of being of Admitted, given a Woman, ranges from 0.286 to 0.322 with 90% confidence.
+
 
 ---
 
@@ -216,12 +292,33 @@ binom.test(557,1835, conf.level = 0.9)
 
 Female: from 0.286 to 0.322  
 Male: from 0.43 to 0.46
+All: from 0.3758 to 0.3998
 
 ```{r, fig.width=12, echo=FALSE}
 library(patchwork)
 ggplot(UCBTab) +aes(x = Gender, fill = Admit) + geom_bar(position = "dodge") + scale_fill_viridis_d(option = "viridis") + theme_minimal() + ggplot(UCBTab) +aes(x = Gender, fill = Admit) + geom_bar(position = "fill") + scale_fill_viridis_d(option = "viridis") + theme_minimal() + guides(fill=FALSE)
 ```
 
+---
+class: inverse
+
+```{r, warning=FALSE}
+UCB.Pi <- bind_rows(UCBTF.Pi, UCBTM.Pi)
+UCB.Pi %>% ggplot(., aes(x=Gender, y=Pi.Admit, fill=Gender)) + geom_violin() + geom_label(aes(x=1.5, y=0.375), label="Too small to be male \n Too large to be female?", size=10, fill="black", color="white", inherit.aes = FALSE) + guides(size=FALSE)
+```
+
+---
+class: inverse
+
+```{r, warning=FALSE}
+library(patchwork)
+UCB.Pi <- bind_rows(UCBTF.Pi, UCBTM.Pi, RSMP)
+UCB.Pi %>% ggplot(., aes(x=Pi.Admit, fill=Gender)) + geom_density(alpha=0.2) +  ggplot(UCBTab) +
+ aes(x = Gender, fill = Admit) +
+ geom_bar() +
+ scale_fill_hue() +
+ theme_minimal()
+```
 
 ---
 background-image: url(`r xaringan:::karl`)
