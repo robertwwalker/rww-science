@@ -1,5 +1,5 @@
 ---
-title: "Testing and Estimation in One and Two-Samples"
+title: "Inference: One and Two-Samples"
 subtitle: "Discrimination and Concrete"  
 author: 
   - "Robert W. Walker"
@@ -12,6 +12,8 @@ output:
       highlightStyle: github
       highlightLines: true
       countIncrementalSlides: false
+    includes:
+      after_body: insert-logo.html
 ---
 
 # How do we learn from data?
@@ -19,36 +21,71 @@ output:
 
 --
 
-.right[![](https://media.giphy.com/media/Jp3tixBJ0YERe4PXig/giphy.gif)]
+.center[![](https://media.giphy.com/media/Jp3tixBJ0YERe4PXig/giphy.gif)]
 
 --
 
 It is probably better posed as, what can we learn from data?
 
 ```{r setup, include=FALSE}
-options(htmltools.dir.version = FALSE)
+options(htmltools.dir.version = FALSE, servr.daemon = TRUE)
 knitr::opts_chunk$set(warning=FALSE, message=FALSE, fig.height=6, fig.showtext =
-TRUE)
+TRUE, fig.retina=3)
+library(DT)
 ```
 
 ```{r xaringan-themer, include=FALSE}
 library(xaringanthemer); library(kableExtra); library(tidyverse)
 style_solarized_light(
-  code_font_family = "Fira Code",
-  code_font_url    = "https://cdn.rawgit.com/tonsky/FiraCode/1.204/distr/fira_code.css"
+#  code_font_family = "Fira Code",
+#  code_font_url    = "https://cdn.rawgit.com/tonsky/FiraCode/1.204/distr/fira_code.css"
+    text_font_google   = google_font("Neuton"),
+    code_font_google   = google_font("IBM Plex Mono")
 )
 ```
 
+```{css, echo = FALSE, include=FALSE}
+.remark-slide-content {
+  font-size: 24px;
+  padding: 10px 60px 10px 60px;
+}
+.remark-code, .remark-inline-code {
+  background: #f0f0f0;
+}
+.remark-code {
+  font-size: 80%;
+}
+.huge .remark-code { /*Change made here*/
+  font-size: 200% !important;
+}
+.tiny .remark-code { /*Change made here*/
+  font-size: 50% !important;
+}
+.red { 
+  color: red 
+}
+.green { 
+  color: green 
+}
+```
 
 ---
 
 # The Big Idea
 
-Inference.
+**Inference.**
 
 In the most basic form, learning something about data that we do not have from data that we do.  In the jargon of statistics, we characterize the probability distribution of some feature of the population of interest from a sample drawn randomly from that population.  
 
 **Describe some key feature with appropriate uncertainty derived from a sample of data.**
+
+--
+
+**Plan studies of adequate size to assess key probabilities of interest.**
+
+--
+
+**Compare key probabilities across two groups.**
 
 ---
 # Inference for Data
@@ -61,20 +98,34 @@ Of two forms:
 
 2. Quantitative
 
+--
+
+We will focus on the former.
+
 ---
-# Qualitative: The Binomial
+## Qualitative: The Binomial
 
 Is entirely defined by two parameters, $n$ -- the number of subjects -- and $\pi$ -- the probability of a positive response.  The probability of exactly $x$ positive responses is given by:
 
 $$ Pr(X = x | \pi, n) = {n \choose x} \pi^x (1-\pi)^{n-x} $$
 
-The binomial is the `canonical` distribution for binary outcomes.  Assuming all $n$ subjects are alike and the outcome occurs with $\pi$ probability, then we must have a sample from a binomial.  Now let's grab some data and frame a question.
+The binomial is the `canonical` distribution for binary outcomes.  *Assuming all $n$ subjects are alike and the outcome occurs with $\pi$ probability*,<sup>1</sup> then we must have a sample from a binomial. 
+
+Two key features:
+1. Expectation: $n \cdot \pi$ or number of subjects times probability.
+2. Variance is $n \cdot \pi \cdot (1 - \pi)$ and standard deviation is $\sqrt{n \cdot \pi \cdot (1 - \pi)}$.
+
+--
+
+Now let's grab some data and frame a question.
+
+.footnote[<sup>1</sup> **If this does not hold, we will seek the homogenous groups in which it does.**]
 
 ---
 
 ## Berkeley Admissions
 
-What is the probability of being admitted to Berkeley?<sup>1</sup>
+What is the probability of being admitted to UC Berkeley Graduate Schools?<sup>2</sup>
 
 --
 
@@ -83,7 +134,7 @@ UCBTab <- data.frame(UCBAdmissions) %>% reshape::untable(., .$Freq) %>% select(-
 table(UCBTab$Admit)
 ```
 
-`r table(UCBTab$Admit)[[1]]` of `r sum(table(UCBTab$Admit))` were admitted.  Now let's calculate the probability of admission just based on the data.  This proportion will later appear as $\hat{p}$.
+`r table(UCBTab$Admit)[[1]]` of `r sum(table(UCBTab$Admit))`, or 38.77% [Pr=0.3877], were admitted. This proportion will later appear as $\hat{p}$.
 
 --
 
@@ -92,21 +143,24 @@ prop.table(table(UCBTab$Admit))
 ```
 
 
-.footnote[<sup>1</sup> **We probably think this depends on a bunch of applicant specific features but we will put that to the side for now.**]
+.footnote[<sup>2</sup> **We probably think this depends on a bunch of applicant specific features but we will put that to the side for now.**]
 
 ---
-class: inverse
+class:inverse
+
+```{r, eval=require('DT')}
+UCBTab %>% DT::datatable(.,fillContainer = FALSE, options = list(pageLength = 8), rownames=FALSE)
+```
+
+
+
+---
 
 ## A Visual
 
-```{r}
-ggplot(UCBTab) +
- aes(x = Gender, fill = Admit) +
- geom_bar() +
- scale_fill_hue() +
- theme_minimal()
+```{r, fig.height = 5}
+UCBTab %>% ggplot(.) + aes(x = Gender, fill = Admit) + geom_bar() + theme_xaringan() + scale_xaringan_fill_discrete()
 ```
-
 
 ---
 
@@ -118,7 +172,7 @@ Suppose we want to know $\pi(Admit)$ -- the probability of being admitted -- wit
 
 One way to do it might be this.  
 
-**Suppose I have 4526 chips with 1755 green and 2771 red.  I toss them all on the floor**
+**Suppose I have 4526 chips with 1755 <span style="color: green;">green</span> and 2771 <span style="color: red;">red</span>.  I toss them all on the floor**
 
 --
 
@@ -126,7 +180,7 @@ and pick them up, one at a time,
 
 --
 
-record the value [green/red], 
+record the value (<span style="color: green;">green</span>/<span style="color: red;">red</span>), 
 
 --
 
@@ -144,12 +198,13 @@ I wrote a little program to do just this -- `ResampleProps`.
 remotes::install_github("robertwwalker/ResampleProps")
 ```
 ---
+class: inverse
 
-# The Result
+# Method 1: Resampling
 
 ```{r}
 library(ResampleProps)
-RSMP <- ResampleProp(UCBTab$Admit, k = 10000, tab.col = 1) %>% data.frame(Pi.Admit=., Gender=as.character("All")) 
+RSMP <- ResampleProp(UCBTab$Admit, k = 10000, tab.col = 1) %>% data.frame(Pi.Admit=., Gender=as.character("All"), frameN = 1) 
 quantile(RSMP$Pi.Admit, probs = c(0.05,0.95))
 ```
 
@@ -161,7 +216,7 @@ What is our estimate of $\pi$ with 90% confidence?  The probability of admission
 
 ```{r, fig.height= 5}
 library(ggthemes)
-RSMP %>%  ggplot(., aes(x=Pi.Admit)) + geom_density(outline.type = "upper", color="blue") +labs(x=expression(pi)) + theme_minimal() + theme_xaringan()
+RSMP %>%  ggplot(., aes(x=Pi.Admit)) + geom_density(outline.type = "upper", color="maroon") +labs(x=expression(pi)) + theme_minimal() + theme_xaringan()
 ```
 
 
@@ -171,35 +226,30 @@ class: inverse
 ## There are three interchangeable methods
 
 1. Resampling/Simulation
+
 --
+
 2. Exact binomial computation
+
 --
+
 3. A normal approximation
 
 ---
+class: inverse
 
 ## Another Way: Exact binomial
 
 That last procedure is correct but it is overkill.
 
-With probability of 0.95, how small could $\pi$ be to have gotten `r table(UCBTab$Admit)[[1]]` of `r sum(table(UCBTab$Admit))` or more?  With probability 0.05, how big could $\pi$ to have gotten `r table(UCBTab$Admit)[[1]]` of `r sum(table(UCBTab$Admit))` or fewer?
-
-```{r}
-binom.test(table(UCBTab$Admit), conf.level=0.9)
-```
-
-
----
-
-## Verifying the Result
+With probability of 0.05, how small could $\pi$ be to have gotten `r table(UCBTab$Admit)[[1]]` of `r sum(table(UCBTab$Admit))` or more?  With probability 0.95, how big could $\pi$ be to have gotten  fewer than `r table(UCBTab$Admit)[[1]]` of `r sum(table(UCBTab$Admit))`?
 
 ```{r}
 table(UCBTab$Admit)
-pbinom(1755, 1755+2771, 0.3998340)
-pbinom(1754, 1755+2771, 0.3757924)
 ```
 
 ---
+class: inverse
 
 ## binom.test()
 
@@ -210,7 +260,13 @@ Plot.Me <- binom.test(1755, 1755+2771, conf.level=0.9)$conf.int %>% data.frame()
 
 With 90% probability, now often referred to as 90% confidence to avoid using the word probability twice, the probability of being admitted ranges between 0.3758 and 0.3998.  Let me show this.
 
+```{r}
+pbinom(1755, 1755+2771, 0.3998340)
+pbinom(1754, 1755+2771, 0.3757924)
+```
+
 ---
+class: inverse
 
 ```{r, fig.width=10}
 Binomial.Search <- data.frame(x=seq(0.33,0.43, by=0.001)) %>% mutate(Too.Low = pbinom(1755, 1755+2771, x), Too.High = 1-pbinom(1754, 1755+2771, x))
@@ -220,61 +276,125 @@ Binomial.Search %>% pivot_longer(cols=c(Too.Low,Too.High)) %>% ggplot(., aes(x=x
 ---
 ## A Third Way: The normal approximation
 
-As long as $n$ and $\pi$ are sufficiently large, we can approximate this with a normal distribution.  **This was also prove handy for a related reason.**  As long as $n*\pi$ > 10, we can write that a standard normal $z$ describes the distribution of $\pi$, given $n$ -- the sample size and $\hat{p}$ -- the proportion of yes's/true's in the sample.
+As long as $n$ and $\pi$ are sufficiently large, we can approximate this with a normal distribution.  **This will also prove handy for a related reason.**  
 
-$$
-Pr(\pi) = \hat{p} \pm z*\left(\sqrt{\frac{\hat{p}*(1-\hat{p})}{n}}\right)
-$$
+As long as $n*\pi$ > 10, we can write that a standard normal $z$ describes the distribution of $\pi$, given $n$ -- the sample size and $\hat{p}$ -- the proportion of yes's/true's in the sample.
 
-$R$ implements this in `prop.test`.
+$$ Pr(\pi) = \hat{p} \pm z \cdot \left( \sqrt{\frac{\hat{p}*(1-\hat{p})}{n}} \right) $$
+
+$R$ implements this in `prop.test`.  By default, R implements a modified version that corrects for discreteness/continuity.  To get the above formula, `prop.test(table, correct=FALSE)`.
 
 ---
 class: inverse
 
-# The normal approximation estimates
+# The normal approximation
 
 ```{r}
 prop.test(table(UCBTab$Admit), conf.level = 0.9)
 ```
 
-$R$ reports the result as $z^2$ not $z$ which is $\chi^2$ not normal.  This approximation yields an estimate of $\pi$, with 90% confidence, that ranges between 0.37 and 0.48.
+$R$ reports the result as $z^2$ not $z$ which is $\chi^2$ not normal.  This approximation yields an estimate of $\pi$, with 90% confidence, that ranges between `r prop.test(table(UCBTab$Admit), conf.level = 0.9)$conf.int[[1]]` and `r prop.test(table(UCBTab$Admit), conf.level = 0.9)$conf.int[[2]]`.
+
+---
+# A Cool Consequence of Normal
+
+The formal equation defines:
+
+$$ z = \frac{\hat{p} - \pi}{\sqrt{\frac{\pi(1-\pi)}{n}}} $$
+
+Some language:
+1. Margin of error is $\hat{p} - \pi$.  [MOE]
+2. Confidence: the probability coverage given z [two-sided].
+3. We need a guess at the true $\pi$ because variance/std. dev. depend on $\pi$.  0.5 is common because it maximizes the variance; we will have enough no matter what the true value.
+
+Algebra allows us to solve for $n$.
+
+$$ n = \frac{z^2 \cdot \pi(1-\pi)}{(\hat{p} - \pi)^2} $$
+
+---
+class:inverse
+
+### Example
+
+Estimate the probability of supporting an initiative to within 0.03 with 95% confidence.  Assume that the probability is 0.5 [it maximizes the variance and renders a conservative estimate -- an upper bound on the sample size]
+
+```{r}
+Sample.Size <- function(MOE, B.pi=0.5, Conf.lev=0.95) { 
+  My.n <- ((qnorm((1-Conf.lev)/2)^2)*(B.pi*(1-B.pi))) / MOE^2 
+  Necessary.sample <- ceiling(My.n) 
+  return(Necessary.sample) 
+}
+Sample.Size(MOE=0.03, B.pi=0.5, Conf.lev = 0.95)
+```
+
+**I need 1068 people to estimate support to within plus or minus 0.03 with 95% confidence.**
+
+---
+class: inverse
+
+### In the Real World
+
+
+```{r, echo=FALSE, out.height = "300px", out.width="1000px"}
+y1 <- "https://i.imgur.com/Fp2nuNN.png"
+download.file(y1, './y1.png')
+knitr::include_graphics("./y1.png")
+```
+
+[A real poll](https://navigatorresearch.org/wp-content/uploads/2020/04/Navigator-Daily-Tracker-Topline-F04.13.20.pdf).  They do not have quite enough for a 3% margin of error.  But 1006 is enough for a 3.1 percent margin of error...
+
+```{r}
+Sample.Size(MOE=0.031, B.pi=0.5, Conf.lev = 0.95)
+```
+
+---
+# Back to the Story
+
+What is our estimate of $\pi$ with 90% confidence?  
+
+**The probability of admission ranges from `r quantile(RSMP$Pi.Admit, probs = c(0.05,0.95))[[1]]` to `r quantile(RSMP$Pi.Admit, probs = c(0.05,0.95))[[2]]`.**
+
+Does this depend on whether the applicant is Male or Female?
 
 ---
 
-# Give It a Rough Try for Men
+# Analysis by Group
 
 ```{r}
 library(janitor); UCBTab %>% tabyl(Gender,Admit) %>% adorn_totals("col")
+UCBTF <- UCBTab %>% filter(Gender=="Female")
+UCBTF.Pi <- ResampleProp(UCBTF$Admit, k = 10000) %>%  data.frame(Pi.Admit=., Gender=as.character("Female"), frameN=2) # Estimates for females
+UCBTM <- UCBTab %>% filter(Gender=="Male")
+UCBTM.Pi <- ResampleProp(UCBTM$Admit, k = 10000) %>%  data.frame(Pi.Admit=., Gender = as.character("Male"), frameN = 2)  # Estimates for males
 ```
 
---
+---
+class:inverse
 
-The probability of being admitted, conditional on being Male, ranges from 0.43 to 0.46 with 90% confidence.
+# Result: Males
 
 ```{r}
 binom.test(1198,2691, conf.level = 0.9)
 ```
+
+
+The probability of being admitted, conditional on being Male, ranges from 0.43 to 0.46 with 90% confidence.
 
 ---
 
 ## The Thought Experiment
 
 ```{r}
-UCBTM <- UCBTab %>% filter(Gender=="Male")
-UCBTM.Pi <- ResampleProp(UCBTM$Admit, k = 10000) %>%  data.frame(Pi.Admit=., Gender = as.character("Male")) 
-UCBTM.Pi %>%  ggplot(., aes(x=Pi.Admit)) + geom_density(color="blue") + 
-  labs(x=expression(pi)) + theme_clean()
+UCBTM.Pi %>%  ggplot(., aes(x=Pi.Admit)) + geom_density(color="maroon") + labs(x=expression(pi)) + theme_xaringan()
 ```
 
 
 ---
 
-## Women
+## The Result: Females
 
 ```{r}
 UCBTab %>% tabyl(Gender,Admit) %>% adorn_totals("col")
-UCBTF <- UCBTab %>% filter(Gender=="Female")
-UCBTF.Pi <- ResampleProp(UCBTF$Admit, k = 10000) %>%  data.frame(Pi.Admit=., Gender=as.character("Female")) 
 ```
 
 --
@@ -283,8 +403,14 @@ UCBTF.Pi <- ResampleProp(UCBTF$Admit, k = 10000) %>%  data.frame(Pi.Admit=., Gen
 binom.test(557,1835, conf.level = 0.9)
 ```
 
-The probability of being of Admitted, given a Woman, ranges from 0.286 to 0.322 with 90% confidence.
+The probability of being of Admitted, given a Female, ranges from 0.286 to 0.322 with 90% confidence.
 
+---
+## The Thought Experiment
+
+```{r}
+UCBTF.Pi %>%  ggplot(., aes(x=Pi.Admit)) + geom_density(color="maroon") + labs(x=expression(pi)) + theme_xaringan()
+```
 
 ---
 
@@ -296,385 +422,31 @@ All: from 0.3758 to 0.3998
 
 ```{r, fig.width=12, echo=FALSE}
 library(patchwork)
-ggplot(UCBTab) +aes(x = Gender, fill = Admit) + geom_bar(position = "dodge") + scale_fill_viridis_d(option = "viridis") + theme_minimal() + ggplot(UCBTab) +aes(x = Gender, fill = Admit) + geom_bar(position = "fill") + scale_fill_viridis_d(option = "viridis") + theme_minimal() + guides(fill=FALSE)
+ggplot(UCBTab) +aes(x = Gender, fill = Admit) + geom_bar(position = "dodge") + scale_xaringan_fill_discrete() + theme_xaringan() + ggplot(UCBTab) +aes(x = Gender, fill = Admit) + geom_bar(position = "fill") + scale_xaringan_fill_discrete() + theme_xaringan() + guides(fill=FALSE)
 ```
 
 ---
 class: inverse
+
+# A Key Visual
 
 ```{r, warning=FALSE}
 UCB.Pi <- bind_rows(UCBTF.Pi, UCBTM.Pi)
-UCB.Pi %>% ggplot(., aes(x=Gender, y=Pi.Admit, fill=Gender)) + geom_violin() + geom_label(aes(x=1.5, y=0.375), label="Too small to be male \n Too large to be female?", size=10, fill="black", color="white", inherit.aes = FALSE) + guides(size=FALSE)
+UCB.Pi %>% ggplot(., aes(x=Gender, y=Pi.Admit, fill=Gender)) + geom_violin() + geom_label(aes(x=1.5, y=0.375), label="Too small to be male \n Too large to be female?", size=10, fill="black", color="white", inherit.aes = FALSE) + guides(size=FALSE) + scale_xaringan_fill_discrete() + theme_xaringan()
 ```
 
 ---
 class: inverse
 
-```{r, warning=FALSE}
-library(patchwork)
+### A `gganimate`
+
+
+```{r, eval=FALSE, warning=FALSE, message=FALSE, results='hide'}
+library(gganimate)
 UCB.Pi <- bind_rows(UCBTF.Pi, UCBTM.Pi, RSMP)
-UCB.Pi %>% ggplot(., aes(x=Pi.Admit, fill=Gender)) + geom_density(alpha=0.2) +  ggplot(UCBTab) +
- aes(x = Gender, fill = Admit) +
- geom_bar() +
- scale_fill_hue() +
- theme_minimal()
+UCB.Pi %>% ggplot(., aes(x=Pi.Admit, fill=Gender)) + geom_density(alpha=0.8) + theme_xaringan() + scale_xaringan_fill_discrete() + transition_states(frameN, state_length = 40, transition_length = 20) + enter_fade() + exit_fade() -> SaveAnim
+anim_save(SaveAnim, file="./Anim1.gif")
 ```
 
----
-background-image: url(`r xaringan:::karl`)
-background-position: 50% 50%
-class: center, bottom, inverse
+![](./Anim1.gif)
 
-# You only live once!
-
----
-
-# Hello Ninja
-
-As a presentation ninja, you certainly should not be satisfied by the "Hello World" example. You need to understand more about two:
-
-1. The [remark.js](https://remarkjs.com) library;
-
-1. The **xaringan** package;
-
-Basically **xaringan** injected the chakra of R Markdown (minus Pandoc) into **remark.js**. The slides are rendered by remark.js in the web browser, and the Markdown source needed by remark.js is generated from R Markdown (**knitr**).
-
----
-
-# remark.js
-
-You can see an introduction of remark.js from [its homepage](https://remarkjs.com). You should read the [remark.js Wiki](https://github.com/gnab/remark/wiki) at least once to know how to
-
-- create a new slide (Markdown syntax<sup>*</sup> and slide properties);
-
-- format a slide (e.g. text alignment);
-
-- configure the slideshow;
-
-- and use the presentation (keyboard shortcuts).
-
-It is important to be familiar with remark.js before you can understand the options in **xaringan**.
-
-.footnote[[*] It is different with Pandoc's Markdown! It is limited but should be enough for presentation purposes. Come on... You do not need a slide for the Table of Contents! Well, the Markdown support in remark.js [may be improved](https://github.com/gnab/remark/issues/142) in the future.]
-
----
-background-image: url(`r xaringan:::karl`)
-background-size: cover
-class: center, bottom, inverse
-
-# I was so happy to have discovered remark.js!
-
----
-class: inverse, middle, center
-
-# Using xaringan
-
----
-
-# xaringan
-
-Provides an R Markdown output format `xaringan::moon_reader` as a wrapper for remark.js, and you can use it in the YAML metadata, e.g.
-
-```yaml
----
-title: "A Cool Presentation"
-output:
-  xaringan::moon_reader
-    yolo: true
-    nature:
-      autoplay: 30000
----
-```
-
-See the help page `?xaringan::moon_reader` for all possible options that you can use.
-
----
-
-# remark.js vs xaringan
-
-Some differences between using remark.js (left) and using **xaringan** (right):
-
-.pull-left[
-1. Start with a boilerplate HTML file;
-
-1. Plain Markdown;
-
-1. Write JavaScript to autoplay slides;
-
-1. Manually configure MathJax;
-
-1. Highlight code with `*`;
-
-1. Edit Markdown source and refresh browser to see updated slides;
-]
-
-.pull-right[
-1. Start with an R Markdown document;
-
-1. R Markdown (can embed R/other code chunks);
-
-1. Provide an option `autoplay`;
-
-1. MathJax just works;<sup>*</sup>
-
-1. Highlight code with `{{}}`;
-
-1. The RStudio addin "Infinite Moon Reader" automatically refreshes slides on changes;
-]
-
-.footnote[[*] Not really. See next page.]
-
----
-
-# Math Expressions
-
-You can write LaTeX math expressions inside a pair of dollar signs, e.g. &#36;\alpha+\beta$ renders $\alpha+\beta$. You can use the display style with double dollar signs:
-
-```
-$$\bar{X}=\frac{1}{n}\sum_{i=1}^nX_i$$
-```
-
-$$\bar{X}=\frac{1}{n}\sum_{i=1}^nX_i$$
-
-Limitations:
-
-1. The source code of a LaTeX math expression must be in one line, unless it is inside a pair of double dollar signs, in which case the starting `$$` must appear in the very beginning of a line, followed immediately by a non-space character, and the ending `$$` must be at the end of a line, led by a non-space character;
-
-1. There should not be spaces after the opening `$` or before the closing `$`.
-
-1. Math does not work on the title slide (see [#61](https://github.com/yihui/xaringan/issues/61) for a workaround).
-
----
-
-# R Code
-
-```{r comment='#'}
-# a boring regression
-fit = lm(dist ~ 1 + speed, data = cars)
-coef(summary(fit))
-dojutsu = c('地爆天星', '天照', '加具土命', '神威', '須佐能乎', '無限月読')
-grep('天', dojutsu, value = TRUE)
-```
-
----
-
-# R Plots
-
-```{r cars, fig.height=4, dev='svg'}
-par(mar = c(4, 4, 1, .1))
-plot(cars, pch = 19, col = 'darkgray', las = 1)
-abline(fit, lwd = 2)
-```
-
----
-
-# Tables
-
-If you want to generate a table, make sure it is in the HTML format (instead of Markdown or other formats), e.g.,
-
-```{r}
-knitr::kable(head(iris), format = 'html')
-```
-
----
-
-# HTML Widgets
-
-I have not thoroughly tested HTML widgets against **xaringan**. Some may work well, and some may not. It is a little tricky.
-
-Similarly, the Shiny mode (`runtime: shiny`) does not work. I might get these issues fixed in the future, but these are not of high priority to me. I never turn my presentation into a Shiny app. When I need to demonstrate more complicated examples, I just launch them separately. It is convenient to share slides with other people when they are plain HTML/JS applications.
-
-See the next page for two HTML widgets.
-
----
-
-```{r out.width='100%', fig.height=6, eval=require('leaflet')}
-library(leaflet)
-leaflet() %>% addTiles() %>% setView(-93.65, 42.0285, zoom = 17)
-```
-
----
-
-```{r eval=require('DT'), tidy=FALSE}
-DT::datatable(
-  head(iris, 10),
-  fillContainer = FALSE, options = list(pageLength = 8)
-)
-```
-
----
-
-# Some Tips
-
-- When you use the "Infinite Moon Reader" addin in RStudio, your R session will be blocked by default. You can click the red button on the right of the console to stop serving the slides, or use the _daemonized_ mode so that it does not block your R session. To do the latter, you can set the option
-
-    ```r
-    options(servr.daemon = TRUE)
-    ```
-    
-    in your current R session, or in `~/.Rprofile` so that it is applied to all future R sessions. I do the latter by myself.
-    
-    To know more about the web server, see the [**servr**](https://github.com/yihui/servr) package.
-
---
-
-- Do not forget to try the `yolo` option of `xaringan::moon_reader`.
-
-    ```yaml
-    output:
-      xaringan::moon_reader:
-        yolo: true
-    ```
-
----
-
-# Some Tips
-
-- Slides can be automatically played if you set the `autoplay` option under `nature`, e.g. go to the next slide every 30 seconds in a lightning talk:
-
-    ```yaml
-    output:
-      xaringan::moon_reader:
-        nature:
-          autoplay: 30000
-    ```
-
---
-
-- A countdown timer can be added to every page of the slides using the `countdown` option under `nature`, e.g. if you want to spend one minute on every page when you give the talk, you can set:
-
-    ```yaml
-    output:
-      xaringan::moon_reader:
-        nature:
-          countdown: 60000
-    ```
-
-    Then you will see a timer counting down from `01:00`, to `00:59`, `00:58`, ... When the time is out, the timer will continue but the time turns red.
-
----
-
-# Some Tips
-
-- There are several ways to build incremental slides. See [this presentation](https://slides.yihui.name/xaringan/incremental.html) for examples.
-
-- The option `highlightLines: true` of `nature` will highlight code lines that start with `*`, or are wrapped in `{{ }}`, or have trailing comments `#<<`;
-
-    ```yaml
-    output:
-      xaringan::moon_reader:
-        nature:
-          highlightLines: true
-    ```
-
-    See examples on the next page.
-
----
-
-# Some Tips
-
-
-.pull-left[
-An example using a leading `*`:
-
-    ```r
-    if (TRUE) {
-    ** message("Very important!")
-    }
-    ```
-Output:
-```r
-if (TRUE) {
-* message("Very important!")
-}
-```
-
-This is invalid R code, so it is a plain fenced code block that is not executed.
-]
-
-.pull-right[
-An example using `{{}}`:
-
-    `r ''````{r tidy=FALSE}
-    if (TRUE) {
-    *{{ message("Very important!") }}
-    }
-    ```
-Output:
-```{r tidy=FALSE}
-if (TRUE) {
-{{ message("Very important!") }}
-}
-```
-
-It is valid R code so you can run it. Note that `{{}}` can wrap an R expression of multiple lines.
-]
-
----
-
-# Some Tips
-
-An example of using the trailing comment `#<<` to highlight lines:
-
-````markdown
-`r ''````{r tidy=FALSE}
-library(ggplot2)
-ggplot(mtcars) + 
-  aes(mpg, disp) + 
-  geom_point() +   #<<
-  geom_smooth()    #<<
-```
-````
-
-Output:
-
-```{r tidy=FALSE, eval=FALSE}
-library(ggplot2)
-ggplot(mtcars) + 
-  aes(mpg, disp) + 
-  geom_point() +   #<<
-  geom_smooth()    #<<
-```
-
----
-
-# Some Tips
-
-- To make slides work offline, you need to download a copy of remark.js in advance, because **xaringan** uses the online version by default (see the help page `?xaringan::moon_reader`).
-
-- You can use `xaringan::summon_remark()` to download the latest or a specified version of remark.js. By default, it is downloaded to `libs/remark-latest.min.js`.
-
-- Then change the `chakra` option in YAML to point to this file, e.g.
-
-    ```yaml
-    output:
-      xaringan::moon_reader:
-        chakra: libs/remark-latest.min.js
-    ```
-
-- If you used Google fonts in slides (the default theme uses _Yanone Kaffeesatz_, _Droid Serif_, and _Source Code Pro_), they won't work offline unless you download or install them locally. The Heroku app [google-webfonts-helper](https://google-webfonts-helper.herokuapp.com/fonts) can help you download fonts and generate the necessary CSS.
-
----
-
-# Macros
-
-- remark.js [allows users to define custom macros](https://github.com/yihui/xaringan/issues/80) (JS functions) that can be applied to Markdown text using the syntax `![:macroName arg1, arg2, ...]` or `![:macroName arg1, arg2, ...](this)`. For example, before remark.js initializes the slides, you can define a macro named `scale`:
-
-    ```js
-    remark.macros.scale = function (percentage) {
-      var url = this;
-      return '<img src="' + url + '" style="width: ' + percentage + '" />';
-    };
-    ```
-
-    Then the Markdown text
-
-    ```markdown
-    ![:scale 50%](image.jpg)
-    ```
-
-    will be translated to
-    
-    ```html
-    <img src="image.jpg" style="width: 50%" />
-    ```

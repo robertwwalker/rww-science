@@ -92,6 +92,7 @@ GGAnim <- animate(Anim1, end_pause=100, nframes=300)
 save_animation(GGAnim, file="./MapAnim.gif")
 ```
 ![County animation](./MapAnim.gif)
+
 # Percent Positive by State
 
 ```{r, warning=FALSE, message=FALSE}
