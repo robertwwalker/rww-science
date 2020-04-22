@@ -13,6 +13,17 @@
     </image>
     
     <item>
+      <title>dplyr verbs and tidy tools</title>
+      <link>/talk/osinfer/</link>
+      <pubDate>Fri, 20 Mar 2020 00:00:00 -0700</pubDate>
+      <guid>/talk/osinfer/</guid>
+      <description>&lt;p&gt;Slides in 
+&lt;a href=&#34;https://rww.science/xaringan/testest/index.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;xaringan&lt;/a&gt;
+&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Archigos meets Grammar of Graphics</title>
       <link>/talk/ggplot/</link>
       <pubDate>Sat, 20 Apr 2019 15:00:00 -0700</pubDate>

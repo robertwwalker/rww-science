@@ -28,7 +28,9 @@ output:
 It is probably better posed as, what can we learn from data?
 
 ```{r setup, include=FALSE}
+library(gganimate)
 options(htmltools.dir.version = FALSE, servr.daemon = TRUE)
+options(gganimate.dev_args = list(width = 800, height = 600))
 knitr::opts_chunk$set(warning=FALSE, message=FALSE, fig.height=6, fig.showtext =
 TRUE, fig.retina=3)
 library(DT)
@@ -36,30 +38,27 @@ library(DT)
 
 ```{r xaringan-themer, include=FALSE}
 library(xaringanthemer); library(kableExtra); library(tidyverse)
-style_solarized_light(
-#  code_font_family = "Fira Code",
-#  code_font_url    = "https://cdn.rawgit.com/tonsky/FiraCode/1.204/distr/fira_code.css"
-    text_font_google   = google_font("Neuton"),
-    code_font_google   = google_font("IBM Plex Mono")
+style_mono_dark(
+#style_solarized_light(
+#style_duo(primary_color = "#371142", header_color = "#ffffff",
+#          secondary_color = "#1c5253", 
+#          text_bold_color = "#FF00FF",
+          link_color = "#F97B64",
+          text_font_google   = google_font("EB Garamond"),
+          code_font_google   = google_font("Fira Mono")
 )
 ```
 
 ```{css, echo = FALSE, include=FALSE}
-.remark-slide-content {
+.remark-slide-content p, il, ol, li {
+  font-size: 36px;
+  padding: 8px 32px 8px 32px;
+}
+code.r{
   font-size: 24px;
-  padding: 10px 60px 10px 60px;
 }
-.remark-code, .remark-inline-code {
-  background: #f0f0f0;
-}
-.remark-code {
-  font-size: 80%;
-}
-.huge .remark-code { /*Change made here*/
-  font-size: 200% !important;
-}
-.tiny .remark-code { /*Change made here*/
-  font-size: 50% !important;
+pre {
+  font-size: 28px
 }
 .red { 
   color: red 
@@ -73,9 +72,11 @@ style_solarized_light(
 
 # The Big Idea
 
-**Inference.**
+## **Inference**
 
 In the most basic form, learning something about data that we do not have from data that we do.  In the jargon of statistics, we characterize the probability distribution of some feature of the population of interest from a sample drawn randomly from that population.  
+
+--
 
 **Describe some key feature with appropriate uncertainty derived from a sample of data.**
 
@@ -122,26 +123,22 @@ Now let's grab some data and frame a question.
 .footnote[<sup>1</sup> **If this does not hold, we will seek the homogenous groups in which it does.**]
 
 ---
-
-## Berkeley Admissions
-
-What is the probability of being admitted to UC Berkeley Graduate Schools?<sup>2</sup>
-
+## Berkeley Admissions  
+  
+What is the probability of being admitted to UC Berkeley Graduate School?<sup>2</sup>  
+  
 --
+  
+I have three variables: Admitted or not, Gender, and Department applied to.  
+<span style="color: yellow;">Admission is the key.</span>
 
 ```{r}
-UCBTab <- data.frame(UCBAdmissions) %>% reshape::untable(., .$Freq) %>% select(-Freq)
-table(UCBTab$Admit)
+library(janitor)
+UCBTab <- data.frame(UCBAdmissions) %>% reshape::untable(., .$Freq) %>% select(-Freq) 
+UCBTab %>% tabyl(Admit)  # Could also use prop.table(table(UCBTab$Admit))
 ```
 
-`r table(UCBTab$Admit)[[1]]` of `r sum(table(UCBTab$Admit))`, or 38.77% [Pr=0.3877], were admitted. This proportion will later appear as $\hat{p}$.
-
---
-
-```{r}
-prop.table(table(UCBTab$Admit))
-```
-
+The proportion is denoted as $\hat{p}$.  We can also do this with *table*.
 
 .footnote[<sup>2</sup> **We probably think this depends on a bunch of applicant specific features but we will put that to the side for now.**]
 
@@ -155,7 +152,6 @@ UCBTab %>% DT::datatable(.,fillContainer = FALSE, options = list(pageLength = 8)
 
 
 ---
-
 ## A Visual
 
 ```{r, fig.height = 5}
@@ -168,62 +164,9 @@ UCBTab %>% ggplot(.) + aes(x = Gender, fill = Admit) + geom_bar() + theme_xaring
 
 Suppose we want to know $\pi(Admit)$ -- the probability of being admitted -- with 90% probability.  We want to take the data that we saw and use it to **infer** the likely values of $\pi(Admit)$.  
 
----
-
-One way to do it might be this.  
-
-**Suppose I have 4526 chips with 1755 <span style="color: green;">green</span> and 2771 <span style="color: red;">red</span>.  I toss them all on the floor**
-
 --
 
-and pick them up, one at a time, 
-
---
-
-record the value (<span style="color: green;">green</span>/<span style="color: red;">red</span>), 
-
---
-
-put the chip back, and repeat 4526 times.  
-
---
-
-I put it back or I would also get exactly the same `sample`.  Each sample of 4526 chips constitutes an estimate of the probability of Admit.
-
---
-
-I wrote a little program to do just this -- `ResampleProps`.  
-
-```
-remotes::install_github("robertwwalker/ResampleProps")
-```
----
-class: inverse
-
-# Method 1: Resampling
-
-```{r}
-library(ResampleProps)
-RSMP <- ResampleProp(UCBTab$Admit, k = 10000, tab.col = 1) %>% data.frame(Pi.Admit=., Gender=as.character("All"), frameN = 1) 
-quantile(RSMP$Pi.Admit, probs = c(0.05,0.95))
-```
-
-What is our estimate of $\pi$ with 90% confidence?  The probability of admission ranges from `r quantile(RSMP$Pi.Admit, probs = c(0.05,0.95))[[1]]` to `r quantile(RSMP$Pi.Admit, probs = c(0.05,0.95))[[2]]`.
-
----
-
-# A Plot
-
-```{r, fig.height= 5}
-library(ggthemes)
-RSMP %>%  ggplot(., aes(x=Pi.Admit)) + geom_density(outline.type = "upper", color="maroon") +labs(x=expression(pi)) + theme_minimal() + theme_xaringan()
-```
-
-
----
-class: inverse
-
-## There are three interchangeable methods
+## Three interchangeable methods
 
 1. Resampling/Simulation
 
@@ -235,9 +178,67 @@ class: inverse
 
 3. A normal approximation
 
+
+---
+## Method 1: Resampling
+
+**Suppose I have 4526 chips with 1755 <span style="color: green;">green</span> and 2771 <span style="color: red;">red</span>.**  
+
+--
+
+I toss them all on the floor
+
+--
+
+and pick them up, one at a time, 
+
+--
+
+record the value (<span style="color: green;">green</span>/<span style="color: red;">red</span>), 
+--
+
+put the chip back,  
+*[NB: I put it back to avoid getting exactly the same `sample` every time.]*
+
+--
+
+and repeat 4526 times.  
+
+--
+
+**Each count of <span style="color: green;">green chips</span> as a proportion of 4526 total chips constitutes an estimate of the probability of Admit.**
+
+--
+
+I wrote a little program to do just this -- `ResampleProps`.  
+```
+remotes::install_github("robertwwalker/ResampleProps")
+```
 ---
 class: inverse
+# Resampling Result
 
+```{r}
+library(ResampleProps)
+RSMP <- ResampleProp(UCBTab$Admit, k = 10000, tab.col = 1) %>% data.frame(Pi.Admit=., Gender=as.character("All"), frameN = 1) 
+quantile(RSMP$Pi.Admit, probs = c(0.05,0.95))
+```
+
+What is our estimate of $\pi$ with 90% confidence?   
+
+*The probability of admission ranges from `r quantile(RSMP$Pi.Admit, probs = c(0.05,0.95))[[1]]` to `r quantile(RSMP$Pi.Admit, probs = c(0.05,0.95))[[2]]`.*
+
+---
+# A Plot
+
+```{r, fig.height= 5}
+library(ggthemes)
+RSMP %>%  ggplot(., aes(x=Pi.Admit)) + geom_density(outline.type = "upper", color="maroon") +labs(x=expression(pi)) + theme_minimal() + theme_xaringan()
+```
+
+
+
+---
 ## Another Way: Exact binomial
 
 That last procedure is correct but it is overkill.
@@ -250,7 +251,6 @@ table(UCBTab$Admit)
 
 ---
 class: inverse
-
 ## binom.test()
 
 ```{r}
@@ -258,15 +258,18 @@ binom.test(1755, 1755+2771, conf.level=0.9)
 Plot.Me <- binom.test(1755, 1755+2771, conf.level=0.9)$conf.int %>% data.frame()
 ```
 
-With 90% probability, now often referred to as 90% confidence to avoid using the word probability twice, the probability of being admitted ranges between 0.3758 and 0.3998.  Let me show this.
-
-```{r}
-pbinom(1755, 1755+2771, 0.3998340)
-pbinom(1754, 1755+2771, 0.3757924)
-```
+**With 90% probability, now often referred to as 90% confidence to avoid using the word probability twice, the probability of being admitted ranges between 0.3758 and 0.3998.**
 
 ---
 class: inverse
+## Illustrating the Binomial
+
+```{r}
+binom.test(1755, 1755+2771, conf.level=0.9)
+c(pbinom(1755, 1755+2771, 0.3998340), pbinom(1754, 1755+2771, 0.3757924))
+```
+
+---
 
 ```{r, fig.width=10}
 Binomial.Search <- data.frame(x=seq(0.33,0.43, by=0.001)) %>% mutate(Too.Low = pbinom(1755, 1755+2771, x), Too.High = 1-pbinom(1754, 1755+2771, x))
@@ -313,7 +316,6 @@ $$ n = \frac{z^2 \cdot \pi(1-\pi)}{(\hat{p} - \pi)^2} $$
 
 ---
 class:inverse
-
 ### Example
 
 Estimate the probability of supporting an initiative to within 0.03 with 95% confidence.  Assume that the probability is 0.5 [it maximizes the variance and renders a conservative estimate -- an upper bound on the sample size]
@@ -331,7 +333,6 @@ Sample.Size(MOE=0.03, B.pi=0.5, Conf.lev = 0.95)
 
 ---
 class: inverse
-
 ### In the Real World
 
 
@@ -357,7 +358,6 @@ What is our estimate of $\pi$ with 90% confidence?
 Does this depend on whether the applicant is Male or Female?
 
 ---
-
 # Analysis by Group
 
 ```{r}
@@ -370,57 +370,48 @@ UCBTM.Pi <- ResampleProp(UCBTM$Admit, k = 10000) %>%  data.frame(Pi.Admit=., Gen
 
 ---
 class:inverse
+# Binomial Result: Males
 
-# Result: Males
-
-```{r}
+```{r BinomMale}
 binom.test(1198,2691, conf.level = 0.9)
 ```
-
 
 The probability of being admitted, conditional on being Male, ranges from 0.43 to 0.46 with 90% confidence.
 
 ---
 
-## The Thought Experiment
+## The Thought Experiment: Male
 
-```{r}
+```{r BMPlot}
 UCBTM.Pi %>%  ggplot(., aes(x=Pi.Admit)) + geom_density(color="maroon") + labs(x=expression(pi)) + theme_xaringan()
 ```
 
 
 ---
+class: inverse
+## Binomial Result: Females
 
-## The Result: Females
-
-```{r}
-UCBTab %>% tabyl(Gender,Admit) %>% adorn_totals("col")
-```
-
---
-
-```{r}
+```{r BinomF}
 binom.test(557,1835, conf.level = 0.9)
 ```
 
 The probability of being of Admitted, given a Female, ranges from 0.286 to 0.322 with 90% confidence.
 
 ---
-## The Thought Experiment
+## The Thought Experiment: Female
 
-```{r}
+```{r BFPlot}
 UCBTF.Pi %>%  ggplot(., aes(x=Pi.Admit)) + geom_density(color="maroon") + labs(x=expression(pi)) + theme_xaringan()
 ```
 
 ---
-
 # Succinctly
 
 Female: from 0.286 to 0.322  
-Male: from 0.43 to 0.46
-All: from 0.3758 to 0.3998
+Male: from 0.43 to 0.46  
+All: from 0.3758 to 0.3998  
 
-```{r, fig.width=12, echo=FALSE}
+```{r patch1, fig.width=12, echo=FALSE}
 library(patchwork)
 ggplot(UCBTab) +aes(x = Gender, fill = Admit) + geom_bar(position = "dodge") + scale_xaringan_fill_discrete() + theme_xaringan() + ggplot(UCBTab) +aes(x = Gender, fill = Admit) + geom_bar(position = "fill") + scale_xaringan_fill_discrete() + theme_xaringan() + guides(fill=FALSE)
 ```
@@ -432,21 +423,52 @@ class: inverse
 
 ```{r, warning=FALSE}
 UCB.Pi <- bind_rows(UCBTF.Pi, UCBTM.Pi)
-UCB.Pi %>% ggplot(., aes(x=Gender, y=Pi.Admit, fill=Gender)) + geom_violin() + geom_label(aes(x=1.5, y=0.375), label="Too small to be male \n Too large to be female?", size=10, fill="black", color="white", inherit.aes = FALSE) + guides(size=FALSE) + scale_xaringan_fill_discrete() + theme_xaringan()
+UCB.Pi %>% ggplot(., aes(x=Gender, y=Pi.Admit, fill=Gender)) + geom_violin() + geom_label(aes(x=1.5, y=0.375), label="Too small to be male \n Too large to be female?", size=14, fill="black", color="white", inherit.aes = FALSE) + guides(size=FALSE) + scale_xaringan_fill_discrete() + theme_xaringan()
 ```
 
 ---
 class: inverse
 
-### A `gganimate`
-
-
-```{r, eval=FALSE, warning=FALSE, message=FALSE, results='hide'}
-library(gganimate)
+```{r GGAnim, eval=FALSE, warning=FALSE, message=FALSE, results='hide', gganimate = list(fig.height="600px", fig.width="800px")}
 UCB.Pi <- bind_rows(UCBTF.Pi, UCBTM.Pi, RSMP)
-UCB.Pi %>% ggplot(., aes(x=Pi.Admit, fill=Gender)) + geom_density(alpha=0.8) + theme_xaringan() + scale_xaringan_fill_discrete() + transition_states(frameN, state_length = 40, transition_length = 20) + enter_fade() + exit_fade() -> SaveAnim
-anim_save(SaveAnim, file="./Anim1.gif")
+UCB.Pi %>% ggplot(., aes(x=Pi.Admit, fill=Gender)) + geom_density(alpha=0.8) + theme_minimal() + scale_fill_viridis_d() + transition_states(frameN, state_length = 40, transition_length = 20) + enter_fade() + exit_fade() -> SaveAnim
+animate(SaveAnim, device = "svg")
+anim_save(filename="./Anim1.gif")
 ```
 
 ![](./Anim1.gif)
 
+
+---
+# Can We Measure the Difference?
+
+.pull-left[
+How much more likely are Males to be admitted when compared to Females?
+
+**We can take the difference in our estimates for Male and Female.**
+
+```{r Diff, tidy=FALSE}
+UCB.Diff <- UCB.Pi %>% filter(frameN != 1) %>% select(Pi.Admit, Gender) %>% mutate(obs = rep(seq(1:10000),2)) %>% pivot_wider(., id_cols = obs, values_from=Pi.Admit, names_from=Gender) %>% mutate(Diff = Male - Female)
+quantile(UCB.Diff$Diff, probs=c(0.05,0.95))
+```
+
+```{r GGP1, eval=FALSE}
+ggplot(UCB.Diff) + aes(x=Diff) + geom_density() + labs(title="Difference in Probability of Admission", subtitle="[Male - Female]") + theme_xaringan()
+```
+]
+.pull-right[
+```{r, echo=FALSE}
+ggplot(UCB.Diff) + aes(x=Diff) + geom_density() + labs(title="Difference in Probability of Admission", subtitle="[Male - Female]") + theme_xaringan()
+```
+]
+
+---
+class: inverse
+
+## Or Use the Normal Approximation
+
+```{r}
+prop.test(table(UCBTab$Gender,UCBTab$Admit), conf.level=0.9)
+```
+
+With 90% confidence, a Female is 0.1175 to 0.1658 less likely to be admitted.
