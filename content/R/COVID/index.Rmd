@@ -42,7 +42,7 @@ library(gganimate)
 library(patchwork)
 library(hrbrthemes)
 library(widgetframe); library(here)
-load(paste0(here(),"/content/R/COVID/data/OregonCOVID",Sys.Date()-1,".RData"))
+load(paste0(here(),"/content/R/COVID/data/OregonCOVID",Sys.Date(),".RData"))
 ```
 
 Verifying, these data are current as of `r max(Oregon.COVID$Scraped.date)` according to the loaded dataset.
