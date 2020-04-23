@@ -9,7 +9,7 @@
   
   <url>
     <loc>/</loc>
-    <lastmod>2020-04-21T17:45:28-07:00</lastmod>
+    <lastmod>2020-04-22T12:00:50-07:00</lastmod>
   </url>
   
   <url>
@@ -93,12 +93,12 @@
   </url>
   
   <url>
-    <loc>/tags/tidytuesday/</loc>
+    <loc>/categories/tidytuesday/</loc>
     <lastmod>2020-04-02T17:36:37-07:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/tidytuesday/</loc>
+    <loc>/tags/tidytuesday/</loc>
     <lastmod>2020-04-02T17:36:37-07:00</lastmod>
   </url>
   
@@ -134,7 +134,7 @@
   
   <url>
     <loc>/talk/osinfer/</loc>
-    <lastmod>2020-03-20T00:00:00-07:00</lastmod>
+    <lastmod>2020-04-22T12:00:50-07:00</lastmod>
   </url>
   
   <url>
@@ -423,13 +423,13 @@
   </url>
   
   <url>
-    <loc>/categories/tidytext/</loc>
-    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
+    <loc>/tags/tidytext/</loc>
+    <lastmod>2020-02-05T13:19:17-08:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/tidytext/</loc>
-    <lastmod>2020-02-05T13:19:17-08:00</lastmod>
+    <loc>/categories/tidytext/</loc>
+    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
   </url>
   
   <url>

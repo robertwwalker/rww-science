@@ -34,7 +34,7 @@ library(ggthemes)
 library(gganimate)
 library(patchwork)
 library(hrbrthemes); library(here)
-load(paste0(here(),"/content/R/COVID/data/OregonCOVID",Sys.Date(),".RData"))
+load(paste0(here(),"/content/R/COVID/data/OregonCOVID",Sys.Date()-1,".RData"))
 ```
 
 Verifying, these data are current as of `r max(Oregon.COVID$Scraped.date)` according to the loaded dataset.
@@ -289,8 +289,15 @@ Plot.COVID("2020-04-19", Map.Me)
 Plot.COVID("2020-04-20", Map.Me)
 ```
 
-
 ## The Result for 04/21/2020
+
+```{r}
+Plot.COVID("2020-04-21", Map.Me)
+```
+
+
+
+## The Result for 04/22/2020
 
 ```{r, warning=FALSE, message=FALSE}
 library(widgetframe); library(ggthemes); library(RColorBrewer)

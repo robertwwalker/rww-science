@@ -26,7 +26,7 @@
 
 &lt;div id=&#34;new-york-times-data-for-the-us&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;New York Times data for the US&lt;/h1&gt;
-&lt;p&gt;The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-04-21 17:36:50.&lt;/p&gt;
+&lt;p&gt;The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-04-23 12:07:28.&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;the-basic-state-of-things&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;The Basic State of Things&lt;/h1&gt;
@@ -53,6 +53,7 @@ plot4 &amp;lt;- NYT.Totals %&amp;gt;% ggplot(., aes(x=date, y=New.Cases)) + geom
 &lt;/div&gt;
 &lt;div id=&#34;the-jburnmurdoch-graphics-for-us-states&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;The &lt;code&gt;@jburnmurdoch&lt;/code&gt; graphics for US States&lt;/h1&gt;
+&lt;p&gt;First.&lt;/p&gt;
 &lt;div id=&#34;deaths&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Deaths&lt;/h2&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;R2.NYT &amp;lt;- Rect.NYT %&amp;gt;% 

@@ -53,6 +53,8 @@ plot4 <- NYT.Totals %>% ggplot(., aes(x=date, y=New.Cases)) + geom_line() + labs
 
 # The `@jburnmurdoch` graphics for US States
 
+First.
+
 ## Deaths
 
 ```{r, message=FALSE, warning=FALSE}
