@@ -3,23 +3,8 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>/r/europemaps/</loc>
-    <lastmod>2020-04-16T15:21:03-07:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/</loc>
-    <lastmod>2020-04-23T12:39:59-07:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/categories/</loc>
     <lastmod>2020-04-23T12:27:57-07:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/r/covid/</loc>
-    <lastmod>2020-04-23T12:39:59-07:00</lastmod>
   </url>
   
   <url>
@@ -28,7 +13,7 @@
   </url>
   
   <url>
-    <loc>/2020/04/14/new-york-times-data-on-covid/</loc>
+    <loc>/2020/04/24/new-york-times-data-on-covid/</loc>
     <lastmod>2020-04-23T12:27:57-07:00</lastmod>
   </url>
   
@@ -43,12 +28,27 @@
   </url>
   
   <url>
+    <loc>/</loc>
+    <lastmod>2020-04-23T12:39:59-07:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/tags/</loc>
     <lastmod>2020-04-23T12:27:57-07:00</lastmod>
   </url>
   
   <url>
     <loc>/r/covid-maps/</loc>
+    <lastmod>2020-04-23T12:39:59-07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/r/europemaps/</loc>
+    <lastmod>2020-04-16T15:21:03-07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/r/covid/</loc>
     <lastmod>2020-04-23T12:39:59-07:00</lastmod>
   </url>
   
@@ -218,12 +218,12 @@
   </url>
   
   <url>
-    <loc>/tags/blogdown/</loc>
+    <loc>/categories/blogdown/</loc>
     <lastmod>2020-02-04T14:46:56-08:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/blogdown/</loc>
+    <loc>/tags/blogdown/</loc>
     <lastmod>2020-02-04T14:46:56-08:00</lastmod>
   </url>
   
