@@ -666,20 +666,8 @@
       <h2><a href="/r/covid-maps/" >COVID-19 Maps for Oregon</a></h2>
       <div class="article-style">
         
-          library(tigris) library(rgdal) library(htmltools) library(viridis) library(sf) library(ggrepel) library(ggthemes) library(gganimate) library(patchwork) library(hrbrthemes) load(url(paste0(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&quot;,Sys.Date(),&quot;.RData&quot;))) Verifying, these data are current as of 2020-04-24 according to the loaded dataset.
+          library(tigris) library(rgdal) library(htmltools) library(viridis) library(sf) library(ggrepel) library(ggthemes) library(gganimate) library(patchwork) library(hrbrthemes) load(url(paste0(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&quot;,Sys.Date(),&quot;.RData&quot;))) Verifying, these data are current as of 2020-04-25 according to the loaded dataset.
 A base map To build a map to work from, I need a map library. Load the tigris library then grab the map as an sf object; there is a geom_sf that makes them easy to work with. Finally, I join the map to the data.
-        
-      </div>
-    </div>
-  
-    
-    
-    
-    <div>
-      <h2><a href="/r/europemaps/" >Mapping Europe</a></h2>
-      <div class="article-style">
-        
-          R Natural Earth Map of Europe library(tidyverse) library(rnaturalearth) Europe &lt;- ne_countries(scale = &#39;medium&#39;, type = &#39;map_units&#39;, returnclass = &#39;sf&#39;, continent=&quot;Europe&quot;) ggplot(Europe) + geom_sf() Woops. Because they come from an entire world map, latitude and longitude are too big. To cut them off, we need to crop the map. The returnclass above means we need a tool for sf data, that tool is st_crop out of the sf library.
         
       </div>
     </div>
@@ -692,6 +680,18 @@ A base map To build a map to work from, I need a map library. Load the tigris li
       <div class="article-style">
         
           Oregon COVID data I wanted to create a self-updating visualization of the data on COVID-19 in the state of Oregon provided by OHA. There is a separate page of daily maps. Oregon reports a set of daily snapshots while progression requires ingesting new data each day so I began tracking it March 20; the process of scraping it is detailed in a separate file. This updates, expands, and consolidates two previous posts here and here.
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
+      <h2><a href="/r/europemaps/" >Mapping Europe</a></h2>
+      <div class="article-style">
+        
+          R Natural Earth Map of Europe library(tidyverse) library(rnaturalearth) Europe &lt;- ne_countries(scale = &#39;medium&#39;, type = &#39;map_units&#39;, returnclass = &#39;sf&#39;, continent=&quot;Europe&quot;) ggplot(Europe) + geom_sf() Woops. Because they come from an entire world map, latitude and longitude are too big. To cut them off, we need to crop the map. The returnclass above means we need a tool for sf data, that tool is st_crop out of the sf library.
         
       </div>
     </div>

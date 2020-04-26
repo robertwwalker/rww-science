@@ -5,12 +5,486 @@
     <link>/tags/tidytuesday/</link>
       <atom:link href="/tags/tidytuesday/index.xml" rel="self" type="application/rss+xml" />
     <description>tidyTuesday</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© 2018</copyright><lastBuildDate>Wed, 01 Apr 2020 00:00:00 +0000</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© 2018</copyright><lastBuildDate>Sat, 25 Apr 2020 00:00:00 +0000</lastBuildDate>
     <image>
       <url>/img/portrait.jpg</url>
       <title>tidyTuesday</title>
       <link>/tags/tidytuesday/</link>
     </image>
+    
+    <item>
+      <title>GDPR Violations</title>
+      <link>/2020/04/25/gdpr-violations/</link>
+      <pubDate>Sat, 25 Apr 2020 00:00:00 +0000</pubDate>
+      <guid>/2020/04/25/gdpr-violations/</guid>
+      <description>
+&lt;script src=&#34;/rmarkdown-libs/header-attrs/header-attrs.js&#34;&gt;&lt;/script&gt;
+
+
+&lt;div id=&#34;r-markdown&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;R Markdown&lt;/h2&gt;
+&lt;p&gt;I love this intro photo from the tidyTuesday page.&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;https://camo.githubusercontent.com/0c831f8d61fee52c54b4edf861012ea51643195f/68747470733a2f2f776f726470726573732e736d6172746c6f6f6b2e636f6d2f77702d636f6e74656e742f75706c6f6164732f323031382f30312f676470722e706e67&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;This week’s tidyTuesday data cover violations of the GDPR.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;gdpr_violations &amp;lt;- readr::read_tsv(&amp;#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-04-21/gdpr_violations.tsv&amp;#39;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Parsed with column specification:
+## cols(
+##   id = col_double(),
+##   picture = col_character(),
+##   name = col_character(),
+##   price = col_double(),
+##   authority = col_character(),
+##   date = col_character(),
+##   controller = col_character(),
+##   article_violated = col_character(),
+##   type = col_character(),
+##   source = col_character(),
+##   summary = col_character()
+## )&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;gdpr_text &amp;lt;- readr::read_tsv(&amp;#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-04-21/gdpr_text.tsv&amp;#39;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Parsed with column specification:
+## cols(
+##   chapter = col_double(),
+##   chapter_title = col_character(),
+##   article = col_double(),
+##   article_title = col_character(),
+##   sub_article = col_double(),
+##   gdpr_text = col_character(),
+##   href = col_character()
+## )&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;summary&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Summary&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(skimr)
+skim(gdpr_violations)&lt;/code&gt;&lt;/pre&gt;
+&lt;table&gt;
+&lt;caption&gt;&lt;span id=&#34;tab:unnamed-chunk-2&#34;&gt;Table 1: &lt;/span&gt;Data summary&lt;/caption&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Name&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;gdpr_violations&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Number of rows&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;250&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Number of columns&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;11&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;_______________________&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Column type frequency:&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;character&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;9&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;numeric&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;________________________&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Group variables&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;None&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;Variable type: character&lt;/strong&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;left&#34;&gt;skim_variable&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;n_missing&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;complete_rate&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;min&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;max&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;empty&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;n_unique&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;whitespace&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;picture&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;67&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;80&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;25&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;name&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;5&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;14&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;25&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;authority&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;14&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;86&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;40&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;date&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;10&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;10&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;140&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;controller&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;93&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;187&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;article_violated&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;7&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;87&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;86&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;type&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;7&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;143&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;22&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;source&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;29&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;209&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;218&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;summary&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;13&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1550&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;238&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;Variable type: numeric&lt;/strong&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;left&#34;&gt;skim_variable&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;n_missing&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;complete_rate&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;mean&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;sd&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p0&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p25&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p50&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p75&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p100&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;hist&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;id&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;125.5&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;72.31&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;63.25&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;125.5&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;187.75&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2.5e+02&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▇▇▇▇&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;price&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;613214.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3980371.95&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2500.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;10500.0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;60000.00&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;5.0e+07&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▁▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;/div&gt;
+&lt;div id=&#34;violations&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Violations&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(tidyverse); library(janitor)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## ── Attaching packages ─────────────────────────────────────────────────────────── tidyverse 1.3.0 ──&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## ✓ ggplot2 3.3.0     ✓ purrr   0.3.3
+## ✓ tibble  3.0.0     ✓ dplyr   0.8.5
+## ✓ tidyr   1.0.2     ✓ stringr 1.4.0
+## ✓ readr   1.3.1     ✓ forcats 0.5.0&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## ── Conflicts ────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## 
+## Attaching package: &amp;#39;janitor&amp;#39;&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## The following objects are masked from &amp;#39;package:stats&amp;#39;:
+## 
+##     chisq.test, fisher.test&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;gdpr_violations %&amp;gt;% tabyl(article_violated)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##                                                                         article_violated
+##                                     Art 6 (1) GDPR|Art 58 (2) e) GDPR|Art 83 (5) a) GDPR
+##                                                        Art. 12 (3) GDPR|Art. 15 (1) GDPR
+##                                                            Art. 12 (4) GDPR|Art. 15 GDPR
+##                           Art. 12 (4) GDPR|Art. 15 GDPR|Art. 18 (1) c) GDPR|Art. 13 GDPR
+##                                 Art. 12 GDPR|Art. 13 GDPR|Art. 5 (1) c) GDPR|Art. 6 GDPR
+##                                                                Art. 12 GDPR|Art. 15 GDPR
+##                                                   Art. 12 GDPR|Art. 15 GDPR|Art. 17 GDPR
+##                                                                Art. 12 GDPR|Art. 17 GDPR
+##                                                                             Art. 13 GDPR
+##                            Art. 13 GDPR|Art. 14 GDPR|Art. 6 GDPR|Art. 4 GDPR|Art. 5 GDPR
+##                                                                Art. 13 GDPR|Art. 37 GDPR
+##                                                                             Art. 14 GDPR
+##                                                                    Art. 15 (1), (3) GDPR
+##                                                                             Art. 15 GDPR
+##                                                   Art. 15 GDPR|Art. 17 GDPR|Art. 21 GDPR
+##                                                                             Art. 17 GDPR
+##                                                            Art. 21 (3) GDPR|Art. 25 GDPR
+##                                                                             Art. 21 GDPR
+##                                                      Art. 25 (1) GDPR|Art. 5 (1) c) GDPR
+##                                                                             Art. 25 GDPR
+##                                                                         Art. 28 (3) GDPR
+##                                                                             Art. 28 GDPR
+##                                                                      Art. 28 of the GDPR
+##                                                                             Art. 31 GDPR
+##                                                                             Art. 32 GDPR
+##                                                                Art. 32 GDPR|Art. 33 GDPR
+##                                       Art. 33 (1) GDPR|Art. 33 (5) GDPR|Art. 34 (1) GDPR
+##                                                                             Art. 33 GDPR
+##                                                                Art. 33 GDPR|Art. 34 GDPR
+##                                                                             Art. 37 GDPR
+##                                                                       Art. 5 (1) a) GDPR
+##                                   Art. 5 (1) a) GDPR|Art. 5 (1) b) GDPR|Art. 32 (1) GDPR
+##                                                    Art. 5 (1) a) GDPR|Art. 5 (1) c) GDPR
+##                       Art. 5 (1) a) GDPR|Art. 5 (1) c) GDPR|Art. 6 (1) GDPR|Art. 13 GDPR
+##                                                    Art. 5 (1) a) GDPR|Art. 6 (1) a) GDPR
+##                                                           Art. 5 (1) a) GDPR|Art. 6 GDPR
+##                       Art. 5 (1) a) GDPR|Art. 9 (1) GDPR|Art. 9 (2) GDPR|Art. 6 (1) GDPR
+##                                                                  Art. 5 (1) a), (2) GDPR
+##                                                            Art. 5 (1) a)|Art. 7 (3) GDPR
+##  Art. 5 (1) b) GDPR|Art. 5 (1) c) GDPR|Art. 13 (3) GDPR|Art. 17 (1) GDPR|Art. 6 (4) GDRP
+##                                                           Art. 5 (1) b) GDPR|Art. 6 GDPR
+##                                                                       Art. 5 (1) c) GDPR
+##                                Art. 5 (1) c) GDPR|Art. 12 GDPR|Art. 13 GDPR|Art. 32 GDPR
+##                                                          Art. 5 (1) c) GDPR|Art. 13 GDPR
+##                                                          Art. 5 (1) c) GDPR|Art. 25 GDPR
+##                                                    Art. 5 (1) c) GDPR|Art. 5 (1) e) GDPR
+##                                 Art. 5 (1) c) GDPR|Art. 9 GDPR|Art. 35 GDPR|Art. 36 GDPR
+##                                                                       Art. 5 (1) d) GDPR
+##                                                       Art. 5 (1) e) GDPR|Art. 5 (2) GDPR
+##                                                                       Art. 5 (1) f) GDPR
+##                                                          Art. 5 (1) f) GDPR|Art. 32 GDPR
+##                                                                          Art. 5 (1) GDPR
+##  Art. 5 (1) GDPR|Art. 5 (2) GDPR|Art. 6 (1) GDPR|Art. 13 (1) c) GDPR|Art. 14 (1) c) GDPR
+##                                                  Art. 5 (1) GDPR|Art. 6 GDPR|Art. 7 GDPR
+##                                      Art. 5 (1) GDPR|Art. 6 GDPR|Art. 7 GDPR|Art. 9 GDPR
+##                                                                              Art. 5 GDPR
+##                                                                 Art. 5 GDPR|Art. 25 GDPR
+##                                       Art. 5 GDPR|Art. 25 GDPR|Art. 32 GDPR|Art. 33 GDPR
+##                                                                 Art. 5 GDPR|Art. 32 GDPR
+##                                                    Art. 5 GDPR|Art. 32 GDPR|Art. 33 GDPR
+##                                                                  Art. 5 GDPR|Art. 6 GDPR
+##                           Art. 5 GDPR|Art. 6 GDPR|Art. 13 GDPR|Art. 14 GDPR|Art. 21 GDPR
+##                                                     Art. 5 GDPR|Art. 6 GDPR|Art. 17 GDPR
+##                                        Art. 5 GDPR|Art. 6 GDPR|Art. 17 GDPR|Art. 21 GDPR
+##                                                     Art. 5 GDPR|Art. 6 GDPR|Art. 21 GDPR
+##                                                     Art. 5 GDPR|Art. 6 GDPR|Art. 32 GDPR
+##                                         Art. 5 GDPR|Art. 6 GDPR|Art. 7 GDPR|Art. 21 GDPR
+##                                                                        Art. 5(1) e) GDPR
+##                                                                             Art. 58 GDPR
+##                                                                          Art. 58(2) GDPR
+##                                                                          Art. 6 (1) GDPR
+##                                                         Art. 6 (1) GDPR|Art. 25 (1) GDPR
+##                                                                              Art. 6 GDPR
+##                                                    Art. 6 GDPR|Art. 12 GDPR|Art. 13 GDPR
+##                                                                 Art. 6 GDPR|Art. 21 GDPR
+##                                                           Art. 6 GDPR|Art. 5 (1) a) GDPR
+##                                              Art. 6 GDPR|Art. 5 (1) b) GDPR|Art. 13 GDPR
+##                                                                  Art. 6 GDPR|Art. 5 GDPR
+##                                                                  Art. 6 GDPR|Art. 7 GDPR
+##                                                                  Art. 6 GDPR|Art. 9 GDPR
+##                                    Art. 83 (4) a) GDPR|Art. 33 (1) GDPR|Art. 34 (1) GDPR
+##                                                                              Art.14 GDPR
+##                                                                       Art.14 of the GDPR
+##                                                                 Data Protection Act 2018
+##                  Failure to implement sufficient measures to ensure information security
+##                                                                                  Unknown
+##   n percent
+##   1   0.004
+##   1   0.004
+##   1   0.004
+##   1   0.004
+##   1   0.004
+##   1   0.004
+##   1   0.004
+##   1   0.004
+##   7   0.028
+##   1   0.004
+##   1   0.004
+##   1   0.004
+##   1   0.004
+##  10   0.040
+##   1   0.004
+##   1   0.004
+##   1   0.004
+##   1   0.004
+##   1   0.004
+##   1   0.004
+##   1   0.004
+##   1   0.004
+##   1   0.004
+##   2   0.008
+##  41   0.164
+##   2   0.008
+##   1   0.004
+##   1   0.004
+##   1   0.004
+##   2   0.008
+##   2   0.008
+##   1   0.004
+##   1   0.004
+##   1   0.004
+##   2   0.008
+##   6   0.024
+##   1   0.004
+##   1   0.004
+##   1   0.004
+##   1   0.004
+##   2   0.008
+##   6   0.024
+##   1   0.004
+##   1   0.004
+##   1   0.004
+##   1   0.004
+##   1   0.004
+##   3   0.012
+##   1   0.004
+##   7   0.028
+##  10   0.040
+##   1   0.004
+##   1   0.004
+##   1   0.004
+##   1   0.004
+##  10   0.040
+##   2   0.008
+##   1   0.004
+##   3   0.012
+##   1   0.004
+##  20   0.080
+##   1   0.004
+##   1   0.004
+##   1   0.004
+##   2   0.008
+##   1   0.004
+##   1   0.004
+##   1   0.004
+##   5   0.020
+##   1   0.004
+##   4   0.016
+##   1   0.004
+##  33   0.132
+##   1   0.004
+##   1   0.004
+##   2   0.008
+##   1   0.004
+##   1   0.004
+##   1   0.004
+##   3   0.012
+##   1   0.004
+##   2   0.008
+##   1   0.004
+##   1   0.004
+##   1   0.004
+##   2   0.008&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;revenue&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Revenue?&lt;/h1&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;GDPT &amp;lt;- gdpr_violations %&amp;gt;% group_by(name) %&amp;gt;% summarise(Collected = sum(price), Violations = n())
+GDPT %&amp;gt;% select(name, Collected) %&amp;gt;% ggplot(., aes(x=fct_reorder(name, Collected), y=Collected/1e7, fill=name)) + geom_col() + scale_fill_viridis_d() + coord_flip() + labs(x=&amp;quot;Country&amp;quot;, y=&amp;quot;Total Fines Collected (in Millions)&amp;quot;) + guides(fill=FALSE)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-04-25-gdpr-violations/index_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;a-map&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;A Map&lt;/h1&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(rnaturalearth)
+Europe &amp;lt;- ne_countries(scale = &amp;#39;medium&amp;#39;, type = &amp;#39;map_units&amp;#39;, returnclass = &amp;#39;sf&amp;#39;, continent=&amp;quot;Europe&amp;quot;)
+library(sf)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Linking to GEOS 3.7.2, GDAL 2.4.2, PROJ 5.2.0&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Europe &amp;lt;- sf::st_crop(Europe, xmin = -20, xmax = 45, ymin = 30, ymax = 73)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## although coordinates are longitude/latitude, st_intersection assumes that they are planar&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning: attribute variables are assumed to be spatially constant throughout all
+## geometries&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggplot(Europe) + geom_sf()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-04-25-gdpr-violations/index_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;div id=&#34;merge-data&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Merge Data&lt;/h2&gt;
+&lt;p&gt;Plot some Europe Maps.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;total-collections&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Total Collections&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Map.Me &amp;lt;- left_join(Europe, GDPT, by = c(&amp;quot;sovereignt&amp;quot; = &amp;quot;name&amp;quot;))
+ggplot(Map.Me) + aes(fill=Collected) + geom_sf() + scale_fill_viridis_c()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-04-25-gdpr-violations/index_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;count-of-violations&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Count of Violations&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggplot(Map.Me) + aes(fill=Violations) + geom_sf() + scale_fill_viridis_c()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-04-25-gdpr-violations/index_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;cost-per-violation&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Cost per violation&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Map.Me %&amp;gt;% mutate(Avg.Fine = Collected / Violations) %&amp;gt;% ggplot(.) + aes(fill=Avg.Fine) + geom_sf() + labs(title=&amp;quot;Average Fine per Violation&amp;quot;) + scale_fill_viridis_c()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-04-25-gdpr-violations/index_files/figure-html/unnamed-chunk-8-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
     
     <item>
       <title>A Quick tidyTuesday on Beer, Breweries, and Ingredients</title>

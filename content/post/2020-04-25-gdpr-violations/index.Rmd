@@ -1,0 +1,91 @@
+---
+title: GDPR Violations
+author: Robert W. Walker
+date: '2020-04-25'
+slug: gdpr-violations
+categories:
+  - Maps
+  - Public Finance
+tags:
+  - tidyTuesday
+  - plot
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2020-04-25T18:55:35-07:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+## R Markdown
+
+I love this intro photo from the tidyTuesday page.
+
+![](https://camo.githubusercontent.com/0c831f8d61fee52c54b4edf861012ea51643195f/68747470733a2f2f776f726470726573732e736d6172746c6f6f6b2e636f6d2f77702d636f6e74656e742f75706c6f6164732f323031382f30312f676470722e706e67)
+
+This week's tidyTuesday data cover violations of the GDPR.
+
+```{r}
+gdpr_violations <- readr::read_tsv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-04-21/gdpr_violations.tsv')
+gdpr_text <- readr::read_tsv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-04-21/gdpr_text.tsv')
+```
+
+## Summary
+
+
+```{r}
+library(skimr)
+skim(gdpr_violations)
+```
+
+## Violations
+
+```{r}
+library(tidyverse); library(janitor)
+gdpr_violations %>% tabyl(article_violated)
+```
+
+# Revenue?
+
+```{r}
+GDPT <- gdpr_violations %>% group_by(name) %>% summarise(Collected = sum(price), Violations = n())
+GDPT %>% select(name, Collected) %>% ggplot(., aes(x=fct_reorder(name, Collected), y=Collected/1e7, fill=name)) + geom_col() + scale_fill_viridis_d() + coord_flip() + labs(x="Country", y="Total Fines Collected (in Millions)") + guides(fill=FALSE)
+```
+
+# A Map
+
+```{r}
+library(rnaturalearth)
+Europe <- ne_countries(scale = 'medium', type = 'map_units', returnclass = 'sf', continent="Europe")
+library(sf)
+Europe <- sf::st_crop(Europe, xmin = -20, xmax = 45, ymin = 30, ymax = 73)
+ggplot(Europe) + geom_sf()
+```
+
+## Merge Data
+
+Plot some Europe Maps.
+
+## Total Collections
+
+```{r}
+Map.Me <- left_join(Europe, GDPT, by = c("sovereignt" = "name"))
+ggplot(Map.Me) + aes(fill=Collected) + geom_sf() + scale_fill_viridis_c()
+```
+
+## Count of Violations
+
+```{r}
+ggplot(Map.Me) + aes(fill=Violations) + geom_sf() + scale_fill_viridis_c()
+```
+
+## Cost per violation
+
+```{r}
+Map.Me %>% mutate(Avg.Fine = Collected / Violations) %>% ggplot(.) + aes(fill=Avg.Fine) + geom_sf() + labs(title="Average Fine per Violation") + scale_fill_viridis_c()
+```
+

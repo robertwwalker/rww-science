@@ -239,7 +239,7 @@
   <meta property="og:description" content="Associate Professor of Quantitative Methods"><meta property="og:image" content="/img/portrait.jpg">
   <meta property="twitter:image" content="/img/portrait.jpg"><meta property="og:locale" content="en-us">
   
-    <meta property="og:updated_time" content="2020-04-24T00:00:00&#43;00:00">
+    <meta property="og:updated_time" content="2020-04-25T00:00:00&#43;00:00">
   
 
   
@@ -654,10 +654,24 @@
     
     
     <div>
+      <h2><a href="/2020/04/25/gdpr-violations/" >GDPR Violations</a></h2>
+      <div class="article-style">
+        
+          R Markdown I love this intro photo from the tidyTuesday page.
+This week’s tidyTuesday data cover violations of the GDPR.
+gdpr_violations &lt;- readr::read_tsv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-04-21/gdpr_violations.tsv&#39;) ## Parsed with column specification: ## cols( ## id = col_double(), ## picture = col_character(), ## name = col_character(), ## price = col_double(), ## authority = col_character(), ## date = col_character(), ## controller = col_character(), ## article_violated = col_character(), ## type = col_character(), ## source = col_character(), ## summary = col_character() ## ) gdpr_text &lt;- readr::read_tsv(&#39;https://raw.
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
       <h2><a href="/2020/04/24/new-york-times-data-on-covid/" >New York Times Data on COVID</a></h2>
       <div class="article-style">
         
-          New York Times data for the US The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-04-25 18:49:40.
+          New York Times data for the US The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-04-26 12:36:43.
  The Basic State of Things options(scipen=9) library(tidyverse); library(hrbrthemes); library(patchwork); library(plotly); library(ggdark); library(ggrepel) state.data &lt;- read_csv(url(&quot;https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv&quot;)) Rect.NYT &lt;- complete(state.data, state,date) Rect.NYT &lt;- Rect.NYT %&gt;% group_by(state) %&gt;% mutate(New.Cases = cases - lag(cases, order_by = date), New.
         
       </div>
@@ -765,20 +779,17 @@ library(tidyquant) library(tidyverse) tq_index(&quot;SP500&quot;) %&gt;% filter(
       </div>
     </div>
   
-    
-    
-    
-    <div>
-      <h2><a href="/2018/02/22/correlation-function/" >Correlation Function</a></h2>
-      <div class="article-style">
-        
-          Correlations and the Impact on Sums and Differences I will use a simple R function to illustrate the effect of correlation on sums and differences of random variables. In general, the variance [and standard deviation] of a sum of random variables is the variance of the individual variables plus twice the covariance; the variance [and standard deviation] of a difference in random variables is the variance of the individual variables minus twice the (signed) covariance.
-        
-      </div>
-    </div>
-  
 
   
+<nav>
+  <ul class="pagination justify-content-center">
+    
+    
+    <li class="page-item"><a class="page-link" href="/tags/plot/page/2/">&raquo;</a></li>
+    
+  </ul>
+</nav>
+
 
 </div>
 
