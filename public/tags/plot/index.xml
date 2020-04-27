@@ -500,7 +500,7 @@ ggplot(Map.Me) + aes(fill=Collected) + geom_sf() + scale_fill_viridis_c()&lt;/co
 
 &lt;div id=&#34;new-york-times-data-for-the-us&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;New York Times data for the US&lt;/h1&gt;
-&lt;p&gt;The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-04-26 12:36:43.&lt;/p&gt;
+&lt;p&gt;The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-04-27 13:10:58.&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;the-basic-state-of-things&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;The Basic State of Things&lt;/h1&gt;
@@ -511,18 +511,20 @@ Rect.NYT &amp;lt;- complete(state.data, state,date)
 Rect.NYT &amp;lt;- Rect.NYT %&amp;gt;% group_by(state) %&amp;gt;% mutate(New.Cases = cases - lag(cases, order_by = date), New.Deaths = deaths - lag(deaths, order_by = date)) %&amp;gt;% ungroup()
 NYT.Totals &amp;lt;- Rect.NYT %&amp;gt;% group_by(date) %&amp;gt;% summarise(Deaths = sum(deaths, na.rm=TRUE), New.Deaths = sum(New.Deaths, na.rm = TRUE), Cases = sum(cases, na.rm=TRUE), New.Cases = sum(New.Cases, na.rm = TRUE)) %&amp;gt;% ungroup()
 library(patchwork)
-plot1 &amp;lt;- NYT.Totals %&amp;gt;% ggplot(., aes(x=date, y=Deaths)) + geom_line() + labs(title=&amp;quot;Deaths&amp;quot;)
-plot2 &amp;lt;- NYT.Totals %&amp;gt;% ggplot(., aes(x=date, y=New.Deaths)) + geom_line() + labs(title=&amp;quot;New Deaths&amp;quot;)
-plot3 &amp;lt;- NYT.Totals %&amp;gt;% ggplot(., aes(x=date, y=Cases)) + geom_line() + labs(title=&amp;quot;Cases&amp;quot;)
-plot4 &amp;lt;- NYT.Totals %&amp;gt;% ggplot(., aes(x=date, y=New.Cases)) + geom_line() + labs(title=&amp;quot;New Cases&amp;quot;)
+plot1 &amp;lt;- NYT.Totals %&amp;gt;% ggplot(., aes(x=date, y=Deaths)) + geom_line() + labs(title=&amp;quot;Deaths&amp;quot;) + dark_mode()
+plot2 &amp;lt;- NYT.Totals %&amp;gt;% ggplot(., aes(x=date, y=New.Deaths)) + geom_line() + labs(title=&amp;quot;New Deaths&amp;quot;) + geom_smooth() + dark_mode()
+plot3 &amp;lt;- NYT.Totals %&amp;gt;% ggplot(., aes(x=date, y=Cases)) + geom_line() + labs(title=&amp;quot;Cases&amp;quot;) + dark_mode()
+plot4 &amp;lt;- NYT.Totals %&amp;gt;% ggplot(., aes(x=date, y=New.Cases)) + geom_line() + labs(title=&amp;quot;New Cases&amp;quot;) + geom_smooth() + dark_mode()
 (plot1 + plot2) / (plot3 + plot4)&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2020-04-03-new-york-times-data-on-covid/index_files/figure-html/unnamed-chunk-1-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot1 &amp;lt;- NYT.Totals %&amp;gt;% ggplot(., aes(x=date, y=Deaths)) + geom_line() + labs(title=&amp;quot;Deaths&amp;quot;) + scale_y_log10()
-plot2 &amp;lt;- NYT.Totals %&amp;gt;% ggplot(., aes(x=date, y=New.Deaths)) + geom_line() + labs(title=&amp;quot;New Deaths&amp;quot;)
-plot3 &amp;lt;- NYT.Totals %&amp;gt;% ggplot(., aes(x=date, y=Cases)) + geom_line() + labs(title=&amp;quot;Cases&amp;quot;) + scale_y_log10()
-plot4 &amp;lt;- NYT.Totals %&amp;gt;% ggplot(., aes(x=date, y=New.Cases)) + geom_line() + labs(title=&amp;quot;New Cases&amp;quot;) 
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot1 &amp;lt;- NYT.Totals %&amp;gt;% ggplot(., aes(x=date, y=Deaths)) + geom_line() + labs(title=&amp;quot;Deaths&amp;quot;) + scale_y_log10() + dark_mode()
+plot2 &amp;lt;- NYT.Totals %&amp;gt;% ggplot(., aes(x=date, y=New.Deaths)) + geom_line() + labs(title=&amp;quot;New Deaths&amp;quot;) + geom_smooth() + dark_mode()
+plot3 &amp;lt;- NYT.Totals %&amp;gt;% ggplot(., aes(x=date, y=Cases)) + geom_line() + labs(title=&amp;quot;Cases&amp;quot;) + scale_y_log10() + dark_mode()
+plot4 &amp;lt;- NYT.Totals %&amp;gt;% ggplot(., aes(x=date, y=New.Cases)) + geom_line() + labs(title=&amp;quot;New Cases&amp;quot;) + geom_smooth() + dark_mode()
 (plot1 + plot2) / (plot3 + plot4)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## Warning: Transformation introduced infinite values in continuous y-axis&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## `geom_smooth()` using method = &amp;#39;loess&amp;#39; and formula &amp;#39;y ~ x&amp;#39;
+## `geom_smooth()` using method = &amp;#39;loess&amp;#39; and formula &amp;#39;y ~ x&amp;#39;&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2020-04-03-new-york-times-data-on-covid/index_files/figure-html/unnamed-chunk-2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;the-jburnmurdoch-graphics-for-us-states&#34; class=&#34;section level1&#34;&gt;
@@ -641,6 +643,20 @@ frameWidget(GPCFR)&lt;/code&gt;&lt;/pre&gt;
 &lt;div id=&#34;htmlwidget-1&#34; style=&#34;width:100%;height:480px;&#34; class=&#34;widgetframe html-widget&#34;&gt;&lt;/div&gt;
 &lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-1&#34;&gt;{&#34;x&#34;:{&#34;url&#34;:&#34;/post/2020-04-03-new-york-times-data-on-covid/index_files/figure-html//widgets/widget_unnamed-chunk-9.html&#34;,&#34;options&#34;:{&#34;xdomain&#34;:&#34;*&#34;,&#34;allowfullscreen&#34;:false,&#34;lazyload&#34;:false}},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
 &lt;/div&gt;
+&lt;div id=&#34;this-may-prove-useful&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;This may prove useful&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;NCFR &amp;lt;- NYT.Totals %&amp;gt;% 
+  mutate(CFR = round(New.Cases / New.Deaths, digits=3))
+P1 &amp;lt;- NCFR %&amp;gt;% ggplot(., aes(x=date, y=CFR)) + 
+  geom_line() + 
+  labs(y=&amp;quot;New Cases per New Death&amp;quot;, title = &amp;quot;New Cases to New Deaths&amp;quot;, subtitle=&amp;quot;Very uncertain estimate... Numerator and denominator uncertain \n Data: NY Times GitHub&amp;quot;, caption=&amp;quot;Data from nytimes/covid-19-data on github.&amp;quot;) + 
+  dark_theme_bw()
+GPNCFR &amp;lt;- ggplotly(P1)
+library(widgetframe)
+frameWidget(GPNCFR)&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;htmlwidget-2&#34; style=&#34;width:100%;height:480px;&#34; class=&#34;widgetframe html-widget&#34;&gt;&lt;/div&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-2&#34;&gt;{&#34;x&#34;:{&#34;url&#34;:&#34;/post/2020-04-03-new-york-times-data-on-covid/index_files/figure-html//widgets/widget_unnamed-chunk-10.html&#34;,&#34;options&#34;:{&#34;xdomain&#34;:&#34;*&#34;,&#34;allowfullscreen&#34;:false,&#34;lazyload&#34;:false}},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;/div&gt;
 &lt;/div&gt;
 &lt;div id=&#34;states&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;50 States?&lt;/h1&gt;
@@ -650,7 +666,7 @@ CFR2 %&amp;gt;% filter(!(state %in% c(&amp;quot;puerto rico&amp;quot;,&amp;quot;
   geom_map(map = fifty_states) + 
     expand_limits(x = fifty_states$long, y = fifty_states$lat) +
     coord_map() + scale_fill_continuous_tableau(palette=&amp;quot;Classic Red&amp;quot;, guide=&amp;quot;colourbar&amp;quot;) + theme_map() + labs(title=&amp;quot;US Case Fatality Rate by State: April 6&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2020-04-03-new-york-times-data-on-covid/index_files/figure-html/unnamed-chunk-10-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-04-03-new-york-times-data-on-covid/index_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;#  geom_point(aes(color=CFR.D)) + 
 #  labs(title = &amp;quot;Case Fatality Rate of COVID-19 in the US&amp;quot;, subtitle=&amp;quot;Very uncertain estimate... Numerator and denominator uncertain \n Data: NY Times GitHub&amp;quot;, caption=&amp;quot;Data from nytimes/covid-19-data on guthub.&amp;quot;, color=&amp;quot;Greater \n than 0.02&amp;quot;) + 
 #  dark_theme_bw()&lt;/code&gt;&lt;/pre&gt;

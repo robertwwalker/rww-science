@@ -35,18 +35,18 @@ Rect.NYT <- complete(state.data, state,date)
 Rect.NYT <- Rect.NYT %>% group_by(state) %>% mutate(New.Cases = cases - lag(cases, order_by = date), New.Deaths = deaths - lag(deaths, order_by = date)) %>% ungroup()
 NYT.Totals <- Rect.NYT %>% group_by(date) %>% summarise(Deaths = sum(deaths, na.rm=TRUE), New.Deaths = sum(New.Deaths, na.rm = TRUE), Cases = sum(cases, na.rm=TRUE), New.Cases = sum(New.Cases, na.rm = TRUE)) %>% ungroup()
 library(patchwork)
-plot1 <- NYT.Totals %>% ggplot(., aes(x=date, y=Deaths)) + geom_line() + labs(title="Deaths")
-plot2 <- NYT.Totals %>% ggplot(., aes(x=date, y=New.Deaths)) + geom_line() + labs(title="New Deaths")
-plot3 <- NYT.Totals %>% ggplot(., aes(x=date, y=Cases)) + geom_line() + labs(title="Cases")
-plot4 <- NYT.Totals %>% ggplot(., aes(x=date, y=New.Cases)) + geom_line() + labs(title="New Cases")
+plot1 <- NYT.Totals %>% ggplot(., aes(x=date, y=Deaths)) + geom_line() + labs(title="Deaths") + dark_mode()
+plot2 <- NYT.Totals %>% ggplot(., aes(x=date, y=New.Deaths)) + geom_line() + labs(title="New Deaths") + geom_smooth() + dark_mode()
+plot3 <- NYT.Totals %>% ggplot(., aes(x=date, y=Cases)) + geom_line() + labs(title="Cases") + dark_mode()
+plot4 <- NYT.Totals %>% ggplot(., aes(x=date, y=New.Cases)) + geom_line() + labs(title="New Cases") + geom_smooth() + dark_mode()
 (plot1 + plot2) / (plot3 + plot4)
 ```
 
 ```{r}
-plot1 <- NYT.Totals %>% ggplot(., aes(x=date, y=Deaths)) + geom_line() + labs(title="Deaths") + scale_y_log10()
-plot2 <- NYT.Totals %>% ggplot(., aes(x=date, y=New.Deaths)) + geom_line() + labs(title="New Deaths")
-plot3 <- NYT.Totals %>% ggplot(., aes(x=date, y=Cases)) + geom_line() + labs(title="Cases") + scale_y_log10()
-plot4 <- NYT.Totals %>% ggplot(., aes(x=date, y=New.Cases)) + geom_line() + labs(title="New Cases") 
+plot1 <- NYT.Totals %>% ggplot(., aes(x=date, y=Deaths)) + geom_line() + labs(title="Deaths") + scale_y_log10() + dark_mode()
+plot2 <- NYT.Totals %>% ggplot(., aes(x=date, y=New.Deaths)) + geom_line() + labs(title="New Deaths") + geom_smooth() + dark_mode()
+plot3 <- NYT.Totals %>% ggplot(., aes(x=date, y=Cases)) + geom_line() + labs(title="Cases") + scale_y_log10() + dark_mode()
+plot4 <- NYT.Totals %>% ggplot(., aes(x=date, y=New.Cases)) + geom_line() + labs(title="New Cases") + geom_smooth() + dark_mode()
 (plot1 + plot2) / (plot3 + plot4)
 ```
 
@@ -175,6 +175,21 @@ GPCFR <- ggplotly(CFR)
 library(widgetframe)
 frameWidget(GPCFR)
 ```
+
+## This may prove useful
+
+```{r, message=FALSE, warning=FALSE}
+NCFR <- NYT.Totals %>% 
+  mutate(CFR = round(New.Cases / New.Deaths, digits=3))
+P1 <- NCFR %>% ggplot(., aes(x=date, y=CFR)) + 
+  geom_line() + 
+  labs(y="New Cases per New Death", title = "New Cases to New Deaths", subtitle="Very uncertain estimate... Numerator and denominator uncertain \n Data: NY Times GitHub", caption="Data from nytimes/covid-19-data on github.") + 
+  dark_theme_bw()
+GPNCFR <- ggplotly(P1)
+library(widgetframe)
+frameWidget(GPNCFR)
+```
+
 
 # 50 States?
 
