@@ -78,7 +78,7 @@ Res.1 <- Map.Me %>%
 
 # Summarising the County Data: An Animation
 
-I will use a ggplot to build Oregon's map and fill it with case numbers.  `geom_sf()` plots the geometry.  I have to repel the labels to prevent print overlap, and scheme the colors.  The last step is to animate it by time. If I stop the label repelling, they will not bounce but it adds excitement. There is a [separate page of daily maps](https://rww.science/r/covid/maps/).
+I will use a ggplot to build Oregon's map and fill it with case numbers.  `geom_sf()` plots the geometry.  I have to repel the labels to prevent print overlap, and scheme the colors.  The last step is to animate it by time. If I stop the label repelling, they will not bounce but it adds excitement.  There is a [separate page of daily maps](https://rww.science/r/covid/maps/).
 
 ```{r, message=FALSE, warning=FALSE, eval=FALSE}
 Anim1 <- Map.Me %>% 

@@ -77,7 +77,7 @@ PlotA <- R2.NYT %>%
 PlotA
 ```
 
-##  Cases
+## Cases
 
 ```{r}
 R2.NYT <- Rect.NYT %>% 
