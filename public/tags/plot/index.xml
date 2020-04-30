@@ -500,7 +500,7 @@ ggplot(Map.Me) + aes(fill=Collected) + geom_sf() + scale_fill_viridis_c()&lt;/co
 
 &lt;div id=&#34;new-york-times-data-for-the-us&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;New York Times data for the US&lt;/h1&gt;
-&lt;p&gt;The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-04-28 16:20:23.&lt;/p&gt;
+&lt;p&gt;The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-04-29 23:05:36.&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;the-basic-state-of-things&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;The Basic State of Things&lt;/h1&gt;
@@ -580,25 +580,25 @@ R2.NYT &amp;lt;- Rect.NYT %&amp;gt;%
   mutate(Counter = row_number()) %&amp;gt;%
   ungroup()
 OR.R2 &amp;lt;- R2.NYT %&amp;gt;% filter(fips==&amp;quot;41&amp;quot;)
-OR.R2A &amp;lt;- R2.NYT %&amp;gt;% filter(fips==&amp;quot;41&amp;quot; &amp;amp; Counter == max(OR.R2$Counter))
-Plot1 &amp;lt;- R2.NYT %&amp;gt;% ggplot(., aes(x=Counter, y=deaths, color=state)) + 
-  geom_line(alpha=0.3) + guides(color=FALSE) + 
+OR.R2A &amp;lt;- R2.NYT %&amp;gt;% filter(fips==&amp;quot;41&amp;quot;) %&amp;gt;% filter(date == max(date))
+Plot1 &amp;lt;- R2.NYT %&amp;gt;% ggplot(., aes(x=Counter, y=cases, color=state)) + 
+  geom_line(alpha=0.3) + 
+#  guides(color=FALSE) + 
   scale_y_log10() + 
   geom_line(data=OR.R2, color=&amp;quot;white&amp;quot;) + 
   geom_text(data=OR.R2A, aes(x=Counter, y=deaths, label=state), color=&amp;quot;white&amp;quot;, inherit.aes = FALSE) + 
   dark_theme_linedraw() + 
-  labs(subtitle=&amp;quot;Note logarithm&amp;quot;, x=&amp;quot;Days since 100th Case&amp;quot;, y=&amp;quot;Log(Cumulative Deaths)&amp;quot;)
+  labs(subtitle=&amp;quot;Note logarithm&amp;quot;, x=&amp;quot;Days Since 100th Case&amp;quot;, y=&amp;quot;Log(Cumulative Cases)&amp;quot;)
 Plot2 &amp;lt;- R2.NYT %&amp;gt;% 
   ggplot(., aes(x=Counter, y=cases, color=state)) + 
   geom_line(alpha=0.3) + 
   guides(color=FALSE) + 
-  scale_y_log10() + 
+#  scale_y_log10() + 
   geom_line(data=OR.R2, color=&amp;quot;white&amp;quot;) + 
   geom_text(data=OR.R2A, aes(x=Counter, y=cases, label=state), color=&amp;quot;white&amp;quot;, inherit.aes = FALSE) + 
   dark_theme_linedraw() +
-  labs(subtitle=&amp;quot;Note logarithm&amp;quot;, x=&amp;quot;Days since 100th Case&amp;quot;, y=&amp;quot;Log(Cumulative Cases)&amp;quot;)
+  labs(x=&amp;quot;Days since 100th Case&amp;quot;, y=&amp;quot;Cumulative Cases&amp;quot;)
 Plot1 + Plot2&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## Warning: Transformation introduced infinite values in continuous y-axis&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2020-04-03-new-york-times-data-on-covid/index_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;div id=&#34;new-cases-by-state-over-time&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;New Cases by State over Time&lt;/h2&gt;

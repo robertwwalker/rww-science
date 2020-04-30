@@ -28,7 +28,7 @@ projects: []
 
 <div id="new-york-times-data-for-the-us" class="section level1">
 <h1>New York Times data for the US</h1>
-<p>The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-04-28 16:20:23.</p>
+<p>The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-04-29 23:05:36.</p>
 </div>
 <div id="the-basic-state-of-things" class="section level1">
 <h1>The Basic State of Things</h1>
@@ -108,25 +108,25 @@ R2.NYT &lt;- Rect.NYT %&gt;%
   mutate(Counter = row_number()) %&gt;%
   ungroup()
 OR.R2 &lt;- R2.NYT %&gt;% filter(fips==&quot;41&quot;)
-OR.R2A &lt;- R2.NYT %&gt;% filter(fips==&quot;41&quot; &amp; Counter == max(OR.R2$Counter))
-Plot1 &lt;- R2.NYT %&gt;% ggplot(., aes(x=Counter, y=deaths, color=state)) + 
-  geom_line(alpha=0.3) + guides(color=FALSE) + 
+OR.R2A &lt;- R2.NYT %&gt;% filter(fips==&quot;41&quot;) %&gt;% filter(date == max(date))
+Plot1 &lt;- R2.NYT %&gt;% ggplot(., aes(x=Counter, y=cases, color=state)) + 
+  geom_line(alpha=0.3) + 
+#  guides(color=FALSE) + 
   scale_y_log10() + 
   geom_line(data=OR.R2, color=&quot;white&quot;) + 
   geom_text(data=OR.R2A, aes(x=Counter, y=deaths, label=state), color=&quot;white&quot;, inherit.aes = FALSE) + 
   dark_theme_linedraw() + 
-  labs(subtitle=&quot;Note logarithm&quot;, x=&quot;Days since 100th Case&quot;, y=&quot;Log(Cumulative Deaths)&quot;)
+  labs(subtitle=&quot;Note logarithm&quot;, x=&quot;Days Since 100th Case&quot;, y=&quot;Log(Cumulative Cases)&quot;)
 Plot2 &lt;- R2.NYT %&gt;% 
   ggplot(., aes(x=Counter, y=cases, color=state)) + 
   geom_line(alpha=0.3) + 
   guides(color=FALSE) + 
-  scale_y_log10() + 
+#  scale_y_log10() + 
   geom_line(data=OR.R2, color=&quot;white&quot;) + 
   geom_text(data=OR.R2A, aes(x=Counter, y=cases, label=state), color=&quot;white&quot;, inherit.aes = FALSE) + 
   dark_theme_linedraw() +
-  labs(subtitle=&quot;Note logarithm&quot;, x=&quot;Days since 100th Case&quot;, y=&quot;Log(Cumulative Cases)&quot;)
+  labs(x=&quot;Days since 100th Case&quot;, y=&quot;Cumulative Cases&quot;)
 Plot1 + Plot2</code></pre>
-<pre><code>## Warning: Transformation introduced infinite values in continuous y-axis</code></pre>
 <p><img src="/post/2020-04-03-new-york-times-data-on-covid/index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <div id="new-cases-by-state-over-time" class="section level2">
 <h2>New Cases by State over Time</h2>

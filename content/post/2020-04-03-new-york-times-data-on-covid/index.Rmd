@@ -107,23 +107,24 @@ R2.NYT <- Rect.NYT %>%
   mutate(Counter = row_number()) %>%
   ungroup()
 OR.R2 <- R2.NYT %>% filter(fips=="41")
-OR.R2A <- R2.NYT %>% filter(fips=="41" & Counter == max(OR.R2$Counter))
-Plot1 <- R2.NYT %>% ggplot(., aes(x=Counter, y=deaths, color=state)) + 
-  geom_line(alpha=0.3) + guides(color=FALSE) + 
+OR.R2A <- R2.NYT %>% filter(fips=="41") %>% filter(date == max(date))
+Plot1 <- R2.NYT %>% ggplot(., aes(x=Counter, y=cases, color=state)) + 
+  geom_line(alpha=0.3) + 
+#  guides(color=FALSE) + 
   scale_y_log10() + 
   geom_line(data=OR.R2, color="white") + 
   geom_text(data=OR.R2A, aes(x=Counter, y=deaths, label=state), color="white", inherit.aes = FALSE) + 
   dark_theme_linedraw() + 
-  labs(subtitle="Note logarithm", x="Days since 100th Case", y="Log(Cumulative Deaths)")
+  labs(subtitle="Note logarithm", x="Days Since 100th Case", y="Log(Cumulative Cases)")
 Plot2 <- R2.NYT %>% 
   ggplot(., aes(x=Counter, y=cases, color=state)) + 
   geom_line(alpha=0.3) + 
   guides(color=FALSE) + 
-  scale_y_log10() + 
+#  scale_y_log10() + 
   geom_line(data=OR.R2, color="white") + 
   geom_text(data=OR.R2A, aes(x=Counter, y=cases, label=state), color="white", inherit.aes = FALSE) + 
   dark_theme_linedraw() +
-  labs(subtitle="Note logarithm", x="Days since 100th Case", y="Log(Cumulative Cases)")
+  labs(x="Days since 100th Case", y="Cumulative Cases")
 Plot1 + Plot2
 ```
 

@@ -1,7 +1,7 @@
 ---
 title: COVID-19 in Oregon
 author: Robert W. Walker
-date: '2020-04-24'
+date: '2020-04-27'
 ---
 
 ```{r setup, include=FALSE}
@@ -78,7 +78,7 @@ Res.1 <- Map.Me %>%
 
 # Summarising the County Data: An Animation
 
-I will use a ggplot to build Oregon's map and fill it with case numbers.  `geom_sf()` plots the geometry.  I have to repel the labels to prevent print overlap, and scheme the colors.  The last step is to animate it by time. If I stop the label repelling, they will not bounce but it adds excitement.  There is a [separate page of daily maps](https://rww.science/r/covid/maps/).
+I will use a ggplot to build Oregon's map and fill it with case numbers.  `geom_sf()` plots the geometry.  I have to repel the labels to prevent print overlap, and scheme the colors.  The last step is to animate it by time. If I stop the label repelling, they will not bounce but it adds excitement. There is a [separate page of daily maps](https://rww.science/r/covid/maps/).
 
 ```{r, message=FALSE, warning=FALSE, eval=FALSE}
 Anim1 <- Map.Me %>% 
@@ -95,7 +95,7 @@ save_animation(GGAnim, file="./MapAnim.gif")
 ```
 ![County animation](./MapAnim.gif)
 
-# Percent Positive by State
+# Percent Positive for Oregon Counties
 
 ```{r, warning=FALSE, message=FALSE}
 library(plotly)
@@ -113,19 +113,21 @@ frameWidget(GGP)
 
 # Testing in Oregon
 
-What is the cumulative status of testing?  These data, updated daily, render a count of all tests performed since January of 2020.
+What is the cumulative status of testing?  These data, updated daily, render a count of all tests performed since January of 2020.  I am cutting it off to the month of April to make the labels read.
 
 ```{r}
+library(ggrepel)
 Oregon.Tests <- Oregon.Tests %>% filter(Category!="Pending")
-OR.Testing <- Oregon.Tests %>% group_by(date) %>% summarise(Total = sum(Outcome, na.rm=TRUE))
-Test1 <- Oregon.Tests %>% 
+OR.Testing <- Oregon.Tests %>% group_by(date) %>% summarise(Total = sum(Outcome, na.rm=TRUE)) %>% filter(date > "2020-04-01")
+Test1 <- Oregon.Tests %>% filter(date > "2020-04-01") %>%
   ggplot(.) + 
   aes(x=date, y=Outcome, fill=Category, label=Outcome) + 
   geom_col() + 
-  geom_label(col="magenta", show.legend = FALSE, vjust=1, size=2) + 
+  geom_label(col="magenta", show.legend = FALSE, vjust=1, size=1.5) + 
   scale_fill_viridis_d() + 
+#  scale_color_viridis_d() + 
   labs(title="Cumulative [since January 2020] COVID-19 Testing in Oregon", y="Completed Tests", x="Date", subtitle="Total appears in black and white", caption = "data: https://govstatus.egov.com/OR-OHA-COVID-19") + 
-  geom_label(data=OR.Testing, aes(x=date, y=Total+100, label=Total), fill="white", color="black", inherit.aes = FALSE, vjust = 0, size=2)
+  geom_label(data=OR.Testing, aes(x=date, y=Total, label=Total), fill="white", color="black", inherit.aes = FALSE, vjust = 0, size=1.5)
 Test1
 ```
 
@@ -134,7 +136,7 @@ Test1
 We should worry about the degree to which tests are applied at all randomly; they are surely not.  As a result, what it means to calculate or break down probability based on having been tested is subject to so many important caveats that vary over time.  It is important to note that this is also cumulative test percentages/proportions.
 
 ```{r}
-Test2 <- Oregon.Tests %>% ggplot(.) + aes(x=date, y=Outcome, fill=Category, label=Outcome) + geom_col(position = "fill") + scale_fill_viridis_d() + labs(title="Cumulative Outcomes of COVID-19 Testing in Oregon", y="Proportion of Tests", x="Date", caption = "data: https://govstatus.egov.com/OR-OHA-COVID-19")
+Test2 <- Oregon.Tests %>% ggplot(.) + aes(x=date, y=Outcome, fill=Category, label=Outcome) + geom_col(position = "fill") + scale_fill_viridis_d() + labs(title="Cumulative Outcomes of COVID-19 Testing in Oregon", y="Proportion of Tests", x="Date", caption = "data: https://govstatus.egov.com/OR-OHA-COVID-19 \n 04-22 Negative Tests Interpolated")
 Test2
 ```
 
@@ -143,7 +145,7 @@ Test2
 Cumulative results are perhaps more informative when viewed alongside the marginal changes from day to day.  Here, I show the proportion of test outcomes just considering those test results reported for that day -- the daily distribution of test outcomes.
 
 ```{r, warning=FALSE, message=FALSE}
-library(hrbrthemes)
+library(hrbrthemes); library(ggrepel)
 MyDat <- Oregon.Tests %>%
   pivot_wider(., names_from = Category, values_from = Outcome) %>% 
   mutate(Positive.Chg = Positive - lag(Positive, order_by = date), 
@@ -152,15 +154,18 @@ MyDat <- Oregon.Tests %>%
   mutate(Positive.Pct = round(Positive.Chg / Total, digits=3)) %>% 
   select(date, Positive.Chg, Negative.Chg, Positive.Pct) %>% 
   pivot_longer(., c(Negative.Chg, Positive.Chg), names_to = "Outcome", values_to = "Test.Changes")
-MyDat %>% 
-  ggplot(., aes(x=date, y=Test.Changes, fill=Outcome)) + 
-  geom_col(position="fill") + 
-  geom_label(data=MyDat, aes(x=date, y=Positive.Pct, label=Positive.Pct), size=2, inherit.aes = TRUE, show.legend=FALSE) + 
-  scale_fill_ipsum() + 
-  labs(title="Daily Distribution of Test Outcomes", subtitle="Percent of Positive Tests Shown")
+MyDat2 <- MyDat %>% filter(Outcome=="Positive.Chg") %>% mutate(PPLab = Positive.Pct)
+MyDat2$PPLab[MyDat2$date < Sys.Date()-4] <- NA
+BaseP <- MyDat2 %>% 
+  ggplot(., aes(x=date, y=Positive.Pct, text=Positive.Pct)) + 
+  geom_line(color="magenta") + 
+  geom_point() +
+  guides(fill=FALSE, color=FALSE) +
+  labs(title="Daily Distribution of Test Outcomes", subtitle="Percent of Positive Tests Shown") + theme_ft_rc()
+ggplotly(BaseP)
 ```
 
-## Testing by County
+## Per-capita Testing by County
 
 ```{r, warning=FALSE, message=FALSE}
 library(rvest); library(htmltools)
