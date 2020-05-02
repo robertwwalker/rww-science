@@ -120,7 +120,7 @@ Plot2 <- R2.NYT %>%
   ggplot(., aes(x=Counter, y=cases, color=state)) + 
   geom_line(alpha=0.3) + 
   guides(color=FALSE) + 
-#  scale_y_log10() + 
+#  scale_y_log10() +
   geom_line(data=OR.R2, color="white") + 
   geom_text(data=OR.R2A, aes(x=Counter, y=cases, label=state), color="white", inherit.aes = FALSE) + 
   dark_theme_linedraw() +

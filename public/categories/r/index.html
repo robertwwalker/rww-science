@@ -657,7 +657,7 @@
       <h2><a href="/2020/04/24/new-york-times-data-on-covid/" >New York Times Data on COVID</a></h2>
       <div class="article-style">
         
-          New York Times data for the US The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-04-30 13:32:24.
+          New York Times data for the US The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-05-01 17:27:12.
  The Basic State of Things options(scipen=9) library(tidyverse); library(hrbrthemes); library(patchwork); library(plotly); library(ggdark); library(ggrepel) state.data &lt;- read_csv(url(&quot;https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv&quot;)) Rect.NYT &lt;- complete(state.data, state,date) Rect.NYT &lt;- Rect.NYT %&gt;% group_by(state) %&gt;% mutate(New.Cases = cases - lag(cases, order_by = date), New.
         
       </div>
@@ -734,7 +734,7 @@ p2 &lt;- office_ratings %&gt;% ggplot(., aes(x=as.factor(season), y=imdb_rating,
     
     
     <div>
-      <h2><a href="/2020/02/27/a-look-at-vix/" >A Look at VIX :2020-04-12</a></h2>
+      <h2><a href="/2020/02/27/a-look-at-vix/" >A Look at VIX :2020-05-01</a></h2>
       <div class="article-style">
         
           Get Some VIX data NB: I originally wrote this on February 27, 2020 so there is commentary surrounding that date. It was done on the quick for curiosity. I will update it by recompiling it with new data and will update the commentary noting when it took place.

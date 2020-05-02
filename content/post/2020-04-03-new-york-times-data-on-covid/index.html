@@ -28,7 +28,7 @@ projects: []
 
 <div id="new-york-times-data-for-the-us" class="section level1">
 <h1>New York Times data for the US</h1>
-<p>The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-04-30 13:32:24.</p>
+<p>The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-05-01 17:27:12.</p>
 </div>
 <div id="the-basic-state-of-things" class="section level1">
 <h1>The Basic State of Things</h1>
@@ -121,7 +121,7 @@ Plot2 &lt;- R2.NYT %&gt;%
   ggplot(., aes(x=Counter, y=cases, color=state)) + 
   geom_line(alpha=0.3) + 
   guides(color=FALSE) + 
-#  scale_y_log10() + 
+#  scale_y_log10() +
   geom_line(data=OR.R2, color=&quot;white&quot;) + 
   geom_text(data=OR.R2A, aes(x=Counter, y=cases, label=state), color=&quot;white&quot;, inherit.aes = FALSE) + 
   dark_theme_linedraw() +
