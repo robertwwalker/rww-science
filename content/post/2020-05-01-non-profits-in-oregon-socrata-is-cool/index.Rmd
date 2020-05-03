@@ -1,0 +1,73 @@
+---
+title: 'Non-Profits in Oregon: Socrata is Cool'
+author: Robert W. Walker
+date: '2020-05-01'
+slug: non-profits-in-oregon-socrata-is-cool
+categories:
+  - R
+  - tidyverse
+tags:
+  - R Markdown
+  - Maps
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2020-05-01T23:04:07-07:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning=FALSE)
+library(tidyverse)
+library(tigris)
+library(sf)
+library(forcats)
+library(ggthemes)
+```
+
+
+# Socrata: The Open Data Portal
+
+I did not previously know much about precisely how open data portals had evolved.  Oregon's is quite nice and I will take the opportunity to map and summarise non-profits throughout the state.  Here is the data.
+
+```{r}
+library(RSocrata)
+Oregon.Nonprofits <- read.socrata("https://data.oregon.gov/resource/8kyv-b2kw.csv")
+glimpse(Oregon.Nonprofits)
+```
+
+## A basic zip code map
+
+```{r, tigris_use_cache = TRUE, results='hide'}
+or_zips <- zctas(cb = TRUE, starts_with = "97", class="sf")
+or_zips %>% ggplot(., aes(geometry=geometry, group=ZCTA5CE10)) + geom_sf()
+```
+
+## Join a summary table by zip code.
+
+```{r}
+ON <- Oregon.Nonprofits %>% group_by(zip_code) %>% summarise(Nonprofits = n_distinct(registry_number)) %>% ungroup()
+Map.Me <- full_join(or_zips, ON, by=c("ZCTA5CE10" = "zip_code"))
+Map.Me %>% ggplot(., aes(geometry=geometry, fill=Nonprofits)) + geom_sf() + scale_fill_viridis_c()
+```
+
+## Some Summary
+
+```{r}
+Oregon.Nonprofits %>% 
+  group_by(nonprofit_type) %>% 
+  summarise(count = n_distinct(registry_number)) %>% 
+  ggplot(., aes(x=fct_reorder(stringr::str_wrap(nonprofit_type, 10), count), y=count, fill=nonprofit_type)) + 
+  geom_col() + 
+  scale_fill_viridis_d() + 
+  coord_flip() + 
+  labs(title="The Distribution of Oregon Non-Profits", fill="Type", x="") + 
+  guides(fill=FALSE) + 
+  theme_minimal()
+```
+

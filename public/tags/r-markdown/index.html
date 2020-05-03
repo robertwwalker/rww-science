@@ -239,7 +239,7 @@
   <meta property="og:description" content="Associate Professor of Quantitative Methods"><meta property="og:image" content="/img/portrait.jpg">
   <meta property="twitter:image" content="/img/portrait.jpg"><meta property="og:locale" content="en-us">
   
-    <meta property="og:updated_time" content="2019-12-17T00:00:00&#43;00:00">
+    <meta property="og:updated_time" content="2020-05-01T00:00:00&#43;00:00">
   
 
   
@@ -654,6 +654,19 @@
     
     
     <div>
+      <h2><a href="/2020/05/01/non-profits-in-oregon-socrata-is-cool/" >Non-Profits in Oregon: Socrata is Cool</a></h2>
+      <div class="article-style">
+        
+          Socrata: The Open Data Portal I did not previously know much about precisely how open data portals had evolved. Oregon’s is quite nice and I will take the opportunity to map and summarise non-profits throughout the state. Here is the data.
+library(RSocrata) Oregon.Nonprofits &lt;- read.socrata(&quot;https://data.oregon.gov/resource/8kyv-b2kw.csv&quot;) glimpse(Oregon.Nonprofits) ## Rows: 164,515 ## Columns: 18 ## $ registry_number &lt;int&gt; 299818, 299818, 299818, 299818, 299818, 5… ## $ business_name &lt;chr&gt; &quot;UNITED METHODIST CHURCH, OREGON CITY, OR… ## $ entity_type &lt;chr&gt; &quot;DOMESTIC NONPROFIT CORPORATION&quot;, &quot;DOMEST… ## $ registry_date &lt;chr&gt; &quot;1850-05-17 00:00:00&quot;, &quot;1850-05-17 00:00:… ## $ nonprofit_type &lt;chr&gt; &quot;RELIGIOUS WITH MEMBERS&quot;, &quot;RELIGIOUS WITH… ## $ associated_name_type &lt;chr&gt; &quot;MAILING ADDRESS&quot;, &quot;PRESIDENT&quot;, &quot;PRINCIPA… ## $ first_name &lt;chr&gt; &quot;&quot;, &quot;MIKE&quot;, &quot;&quot;, &quot;MIKE&quot;, &quot;CHRISTA&quot;, &quot;&quot;, &quot;S… ## $ middle_name &lt;chr&gt; &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;E&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, … ## $ last_name &lt;chr&gt; &quot;&quot;, &quot;BENISCHEK&quot;, &quot;&quot;, &quot;BENISCHEK&quot;, &quot;PALMER… ## $ suffix &lt;chr&gt; &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;… ## $ not_of_record_entity &lt;chr&gt; &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;… ## $ entity_of_record_reg_number &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N… ## $ entity_of_record_name &lt;chr&gt; &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;… ## $ address &lt;chr&gt; &quot;18955 S SOUTH END RD&quot;, &quot;18955 S SOUTH EN… ## $ address_continued &lt;chr&gt; &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;&quot;, &quot;… ## $ city &lt;chr&gt; &quot;OREGON CITY&quot;, &quot;OREGON CITY&quot;, &quot;OREGON CIT… ## $ state &lt;chr&gt; &quot;OR&quot;, &quot;OR&quot;, &quot;OR&quot;, &quot;OR&quot;, &quot;OR&quot;, &quot;OR&quot;, &quot;OR&quot;,… ## $ zip_code &lt;chr&gt; &quot;97045&quot;, &quot;97045&quot;, &quot;97045&quot;, &quot;97045&quot;, &quot;9704… A basic zip code map or_zips &lt;- zctas(cb = TRUE, starts_with = &quot;97&quot;, class=&quot;sf&quot;) or_zips %&gt;% ggplot(.
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
       <h2><a href="/2019/12/17/dog-movements-a-tidytuesday/" >Dog Movements: a tidyTuesday</a></h2>
       <div class="article-style">
         
@@ -762,19 +775,6 @@ library(tidyverse) library(tidytext) library(SnowballC) library(tm) library(syuz
       <div class="article-style">
         
           Mining Twitter Data Is rather easy. You have to arrange a developer account with Twitter and set up an app. After that, Twitter gives you access to a consumer key and secret and an access token and access secret. My tool of choice for this is rtweet because it automagically processes tweet elements and makes them easy to slice and dice. I also played with twitteR but it was harder to work with for what I wanted.
-        
-      </div>
-    </div>
-  
-    
-    
-    
-    <div>
-      <h2><a href="/2018/04/08/scraping-epl-salary-data/" >Scraping EPL Salary Data</a></h2>
-      <div class="article-style">
-        
-          EPL Scraping In a previous post, I scraped some NFL data and learned the structure of Sportrac. Now, I want to scrape the available data on the EPL. The EPL data is organized in a few distinct but potentially linked tables. The basic structure is organized around team folders. Let me begin by isolating those URLs.
-library(rvest) library(tidyverse) base_url &lt;- &quot;http://www.spotrac.com/epl/&quot; read.base &lt;- read_html(base_url) team.URL &lt;- read.base %&gt;% html_nodes(&quot;.team-name&quot;) %&gt;% html_attr(&#39;href&#39;) team.
         
       </div>
     </div>

@@ -239,7 +239,7 @@
   <meta property="og:description" content="Associate Professor of Quantitative Methods"><meta property="og:image" content="/img/portrait.jpg">
   <meta property="twitter:image" content="/img/portrait.jpg"><meta property="og:locale" content="en-us">
   
-    <meta property="og:updated_time" content="2020-04-03T00:00:00&#43;00:00">
+    <meta property="og:updated_time" content="2020-05-01T00:00:00&#43;00:00">
   
 
   
@@ -654,6 +654,19 @@
     
     
     <div>
+      <h2><a href="/2020/01/18/a-quick-tidytuesday-on-passwords/" >a quick tidyTuesday on Passwords</a></h2>
+      <div class="article-style">
+        
+          First, I wanted to acquire the distribution of letters and then play with that. I embedded the result here. The second step is to import the tidyTuesday data.
+library(tidyverse) Letter.Freq &lt;- data.frame(stringsAsFactors=FALSE, Letter = c(&quot;E&quot;, &quot;T&quot;, &quot;A&quot;, &quot;O&quot;, &quot;I&quot;, &quot;N&quot;, &quot;S&quot;, &quot;R&quot;, &quot;H&quot;, &quot;D&quot;, &quot;L&quot;, &quot;U&quot;, &quot;C&quot;, &quot;M&quot;, &quot;F&quot;, &quot;Y&quot;, &quot;W&quot;, &quot;G&quot;, &quot;P&quot;, &quot;B&quot;, &quot;V&quot;, &quot;K&quot;, &quot;X&quot;, &quot;Q&quot;, &quot;J&quot;, &quot;Z&quot;), Frequency = c(12.02, 9.1, 8.12, 7.68, 7.31, 6.95, 6.28, 6.
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
       <h2><a href="/2019/12/17/dog-movements-a-tidytuesday/" >Dog Movements: a tidyTuesday</a></h2>
       <div class="article-style">
         
@@ -764,20 +777,6 @@ library(tidyverse) ## ── Attaching packages ──────────�
         
           Pizza Ratings The #tidyTuesday for this week involves pizza shop ratings data. Let’s see what we have.
 pizza_jared &lt;- readr::read_csv(&quot;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-10-01/pizza_jared.csv&quot;) ## Parsed with column specification: ## cols( ## polla_qid = col_double(), ## answer = col_character(), ## votes = col_double(), ## pollq_id = col_double(), ## question = col_character(), ## place = col_character(), ## time = col_double(), ## total_votes = col_double(), ## percent = col_double() ## ) pizza_barstool &lt;- readr::read_csv(&quot;https://raw.
-        
-      </div>
-    </div>
-  
-    
-    
-    
-    <div>
-      <h2><a href="/2019/05/22/some-basic-text-on-the-mueller-report/" >Some Basic Text on the Mueller Report</a></h2>
-      <div class="article-style">
-        
-          So this Robert Mueller guy wrote a report I may as well analyse it a bit.
-First, let me see if I can get a hold of the data. I grabbed the report directly from the Department of Justice website. You can follow this link.
-library(tidyverse) library(pdftools) # Download report from link above mueller_report_txt &lt;- pdf_text(&quot;../data/report.pdf&quot;) # Create a tibble of the text with line numbers and pages mueller_report &lt;- tibble( page = 1:length(mueller_report_txt), text = mueller_report_txt) %&gt;% separate_rows(text, sep = &quot;\n&quot;) %&gt;% group_by(page) %&gt;% mutate(line = row_number()) %&gt;% ungroup() %&gt;% select(page, line, text) write_csv(mueller_report, &quot;data/mueller_report.
         
       </div>
     </div>

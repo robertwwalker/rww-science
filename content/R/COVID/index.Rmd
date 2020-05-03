@@ -13,7 +13,7 @@ library(tidyverse)
 
 I wanted to create a self-updating visualization of [the data on COVID-19 in the state of Oregon provided by OHA](https://govstatus.egov.com/OR-OHA-COVID-19).  There is a [separate page of daily maps](https://rww.science/r/covid-maps/).  Oregon reports a set of daily snapshots while progression requires ingesting new data each day so  I began tracking it March 20; the process of scraping it is detailed in [a separate file](https://rww.science/r/covid-scraping/).  This updates, expands, and consolidates two previous posts [here](https://rww.science/2020/03/21/covid-19-in-oregon/) and [here](https://rww.science/2020/03/24/covid-19-county-maps-for-oregon/).  A few cautionary notes.  First, these are cumulative case counts that are almost certainly incomplete.  Second, there is reason to believe that the death numbers may also be incomplete because it is dangerous to police and first responders are spread thinly.
 
-This post is current as of April 27, 2020; this first bit of R code loads the current data from my github.
+This post is current as of May 2, 2020; this first bit of R code loads the current data from my github.
 
 ```{r, eval=FALSE}
 library(tigris)
@@ -72,7 +72,7 @@ counties.t <- counties(state = "41", resolution = "500k", class="sf")
 Map.Me <- left_join(counties.t,Oregon.COVID, by=c("NAME" = "County"))
 Res.1 <- Map.Me %>% 
   filter(date==Sys.Date()) %>% 
-  mutate(Percent.Positive = Number.of.cases / Negative.test.results, 
+  mutate(Percent.Positive = Number.of.cases / (Number.of.cases + Negative.test.results), 
          TTip = paste0("Percent Positive: ", Percent.Positive, "<br> Positive Tests: ", Number.of.cases, "<br> Negative Tests: ", Negative.test.results, "<br> Deaths: ", Deaths))
 ```
 
@@ -101,8 +101,8 @@ save_animation(GGAnim, file="./MapAnim.gif")
 library(plotly)
 Res1 <- Res.1 %>% 
   mutate(Percent.Positive = Number.of.cases / (Number.of.cases + Negative.test.results) ) %>%
-  filter(Negative.test.results > 10) %>% 
-  ggplot(., aes(geometry=geometry, fill=Percent.Positive, label=NAME, text=TTip)) + 
+#  filter(Negative.test.results > 10) %>% 
+  ggplot(., aes(geometry=geometry, fill=Percent.Positive, label=NAME, text=Percent.Positive)) + 
    geom_sf() + 
    scale_fill_viridis_c(option = "A") + 
    theme_map() + 
@@ -176,7 +176,7 @@ R2GPM <- Res.2 %>% ggplot(., aes(geometry=geometry, fill=PerCap.Tests, label=NAM
    geom_sf() + 
    scale_fill_viridis_c(option = "A") + 
    theme_map() + 
-   labs(title="Per capita testing in Oregon", subtitle=Sys.Date(), fill="Percent Tested")
+   labs(title="per capita COVID Testing in Oregon", subtitle=Sys.Date(), fill="per capita testing")
 R2GPM3 <- ggplotly(R2GPM)
 frameWidget(R2GPM3)
 ```

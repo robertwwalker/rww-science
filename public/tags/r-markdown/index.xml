@@ -5,12 +5,78 @@
     <link>/tags/r-markdown/</link>
       <atom:link href="/tags/r-markdown/index.xml" rel="self" type="application/rss+xml" />
     <description>R Markdown</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© 2018</copyright><lastBuildDate>Tue, 17 Dec 2019 00:00:00 +0000</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© 2018</copyright><lastBuildDate>Fri, 01 May 2020 00:00:00 +0000</lastBuildDate>
     <image>
       <url>/img/portrait.jpg</url>
       <title>R Markdown</title>
       <link>/tags/r-markdown/</link>
     </image>
+    
+    <item>
+      <title>Non-Profits in Oregon: Socrata is Cool</title>
+      <link>/2020/05/01/non-profits-in-oregon-socrata-is-cool/</link>
+      <pubDate>Fri, 01 May 2020 00:00:00 +0000</pubDate>
+      <guid>/2020/05/01/non-profits-in-oregon-socrata-is-cool/</guid>
+      <description>
+&lt;script src=&#34;/rmarkdown-libs/header-attrs/header-attrs.js&#34;&gt;&lt;/script&gt;
+
+
+&lt;div id=&#34;socrata-the-open-data-portal&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Socrata: The Open Data Portal&lt;/h1&gt;
+&lt;p&gt;I did not previously know much about precisely how open data portals had evolved. Oregon’s is quite nice and I will take the opportunity to map and summarise non-profits throughout the state. Here is the data.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(RSocrata)
+Oregon.Nonprofits &amp;lt;- read.socrata(&amp;quot;https://data.oregon.gov/resource/8kyv-b2kw.csv&amp;quot;)
+glimpse(Oregon.Nonprofits)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Rows: 164,515
+## Columns: 18
+## $ registry_number             &amp;lt;int&amp;gt; 299818, 299818, 299818, 299818, 299818, 5…
+## $ business_name               &amp;lt;chr&amp;gt; &amp;quot;UNITED METHODIST CHURCH, OREGON CITY, OR…
+## $ entity_type                 &amp;lt;chr&amp;gt; &amp;quot;DOMESTIC NONPROFIT CORPORATION&amp;quot;, &amp;quot;DOMEST…
+## $ registry_date               &amp;lt;chr&amp;gt; &amp;quot;1850-05-17 00:00:00&amp;quot;, &amp;quot;1850-05-17 00:00:…
+## $ nonprofit_type              &amp;lt;chr&amp;gt; &amp;quot;RELIGIOUS WITH MEMBERS&amp;quot;, &amp;quot;RELIGIOUS WITH…
+## $ associated_name_type        &amp;lt;chr&amp;gt; &amp;quot;MAILING ADDRESS&amp;quot;, &amp;quot;PRESIDENT&amp;quot;, &amp;quot;PRINCIPA…
+## $ first_name                  &amp;lt;chr&amp;gt; &amp;quot;&amp;quot;, &amp;quot;MIKE&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;MIKE&amp;quot;, &amp;quot;CHRISTA&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;S…
+## $ middle_name                 &amp;lt;chr&amp;gt; &amp;quot;&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;E&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;&amp;quot;, …
+## $ last_name                   &amp;lt;chr&amp;gt; &amp;quot;&amp;quot;, &amp;quot;BENISCHEK&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;BENISCHEK&amp;quot;, &amp;quot;PALMER…
+## $ suffix                      &amp;lt;chr&amp;gt; &amp;quot;&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;…
+## $ not_of_record_entity        &amp;lt;chr&amp;gt; &amp;quot;&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;…
+## $ entity_of_record_reg_number &amp;lt;int&amp;gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, N…
+## $ entity_of_record_name       &amp;lt;chr&amp;gt; &amp;quot;&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;…
+## $ address                     &amp;lt;chr&amp;gt; &amp;quot;18955 S SOUTH END RD&amp;quot;, &amp;quot;18955 S SOUTH EN…
+## $ address_continued           &amp;lt;chr&amp;gt; &amp;quot;&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;&amp;quot;, &amp;quot;…
+## $ city                        &amp;lt;chr&amp;gt; &amp;quot;OREGON CITY&amp;quot;, &amp;quot;OREGON CITY&amp;quot;, &amp;quot;OREGON CIT…
+## $ state                       &amp;lt;chr&amp;gt; &amp;quot;OR&amp;quot;, &amp;quot;OR&amp;quot;, &amp;quot;OR&amp;quot;, &amp;quot;OR&amp;quot;, &amp;quot;OR&amp;quot;, &amp;quot;OR&amp;quot;, &amp;quot;OR&amp;quot;,…
+## $ zip_code                    &amp;lt;chr&amp;gt; &amp;quot;97045&amp;quot;, &amp;quot;97045&amp;quot;, &amp;quot;97045&amp;quot;, &amp;quot;97045&amp;quot;, &amp;quot;9704…&lt;/code&gt;&lt;/pre&gt;
+&lt;div id=&#34;a-basic-zip-code-map&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;A basic zip code map&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;or_zips &amp;lt;- zctas(cb = TRUE, starts_with = &amp;quot;97&amp;quot;, class=&amp;quot;sf&amp;quot;)
+or_zips %&amp;gt;% ggplot(., aes(geometry=geometry, group=ZCTA5CE10)) + geom_sf()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-05-01-non-profits-in-oregon-socrata-is-cool/index_files/figure-html/unnamed-chunk-2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;join-a-summary-table-by-zip-code.&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Join a summary table by zip code.&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ON &amp;lt;- Oregon.Nonprofits %&amp;gt;% group_by(zip_code) %&amp;gt;% summarise(Nonprofits = n_distinct(registry_number)) %&amp;gt;% ungroup()
+Map.Me &amp;lt;- full_join(or_zips, ON, by=c(&amp;quot;ZCTA5CE10&amp;quot; = &amp;quot;zip_code&amp;quot;))
+Map.Me %&amp;gt;% ggplot(., aes(geometry=geometry, fill=Nonprofits)) + geom_sf() + scale_fill_viridis_c()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-05-01-non-profits-in-oregon-socrata-is-cool/index_files/figure-html/unnamed-chunk-3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;some-summary&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Some Summary&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Oregon.Nonprofits %&amp;gt;% 
+  group_by(nonprofit_type) %&amp;gt;% 
+  summarise(count = n_distinct(registry_number)) %&amp;gt;% 
+  ggplot(., aes(x=fct_reorder(stringr::str_wrap(nonprofit_type, 10), count), y=count, fill=nonprofit_type)) + 
+  geom_col() + 
+  scale_fill_viridis_d() + 
+  coord_flip() + 
+  labs(title=&amp;quot;The Distribution of Oregon Non-Profits&amp;quot;, fill=&amp;quot;Type&amp;quot;, x=&amp;quot;&amp;quot;) + 
+  guides(fill=FALSE) + 
+  theme_minimal()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-05-01-non-profits-in-oregon-socrata-is-cool/index_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
     
     <item>
       <title>Dog Movements: a tidyTuesday</title>

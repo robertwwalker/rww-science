@@ -239,7 +239,7 @@
   <meta property="og:description" content="Associate Professor of Quantitative Methods"><meta property="og:image" content="/img/portrait.jpg">
   <meta property="twitter:image" content="/img/portrait.jpg"><meta property="og:locale" content="en-us">
   
-    <meta property="og:updated_time" content="2020-04-03T00:00:00&#43;00:00">
+    <meta property="og:updated_time" content="2020-05-01T00:00:00&#43;00:00">
   
 
   
@@ -654,6 +654,20 @@
     
     
     <div>
+      <h2><a href="/2019/05/22/some-basic-text-on-the-mueller-report/" >Some Basic Text on the Mueller Report</a></h2>
+      <div class="article-style">
+        
+          So this Robert Mueller guy wrote a report I may as well analyse it a bit.
+First, let me see if I can get a hold of the data. I grabbed the report directly from the Department of Justice website. You can follow this link.
+library(tidyverse) library(pdftools) # Download report from link above mueller_report_txt &lt;- pdf_text(&quot;../data/report.pdf&quot;) # Create a tibble of the text with line numbers and pages mueller_report &lt;- tibble( page = 1:length(mueller_report_txt), text = mueller_report_txt) %&gt;% separate_rows(text, sep = &quot;\n&quot;) %&gt;% group_by(page) %&gt;% mutate(line = row_number()) %&gt;% ungroup() %&gt;% select(page, line, text) write_csv(mueller_report, &quot;data/mueller_report.
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
       <h2><a href="/2019/04/30/nflscrapr-is-amazing/" >nflscrapR is amazing</a></h2>
       <div class="article-style">
         
@@ -768,18 +782,6 @@ With a source in hand, the key tool is the SelectorGadget. SelectorGadget is a b
       </div>
     </div>
   
-    
-    
-    
-    <div>
-      <h2><a href="/2018/04/03/tidytuesday-tuition/" >tidyTuesday - Tuition</a></h2>
-      <div class="article-style">
-        
-          I found a great example on tidyTuesday that I wanted to work on. @JakeKaupp tweeted his #tidyTuesday: a very cool slope plot of tuition changes averaged by state over the last decade. It is a very informative graphic. The only tweak is a simple embedded line plot that uses color in a creative way to show growth rates. All of the R code for this is on Jake Kaupp’s GitHub.
-        
-      </div>
-    </div>
-  
 
   
 <nav>
@@ -787,6 +789,8 @@ With a source in hand, the key tool is the SelectorGadget. SelectorGadget is a b
     
     <li class="page-item"><a class="page-link" href="/categories/tidyverse/page/2/">&laquo;</a></li>
     
+    
+    <li class="page-item"><a class="page-link" href="/categories/tidyverse/page/4/">&raquo;</a></li>
     
   </ul>
 </nav>
