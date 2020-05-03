@@ -319,9 +319,49 @@ Plot.COVID("2020-04-24", Map.Me)
 Plot.COVID("2020-04-25", Map.Me)
 ```
 
-
-
 ## The Result for 04/26/2020
+
+```{r}
+Plot.COVID("2020-04-26", Map.Me)
+```
+
+## The Result for 04/27/2020
+
+```{r}
+Plot.COVID("2020-04-27", Map.Me)
+```
+
+## The Result for 04/28/2020
+
+```{r}
+Plot.COVID("2020-04-28", Map.Me)
+```
+
+## The Result for 04/29/2020
+
+```{r}
+Plot.COVID("2020-04-29", Map.Me)
+```
+
+## The Result for 04/30/2020
+
+```{r}
+Plot.COVID("2020-04-30", Map.Me)
+```
+
+## The Result for 05/01/2020
+
+```{r}
+Plot.COVID("2020-05-01", Map.Me)
+```
+
+## The Result for 05/02/2020
+
+```{r}
+Plot.COVID("2020-05-02", Map.Me)
+```
+
+## The Result for 05/03/2020
 
 ```{r, warning=FALSE, message=FALSE}
 library(widgetframe); library(ggthemes); library(RColorBrewer)

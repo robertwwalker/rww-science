@@ -1,7 +1,7 @@
 ---
 title: New York Times Data on COVID
 author: Robert W. Walker
-date: '2020-04-24'
+date: '2020-05-03'
 slug: new-york-times-data-on-covid
 categories:
   - R
@@ -28,7 +28,7 @@ projects: []
 
 <div id="new-york-times-data-for-the-us" class="section level1">
 <h1>New York Times data for the US</h1>
-<p>The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-05-02 18:03:28.</p>
+<p>The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-05-03 13:45:20.</p>
 </div>
 <div id="the-basic-state-of-things" class="section level1">
 <h1>The Basic State of Things</h1>
@@ -40,15 +40,15 @@ Rect.NYT &lt;- Rect.NYT %&gt;% group_by(state) %&gt;% mutate(New.Cases = cases -
 NYT.Totals &lt;- Rect.NYT %&gt;% group_by(date) %&gt;% summarise(Deaths = sum(deaths, na.rm=TRUE), New.Deaths = sum(New.Deaths, na.rm = TRUE), Cases = sum(cases, na.rm=TRUE), New.Cases = sum(New.Cases, na.rm = TRUE)) %&gt;% ungroup()
 library(patchwork)
 plot1 &lt;- NYT.Totals %&gt;% ggplot(., aes(x=date, y=Deaths)) + geom_line() + labs(title=&quot;Deaths&quot;) + dark_mode()
-plot2 &lt;- NYT.Totals %&gt;% ggplot(., aes(x=date, y=New.Deaths)) + geom_line() + labs(title=&quot;New Deaths&quot;) + geom_smooth() + dark_mode()
+plot2 &lt;- NYT.Totals %&gt;% ggplot(., aes(x=date, y=New.Deaths)) + geom_line() + labs(title=&quot;New Deaths&quot;) + geom_smooth(fill=&quot;white&quot;) + dark_mode()
 plot3 &lt;- NYT.Totals %&gt;% ggplot(., aes(x=date, y=Cases)) + geom_line() + labs(title=&quot;Cases&quot;) + dark_mode()
-plot4 &lt;- NYT.Totals %&gt;% ggplot(., aes(x=date, y=New.Cases)) + geom_line() + labs(title=&quot;New Cases&quot;) + geom_smooth() + dark_mode()
+plot4 &lt;- NYT.Totals %&gt;% ggplot(., aes(x=date, y=New.Cases)) + geom_line() + labs(title=&quot;New Cases&quot;) + geom_smooth(fill=&quot;white&quot;) + dark_mode()
 (plot1 + plot2) / (plot3 + plot4)</code></pre>
 <p><img src="/post/2020-04-03-new-york-times-data-on-covid/index_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
 <pre class="r"><code>plot1 &lt;- NYT.Totals %&gt;% ggplot(., aes(x=date, y=Deaths)) + geom_line() + labs(title=&quot;Deaths&quot;) + scale_y_log10() + dark_mode()
-plot2 &lt;- NYT.Totals %&gt;% ggplot(., aes(x=date, y=New.Deaths)) + geom_line() + labs(title=&quot;New Deaths&quot;) + geom_smooth() + dark_mode()
+plot2 &lt;- NYT.Totals %&gt;% ggplot(., aes(x=date, y=New.Deaths)) + geom_line() + labs(title=&quot;New Deaths&quot;) + geom_smooth(fill=&quot;white&quot;) + dark_mode()
 plot3 &lt;- NYT.Totals %&gt;% ggplot(., aes(x=date, y=Cases)) + geom_line() + labs(title=&quot;Cases&quot;) + scale_y_log10() + dark_mode()
-plot4 &lt;- NYT.Totals %&gt;% ggplot(., aes(x=date, y=New.Cases)) + geom_line() + labs(title=&quot;New Cases&quot;) + geom_smooth() + dark_mode()
+plot4 &lt;- NYT.Totals %&gt;% ggplot(., aes(x=date, y=New.Cases)) + geom_line() + labs(title=&quot;New Cases&quot;) + geom_smooth(fill=&quot;white&quot;) + dark_mode()
 (plot1 + plot2) / (plot3 + plot4)</code></pre>
 <pre><code>## Warning: Transformation introduced infinite values in continuous y-axis</code></pre>
 <pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;
@@ -57,7 +57,6 @@ plot4 &lt;- NYT.Totals %&gt;% ggplot(., aes(x=date, y=New.Cases)) + geom_line() 
 </div>
 <div id="the-jburnmurdoch-graphics-for-us-states" class="section level1">
 <h1>The <code>@jburnmurdoch</code> graphics for US States</h1>
-<p>First.</p>
 <div id="deaths" class="section level2">
 <h2>Deaths</h2>
 <pre class="r"><code>R2.NYT &lt;- Rect.NYT %&gt;% 
@@ -111,7 +110,7 @@ OR.R2 &lt;- R2.NYT %&gt;% filter(fips==&quot;41&quot;)
 OR.R2A &lt;- R2.NYT %&gt;% filter(fips==&quot;41&quot;) %&gt;% filter(date == max(date))
 Plot1 &lt;- R2.NYT %&gt;% ggplot(., aes(x=Counter, y=cases, color=state)) + 
   geom_line(alpha=0.3) + 
-#  guides(color=FALSE) + 
+  guides(color=FALSE) + 
   scale_y_log10() + 
   geom_line(data=OR.R2, color=&quot;white&quot;) + 
   geom_text(data=OR.R2A, aes(x=Counter, y=deaths, label=state), color=&quot;white&quot;, inherit.aes = FALSE) + 

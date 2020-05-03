@@ -1,7 +1,7 @@
 ---
 title: New York Times Data on COVID
 author: Robert W. Walker
-date: '2020-04-24'
+date: '2020-05-03'
 slug: new-york-times-data-on-covid
 categories:
   - R
@@ -36,24 +36,22 @@ Rect.NYT <- Rect.NYT %>% group_by(state) %>% mutate(New.Cases = cases - lag(case
 NYT.Totals <- Rect.NYT %>% group_by(date) %>% summarise(Deaths = sum(deaths, na.rm=TRUE), New.Deaths = sum(New.Deaths, na.rm = TRUE), Cases = sum(cases, na.rm=TRUE), New.Cases = sum(New.Cases, na.rm = TRUE)) %>% ungroup()
 library(patchwork)
 plot1 <- NYT.Totals %>% ggplot(., aes(x=date, y=Deaths)) + geom_line() + labs(title="Deaths") + dark_mode()
-plot2 <- NYT.Totals %>% ggplot(., aes(x=date, y=New.Deaths)) + geom_line() + labs(title="New Deaths") + geom_smooth() + dark_mode()
+plot2 <- NYT.Totals %>% ggplot(., aes(x=date, y=New.Deaths)) + geom_line() + labs(title="New Deaths") + geom_smooth(fill="white") + dark_mode()
 plot3 <- NYT.Totals %>% ggplot(., aes(x=date, y=Cases)) + geom_line() + labs(title="Cases") + dark_mode()
-plot4 <- NYT.Totals %>% ggplot(., aes(x=date, y=New.Cases)) + geom_line() + labs(title="New Cases") + geom_smooth() + dark_mode()
+plot4 <- NYT.Totals %>% ggplot(., aes(x=date, y=New.Cases)) + geom_line() + labs(title="New Cases") + geom_smooth(fill="white") + dark_mode()
 (plot1 + plot2) / (plot3 + plot4)
 ```
 
 ```{r}
 plot1 <- NYT.Totals %>% ggplot(., aes(x=date, y=Deaths)) + geom_line() + labs(title="Deaths") + scale_y_log10() + dark_mode()
-plot2 <- NYT.Totals %>% ggplot(., aes(x=date, y=New.Deaths)) + geom_line() + labs(title="New Deaths") + geom_smooth() + dark_mode()
+plot2 <- NYT.Totals %>% ggplot(., aes(x=date, y=New.Deaths)) + geom_line() + labs(title="New Deaths") + geom_smooth(fill="white") + dark_mode()
 plot3 <- NYT.Totals %>% ggplot(., aes(x=date, y=Cases)) + geom_line() + labs(title="Cases") + scale_y_log10() + dark_mode()
-plot4 <- NYT.Totals %>% ggplot(., aes(x=date, y=New.Cases)) + geom_line() + labs(title="New Cases") + geom_smooth() + dark_mode()
+plot4 <- NYT.Totals %>% ggplot(., aes(x=date, y=New.Cases)) + geom_line() + labs(title="New Cases") + geom_smooth(fill="white") + dark_mode()
 (plot1 + plot2) / (plot3 + plot4)
 ```
 
 
 # The `@jburnmurdoch` graphics for US States
-
-First.
 
 ## Deaths
 
@@ -110,7 +108,7 @@ OR.R2 <- R2.NYT %>% filter(fips=="41")
 OR.R2A <- R2.NYT %>% filter(fips=="41") %>% filter(date == max(date))
 Plot1 <- R2.NYT %>% ggplot(., aes(x=Counter, y=cases, color=state)) + 
   geom_line(alpha=0.3) + 
-#  guides(color=FALSE) + 
+  guides(color=FALSE) + 
   scale_y_log10() + 
   geom_line(data=OR.R2, color="white") + 
   geom_text(data=OR.R2A, aes(x=Counter, y=deaths, label=state), color="white", inherit.aes = FALSE) + 

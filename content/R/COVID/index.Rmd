@@ -13,7 +13,7 @@ library(tidyverse)
 
 I wanted to create a self-updating visualization of [the data on COVID-19 in the state of Oregon provided by OHA](https://govstatus.egov.com/OR-OHA-COVID-19).  There is a [separate page of daily maps](https://rww.science/r/covid-maps/).  Oregon reports a set of daily snapshots while progression requires ingesting new data each day so  I began tracking it March 20; the process of scraping it is detailed in [a separate file](https://rww.science/r/covid-scraping/).  This updates, expands, and consolidates two previous posts [here](https://rww.science/2020/03/21/covid-19-in-oregon/) and [here](https://rww.science/2020/03/24/covid-19-county-maps-for-oregon/).  A few cautionary notes.  First, these are cumulative case counts that are almost certainly incomplete.  Second, there is reason to believe that the death numbers may also be incomplete because it is dangerous to police and first responders are spread thinly.
 
-This post is current as of May 2, 2020; this first bit of R code loads the current data from my github.
+This post is current as of May 3, 2020; this first bit of R code loads the current data from my github.
 
 ```{r, eval=FALSE}
 library(tigris)
@@ -145,7 +145,7 @@ Test2
 Cumulative results are perhaps more informative when viewed alongside the marginal changes from day to day.  Here, I show the proportion of test outcomes just considering those test results reported for that day -- the daily distribution of test outcomes.
 
 ```{r, warning=FALSE, message=FALSE}
-library(hrbrthemes); library(ggrepel)
+library(hrbrthemes); library(ggrepel); library(plotly)
 MyDat <- Oregon.Tests %>%
   pivot_wider(., names_from = Category, values_from = Outcome) %>% 
   mutate(Positive.Chg = Positive - lag(Positive, order_by = date), 
@@ -162,7 +162,8 @@ BaseP <- MyDat2 %>%
   geom_point() +
   guides(fill=FALSE, color=FALSE) +
   labs(title="Daily Distribution of Test Outcomes", subtitle="Percent of Positive Tests Shown") + theme_ft_rc()
-ggplotly(BaseP)
+RGP1 <- ggplotly(BaseP)
+frameWidget(RGP1)
 ```
 
 ## Per-capita Testing by County
