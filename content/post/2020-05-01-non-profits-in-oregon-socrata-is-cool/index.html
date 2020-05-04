@@ -30,7 +30,7 @@ projects: []
 <pre class="r"><code>library(RSocrata)
 Oregon.Nonprofits &lt;- read.socrata(&quot;https://data.oregon.gov/resource/8kyv-b2kw.csv&quot;)
 glimpse(Oregon.Nonprofits)</code></pre>
-<pre><code>## Rows: 164,515
+<pre><code>## Rows: 165,561
 ## Columns: 18
 ## $ registry_number             &lt;int&gt; 299818, 299818, 299818, 299818, 299818, 5…
 ## $ business_name               &lt;chr&gt; &quot;UNITED METHODIST CHURCH, OREGON CITY, OR…
@@ -58,8 +58,9 @@ or_zips %&gt;% ggplot(., aes(geometry=geometry, group=ZCTA5CE10)) + geom_sf()</c
 </div>
 <div id="join-a-summary-table-by-zip-code." class="section level2">
 <h2>Join a summary table by zip code.</h2>
+<p>I am not exactly sure why this happens. For whatever reason, the map always has missing chunks</p>
 <pre class="r"><code>ON &lt;- Oregon.Nonprofits %&gt;% group_by(zip_code) %&gt;% summarise(Nonprofits = n_distinct(registry_number)) %&gt;% ungroup()
-Map.Me &lt;- full_join(or_zips, ON, by=c(&quot;ZCTA5CE10&quot; = &quot;zip_code&quot;))
+Map.Me &lt;- left_join(or_zips, ON, by=c(&quot;ZCTA5CE10&quot; = &quot;zip_code&quot;))
 Map.Me %&gt;% ggplot(., aes(geometry=geometry, fill=Nonprofits)) + geom_sf() + scale_fill_viridis_c()</code></pre>
 <p><img src="/post/2020-05-01-non-profits-in-oregon-socrata-is-cool/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 </div>

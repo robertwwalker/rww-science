@@ -243,11 +243,17 @@ RSMP %>%  ggplot(., aes(x=Pi.Admit)) + geom_density(outline.type = "upper", colo
 
 That last procedure is correct but it is overkill.
 
-With probability of 0.05, how small could $\pi$ be to have gotten `r table(UCBTab$Admit)[[1]]` of `r sum(table(UCBTab$Admit))` or more?  With probability 0.95, how big could $\pi$ be to have gotten  fewer than `r table(UCBTab$Admit)[[1]]` of `r sum(table(UCBTab$Admit))`?
+1. With probability of 0.05, how small could $\pi$ be to have gotten `r table(UCBTab$Admit)[[1]]` of `r sum(table(UCBTab$Admit))` or more?  
+
+2. With probability 0.95, how big could $\pi$ be to have gotten  fewer than `r table(UCBTab$Admit)[[1]]` of `r sum(table(UCBTab$Admit))`?
 
 ```{r}
 table(UCBTab$Admit)
 ```
+
+--
+
+**`binom.test` does exactly this.**
 
 ---
 class: inverse
@@ -285,7 +291,7 @@ As long as $n*\pi$ > 10, we can write that a standard normal $z$ describes the d
 
 $$ Pr(\pi) = \hat{p} \pm z \cdot \left( \sqrt{\frac{\hat{p}*(1-\hat{p})}{n}} \right) $$
 
-$R$ implements this in `prop.test`.  By default, R implements a modified version that corrects for discreteness/continuity.  To get the above formula, `prop.test(table, correct=FALSE)`.
+$R$ implements this in `prop.test`.  By default, R implements a modified version that corrects for discreteness/continuity.  To get the above formula exactly, `prop.test(table, correct=FALSE)`.
 
 ---
 class: inverse
@@ -293,10 +299,14 @@ class: inverse
 # The normal approximation
 
 ```{r}
-prop.test(table(UCBTab$Admit), conf.level = 0.9)
+# prop.test(table(UCBTab$Admit), conf.level = 0.9)
+# (0.3877596 - 0.5)/(sqrt(0.5^2 / 4526))
+prop.test(table(UCBTab$Admit), conf.level = 0.9, correct=FALSE)
 ```
 
-$R$ reports the result as $z^2$ not $z$ which is $\chi^2$ not normal.  This approximation yields an estimate of $\pi$, with 90% confidence, that ranges between `r prop.test(table(UCBTab$Admit), conf.level = 0.9)$conf.int[[1]]` and `r prop.test(table(UCBTab$Admit), conf.level = 0.9)$conf.int[[2]]`.
+$R$ reports the result as $z^2$ not $z$ which is $\chi^2$ not normal; we can obtain the $z$ by taking a square root.
+
+This approximation yields an estimate of $\pi$, with 90% confidence, that ranges between `r prop.test(table(UCBTab$Admit), conf.level = 0.9)$conf.int[[1]]` and `r prop.test(table(UCBTab$Admit), conf.level = 0.9)$conf.int[[2]]`.
 
 ---
 # A Cool Consequence of Normal

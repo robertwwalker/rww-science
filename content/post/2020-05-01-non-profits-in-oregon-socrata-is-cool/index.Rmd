@@ -50,9 +50,11 @@ or_zips %>% ggplot(., aes(geometry=geometry, group=ZCTA5CE10)) + geom_sf()
 
 ## Join a summary table by zip code.
 
+I am not exactly sure why this happens.  For whatever reason, the map always has missing chunks
+
 ```{r}
 ON <- Oregon.Nonprofits %>% group_by(zip_code) %>% summarise(Nonprofits = n_distinct(registry_number)) %>% ungroup()
-Map.Me <- full_join(or_zips, ON, by=c("ZCTA5CE10" = "zip_code"))
+Map.Me <- left_join(or_zips, ON, by=c("ZCTA5CE10" = "zip_code"))
 Map.Me %>% ggplot(., aes(geometry=geometry, fill=Nonprofits)) + geom_sf() + scale_fill_viridis_c()
 ```
 
