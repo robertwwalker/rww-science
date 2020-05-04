@@ -25,6 +25,9 @@ OHA.Corona <- function(website, date) {
     mutate(Outcome = parse_number(Outcome), 
            date=as.Date(date), 
            Scraped.date = as.Date(Scraped.date,"%m.%d.%y")) # Create a few variables including the date for checking
+  COVID.Head$Category[COVID.Head$Category=="Total tested"] <- "Total persons tested"
+  COVID.Head$Category[COVID.Head$Category=="Positive tests"] <- "Positive"
+  COVID.Head$Category[COVID.Head$Category=="Negative tests"] <- "Negative"
   # Extract the county data
   COVID.County <- webpage %>%
     html_nodes("table") %>% # 2
