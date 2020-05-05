@@ -5,7 +5,7 @@
     <link>/tags/plot/</link>
       <atom:link href="/tags/plot/index.xml" rel="self" type="application/rss+xml" />
     <description>plot</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© 2018</copyright><lastBuildDate>Sun, 03 May 2020 00:00:00 +0000</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© 2018</copyright><lastBuildDate>Mon, 04 May 2020 00:00:00 +0000</lastBuildDate>
     <image>
       <url>/img/portrait.jpg</url>
       <title>plot</title>
@@ -14,9 +14,9 @@
     
     <item>
       <title>New York Times Data on COVID</title>
-      <link>/2020/05/03/new-york-times-data-on-covid/</link>
-      <pubDate>Sun, 03 May 2020 00:00:00 +0000</pubDate>
-      <guid>/2020/05/03/new-york-times-data-on-covid/</guid>
+      <link>/2020/05/04/new-york-times-data-on-covid/</link>
+      <pubDate>Mon, 04 May 2020 00:00:00 +0000</pubDate>
+      <guid>/2020/05/04/new-york-times-data-on-covid/</guid>
       <description>
 &lt;script src=&#34;/rmarkdown-libs/header-attrs/header-attrs.js&#34;&gt;&lt;/script&gt;
 &lt;script src=&#34;/rmarkdown-libs/htmlwidgets/htmlwidgets.js&#34;&gt;&lt;/script&gt;
@@ -26,12 +26,13 @@
 
 &lt;div id=&#34;new-york-times-data-for-the-us&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;New York Times data for the US&lt;/h1&gt;
-&lt;p&gt;The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-05-04 15:44:02.&lt;/p&gt;
+&lt;p&gt;The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-05-05 13:34:34.&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;the-basic-state-of-things&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;The Basic State of Things&lt;/h1&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;options(scipen=9)
 library(tidyverse); library(hrbrthemes); library(patchwork); library(plotly); library(ggdark); library(ggrepel)
+CTP &amp;lt;- read.csv(&amp;quot;https://covidtracking.com/api/v1/states/daily.csv&amp;quot;)
 state.data &amp;lt;- read_csv(url(&amp;quot;https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv&amp;quot;))
 Rect.NYT &amp;lt;- complete(state.data, state,date)
 Rect.NYT &amp;lt;- Rect.NYT %&amp;gt;% group_by(state) %&amp;gt;% mutate(New.Cases = cases - lag(cases, order_by = date), New.Deaths = deaths - lag(deaths, order_by = date)) %&amp;gt;% ungroup()

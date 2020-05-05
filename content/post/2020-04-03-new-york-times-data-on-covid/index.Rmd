@@ -1,7 +1,7 @@
 ---
 title: New York Times Data on COVID
 author: Robert W. Walker
-date: '2020-05-03'
+date: '2020-05-04'
 slug: new-york-times-data-on-covid
 categories:
   - R
@@ -11,7 +11,7 @@ tags:
 subtitle: ''
 summary: ''
 authors: []
-lastmod: '2020-04-23T20:04:06-07:00'
+lastmod: '2020-05-04T20:04:06-07:00'
 featured: no
 image:
   caption: ''
@@ -30,6 +30,7 @@ The New York Times has a wonderful compilation of United States on the novel cor
 ```{r, message=FALSE, warning=FALSE}
 options(scipen=9)
 library(tidyverse); library(hrbrthemes); library(patchwork); library(plotly); library(ggdark); library(ggrepel)
+CTP <- read.csv("https://covidtracking.com/api/v1/states/daily.csv")
 state.data <- read_csv(url("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv"))
 Rect.NYT <- complete(state.data, state,date)
 Rect.NYT <- Rect.NYT %>% group_by(state) %>% mutate(New.Cases = cases - lag(cases, order_by = date), New.Deaths = deaths - lag(deaths, order_by = date)) %>% ungroup()

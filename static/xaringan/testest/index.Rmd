@@ -295,6 +295,63 @@ $R$ implements this in `prop.test`.  By default, R implements a modified version
 
 ---
 class: inverse
+### A first look at hypotheses
+
+$$ z = \frac{\hat{p} - \pi}{\sqrt{\frac{\pi(1-\pi)}{n}}} $$
+
+With some proportion calculated from data $\hat{p}$ and some claim about $\pi$ -- hereafter called an hypothesis -- we can use $z$ to calculate/evaluate the claim.  
+
+These claims are *hypothetical* values of $\pi$.  They can be evaluated against a specific alternative considered in three ways:  
+- two-sided, that is $\pi = value$ against not equal.  
+- $\pi \geq value$ against something smaller.  
+- $\pi \leq value$ against something greater.  
+
+In the first case, either much bigger or much smaller values could be evidence against equal.  The second and third cases are always about smaller and bigger; they are one-sided.
+
+Just as $z$ has metric standard deviations now referred to as standard errors of the proportion, the z here will measure where the data fall with respect to the hypothetical $\pi$.  
+
+*With z sufficiently large, and in the proper direction, our hypothetical $\pi$ becomes unlikely given the evidence and should be dismissed.*
+
+---
+class: inverse
+## Three hypothesis tests
+
+```{r}
+( Z.ALL <- (0.3877596 - 0.5)/(sqrt(0.5^2 / 4526)) ) # Calculate z 
+```
+
+*The estimate is 15.1 standard errors below the hypothesized value.*
+
+.pull-left[
+
+## Two Sided
+
+$\pi = 0.5$ against $\pi \neq 0.5$.
+```{r}
+pnorm(-abs(Z.ALL)) + (1-pnorm(abs(Z.ALL))) 
+```
+
+Any $|z| > 1.64$ -- probability 0.05 above and below -- is sufficient to dispense with the hypothesis.
+
+]
+
+.pull-right[
+
+## One-Sided
+
+$\pi \leq 0.5$ against $\pi \gt 0.5$.
+
+With 90% confidence, $z > 1.28$ is sufficient.
+
+$\pi \geq 0.5$ against $\pi \lt 0.5$.
+
+With 90% confidence, $z < -1.28$ is sufficient.
+
+]
+
+
+---
+class: inverse
 
 # The normal approximation
 
@@ -308,21 +365,27 @@ $R$ reports the result as $z^2$ not $z$ which is $\chi^2$ not normal; we can obt
 
 This approximation yields an estimate of $\pi$, with 90% confidence, that ranges between `r prop.test(table(UCBTab$Admit), conf.level = 0.9)$conf.int[[1]]` and `r prop.test(table(UCBTab$Admit), conf.level = 0.9)$conf.int[[2]]`.
 
+
+
 ---
 # A Cool Consequence of Normal
 
 The formal equation defines:
 
 $$ z = \frac{\hat{p} - \pi}{\sqrt{\frac{\pi(1-\pi)}{n}}} $$
+--
 
 Some language:
 1. Margin of error is $\hat{p} - \pi$.  [MOE]
 2. Confidence: the probability coverage given z [two-sided].
 3. We need a guess at the true $\pi$ because variance/std. dev. depend on $\pi$.  0.5 is common because it maximizes the variance; we will have enough no matter what the true value.
 
+--
+
 Algebra allows us to solve for $n$.
 
 $$ n = \frac{z^2 \cdot \pi(1-\pi)}{(\hat{p} - \pi)^2} $$
+
 
 ---
 class:inverse

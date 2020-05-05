@@ -1,7 +1,7 @@
 ---
 title: New York Times Data on COVID
 author: Robert W. Walker
-date: '2020-05-03'
+date: '2020-05-04'
 slug: new-york-times-data-on-covid
 categories:
   - R
@@ -11,7 +11,7 @@ tags:
 subtitle: ''
 summary: ''
 authors: []
-lastmod: '2020-04-23T20:04:06-07:00'
+lastmod: '2020-05-04T20:04:06-07:00'
 featured: no
 image:
   caption: ''
@@ -28,12 +28,13 @@ projects: []
 
 <div id="new-york-times-data-for-the-us" class="section level1">
 <h1>New York Times data for the US</h1>
-<p>The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-05-04 15:44:02.</p>
+<p>The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-05-05 13:34:34.</p>
 </div>
 <div id="the-basic-state-of-things" class="section level1">
 <h1>The Basic State of Things</h1>
 <pre class="r"><code>options(scipen=9)
 library(tidyverse); library(hrbrthemes); library(patchwork); library(plotly); library(ggdark); library(ggrepel)
+CTP &lt;- read.csv(&quot;https://covidtracking.com/api/v1/states/daily.csv&quot;)
 state.data &lt;- read_csv(url(&quot;https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv&quot;))
 Rect.NYT &lt;- complete(state.data, state,date)
 Rect.NYT &lt;- Rect.NYT %&gt;% group_by(state) %&gt;% mutate(New.Cases = cases - lag(cases, order_by = date), New.Deaths = deaths - lag(deaths, order_by = date)) %&gt;% ungroup()
