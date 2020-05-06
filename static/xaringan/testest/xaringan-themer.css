@@ -15,7 +15,7 @@
  *    - xaringan wiki: https://github.com/yihui/xaringan/wiki
  *    - remarkjs wiki: https://github.com/gnab/remark/wiki
  *
- *  Version: 0.2.0.9100
+ *  Version: 0.3.0
  *
  * ------------------------------------------------------- */
 @import url(https://fonts.googleapis.com/css?family=EB+Garamond&display=swap);
@@ -66,7 +66,7 @@ html {
 
 body {
   font-family: var(--text-font-family), var(--text-font-family-fallback), var(--text-font-base);
-  font-weight: ;
+  font-weight: normal;
   color: var(--text-color);
 }
 h1, h2, h3 {

@@ -422,13 +422,22 @@ Sample.Size(MOE=0.031, B.pi=0.5, Conf.lev = 0.95)
 ```
 
 ---
-# Back to the Story
+# One More Oddity
 
 What is our estimate of $\pi$ with 90% confidence?  
 
 **The probability of admission ranges from `r quantile(RSMP$Pi.Admit, probs = c(0.05,0.95))[[1]]` to `r quantile(RSMP$Pi.Admit, probs = c(0.05,0.95))[[2]]`.**
 
-Does this depend on whether the applicant is Male or Female?
+If we wish to express this using the normal approximation, a central interval is the observed proportion plus/minus $z$ times the *standard error of the proportion* -- $$ SE(\hat{p}) = \sqrt{\frac{\hat{p}(1-\hat{p})}{n}} $$  NB: The sample value replaces our assumed true value because $\pi$ is to be solved for.  For 90%, the probability of admissions ranges from
+
+```{r}
+0.3877596 + qnorm(c(0.05,0.95))*(sqrt(0.3877596*(1-0.3877596)/4526))
+```
+
+---
+# Back to the Story
+
+**Does the probability of admission depend on whether the applicant is Male or Female?**
 
 ---
 # Analysis by Group
@@ -540,8 +549,10 @@ class: inverse
 
 ## Or Use the Normal Approximation
 
+$$ ( \hat{p}_{M} - \hat{p}_{F} ) \pm z*\sqrt{\frac{\hat{p}_{M}(1-\hat{p}_{M})}{n_M} + \frac{\hat{p}_{F}(1-\hat{p}_{F})}{n_F}} $$
+
 ```{r}
-prop.test(table(UCBTab$Gender,UCBTab$Admit), conf.level=0.9)
+prop.test(table(UCBTab$Gender,UCBTab$Admit), conf.level=0.9, correct=FALSE)
 ```
 
 With 90% confidence, a Female is 0.1175 to 0.1658 less likely to be admitted.
