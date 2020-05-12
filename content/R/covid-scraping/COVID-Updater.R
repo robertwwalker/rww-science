@@ -37,9 +37,9 @@ OHA.Corona <- function(website, date) {
 #    mutate(Negative = as.integer(str_replace(Negative, "Pending*", "NA"))) %>%
     mutate(date=as.Date(date), # 5
            Scraped.date = as.Date(Scraped.date,"%m.%d.%y"), 
-           Negative.test.results = Negative,
-           Deaths = Deaths.,
-           Number.of.cases = Positive.)
+           Negative.test.results = Negative3,
+           Deaths = Deaths2,
+           Number.of.cases = Positive1)
   # Extract the age data
   COVID.Age <- webpage %>%
     html_nodes("table") %>% #2
@@ -49,10 +49,10 @@ OHA.Corona <- function(website, date) {
     mutate(Cases = dash.rm.to.numeric(Cases)) %>%
     mutate(date=as.Date(date), 
            Scraped.date = as.Date(Scraped.date,"%m.%d.%y"), 
-           Hospitalized = dash.rm.to.numeric(Ever.hospitalized.), 
-           Deaths = dash.rm.to.numeric(Deaths.),
+           Hospitalized = dash.rm.to.numeric(Ever.hospitalized4), 
+           Deaths = dash.rm.to.numeric(Deaths2),
            Number.of.cases = Cases) %>% 
-    select(-c(Ever.hospitalized.,Deaths.)) # 5
+    select(-c(Ever.hospitalized4,Deaths2)) # 5
   # Extract the age data
   COVID.Gender <- webpage %>%
     html_nodes("table") %>% #2
@@ -61,15 +61,16 @@ OHA.Corona <- function(website, date) {
     data.frame()  %>%   # 4
     mutate(date=as.Date(date), 
            Scraped.date = as.Date(Scraped.date,"%m.%d.%y"), 
-           Deaths = dash.rm.to.numeric(Deaths.)) %>% 
-    select(-Deaths.) # 5
+           Deaths = dash.rm.to.numeric(Deaths2)) %>% 
+    select(-Deaths2) # 5
   # Extract the hospitalization data
   COVID.Hospitalized <- webpage %>%
     html_nodes("table") %>% # 2
     .[5] %>%
     html_table(fill = TRUE) %>% # 3
     data.frame()  %>%  # 4
-    mutate(date=as.Date(date), 
+    mutate(Hospitalized = Hospitalized4,
+           date=as.Date(date), 
            Scraped.date = as.Date(Scraped.date,"%m.%d.%y"),
            Number.of.cases = Cases) # 5
   # Extract the hospital capacity data
@@ -83,14 +84,14 @@ OHA.Corona <- function(website, date) {
            Available = comma.rm.to.numeric(na_if(Available, "pending")),
            Total = comma.rm.to.numeric(na_if(Total, "pending"))) %>% 
            pivot_longer(c(Available, Total), names_to = "Type", values_to = "Number") %>% 
-    mutate(Hospital.Capacity = Hospital.capacity.and.usage.) %>% select(-Hospital.capacity.and.usage.) # 5
+    mutate(Hospital.Capacity = Hospital.capacity.and.usage5) %>% select(-Hospital.capacity.and.usage5) # 5
   # Extract the COVID data
   COVID.Strain <- webpage %>%
     html_nodes("table") %>% # 2
     .[7] %>%
     html_table(fill = TRUE) %>% # 3
     data.frame() %>% filter(row_number() < 4) %>% 
-    mutate(COVID.19.Details = COVID.19.details.,
+    mutate(COVID.19.Details = COVID.19.details5,
            date=as.Date(date),  
            Scraped.date = as.Date(Scraped.date,"%m.%d.%y"),
            COVID19.Patients = Patients.with.suspected.or.confirmed.COVID.19, 

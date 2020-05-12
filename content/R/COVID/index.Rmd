@@ -67,6 +67,9 @@ The central takeaway is that the underlying data reports are constantly changing
 
 *2020-05-05* Non-binary added as new classification.
 
+*2020-05-11* Numbered footnotes change most of the variable names, code updated.
+
+
 # A base map
 
 To build a map to work from, I need a map library.  Load the `tigris` library then grab the map as an `sf` object; there is a `geom_sf` that makes them easy to work with.  Finally, I join the map to the data and build a tool tip to display.
