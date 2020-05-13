@@ -549,10 +549,23 @@ class: inverse
 
 ## Or Use the Normal Approximation
 
-$$ ( \hat{p}_{M} - \hat{p}_{F} ) \pm z*\sqrt{\frac{\hat{p}_{M}(1-\hat{p}_{M})}{n_M} + \frac{\hat{p}_{F}(1-\hat{p}_{F})}{n_F}} $$
+$$ [\hat{p}_{M} - \hat{p}_{F}] \pm z*\sqrt{ \frac{\hat{p}_{M}(1-\hat{p}_{M})}{n_{M} } + \frac{\hat{p}_{F}(1-\hat{p}_{F})}{n_{F}} } $$
 
 ```{r}
 prop.test(table(UCBTab$Gender,UCBTab$Admit), conf.level=0.9, correct=FALSE)
 ```
 
-With 90% confidence, a Female is 0.1175 to 0.1658 less likely to be admitted.
+With 90% confidence, a Female is 0.118 to 0.165 [0.1416] less likely to be admitted.
+
+---
+class: inverse
+
+### The Standard Error of the Difference
+
+Following something akin to the FOIL method, we can show that the variance of a difference in two random variables is the sum of the variances minus twice the covariance between them.
+
+$$ Var(X - Y) = Var(X) + Var(Y) - 2*Cov(X,Y) $$
+
+If we assume [or recognize it is generally unknownable] that the male and female samples are independent, the covariance is zero, and the variance of the difference is simply the sum of the variance for male and female, respectively.
+
+$$SE(\hat{p}_{M} - \hat{p}_{F}) =  \sqrt{\frac{\hat{p}_{M}(1-\hat{p}_{M})}{n_{M}} + \frac{\hat{p}_{F}(1-\hat{p}_{F})}{n_{F}}} $$
