@@ -37,9 +37,9 @@ OHA.Corona <- function(website, date) {
 #    mutate(Negative = as.integer(str_replace(Negative, "Pending*", "NA"))) %>%
     mutate(date=as.Date(date), # 5
            Scraped.date = as.Date(Scraped.date,"%m.%d.%y"), 
-           Negative.test.results = Negative3,
+           Negative.test.results = Negatives3,
            Deaths = Deaths2,
-           Number.of.cases = Positive1)
+           Number.of.cases = Cases1)
   # Extract the age data
   COVID.Age <- webpage %>%
     html_nodes("table") %>% #2
