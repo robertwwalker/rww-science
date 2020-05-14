@@ -101,7 +101,7 @@ Of two forms:
 
 --
 
-We will focus on the former.
+We will first focus on the former.
 
 ---
 ## Qualitative: The Binomial
@@ -505,7 +505,7 @@ class: inverse
 
 ```{r, warning=FALSE}
 UCB.Pi <- bind_rows(UCBTF.Pi, UCBTM.Pi)
-UCB.Pi %>% ggplot(., aes(x=Gender, y=Pi.Admit, fill=Gender)) + geom_violin() + geom_label(aes(x=1.5, y=0.375), label="Too small to be male \n Too large to be female?", size=14, fill="black", color="white", inherit.aes = FALSE) + guides(size=FALSE) + scale_xaringan_fill_discrete() + theme_xaringan()
+UCB.Pi %>% ggplot(., aes(x=Gender, y=Pi.Admit, fill=Gender)) + geom_violin() + geom_label(aes(x=1.5, y=0.375), label="Too small to be male \n Too large to be female?", size=14, fill="black", color="white", inherit.aes = FALSE) + guides(size=FALSE) + scale_xaringan_fill_discrete() + theme_xaringan_inverse()
 ```
 
 ---
@@ -513,8 +513,8 @@ class: inverse
 
 ```{r GGAnim, eval=FALSE, warning=FALSE, message=FALSE, results='hide', gganimate = list(fig.height="600px", fig.width="800px")}
 UCB.Pi <- bind_rows(UCBTF.Pi, UCBTM.Pi, RSMP)
-UCB.Pi %>% ggplot(., aes(x=Pi.Admit, fill=Gender)) + geom_density(alpha=0.8) + theme_minimal() + scale_fill_viridis_d() + transition_states(frameN, state_length = 40, transition_length = 20) + enter_fade() + exit_fade() -> SaveAnim
-animate(SaveAnim, device = "svg")
+UCB.Pi %>% ggplot(., aes(x=Pi.Admit, fill=Gender)) + geom_density(alpha=0.8) + theme_xaringan_inverse() + transition_states(frameN, state_length = 40, transition_length = 20) + enter_fade() + exit_fade() -> SaveAnim
+animate(SaveAnim)
 anim_save(filename="./Anim1.gif")
 ```
 
@@ -549,7 +549,7 @@ class: inverse
 
 ## Or Use the Normal Approximation
 
-$$ [\hat{p}_{M} - \hat{p}_{F}] \pm z*\sqrt{ \frac{\hat{p}_{M}(1-\hat{p}_{M})}{n_{M} } + \frac{\hat{p}_{F}(1-\hat{p}_{F})}{n_{F}} } $$
+$$[\hat{p}_{M} - \hat{p}_{F}] \pm z*\sqrt{ \underbrace{\frac{\hat{p}_{M}(1-\hat{p}_{M})}{n_{M}}}_{Males} + \underbrace{\frac{\hat{p}_{F}(1-\hat{p}_{F})}{n_{F}}}_{Females}}$$
 
 ```{r}
 prop.test(table(UCBTab$Gender,UCBTab$Admit), conf.level=0.9, correct=FALSE)
@@ -564,8 +564,88 @@ class: inverse
 
 Following something akin to the FOIL method, we can show that the variance of a difference in two random variables is the sum of the variances minus twice the covariance between them.
 
-$$ Var(X - Y) = Var(X) + Var(Y) - 2*Cov(X,Y) $$
+$$Var(X - Y) = Var(X) + Var(Y) - 2*Cov(X,Y) $$
 
-If we assume [or recognize it is generally unknownable] that the male and female samples are independent, the covariance is zero, and the variance of the difference is simply the sum of the variance for male and female, respectively.
+If we assume [or recognize it is generally unknownable] that the male and female samples are independent, the covariance is zero, and the variance of the difference is simply the sum of the variance for male and female, respectively, and **zero covariance**.
 
-$$SE(\hat{p}_{M} - \hat{p}_{F}) =  \sqrt{\frac{\hat{p}_{M}(1-\hat{p}_{M})}{n_{M}} + \frac{\hat{p}_{F}(1-\hat{p}_{F})}{n_{F}}} $$
+$$SE(\hat{p}_{M} - \hat{p}_{F}) =  \sqrt{ \underbrace{\frac{\hat{p}_{M}(1-\hat{p}_{M})}{n_{M}}}_{Males} + \underbrace{\frac{\hat{p}_{F}(1-\hat{p}_{F})}{n_{F}}}_{Females}}$$  
+
+---
+# Inference for Data
+
+Of two forms:
+
+1. Binary/Qualitative
+2. **Quantitative**
+
+--
+
+We will now turn to the latter.
+
+---
+## Inference for Quantitative Data
+
+**What is the average level of expenditure by Ethnicity?**
+
+Why do we focus on the average?  Under general conditions, the average has a known probability distribution even if the distribution of the underlying data is unknown.  This is a result of the central limit theorem and a generic property of averaging.
+
+---
+## Expenditures
+
+First, a look at the data on expenditures.
+
+```{r}
+load(url("https://github.com/robertwwalker/DADMStuff/raw/master/DiscriminationCADSS.RData"))
+## Cutting Discrimination$Age into Discrimination$Age.Cohort
+Discrimination$Age.Cohort <- cut(Discrimination$Age, include.lowest=FALSE,  right=TRUE,
+                                 breaks=c(0, 5, 12, 17, 21, 50, 95))
+WH <- Discrimination %>% filter(Ethnicity %in% c("White not Hispanic","Hispanic"))
+summary(WH$Expenditures)
+```
+
+
+---
+class: inverse
+
+```{r}
+ggplot(WH, aes(x=Expenditures)) + geom_density() + theme_xaringan()
+```
+
+---
+class: inverse
+## Method 1: Resampling
+
+**Suppose I have 777 chips that each contain an expenditure**  
+--
+
+I toss them all on the floor
+--
+
+and pick them up, one at a time, 
+--
+
+record the value, 
+--
+
+put the chip back,  
+*[NB: I put it back to avoid getting exactly the same sample every time.]*
+--
+
+and repeat this to create a sample of n=777.  
+--
+
+Use random sampling to sample the mean/average 10000 times.
+--
+
+**Each average of 777 chips/expenditures constitutes an estimate of the average expenditure.**
+
+```{r}
+WH.Means <- data.frame(Mean.Expenditure=ResampleMean(WH$Expenditures))
+```
+
+---
+class: inverse
+
+```{r}
+ggplot(WH.Means, aes(x=Mean.Expenditure)) + geom_density() + theme_xaringan_inverse()
+```
