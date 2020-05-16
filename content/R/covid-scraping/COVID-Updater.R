@@ -46,13 +46,13 @@ OHA.Corona <- function(website, date) {
     .[3] %>%
     html_table(fill = TRUE) %>% # 3 
     data.frame()  %>%   # 4
-    mutate(Cases = dash.rm.to.numeric(Cases)) %>%
+    mutate(Cases = dash.rm.to.numeric(Cases1)) %>%
     mutate(date=as.Date(date), 
            Scraped.date = as.Date(Scraped.date,"%m.%d.%y"), 
            Hospitalized = dash.rm.to.numeric(Ever.hospitalized4), 
            Deaths = dash.rm.to.numeric(Deaths2),
            Number.of.cases = Cases) %>% 
-    select(-c(Ever.hospitalized4,Deaths2)) # 5
+    select(-c(Ever.hospitalized4,Deaths2,Cases1)) # 5
   # Extract the age data
   COVID.Gender <- webpage %>%
     html_nodes("table") %>% #2
@@ -72,7 +72,7 @@ OHA.Corona <- function(website, date) {
     mutate(Hospitalized = Hospitalized4,
            date=as.Date(date), 
            Scraped.date = as.Date(Scraped.date,"%m.%d.%y"),
-           Number.of.cases = Cases) # 5
+           Number.of.cases = Cases1) # 5
   # Extract the hospital capacity data
   COVID.Hospital.Cap <- webpage %>%
     html_nodes("table") %>% # 2
