@@ -21,19 +21,22 @@ output:
 
 --
 
-.center[![](https://media.giphy.com/media/Jp3tixBJ0YERe4PXig/giphy.gif)]
+.center[![](https://media.giphy.com/media/frBS2qxvbV9SzizdSX/giphy.gif)]
 
 --
 
-It is probably better posed as, what can we learn from data?
+**It is probably better posed as, what can we learn from data?**
 
 ```{r setup, include=FALSE}
 library(gganimate)
-options(htmltools.dir.version = FALSE, servr.daemon = TRUE)
+options(htmltools.dir.version = FALSE)
+options(servr.daemon = TRUE)
 options(gganimate.dev_args = list(width = 800, height = 600))
-knitr::opts_chunk$set(warning=FALSE, message=FALSE, fig.height=6, fig.showtext =
-TRUE, fig.retina=3)
+knitr::opts_chunk$set(warning=FALSE, message=FALSE, fig.showtext = TRUE, fig.retina=3, dev = "svg", fig.height=6)
 library(DT)
+library(here)
+library(svglite)
+library(magrittr)
 ```
 
 ```{r xaringan-themer, include=FALSE}
@@ -74,19 +77,22 @@ pre {
 
 ## **Inference**
 
-In the most basic form, learning something about data that we do not have from data that we do.  In the jargon of statistics, we characterize the probability distribution of some feature of the population of interest from a sample drawn randomly from that population.  
+In the most basic form, learning something about data that we do not have from data that we do.  In the jargon of statistics, we characterize the probability distribution of some feature of the population of interest from a sample drawn randomly from that population. 
+  
+--
+
+**Quantities of Interest:**  
+*The probability of some qualitative outcome with appropriate uncertainty.*   
+*The average of some quantitative outcome with appropriate uncertainty.*    
+
+
+*Compare key probabilities across two groups.*  
+*Compare averages/means across two groups.*  
 
 --
 
-**Describe some key feature with appropriate uncertainty derived from a sample of data.**
-
---
-
-**Plan studies of adequate size to assess key probabilities of interest.**
-
---
-
-**Compare key probabilities across two groups.**
+**Study Planning:**
+*Plan studies of adequate size to assess key probabilities of interest.*   
 
 ---
 # Inference for Data
@@ -166,7 +172,7 @@ Suppose we want to know $\pi(Admit)$ -- the probability of being admitted -- wit
 
 --
 
-## Three interchangeable methods
+### Three interchangeable methods
 
 1. Resampling/Simulation
 
@@ -248,7 +254,7 @@ That last procedure is correct but it is overkill.
 2. With probability 0.95, how big could $\pi$ be to have gotten  fewer than `r table(UCBTab$Admit)[[1]]` of `r sum(table(UCBTab$Admit))`?
 
 ```{r}
-table(UCBTab$Admit)
+UCBTab %$% table(Admit)
 ```
 
 --
@@ -260,7 +266,7 @@ class: inverse
 ## binom.test()
 
 ```{r}
-binom.test(1755, 1755+2771, conf.level=0.9)
+UCBTab %$% table(Admit) %>% binom.test(conf.level = 0.9)
 Plot.Me <- binom.test(1755, 1755+2771, conf.level=0.9)$conf.int %>% data.frame()
 ```
 
@@ -271,7 +277,7 @@ class: inverse
 ## Illustrating the Binomial
 
 ```{r}
-binom.test(1755, 1755+2771, conf.level=0.9)
+UCBTab %$% table(Admit) %>% binom.test(conf.level = 0.9)
 c(pbinom(1755, 1755+2771, 0.3998340), pbinom(1754, 1755+2771, 0.3757924))
 ```
 
@@ -356,15 +362,12 @@ class: inverse
 # The normal approximation
 
 ```{r}
-# prop.test(table(UCBTab$Admit), conf.level = 0.9)
-# (0.3877596 - 0.5)/(sqrt(0.5^2 / 4526))
 prop.test(table(UCBTab$Admit), conf.level = 0.9, correct=FALSE)
 ```
 
-$R$ reports the result as $z^2$ not $z$ which is $\chi^2$ not normal; we can obtain the $z$ by taking a square root.
+$R$ reports the result as $z^2$ not $z$ which is $\chi^2$ not normal; we can obtain the $z$ by taking a square root: $\sqrt{228.08} \approx 15.1 $.
 
-This approximation yields an estimate of $\pi$, with 90% confidence, that ranges between `r prop.test(table(UCBTab$Admit), conf.level = 0.9)$conf.int[[1]]` and `r prop.test(table(UCBTab$Admit), conf.level = 0.9)$conf.int[[2]]`.
-
+This approximation yields an estimate of $\pi$, with 90% confidence, that ranges between `r prop.test(table(UCBTab$Admit), conf.level = 0.9, correct=FALSE)$conf.int[[1]]` and `r prop.test(table(UCBTab$Admit), conf.level = 0.9, correct=FALSE)$conf.int[[2]]`.
 
 
 ---
@@ -409,7 +412,7 @@ class: inverse
 ### In the Real World
 
 
-```{r, echo=FALSE, out.height = "300px", out.width="1000px"}
+```{r, echo=FALSE, out.width="800px"}
 y1 <- "https://i.imgur.com/Fp2nuNN.png"
 download.file(y1, './y1.png')
 knitr::include_graphics("./y1.png")
@@ -455,7 +458,7 @@ class:inverse
 # Binomial Result: Males
 
 ```{r BinomMale}
-binom.test(1198,2691, conf.level = 0.9)
+UCBTM %$% table(Admit) %>% binom.test(., conf.level = 0.9)
 ```
 
 The probability of being admitted, conditional on being Male, ranges from 0.43 to 0.46 with 90% confidence.
@@ -474,7 +477,7 @@ class: inverse
 ## Binomial Result: Females
 
 ```{r BinomF}
-binom.test(557,1835, conf.level = 0.9)
+UCBTF %$% table(Admit) %>% binom.test(., conf.level = 0.9)
 ```
 
 The probability of being of Admitted, given a Female, ranges from 0.286 to 0.322 with 90% confidence.
@@ -503,9 +506,9 @@ class: inverse
 
 # A Key Visual
 
-```{r, warning=FALSE}
+```{r}
 UCB.Pi <- bind_rows(UCBTF.Pi, UCBTM.Pi)
-UCB.Pi %>% ggplot(., aes(x=Gender, y=Pi.Admit, fill=Gender)) + geom_violin() + geom_label(aes(x=1.5, y=0.375), label="Too small to be male \n Too large to be female?", size=14, fill="black", color="white", inherit.aes = FALSE) + guides(size=FALSE) + scale_xaringan_fill_discrete() + theme_xaringan_inverse()
+UCB.Pi %>% ggplot(., aes(x=Gender, y=Pi.Admit, fill=Gender)) + geom_violin() + geom_label(aes(x=1.5, y=0.375), label="Too small to be male \n Too large to be female?", size=14, fill="black", color="white", inherit.aes = FALSE) + guides(size=FALSE) + theme_xaringan_inverse()
 ```
 
 ---
@@ -513,7 +516,7 @@ class: inverse
 
 ```{r GGAnim, eval=FALSE, warning=FALSE, message=FALSE, results='hide', gganimate = list(fig.height="600px", fig.width="800px")}
 UCB.Pi <- bind_rows(UCBTF.Pi, UCBTM.Pi, RSMP)
-UCB.Pi %>% ggplot(., aes(x=Pi.Admit, fill=Gender)) + geom_density(alpha=0.8) + theme_xaringan_inverse() + transition_states(frameN, state_length = 40, transition_length = 20) + enter_fade() + exit_fade() -> SaveAnim
+UCB.Pi %>% ggplot(., aes(x=Pi.Admit, fill=Gender)) + geom_density(alpha=0.5) + theme_xaringan_inverse() + transition_states(frameN, state_length = 40, transition_length = 20) + enter_fade() + exit_fade() -> SaveAnim
 animate(SaveAnim)
 anim_save(filename="./Anim1.gif")
 ```
@@ -552,7 +555,8 @@ class: inverse
 $$[\hat{p}_{M} - \hat{p}_{F}] \pm z*\sqrt{ \underbrace{\frac{\hat{p}_{M}(1-\hat{p}_{M})}{n_{M}}}_{Males} + \underbrace{\frac{\hat{p}_{F}(1-\hat{p}_{F})}{n_{F}}}_{Females}}$$
 
 ```{r}
-prop.test(table(UCBTab$Gender,UCBTab$Admit), conf.level=0.9, correct=FALSE)
+# prop.test(table(UCBTab$Gender,UCBTab$Admit), conf.level=0.9, correct=FALSE)
+UCBTab %$% table(Gender, Admit) %>% prop.test(conf.level = 0.9, correct=FALSE)
 ```
 
 With 90% confidence, a Female is 0.118 to 0.165 [0.1416] less likely to be admitted.
@@ -594,7 +598,7 @@ Why do we focus on the average?  Under general conditions, the average has a kno
 
 First, a look at the data on expenditures.
 
-```{r}
+```{r Expend}
 load(url("https://github.com/robertwwalker/DADMStuff/raw/master/DiscriminationCADSS.RData"))
 ## Cutting Discrimination$Age into Discrimination$Age.Cohort
 Discrimination$Age.Cohort <- cut(Discrimination$Age, include.lowest=FALSE,  right=TRUE,
@@ -608,36 +612,41 @@ summary(WH$Expenditures)
 class: inverse
 
 ```{r}
-ggplot(WH, aes(x=Expenditures)) + geom_density() + theme_xaringan()
+( BasePlot <- ggplot(WH, aes(x=Expenditures)) + geom_density(color="red") + theme_minimal() + labs(y="") )
+```
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+ggsave(BasePlot, filename="BaseDensity.svg", device="svg", path=here("static/xaringan/testest/images"))
 ```
 
 ---
-class: inverse
 ## Method 1: Resampling
 
 **Suppose I have 777 chips that each contain an expenditure**  
 --
 
-I toss them all on the floor
+I toss them all on the floor  
 --
 
-and pick them up, one at a time, 
+and pick them up, one at a time,  
 --
 
-record the value, 
+record the value,  
 --
 
 put the chip back,  
-*[NB: I put it back to avoid getting exactly the same sample every time.]*
+*[NB: I put it back to avoid getting exactly the same sample every time.]*  
+
 --
 
 and repeat this to create a sample of n=777.  
 --
 
-Use random sampling to sample the mean/average 10000 times.
+Use random sampling to sample the mean/average 10000 times.  
+
 --
 
 **Each average of 777 chips/expenditures constitutes an estimate of the average expenditure.**
+
 
 ```{r}
 WH.Means <- data.frame(Mean.Expenditure=ResampleMean(WH$Expenditures))
@@ -646,6 +655,38 @@ WH.Means <- data.frame(Mean.Expenditure=ResampleMean(WH$Expenditures))
 ---
 class: inverse
 
-```{r}
-ggplot(WH.Means, aes(x=Mean.Expenditure)) + geom_density() + theme_xaringan_inverse()
+### A Visual
+
+```{r, fig.width=10}
+(ggplot(WH, aes(x=Expenditures)) + geom_density() +  theme_xaringan_inverse()) / (ggplot(WH.Means, aes(x=Mean.Expenditure)) + geom_density() + theme_xaringan_inverse())
 ```
+
+
+
+---
+
+```{r, echo=FALSE}
+library(cowplot)
+PI <- ggplot(WH.Means, aes(x=Mean.Expenditure)) + geom_density(color="magenta") + theme_nothing() + labs(x="Mean.Expenditures")
+ggdraw(BasePlot) +
+  draw_plot(PI, .18, 0.3, .15, .15)
+```
+
+
+---
+## Average Expenditures: A 90% Interval
+
+What is the middle 90% of the sampled averages?
+
+```{r}
+( ResQ <- quantile(WH.Means$Mean.Expenditure, probs=c(0.05,0.95)) )
+```
+
+---
+## A Decent Visualization
+
+```{r}
+ResQD <- data.frame(ResQ)
+BasePlot + geom_vline(data=ResQD, aes(xintercept=ResQ), color="blue")
+```
+
