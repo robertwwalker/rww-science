@@ -661,18 +661,6 @@ class: inverse
 (ggplot(WH, aes(x=Expenditures)) + geom_density() +  theme_xaringan_inverse()) / (ggplot(WH.Means, aes(x=Mean.Expenditure)) + geom_density() + theme_xaringan_inverse())
 ```
 
-
-
----
-
-```{r, echo=FALSE}
-library(cowplot)
-PI <- ggplot(WH.Means, aes(x=Mean.Expenditure)) + geom_density(color="magenta") + theme_nothing() + labs(x="Mean.Expenditures")
-ggdraw(BasePlot) +
-  draw_plot(PI, .18, 0.3, .15, .15)
-```
-
-
 ---
 ## Average Expenditures: A 90% Interval
 
@@ -680,13 +668,44 @@ What is the middle 90% of the sampled averages?
 
 ```{r}
 ( ResQ <- quantile(WH.Means$Mean.Expenditure, probs=c(0.05,0.95)) )
+ResQD <- data.frame(ResQ=ResQ, Height2=5e-5)
 ```
+
+
+---
+
+```{r, echo=FALSE}
+library(cowplot)
+PI <- ggplot(WH.Means, aes(x=Mean.Expenditure)) + geom_density(color="magenta") + geom_area(data=ResQD, aes(x=ResQ, y=Height2), fill="blue", color="blue", alpha=0.2, outline.type = "full") + theme_nothing() + labs(x="Mean.Expenditures")
+ggdraw(BasePlot) +
+  draw_plot(PI, .24, 0.3, .15, .15)
+```
+
 
 ---
 ## A Decent Visualization
 
+```{r, fig.height=5}
+BasePlot + geom_area(data=ResQD, aes(x=ResQ, y=Height2), fill="blue", color="blue", alpha=0.2, outline.type = "full")
+```
+
+---
+class: inverse
+## A Parametric Alternative
+
+Under general conditions, the sample and population mean can be described by the $t_{df}$ distribution with a single parameter -- degrees of freedom [df] -- and metric standard errors of the mean: $\frac{s}{\sqrt{n}}$ as follows:
+
+$$ t_{df} = \frac{\overline{x} - \mu}{\frac{s}{\sqrt{n}}} $$  
+
+Given any observed sample of data, only two features of the aforementioned equation remain unknown: $\mu$ -- the true mean -- and $t_{df}$.  Solving for $\mu$ yields:
+
+$$ \mu = \overline{x} - t_{df} \cdot \left( \frac{s}{\sqrt{n}} \right) $$
+---
+class: inverse
+## Putting It To Work
+
 ```{r}
-ResQD <- data.frame(ResQ)
-BasePlot + geom_vline(data=ResQD, aes(xintercept=ResQ), color="blue")
+( Summaries <- WH %>% summarise(Exp.Mean = mean(Expenditures), Exp.SD = sd(Expenditures), Count = n()) )
+WH %$% t.test(Expenditures, conf.level = 0.9) #<<
 ```
 
