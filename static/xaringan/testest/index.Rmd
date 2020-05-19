@@ -12,6 +12,7 @@ output:
       highlightStyle: github
       highlightLines: true
       countIncrementalSlides: false
+      ratio: "16:9"
     includes:
       after_body: insert-logo.html
 ---
@@ -25,7 +26,7 @@ output:
 
 --
 
-**It is probably better posed as, what can we learn from data?**
+### It is probably better posed as, what can we learn from data?
 
 ```{r setup, include=FALSE}
 library(gganimate)
@@ -54,7 +55,7 @@ style_mono_dark(
 
 ```{css, echo = FALSE, include=FALSE}
 .remark-slide-content p, il, ol, li {
-  font-size: 36px;
+  font-size: 32px;
   padding: 8px 32px 8px 32px;
 }
 code.r{
@@ -72,7 +73,6 @@ pre {
 ```
 
 ---
-
 # The Big Idea
 
 ## **Inference**
@@ -81,17 +81,45 @@ In the most basic form, learning something about data that we do not have from d
   
 --
 
-**Quantities of Interest:**  
-*The probability of some qualitative outcome with appropriate uncertainty.*   
-*The average of some quantitative outcome with appropriate uncertainty.*    
+### Quantities of Interest:  
+**Single Proportion**  
+*The probability of some qualitative outcome with appropriate uncertainty.<sup>1</sup>*   
+**Single Mean**  
+*The average of some quantitative outcome with appropriate uncertainty.<sup>1</sup>*    
+  
+.footnote[
+<sup>1</sup> Which will itself be a probability measure.
+]
 
 
-*Compare key probabilities across two groups.*  
-*Compare averages/means across two groups.*  
+---
+# The Big Idea
 
---
+## **Inference**
 
-**Study Planning:**
+In the most basic form, learning something about data that we do not have from data that we do.  In the jargon of statistics, we characterize the probability distribution of some feature of the population of interest from a sample drawn randomly from that population.  
+
+
+### Quantities of Interest:  
+**Compare Proportions**  
+*Compare key probabilities across two groups with appropriate uncertainty.<sup>1</sup>*  
+**Compare Means**  
+*Compare averages/means across two groups with appropriate uncertainty.<sup>1</sup>*   
+  
+.footnote[
+<sup>1</sup> Which will itself be a probability measure.
+]
+
+
+---
+# The Big Idea
+
+## **Inference**
+
+In the most basic form, learning something about data that we do not have from data that we do.  In the jargon of statistics, we characterize the probability distribution of some feature of the population of interest from a sample drawn randomly from that population. 
+
+### Study Planning  
+
 *Plan studies of adequate size to assess key probabilities of interest.*   
 
 ---
@@ -116,11 +144,11 @@ Is entirely defined by two parameters, $n$ -- the number of subjects -- and $\pi
 
 $$ Pr(X = x | \pi, n) = {n \choose x} \pi^x (1-\pi)^{n-x} $$
 
-The binomial is the `canonical` distribution for binary outcomes.  *Assuming all $n$ subjects are alike and the outcome occurs with $\pi$ probability*,<sup>1</sup> then we must have a sample from a binomial. 
+The binomial is the `canonical` distribution for binary outcomes.  *Assuming all $n$ subjects are alike and the outcome occurs with $\pi$ probability*,<sup>1</sup> then we must have a sample from a binomial.  *A binomial with $n=1$ is known as a Bernoulli trial* 
 
 Two key features:
-1. Expectation: $n \cdot \pi$ or number of subjects times probability.
-2. Variance is $n \cdot \pi \cdot (1 - \pi)$ and standard deviation is $\sqrt{n \cdot \pi \cdot (1 - \pi)}$.
+1. Expectation: $n \cdot \pi$ or number of subjects times probability [$\pi | n=1$].
+2. Variance is $n \cdot \pi \cdot (1 - \pi)$ [$\pi(1-\pi) | n=1$] and standard deviation is $\sqrt{n \cdot \pi \cdot (1 - \pi)}$ [$\sqrt{\pi(1-\pi)} | n=1$.
 
 --
 
@@ -139,9 +167,9 @@ I have three variables: Admitted or not, Gender, and Department applied to.
 <span style="color: yellow;">Admission is the key.</span>
 
 ```{r}
-library(janitor)
+library(janitor) #<<
 UCBTab <- data.frame(UCBAdmissions) %>% reshape::untable(., .$Freq) %>% select(-Freq) 
-UCBTab %>% tabyl(Admit)  # Could also use prop.table(table(UCBTab$Admit))
+UCBTab %>% tabyl(Admit)  # Could also use UCBTab %$% table(Admit) 
 ```
 
 The proportion is denoted as $\hat{p}$.  We can also do this with *table*.
@@ -149,19 +177,16 @@ The proportion is denoted as $\hat{p}$.  We can also do this with *table*.
 .footnote[<sup>2</sup> **We probably think this depends on a bunch of applicant specific features but we will put that to the side for now.**]
 
 ---
-class:inverse
 
 ```{r, eval=require('DT')}
 UCBTab %>% DT::datatable(.,fillContainer = FALSE, options = list(pageLength = 8), rownames=FALSE)
 ```
 
-
-
 ---
 ## A Visual
 
 ```{r, fig.height = 5}
-UCBTab %>% ggplot(.) + aes(x = Gender, fill = Admit) + geom_bar() + theme_xaringan() + scale_xaringan_fill_discrete()
+UCBTab %>% ggplot(.) + aes(x = Gender, fill = Admit) + geom_bar(color="darkgreen") + theme_xaringan() + scale_xaringan_fill_discrete()
 ```
 
 ---
@@ -232,7 +257,7 @@ quantile(RSMP$Pi.Admit, probs = c(0.05,0.95))
 
 What is our estimate of $\pi$ with 90% confidence?   
 
-*The probability of admission ranges from `r quantile(RSMP$Pi.Admit, probs = c(0.05,0.95))[[1]]` to `r quantile(RSMP$Pi.Admit, probs = c(0.05,0.95))[[2]]`.*
+*The probability of admission ranges from `r round(quantile(RSMP$Pi.Admit, probs = c(0.05,0.95))[[1]], 3)` to `r round(quantile(RSMP$Pi.Admit, probs = c(0.05,0.95))[[2]], 3)`.*
 
 ---
 # A Plot
@@ -254,7 +279,7 @@ That last procedure is correct but it is overkill.
 2. With probability 0.95, how big could $\pi$ be to have gotten  fewer than `r table(UCBTab$Admit)[[1]]` of `r sum(table(UCBTab$Admit))`?
 
 ```{r}
-UCBTab %$% table(Admit)
+UCBTab %$% table(Admit) #<<
 ```
 
 --
@@ -365,9 +390,9 @@ class: inverse
 prop.test(table(UCBTab$Admit), conf.level = 0.9, correct=FALSE)
 ```
 
-$R$ reports the result as $z^2$ not $z$ which is $\chi^2$ not normal; we can obtain the $z$ by taking a square root: $\sqrt{228.08} \approx 15.1 $.
+$R$ reports the result as $z^2$ not $z$ which is $\chi^2$ not normal; we can obtain the $z$ by taking a square root: $$\sqrt{228.08} \approx 15.1 $$
 
-This approximation yields an estimate of $\pi$, with 90% confidence, that ranges between `r prop.test(table(UCBTab$Admit), conf.level = 0.9, correct=FALSE)$conf.int[[1]]` and `r prop.test(table(UCBTab$Admit), conf.level = 0.9, correct=FALSE)$conf.int[[2]]`.
+This approximation yields an estimate of $\pi$, with 90% confidence, that ranges between `r round(prop.test(table(UCBTab$Admit), conf.level = 0.9, correct=FALSE)$conf.int[[1]], 3)` and `r round(prop.test(table(UCBTab$Admit), conf.level = 0.9, correct=FALSE)$conf.int[[2]], 3)`.
 
 
 ---
@@ -492,29 +517,42 @@ UCBTF.Pi %>%  ggplot(., aes(x=Pi.Admit)) + geom_density(color="maroon") + labs(x
 ---
 # Succinctly
 
+.left-column[
 Female: from 0.286 to 0.322  
 Male: from 0.43 to 0.46  
 All: from 0.3758 to 0.3998  
-
-```{r patch1, fig.width=12, echo=FALSE}
+]
+.right-column[
+```{r patch1, fig.width=9, echo=FALSE}
 library(patchwork)
-ggplot(UCBTab) +aes(x = Gender, fill = Admit) + geom_bar(position = "dodge") + scale_xaringan_fill_discrete() + theme_xaringan() + ggplot(UCBTab) +aes(x = Gender, fill = Admit) + geom_bar(position = "fill") + scale_xaringan_fill_discrete() + theme_xaringan() + guides(fill=FALSE)
+ggplot(UCBTab) +aes(x = Gender, fill = Admit) + geom_bar(color="darkgreen", position = "dodge") + scale_xaringan_fill_discrete() + theme_xaringan() + labs(x="") + ggplot(UCBTab) +aes(x = Gender, fill = Admit) + geom_bar(color="darkgreen", position = "fill") + scale_xaringan_fill_discrete() + theme_xaringan() + guides(fill=FALSE) + labs(y="Proportion", x="")
 ```
+]
 
 ---
 class: inverse
 
 # A Key Visual
 
-```{r}
+```{r Yellow, cache=TRUE, echo=FALSE}
 UCB.Pi <- bind_rows(UCBTF.Pi, UCBTM.Pi)
+```
+
+.left-column[
+```{r, eval=FALSE}
 UCB.Pi %>% ggplot(., aes(x=Gender, y=Pi.Admit, fill=Gender)) + geom_violin() + geom_label(aes(x=1.5, y=0.375), label="Too small to be male \n Too large to be female?", size=14, fill="black", color="white", inherit.aes = FALSE) + guides(size=FALSE) + theme_xaringan_inverse()
 ```
+]
+.right-column[
+```{r, echo=FALSE, fig.width=10}
+UCB.Pi %>% ggplot(., aes(x=Gender, y=Pi.Admit, fill=Gender)) + geom_violin() + geom_label(aes(x=1.5, y=0.375), label="Too small to be male \n Too large to be female?", size=14, fill="black", color="white", inherit.aes = FALSE) + guides(size=FALSE) + theme_xaringan_inverse()
+```
+]
 
 ---
 class: inverse
 
-```{r GGAnim, eval=FALSE, warning=FALSE, message=FALSE, results='hide', gganimate = list(fig.height="600px", fig.width="800px")}
+```{r GGAnim, eval=FALSE, warning=FALSE, message=FALSE, results='hide', gganimate = list(fig.height="600px", fig.width="1200px")}
 UCB.Pi <- bind_rows(UCBTF.Pi, UCBTM.Pi, RSMP)
 UCB.Pi %>% ggplot(., aes(x=Pi.Admit, fill=Gender)) + geom_density(alpha=0.5) + theme_xaringan_inverse() + transition_states(frameN, state_length = 40, transition_length = 20) + enter_fade() + exit_fade() -> SaveAnim
 animate(SaveAnim)
@@ -671,12 +709,17 @@ What is the middle 90% of the sampled averages?
 ResQD <- data.frame(ResQ=ResQ, Height2=5e-5)
 ```
 
-
 ---
+## A Cowplot without Proper Scaling
 
 ```{r, echo=FALSE}
 library(cowplot)
-PI <- ggplot(WH.Means, aes(x=Mean.Expenditure)) + geom_density(color="magenta") + geom_area(data=ResQD, aes(x=ResQ, y=Height2), fill="blue", color="blue", alpha=0.2, outline.type = "full") + theme_nothing() + labs(x="Mean.Expenditures")
+PI <- ggplot(WH.Means, aes(x=Mean.Expenditure)) + geom_density(color="magenta") + geom_area(data=ResQD, aes(x=ResQ, y=Height2), fill="blue", color="blue", alpha=0.2, outline.type = "full") + theme_nothing() + labs(x="Mean.Expenditures") + geom_text(data = data.frame(x = 18093.4148792519, y = 1.22e-04, 
+    label = "90% Confidence Interval \n for Average Expenditures"), 
+    mapping = aes(x = x, y = y, label = label), size = 2.5, 
+    angle = 0L, lineheight = 1L, hjust = 0.5, vjust = 0.5, colour = "blue", 
+    family = "sans", fontface = "plain", inherit.aes = FALSE, 
+    show.legend = FALSE)
 ggdraw(BasePlot) +
   draw_plot(PI, .24, 0.3, .15, .15)
 ```
@@ -708,4 +751,37 @@ class: inverse
 ( Summaries <- WH %>% summarise(Exp.Mean = mean(Expenditures), Exp.SD = sd(Expenditures), Count = n()) )
 WH %$% t.test(Expenditures, conf.level = 0.9) #<<
 ```
+
+With 90% confidence, average expenditures [for White not Hispanic and Hispanic] range between `r round(t.test(WH$Expenditures, conf.level = 0.9)$conf.int[[1]], 0)` and `r round(t.test(WH$Expenditures, conf.level = 0.9)$conf.int[[2]], 0)` dollars per DDS client.
+
+---
+class: inverse
+## Disparities in Expenditures?
+
+```{r, fig.width=10}
+ggplot(WH, aes(x=Ethnicity, y=Expenditures, fill=Ethnicity)) + geom_violin() + theme_xaringan_inverse() + scale_xaringan_fill_discrete()
+```
+
+---
+## Two Groups?
+
+.pull-left[
+<small>
+```{r}
+WH %>% 
+  filter(Ethnicity=="White not Hispanic") %$% 
+  t.test(Expenditures, conf.level=0.9)
+```
+</small>
+]
+
+.pull-right[
+<small>
+```{r}
+WH %>% 
+  filter(Ethnicity=="Hispanic") %$% 
+  t.test(Expenditures, conf.level=0.9)
+```
+</small>
+]
 

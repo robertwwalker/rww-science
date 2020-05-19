@@ -71,6 +71,7 @@ The central takeaway is that the underlying data reports are constantly changing
 
 *2020-05-15* Numbered footnotes changed Cases to Cases1, code updated.
 
+*2020-05-19* For strain on hospitals, Total was renamed to Total.staffed.
 
 # A base map
 
