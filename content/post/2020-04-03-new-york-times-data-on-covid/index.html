@@ -1,7 +1,7 @@
 ---
 title: New York Times Data on COVID
 author: Robert W. Walker
-date: '2020-05-17'
+date: '2020-05-19'
 slug: new-york-times-data-on-covid
 categories:
   - R
@@ -28,7 +28,7 @@ projects: []
 
 <div id="new-york-times-data-for-the-us" class="section level1">
 <h1>New York Times data for the US</h1>
-<p>The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-05-19 13:35:06.</p>
+<p>The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-05-20 15:19:57.</p>
 </div>
 <div id="the-basic-state-of-things" class="section level1">
 <h1>The Basic State of Things</h1>
@@ -189,7 +189,7 @@ frameWidget(GPNCFR)</code></pre>
 <div id="states" class="section level1">
 <h1>50 States?</h1>
 <pre class="r"><code>library(fiftystater); library(maptools); library(ggthemes); library(ggmap)
-CFR2 &lt;- Rect.NYT %&gt;% filter(date == &quot;2020-04-10&quot;) %&gt;% mutate(CFR = round(deaths / cases, digits=3), State = state, state = tolower(State))
+CFR2 &lt;- Rect.NYT %&gt;% filter(date == &quot;2020-05-18&quot;) %&gt;% mutate(CFR = round(deaths / cases, digits=3), State = state, state = tolower(State))
 CFR2 %&gt;% filter(!(state %in% c(&quot;puerto rico&quot;,&quot;northern mariana islands&quot;, &quot;virgin islands&quot;, &quot;guam&quot;))) %&gt;% ggplot(., aes(fill=CFR, map_id=state)) + 
   geom_map(map = fifty_states) + 
     expand_limits(x = fifty_states$long, y = fifty_states$lat) +

@@ -32,8 +32,7 @@ output:
 library(gganimate)
 options(htmltools.dir.version = FALSE)
 options(servr.daemon = TRUE)
-options(gganimate.dev_args = list(width = 800, height = 600))
-knitr::opts_chunk$set(warning=FALSE, message=FALSE, fig.showtext = TRUE, fig.retina=3, dev = "svg", fig.height=6)
+knitr::opts_chunk$set(warning=FALSE, message=FALSE, fig.showtext = TRUE, fig.height=6, fig.retina=3, dev="CairoJPEG")
 library(DT)
 library(here)
 library(svglite)
@@ -62,7 +61,7 @@ code.r{
   font-size: 24px;
 }
 pre {
-  font-size: 28px
+  font-size: 12px
 }
 .red { 
   color: red 
@@ -147,8 +146,8 @@ $$ Pr(X = x | \pi, n) = {n \choose x} \pi^x (1-\pi)^{n-x} $$
 The binomial is the `canonical` distribution for binary outcomes.  *Assuming all $n$ subjects are alike and the outcome occurs with $\pi$ probability*,<sup>1</sup> then we must have a sample from a binomial.  *A binomial with $n=1$ is known as a Bernoulli trial* 
 
 Two key features:
-1. Expectation: $n \cdot \pi$ or number of subjects times probability [$\pi | n=1$].
-2. Variance is $n \cdot \pi \cdot (1 - \pi)$ [$\pi(1-\pi) | n=1$] and standard deviation is $\sqrt{n \cdot \pi \cdot (1 - \pi)}$ [$\sqrt{\pi(1-\pi)} | n=1$.
+1. Expectation: $n \cdot \pi$ or number of subjects times probability, $\pi \textrm{ if } n=1$.
+2. Variance is $n \cdot \pi \cdot (1 - \pi)$  or $\pi(1-\pi) \textrm{ if } n=1$ and standard deviation is $\sqrt{n \cdot \pi \cdot (1 - \pi)}$ or $\sqrt{\pi(1-\pi)} \textrm{ if } n=1$.
 
 --
 
@@ -437,7 +436,7 @@ class: inverse
 ### In the Real World
 
 
-```{r, echo=FALSE, out.width="800px"}
+```{r, echo=FALSE, out.height="300px", out.width="900px"}
 y1 <- "https://i.imgur.com/Fp2nuNN.png"
 download.file(y1, './y1.png')
 knitr::include_graphics("./y1.png")
@@ -472,6 +471,7 @@ If we wish to express this using the normal approximation, a central interval is
 
 ```{r}
 library(janitor); UCBTab %>% tabyl(Gender,Admit) %>% adorn_totals("col")
+UCBTab %>% tabyl(Gender,Admit) %>% adorn_percentages("row")
 UCBTF <- UCBTab %>% filter(Gender=="Female")
 UCBTF.Pi <- ResampleProp(UCBTF$Admit, k = 10000) %>%  data.frame(Pi.Admit=., Gender=as.character("Female"), frameN=2) # Estimates for females
 UCBTM <- UCBTab %>% filter(Gender=="Male")
@@ -531,32 +531,20 @@ ggplot(UCBTab) +aes(x = Gender, fill = Admit) + geom_bar(color="darkgreen", posi
 
 ---
 class: inverse
+## A Key Visual
 
-# A Key Visual
-
-```{r Yellow, cache=TRUE, echo=FALSE}
+```{r Yellow, message=FALSE, warning=FALSE, fig.width=9, fig.height=5}
 UCB.Pi <- bind_rows(UCBTF.Pi, UCBTM.Pi)
+UCB.Pi %>% ggplot(., aes(x=Gender, y=Pi.Admit, fill=Gender)) + geom_violin() + geom_label(aes(x=1.5, y=0.375), label="Too small to be male \n Too large to be female?", size=14, fill="black", color="white", inherit.aes = FALSE) + guides(size=FALSE) + theme_xaringan_inverse() + labs(x="")
 ```
-
-.left-column[
-```{r, eval=FALSE}
-UCB.Pi %>% ggplot(., aes(x=Gender, y=Pi.Admit, fill=Gender)) + geom_violin() + geom_label(aes(x=1.5, y=0.375), label="Too small to be male \n Too large to be female?", size=14, fill="black", color="white", inherit.aes = FALSE) + guides(size=FALSE) + theme_xaringan_inverse()
-```
-]
-.right-column[
-```{r, echo=FALSE, fig.width=10}
-UCB.Pi %>% ggplot(., aes(x=Gender, y=Pi.Admit, fill=Gender)) + geom_violin() + geom_label(aes(x=1.5, y=0.375), label="Too small to be male \n Too large to be female?", size=14, fill="black", color="white", inherit.aes = FALSE) + guides(size=FALSE) + theme_xaringan_inverse()
-```
-]
 
 ---
-class: inverse
+class: inverse, center
 
-```{r GGAnim, eval=FALSE, warning=FALSE, message=FALSE, results='hide', gganimate = list(fig.height="600px", fig.width="1200px")}
+```{r GGAnim, eval=FALSE, warning=FALSE, message=FALSE, results='hide'}
 UCB.Pi <- bind_rows(UCBTF.Pi, UCBTM.Pi, RSMP)
-UCB.Pi %>% ggplot(., aes(x=Pi.Admit, fill=Gender)) + geom_density(alpha=0.5) + theme_xaringan_inverse() + transition_states(frameN, state_length = 40, transition_length = 20) + enter_fade() + exit_fade() -> SaveAnim
-animate(SaveAnim)
-anim_save(filename="./Anim1.gif")
+UCB.Pi %>% ggplot(., aes(x=Pi.Admit, fill=Gender)) + geom_density(alpha=0.5) + theme_minimal() +  scale_fill_viridis_d() + transition_states(frameN, state_length = 40, transition_length = 20) + enter_fade() + exit_fade() -> SaveAnim
+anim_save(SaveAnim, renderer = gifski_renderer(height=500, width=1000), filename=here("static/xaringan/testest","Anim1.gif"))
 ```
 
 ![](./Anim1.gif)
@@ -721,7 +709,7 @@ PI <- ggplot(WH.Means, aes(x=Mean.Expenditure)) + geom_density(color="magenta") 
     family = "sans", fontface = "plain", inherit.aes = FALSE, 
     show.legend = FALSE)
 ggdraw(BasePlot) +
-  draw_plot(PI, .24, 0.3, .15, .15)
+  draw_plot(PI, .23, 0.3, .15, .15)
 ```
 
 
@@ -785,3 +773,17 @@ WH %>%
 </small>
 ]
 
+---
+## Comparing Means
+
+There are two [generic] ways to compare means:  
+1. The resampling approach  
+2. t-tests
+
+---
+## Comparing Means by Resampling
+
+The method is similar to the approach for comparing proportions.  We will:  
+1. Take a random sample of the same size as the original for each group *with replacement*.  
+2. Calculate the average for each group and the difference in the averages.  
+3. Repeat steps 1 and 2 $k$ times for $k$ samples.
