@@ -3,12 +3,17 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>/categories/</loc>
-    <lastmod>2020-05-20T15:24:04-07:00</lastmod>
+    <loc>/r/covid/</loc>
+    <lastmod>2020-05-21T17:15:11-07:00</lastmod>
   </url>
   
   <url>
-    <loc>/r/covid/</loc>
+    <loc>/</loc>
+    <lastmod>2020-05-21T17:15:11-07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/</loc>
     <lastmod>2020-05-20T15:24:04-07:00</lastmod>
   </url>
   
@@ -23,7 +28,7 @@
   </url>
   
   <url>
-    <loc>/2020/05/19/new-york-times-data-on-covid/</loc>
+    <loc>/2020/05/20/new-york-times-data-on-covid/</loc>
     <lastmod>2020-05-20T15:24:04-07:00</lastmod>
   </url>
   
@@ -34,11 +39,6 @@
   
   <url>
     <loc>/categories/r/</loc>
-    <lastmod>2020-05-20T15:24:04-07:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/</loc>
     <lastmod>2020-05-20T15:24:04-07:00</lastmod>
   </url>
   
@@ -198,12 +198,12 @@
   </url>
   
   <url>
-    <loc>/tags/reticulate/</loc>
+    <loc>/categories/reticulate/</loc>
     <lastmod>2020-02-24T00:09:44-08:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/reticulate/</loc>
+    <loc>/tags/reticulate/</loc>
     <lastmod>2020-02-24T00:09:44-08:00</lastmod>
   </url>
   

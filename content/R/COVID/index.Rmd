@@ -1,7 +1,7 @@
 ---
 title: COVID-19 in Oregon
 author: Robert W. Walker
-date: '2020-05-19'
+date: '2020-05-22'
 ---
 
 ```{r setup, include=FALSE}
@@ -61,7 +61,7 @@ The central takeaway is that the underlying data reports are constantly changing
 
 *2020-04-08* It came back yesterday.
 
-*2020-04-22* Negative tests for all counties and the total are listed as pending.  Resolved 04/23.
+*2020-04-22* Negative tests for all counties and the total are listed as pending.  Resolved 04/23.  Combined in report, split up by me.
 
 *2020-05-04* New version of header table with different labels.
 
