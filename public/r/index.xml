@@ -40,7 +40,7 @@ library(patchwork)
 library(hrbrthemes)
 library(widgetframe)
 load(url(paste0(&amp;quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&amp;quot;,Sys.Date(),&amp;quot;.RData&amp;quot;)))&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Verifying, these data are current as of 2020-05-20 according to the loaded dataset.&lt;/p&gt;
+&lt;p&gt;Verifying, these data are current as of 2020-05-21 according to the loaded dataset.&lt;/p&gt;
 &lt;div id=&#34;a-running-commentary-on-the-data&#34; class=&#34;section level3&#34;&gt;
 &lt;h3&gt;A running commentary on the data&lt;/h3&gt;
 &lt;p&gt;The central takeaway is that the underlying data reports are constantly changing over time. They are reporting new and different quantities and this destroys the comparability of data. Some of it can be reconstructed but much of it is only useful going forward and keeping the schema constant. I hope that will happen at some point.&lt;/p&gt;
@@ -168,6 +168,14 @@ frameWidget(R2GPM3)&lt;/code&gt;&lt;/pre&gt;
 &lt;div id=&#34;htmlwidget-3&#34; style=&#34;width:100%;height:480px;&#34; class=&#34;widgetframe html-widget&#34;&gt;&lt;/div&gt;
 &lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-3&#34;&gt;{&#34;x&#34;:{&#34;url&#34;:&#34;/R/COVID/index_files/figure-html//widgets/widget_unnamed-chunk-9.html&#34;,&#34;options&#34;:{&#34;xdomain&#34;:&#34;*&#34;,&#34;allowfullscreen&#34;:false,&#34;lazyload&#34;:false}},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
 &lt;/div&gt;
+&lt;div id=&#34;new-cases-moving-average&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;New Cases: Moving Average&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;OR.County.COVID &amp;lt;- Oregon.COVID %&amp;gt;% group_by(County) %&amp;gt;% mutate(New.Cases = Number.of.cases - lag(Number.of.cases, order_by = date), New.Deaths = Deaths - lag(Deaths, order_by = date), Cases.MA7 = zoo::rollmean(New.Cases, 7, fill=NA), Deaths.MA7 = zoo::rollmean(New.Deaths, 7, fill=NA))
+OR.County.COVID.L &amp;lt;- OR.County.COVID %&amp;gt;% select(County, date, Cases.MA7, Deaths.MA7) %&amp;gt;% pivot_longer(cols=c(Cases.MA7,Deaths.MA7), names_to = &amp;quot;WhichVar&amp;quot;, values_to = &amp;quot;Outcome&amp;quot;) %&amp;gt;% mutate(WhichVar = str_remove(WhichVar, &amp;quot;.MA7&amp;quot;), date2 = as.Date(&amp;quot;2020-05-20&amp;quot;))
+GGP1 &amp;lt;- ggplot(OR.County.COVID.L, aes(x=date, y=Outcome, color=County, label=County, group=County)) + geom_line() + geom_text_repel(direction = &amp;quot;y&amp;quot;, min.segment.length = 8) + scale_color_viridis_d() + guides(color=FALSE) + xlim(c(as.Date(&amp;quot;2020-03-15&amp;quot;),as.Date(&amp;quot;2020-06-15&amp;quot;))) +  hrbrthemes::theme_ipsum() + facet_wrap(vars(WhichVar), scales = &amp;quot;free_y&amp;quot;) + transition_reveal(date)
+animate(GGP1, end_pause = 50, nframes=150)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-10-1.gif&#34; /&gt;&lt;!-- --&gt;&lt;/p&gt;
+&lt;/div&gt;
 &lt;/div&gt;
 &lt;div id=&#34;hospitalization-data-for-oregon&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;Hospitalization Data for Oregon&lt;/h1&gt;
@@ -187,7 +195,7 @@ Hos2 &amp;lt;- OR.Hosp %&amp;gt;%
   labs(x=&amp;quot;Date&amp;quot;, y=&amp;quot;Number of COVID Positives&amp;quot;, fill=&amp;quot;Hospitalized?&amp;quot;) + 
   coord_flip()
 Hos1 + Hos2&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-10-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;age-data&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;Age Data&lt;/h1&gt;
@@ -207,7 +215,7 @@ Age2 &amp;lt;- OR.Ages1 %&amp;gt;% ggplot(.) +
  scale_fill_ipsum() + labs(x=&amp;quot;Date&amp;quot;, y=&amp;quot;Proportion of COVID-19 Positives&amp;quot;) +
  theme_minimal()
 Age1 + Age2&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-12-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;div id=&#34;the-revision&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;The Revision&lt;/h2&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;OR.Ages1 &amp;lt;- OR.Ages %&amp;gt;% filter(date &amp;gt; &amp;quot;2020-03-24&amp;quot;)
@@ -224,7 +232,7 @@ Age2 &amp;lt;- OR.Ages1 %&amp;gt;% ggplot(.) +
  theme_economist() + 
  theme(axis.text.x = element_text(size=8, angle=45))
 Age1 + Age2&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-12-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-13-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;div id=&#34;males-and-females&#34; class=&#34;section level1&#34;&gt;
@@ -243,7 +251,7 @@ OR.Sex.Reshape %&amp;gt;%
   scale_fill_ipsum() + 
   labs(x=&amp;quot;Date&amp;quot;, y=&amp;quot;Cases&amp;quot;, title=&amp;quot;Cumulative Deaths and COVID-19 Cases in Oregon by Sex&amp;quot;) +
   facet_wrap(vars(Sex))&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-13-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-14-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;I do not know to what extent that mirrors the general trend that men are more likely to suffer serious cases. The death rate data seem to highlight that.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;OR.Gender %&amp;gt;% 
   filter(Sex%in%c(&amp;quot;Male&amp;quot;,&amp;quot;Female&amp;quot;)) %&amp;gt;% 
@@ -253,14 +261,14 @@ OR.Sex.Reshape %&amp;gt;%
   geom_line() + 
   theme_ipsum_rc() +
   labs(x=&amp;quot;Date&amp;quot;, y=&amp;quot;Case Fatality Ratio&amp;quot;, title=&amp;quot;Oregon&amp;#39;s Cumulative Case Fatality Ratio by Sex&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-14-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-15-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;analysis-over-time&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;Analysis over Time&lt;/h1&gt;
 &lt;div id=&#34;admissions&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Admissions&lt;/h2&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;OR.COVID.Strain %&amp;gt;% filter(COVID.19.Details==&amp;quot;COVID-19 admissions&amp;quot;) %&amp;gt;% ggplot(., aes(x=date, y=COVID19.Patients)) + geom_point() + geom_line() + labs(title=&amp;quot;COVID-19 Admissions&amp;quot;, x=&amp;quot;Date&amp;quot;, y=&amp;quot;Count&amp;quot;, caption = &amp;quot;data: https://govstatus.egov.com/OR-OHA-COVID-19 \n By: @PieRatio&amp;quot;) + theme_ipsum() + theme(axis.text.x = element_text(angle = 90))&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-15-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-16-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;hospital-capacity&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Hospital Capacity&lt;/h2&gt;
@@ -274,7 +282,7 @@ OR.Sex.Reshape %&amp;gt;%
     hrbrthemes::scale_color_ipsum() +
     theme_ipsum() +
     facet_wrap(vars(Hospital.Capacity), scales = &amp;quot;free_y&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-16-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-17-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;OR.Hospital.Caps %&amp;gt;% filter(date &amp;gt; &amp;quot;2020-03-28&amp;quot;) %&amp;gt;% pivot_wider(., names_from = Type, values_from = Number, id_cols = c(date, Scraped.date, Hospital.Capacity)) %&amp;gt;%
     filter(Hospital.Capacity != &amp;quot;Ventilators&amp;quot;) %&amp;gt;% 
     mutate(Hospital.Capacity = as.character(Hospital.Capacity)) %&amp;gt;%
@@ -285,7 +293,7 @@ OR.Sex.Reshape %&amp;gt;%
     hrbrthemes::scale_color_ipsum() +
     theme_ipsum() +
     facet_wrap(vars(Hospital.Capacity), scales = &amp;quot;free_y&amp;quot;) + labs(title=&amp;quot;Oregon&amp;#39;s Critical Resource Use&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-17-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-18-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;icu-beds&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;ICU Beds&lt;/h2&gt;
@@ -299,7 +307,7 @@ ICUB %&amp;gt;%
   geom_line() + 
   labs(title=&amp;quot;COVID-19 ICU Beds Consumed in Oregon&amp;quot;, x=&amp;quot;Date&amp;quot;, y=&amp;quot;Count&amp;quot;, caption = &amp;quot;data: https://govstatus.egov.com/OR-OHA-COVID-19 \n By: @PieRatio&amp;quot;) + 
   theme_ipsum() + theme(axis.text.x = element_text(angle = 90))&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-18-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-19-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;ventilators&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Ventilators&lt;/h2&gt;
@@ -314,7 +322,7 @@ Vents %&amp;gt;%
   labs(title=&amp;quot;Ventilators in Oregon&amp;quot;, x=&amp;quot;Date&amp;quot;, y=&amp;quot;Count&amp;quot;, caption = &amp;quot;data: https://govstatus.egov.com/OR-OHA-COVID-19 \n By: @PieRatio&amp;quot;) + 
   theme_ipsum() + theme(axis.text.x = element_text(angle = 90)) + 
   facet_wrap(vars(Capacity), scales = &amp;quot;free_y&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-19-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/R/COVID/index_files/figure-html/unnamed-chunk-20-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 </description>

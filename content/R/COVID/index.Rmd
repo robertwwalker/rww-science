@@ -193,6 +193,14 @@ R2GPM3 <- ggplotly(R2GPM)
 frameWidget(R2GPM3)
 ```
 
+## New Cases: Moving Average
+
+```{r}
+OR.County.COVID <- Oregon.COVID %>% group_by(County) %>% mutate(New.Cases = Number.of.cases - lag(Number.of.cases, order_by = date), New.Deaths = Deaths - lag(Deaths, order_by = date), Cases.MA7 = zoo::rollmean(New.Cases, 7, fill=NA), Deaths.MA7 = zoo::rollmean(New.Deaths, 7, fill=NA))
+OR.County.COVID.L <- OR.County.COVID %>% select(County, date, Cases.MA7, Deaths.MA7) %>% pivot_longer(cols=c(Cases.MA7,Deaths.MA7), names_to = "WhichVar", values_to = "Outcome") %>% mutate(WhichVar = str_remove(WhichVar, ".MA7"), date2 = as.Date("2020-05-20"))
+GGP1 <- ggplot(OR.County.COVID.L, aes(x=date, y=Outcome, color=County, label=County, group=County)) + geom_line() + geom_text_repel(direction = "y", min.segment.length = 8) + scale_color_viridis_d() + guides(color=FALSE) + xlim(c(as.Date("2020-03-15"),as.Date("2020-06-15"))) +  hrbrthemes::theme_ipsum() + facet_wrap(vars(WhichVar), scales = "free_y") + transition_reveal(date)
+animate(GGP1, end_pause = 50, nframes=150)
+```
 
 
 # Hospitalization Data for Oregon

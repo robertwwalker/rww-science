@@ -61,7 +61,7 @@ code.r{
   font-size: 24px;
 }
 pre {
-  font-size: 12px
+  font-size: 24px
 }
 .red { 
   color: red 
@@ -184,7 +184,7 @@ UCBTab %>% DT::datatable(.,fillContainer = FALSE, options = list(pageLength = 8)
 ---
 ## A Visual
 
-```{r, fig.height = 5}
+```{r, fig.height = 5, fig.align='center'}
 UCBTab %>% ggplot(.) + aes(x = Gender, fill = Admit) + geom_bar(color="darkgreen") + theme_xaringan() + scale_xaringan_fill_discrete()
 ```
 
@@ -261,7 +261,7 @@ What is our estimate of $\pi$ with 90% confidence?
 ---
 # A Plot
 
-```{r, fig.height= 5}
+```{r, fig.height= 5, fig.align='center'}
 library(ggthemes)
 RSMP %>%  ggplot(., aes(x=Pi.Admit)) + geom_density(outline.type = "upper", color="maroon") +labs(x=expression(pi)) + theme_minimal() + theme_xaringan()
 ```
@@ -307,7 +307,7 @@ c(pbinom(1755, 1755+2771, 0.3998340), pbinom(1754, 1755+2771, 0.3757924))
 
 ---
 
-```{r, fig.width=10}
+```{r, fig.width=10, fig.align='center'}
 Binomial.Search <- data.frame(x=seq(0.33,0.43, by=0.001)) %>% mutate(Too.Low = pbinom(1755, 1755+2771, x), Too.High = 1-pbinom(1754, 1755+2771, x))
 Binomial.Search %>% pivot_longer(cols=c(Too.Low,Too.High)) %>% ggplot(., aes(x=x, y=value, color=name)) + geom_line() + geom_hline(aes(yintercept=0.05)) + geom_hline(aes(yintercept=0.95))  + geom_vline(data=Plot.Me, aes(xintercept=.), linetype=3) + labs(title="Using the Binomial to Search", color="Greater/Lesser", x=expression(pi), y="Probability") + theme_xaringan() + scale_xaringan_color_discrete()
 ```
@@ -492,7 +492,7 @@ The probability of being admitted, conditional on being Male, ranges from 0.43 t
 
 ## The Thought Experiment: Male
 
-```{r BMPlot}
+```{r BMPlot, fig.align='center'}
 UCBTM.Pi %>%  ggplot(., aes(x=Pi.Admit)) + geom_density(color="maroon") + labs(x=expression(pi)) + theme_xaringan()
 ```
 
@@ -510,7 +510,7 @@ The probability of being of Admitted, given a Female, ranges from 0.286 to 0.322
 ---
 ## The Thought Experiment: Female
 
-```{r BFPlot}
+```{r BFPlot, fig.align='center'}
 UCBTF.Pi %>%  ggplot(., aes(x=Pi.Admit)) + geom_density(color="maroon") + labs(x=expression(pi)) + theme_xaringan()
 ```
 
@@ -533,22 +533,22 @@ ggplot(UCBTab) +aes(x = Gender, fill = Admit) + geom_bar(color="darkgreen", posi
 class: inverse
 ## A Key Visual
 
-```{r Yellow, message=FALSE, warning=FALSE, fig.width=9, fig.height=5}
+```{r Yellow, message=FALSE, warning=FALSE, fig.width=9, fig.height=5, fig.align='center'}
 UCB.Pi <- bind_rows(UCBTF.Pi, UCBTM.Pi)
 UCB.Pi %>% ggplot(., aes(x=Gender, y=Pi.Admit, fill=Gender)) + geom_violin() + geom_label(aes(x=1.5, y=0.375), label="Too small to be male \n Too large to be female?", size=14, fill="black", color="white", inherit.aes = FALSE) + guides(size=FALSE) + theme_xaringan_inverse() + labs(x="")
 ```
 
 ---
-class: inverse, center
+class: inverse
 
 ```{r GGAnim, eval=FALSE, warning=FALSE, message=FALSE, results='hide'}
 UCB.Pi <- bind_rows(UCBTF.Pi, UCBTM.Pi, RSMP)
 UCB.Pi %>% ggplot(., aes(x=Pi.Admit, fill=Gender)) + geom_density(alpha=0.5) + theme_minimal() +  scale_fill_viridis_d() + transition_states(frameN, state_length = 40, transition_length = 20) + enter_fade() + exit_fade() -> SaveAnim
 anim_save(SaveAnim, renderer = gifski_renderer(height=500, width=1000), filename=here("static/xaringan/testest","Anim1.gif"))
 ```
-
+.center[
 ![](./Anim1.gif)
-
+]
 
 ---
 # Can We Measure the Difference?
@@ -605,8 +605,8 @@ $$SE(\hat{p}_{M} - \hat{p}_{F}) =  \sqrt{ \underbrace{\frac{\hat{p}_{M}(1-\hat{p
 
 Of two forms:
 
-1. Binary/Qualitative
-2. **Quantitative**
+1. Binary/Qualitative (Proportions)
+2. **Quantitative (Means)**
 
 --
 
@@ -683,7 +683,7 @@ class: inverse
 
 ### A Visual
 
-```{r, fig.width=10}
+```{r, fig.width=10, fig.align='center'}
 (ggplot(WH, aes(x=Expenditures)) + geom_density() +  theme_xaringan_inverse()) / (ggplot(WH.Means, aes(x=Mean.Expenditure)) + geom_density() + theme_xaringan_inverse())
 ```
 
@@ -709,14 +709,14 @@ PI <- ggplot(WH.Means, aes(x=Mean.Expenditure)) + geom_density(color="magenta") 
     family = "sans", fontface = "plain", inherit.aes = FALSE, 
     show.legend = FALSE)
 ggdraw(BasePlot) +
-  draw_plot(PI, .23, 0.3, .15, .15)
+  draw_plot(PI, .215, 0.3, .15, .15)
 ```
 
 
 ---
 ## A Decent Visualization
 
-```{r, fig.height=5}
+```{r, fig.height=5, fig.align='center'}
 BasePlot + geom_area(data=ResQD, aes(x=ResQ, y=Height2), fill="blue", color="blue", alpha=0.2, outline.type = "full")
 ```
 
@@ -746,7 +746,7 @@ With 90% confidence, average expenditures [for White not Hispanic and Hispanic] 
 class: inverse
 ## Disparities in Expenditures?
 
-```{r, fig.width=10}
+```{r, fig.width=10, fig.align='center'}
 ggplot(WH, aes(x=Ethnicity, y=Expenditures, fill=Ethnicity)) + geom_violin() + theme_xaringan_inverse() + scale_xaringan_fill_discrete()
 ```
 
