@@ -117,7 +117,7 @@ OR.County.COVID %>% filter(RankC > 26) %>%
          y="Confirmed COVID-19 Cases") +
     hrbrthemes::theme_ipsum(plot_title_size = 32, subtitle_size = 24, caption_size = 20, base_size = 20) +
     gganimate::transition_time(Scraped.date) -> p1
-  GGPA <- animate(p1, nframes = 550, end_pause = 100, width = 1200, height = 900)
+  GGPA <- animate(p1, nframes = 200, end_pause = 50, width = 1200, height = 900)
   save_animation(GGPA, "./BarAnim.gif")
 ```
 
@@ -128,7 +128,7 @@ OR.County.COVID %>% filter(RankC > 26) %>%
 
 To build a map to work from, I need a map library.  Load the `tigris` library then grab the map as an `sf` object; there is a `geom_sf` that makes them easy to work with.  Finally, I join the map to the data and build a tool tip to display.
 
-```{r, message=FALSE, warning=FALSE, results='hide'}
+```{r MapC, message=FALSE, warning=FALSE, results='hide', cache=TRUE}
 counties.t <- counties(state = "41", resolution = "500k", class="sf")
 Map.Me <- left_join(counties.t,Oregon.COVID, by=c("NAME" = "County"))
 Res.1 <- Map.Me %>% 
@@ -150,7 +150,7 @@ Anim1 <- Map.Me %>%
     segment.colour = "white",
     size = 3,
     box.padding = unit(0.05, "lines"))  + scale_fill_continuous_tableau("Red") + theme_minimal() + labs(title="COVID-19 in Oregon", subtitle="{frame_time}", x="", y="", caption="Made with R, ggplot2, and ggrepel by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19") + transition_time(date)
-GGAnim <- animate(Anim1, end_pause=50, nframes=300)
+GGAnim <- animate(Anim1, end_pause=50, nframes=200, width = 1200, height = 900)
 save_animation(GGAnim, file="./MapAnim.gif")
 ```
 ![County animation](./MapAnim.gif)

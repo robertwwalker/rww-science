@@ -26,7 +26,7 @@
 
 &lt;div id=&#34;new-york-times-data-for-the-us&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;New York Times data for the US&lt;/h1&gt;
-&lt;p&gt;The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-05-23 14:47:14.&lt;/p&gt;
+&lt;p&gt;The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-05-24 12:39:08.&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;the-basic-state-of-things&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;The Basic State of Things&lt;/h1&gt;
@@ -187,11 +187,11 @@ frameWidget(GPNCFR)&lt;/code&gt;&lt;/pre&gt;
 &lt;div id=&#34;states&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;50 States?&lt;/h1&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(fiftystater); library(maptools); library(ggthemes); library(ggmap)
-CFR2 &amp;lt;- Rect.NYT %&amp;gt;% filter(date == &amp;quot;2020-05-18&amp;quot;) %&amp;gt;% mutate(CFR = round(deaths / cases, digits=3), State = state, state = tolower(State))
+CFR2 &amp;lt;- Rect.NYT %&amp;gt;% filter(date == &amp;quot;2020-05-22&amp;quot;) %&amp;gt;% mutate(CFR = round(deaths / cases, digits=3), State = state, state = tolower(State))
 CFR2 %&amp;gt;% filter(!(state %in% c(&amp;quot;puerto rico&amp;quot;,&amp;quot;northern mariana islands&amp;quot;, &amp;quot;virgin islands&amp;quot;, &amp;quot;guam&amp;quot;))) %&amp;gt;% ggplot(., aes(fill=CFR, map_id=state)) + 
   geom_map(map = fifty_states) + 
     expand_limits(x = fifty_states$long, y = fifty_states$lat) +
-    coord_map() + scale_fill_continuous_tableau(palette=&amp;quot;Classic Red&amp;quot;, guide=&amp;quot;colourbar&amp;quot;) + theme_map() + labs(title=&amp;quot;US Case Fatality Rate by State: April 6&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+    coord_map() + scale_fill_continuous_tableau(palette=&amp;quot;Classic Red&amp;quot;, guide=&amp;quot;colourbar&amp;quot;) + theme_map() + labs(title=&amp;quot;US Case Fatality Rate by State: May 22&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2020-04-03-new-york-times-data-on-covid/index_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;#  geom_point(aes(color=CFR.D)) + 
 #  labs(title = &amp;quot;Case Fatality Rate of COVID-19 in the US&amp;quot;, subtitle=&amp;quot;Very uncertain estimate... Numerator and denominator uncertain \n Data: NY Times GitHub&amp;quot;, caption=&amp;quot;Data from nytimes/covid-19-data on guthub.&amp;quot;, color=&amp;quot;Greater \n than 0.02&amp;quot;) + 

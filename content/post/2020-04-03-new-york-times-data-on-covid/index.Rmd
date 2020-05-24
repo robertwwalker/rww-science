@@ -195,11 +195,11 @@ frameWidget(GPNCFR)
 
 ```{r, message=FALSE, warning=FALSE}
 library(fiftystater); library(maptools); library(ggthemes); library(ggmap)
-CFR2 <- Rect.NYT %>% filter(date == "2020-05-18") %>% mutate(CFR = round(deaths / cases, digits=3), State = state, state = tolower(State))
+CFR2 <- Rect.NYT %>% filter(date == "2020-05-22") %>% mutate(CFR = round(deaths / cases, digits=3), State = state, state = tolower(State))
 CFR2 %>% filter(!(state %in% c("puerto rico","northern mariana islands", "virgin islands", "guam"))) %>% ggplot(., aes(fill=CFR, map_id=state)) + 
   geom_map(map = fifty_states) + 
     expand_limits(x = fifty_states$long, y = fifty_states$lat) +
-    coord_map() + scale_fill_continuous_tableau(palette="Classic Red", guide="colourbar") + theme_map() + labs(title="US Case Fatality Rate by State: April 6")
+    coord_map() + scale_fill_continuous_tableau(palette="Classic Red", guide="colourbar") + theme_map() + labs(title="US Case Fatality Rate by State: May 22")
 #  geom_point(aes(color=CFR.D)) + 
 #  labs(title = "Case Fatality Rate of COVID-19 in the US", subtitle="Very uncertain estimate... Numerator and denominator uncertain \n Data: NY Times GitHub", caption="Data from nytimes/covid-19-data on guthub.", color="Greater \n than 0.02") + 
 #  dark_theme_bw()

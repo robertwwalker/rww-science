@@ -21,7 +21,7 @@ output:
 knitr::opts_chunk$set(fig.width = 6, message = FALSE, warning = FALSE, comment = "", cache = FALSE, fig.retina = 3)
 library(xaringan); library(flipbookr)
 library(tidyverse); library(here); library(gganimate); library(magrittr)
-  load(paste0(here(),"/content/R/COVID/data/OregonCOVID",Sys.Date()-1,".RData"))
+  load(paste0(here(),"/content/R/COVID/data/OregonCOVID",Sys.Date(),".RData"))
   Oregon.COVID <- Oregon.COVID.All %>% filter(County!="Total")
   TabA <- rownames(table(Oregon.COVID$County))
   TabB <- rownames(table(Oregon.COVID$Scraped.date))
@@ -45,7 +45,7 @@ library(tidyverse); library(here); library(gganimate); library(magrittr)
 # Using `flipbookr::chunk_reveal()`
 
 
-```{r cars_anova, eval=FALSE, include = FALSE, display_type = "both", message=FALSE, warning=FALSE, results='hide'}
+```{r ORCOVID, eval=FALSE, message=FALSE, warning=FALSE, display_type="both", include=FALSE, results='hide'}
 # The Race to Open
 OR.County.COVID %>% filter(RankC > 26) %>%
     ggplot(aes(x = RankC, y = Number.of.cases, fill=County, color=County, label=County)) +
@@ -57,16 +57,14 @@ OR.County.COVID %>% filter(RankC > 26) %>%
     scale_fill_viridis_d() +
     scale_color_viridis_d() +
     guides(fill=FALSE, color=FALSE) +
-    labs(title='Cases in Oregon by County',
-         subtitle='{frame_time}',
-         caption='Source: OHA Data',
-         y="Confirmed COVID-19 Cases") +
+    labs(title='Cases in Top 10 Oregon Counties', caption='Source: OHA Data', y="Confirmed COVID-19 Cases", subtitle='{frame_time}') +
     hrbrthemes::theme_ipsum(plot_title_size = 32, subtitle_size = 24, caption_size = 20, base_size = 20) +
     gganimate::transition_time(Scraped.date) -> p1
-p1
+animate(p1, nframes = 550, end_pause = 100, width = 1200, height = 900)
 ```
 
-`r chunk_reveal("cars_anova")`
+`r chunk_reveal("ORCOVID")`
+
 
 ```{css, eval = TRUE, echo = FALSE}
 .remark-code{line-height: 1.5; font-size: 80%}

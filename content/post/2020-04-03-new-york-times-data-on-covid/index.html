@@ -28,7 +28,7 @@ projects: []
 
 <div id="new-york-times-data-for-the-us" class="section level1">
 <h1>New York Times data for the US</h1>
-<p>The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-05-23 14:47:14.</p>
+<p>The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-05-24 12:39:08.</p>
 </div>
 <div id="the-basic-state-of-things" class="section level1">
 <h1>The Basic State of Things</h1>
@@ -189,11 +189,11 @@ frameWidget(GPNCFR)</code></pre>
 <div id="states" class="section level1">
 <h1>50 States?</h1>
 <pre class="r"><code>library(fiftystater); library(maptools); library(ggthemes); library(ggmap)
-CFR2 &lt;- Rect.NYT %&gt;% filter(date == &quot;2020-05-18&quot;) %&gt;% mutate(CFR = round(deaths / cases, digits=3), State = state, state = tolower(State))
+CFR2 &lt;- Rect.NYT %&gt;% filter(date == &quot;2020-05-22&quot;) %&gt;% mutate(CFR = round(deaths / cases, digits=3), State = state, state = tolower(State))
 CFR2 %&gt;% filter(!(state %in% c(&quot;puerto rico&quot;,&quot;northern mariana islands&quot;, &quot;virgin islands&quot;, &quot;guam&quot;))) %&gt;% ggplot(., aes(fill=CFR, map_id=state)) + 
   geom_map(map = fifty_states) + 
     expand_limits(x = fifty_states$long, y = fifty_states$lat) +
-    coord_map() + scale_fill_continuous_tableau(palette=&quot;Classic Red&quot;, guide=&quot;colourbar&quot;) + theme_map() + labs(title=&quot;US Case Fatality Rate by State: April 6&quot;)</code></pre>
+    coord_map() + scale_fill_continuous_tableau(palette=&quot;Classic Red&quot;, guide=&quot;colourbar&quot;) + theme_map() + labs(title=&quot;US Case Fatality Rate by State: May 22&quot;)</code></pre>
 <p><img src="/post/2020-04-03-new-york-times-data-on-covid/index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 <pre class="r"><code>#  geom_point(aes(color=CFR.D)) + 
 #  labs(title = &quot;Case Fatality Rate of COVID-19 in the US&quot;, subtitle=&quot;Very uncertain estimate... Numerator and denominator uncertain \n Data: NY Times GitHub&quot;, caption=&quot;Data from nytimes/covid-19-data on guthub.&quot;, color=&quot;Greater \n than 0.02&quot;) + 
