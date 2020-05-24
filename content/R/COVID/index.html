@@ -1,7 +1,7 @@
 ---
 title: COVID-19 in Oregon
 author: Robert W. Walker
-date: '2020-05-22'
+date: '2020-05-24'
 ---
 
 <script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
@@ -13,7 +13,7 @@ date: '2020-05-22'
 <div id="oregon-covid-data" class="section level1">
 <h1>Oregon COVID data</h1>
 <p>I wanted to create a self-updating visualization of <a href="https://govstatus.egov.com/OR-OHA-COVID-19">the data on COVID-19 in the state of Oregon provided by OHA</a>. There is a <a href="https://rww.science/r/covid-maps/">separate page of daily maps</a>. Oregon reports a set of daily snapshots while progression requires ingesting new data each day so I began tracking it March 20; the process of scraping it is detailed in <a href="https://rww.science/r/covid-scraping/">a separate file</a>. This updates, expands, and consolidates two previous posts <a href="https://rww.science/2020/03/21/covid-19-in-oregon/">here</a> and <a href="https://rww.science/2020/03/24/covid-19-county-maps-for-oregon/">here</a>. A few cautionary notes. First, these are cumulative case counts that are almost certainly incomplete. Second, there is reason to believe that the death numbers may also be incomplete because it is dangerous to police and first responders are spread thinly.</p>
-<p>This post is current as of May 20, 2020; this first bit of R code loads the current data from my github.</p>
+<p>This post is current as of May 24, 2020; this first bit of R code loads the current data from my github.</p>
 <pre class="r"><code>library(tigris)
 library(rgdal)
 library(htmltools)
@@ -119,6 +119,7 @@ save_animation(GGAnim, file=&quot;./MapAnim.gif&quot;)</code></pre>
 </div>
 <div id="percent-positive-for-oregon-counties" class="section level1">
 <h1>Percent Positive for Oregon Counties</h1>
+<p>Divide the number of cases by the total number of tests completed and show them by county.</p>
 <pre class="r"><code>library(plotly)
 Res1 &lt;- Res.1 %&gt;% 
   mutate(Percent.Positive = Number.of.cases / (Number.of.cases + Negative.test.results) ) %&gt;%
@@ -136,17 +137,17 @@ frameWidget(GGP)</code></pre>
 <div id="testing-in-oregon" class="section level1">
 <h1>Testing in Oregon</h1>
 <p>What is the cumulative status of testing? These data, updated daily, render a count of all tests performed since January of 2020. I am cutting it off to the month of April to make the labels read.</p>
-<pre class="r"><code>library(ggrepel)
-Oregon.Tests &lt;- Oregon.Tests %&gt;% filter(Category!=&quot;Pending&quot;)
-OR.Testing &lt;- Oregon.Tests %&gt;% group_by(date) %&gt;% summarise(Total = sum(Outcome, na.rm=TRUE)) %&gt;% filter(date &gt; &quot;2020-04-01&quot;)
-Test1 &lt;- Oregon.Tests %&gt;% filter(date &gt; &quot;2020-04-01&quot;) %&gt;%
+<pre class="r"><code>library(ggrepel); library(magrittr)
+Oregon.Tests %&lt;&gt;% filter(Category!=&quot;Pending&quot;)
+OR.Testing &lt;- Oregon.Tests %&gt;% group_by(date) %&gt;% summarise(Total = sum(Outcome, na.rm=TRUE)) %&gt;% filter(date &gt; &quot;2020-05-01&quot;)
+Test1 &lt;- Oregon.Tests %&gt;% filter(date &gt; &quot;2020-05-01&quot;) %&gt;%
   ggplot(.) + 
   aes(x=date, y=Outcome, fill=Category, label=Outcome) + 
   geom_col() + 
   geom_label(col=&quot;magenta&quot;, show.legend = FALSE, vjust=1, size=1.5) + 
   scale_fill_viridis_d() + 
 #  scale_color_viridis_d() + 
-  labs(title=&quot;Cumulative [since January 2020] COVID-19 Testing in Oregon&quot;, y=&quot;Completed Tests&quot;, x=&quot;Date&quot;, subtitle=&quot;Total appears in black and white&quot;, caption = &quot;data: https://govstatus.egov.com/OR-OHA-COVID-19&quot;) + 
+  labs(title=&quot;Cumulative [since January 2020] COVID-19 Testing in Oregon \n Shown from May 1&quot;, y=&quot;Completed Tests&quot;, x=&quot;Date&quot;, subtitle=&quot;Total appears in black and white&quot;, caption = &quot;data: https://govstatus.egov.com/OR-OHA-COVID-19&quot;) + 
   guides(fill=FALSE) +
   geom_label(data=OR.Testing, aes(x=date, y=Total, label=Total), fill=&quot;white&quot;, color=&quot;black&quot;, inherit.aes = FALSE, vjust = 0, size=1.5)
 Test1</code></pre>
@@ -216,7 +217,7 @@ animate(GGP1, end_pause = 50, nframes=150)</code></pre>
   ggplot(., aes(x=date, y=Number.of.cases,fill=Hospitalized.)) + 
   geom_col() + 
   scale_fill_ipsum() + 
-  labs(x=&quot;Date&quot;, y=&quot;Number of COVID Positives&quot;, fill=&quot;Hospitalized?&quot;, title=&quot;Hospitalization and /n COVID-19 in Oregon&quot;) + 
+  labs(x=&quot;Date&quot;, y=&quot;Number of COVID Positives&quot;, fill=&quot;Hospitalized?&quot;, title=&quot;Hospitalization and \n COVID-19 in Oregon&quot;) + 
   coord_flip()
 Hos2 &lt;- OR.Hosp %&gt;% 
   filter(Hospitalized.!=&quot;Total&quot;) %&gt;% 

@@ -61,7 +61,8 @@ OHA.Corona <- function(website, date) {
     data.frame()  %>%   # 4
     mutate(date=as.Date(date), 
            Scraped.date = as.Date(Scraped.date,"%m.%d.%y"), 
-           Deaths = dash.rm.to.numeric(Deaths2)) %>% 
+           Deaths = dash.rm.to.numeric(Deaths2),
+           Cases = Cases1) %>% 
     select(-Deaths2) # 5
   # Extract the hospitalization data
   COVID.Hospitalized <- webpage %>%
