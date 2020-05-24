@@ -43,7 +43,7 @@ library(patchwork)
 library(hrbrthemes)
 library(widgetframe); library(here)
 library(magrittr)
-load(paste0(here(),"/content/R/COVID/data/OregonCOVID",Sys.Date()-1,".RData"))
+load(paste0(here(),"/content/R/COVID/data/OregonCOVID",Sys.Date(),".RData"))
 ```
 
 Verifying, these data are current as of `r max(Oregon.COVID$Scraped.date)` according to the loaded dataset.
@@ -74,19 +74,6 @@ The central takeaway is that the underlying data reports are constantly changing
 
 *2020-05-19* For strain on hospitals, Total was renamed to Total.staffed.
 
-# A base map
-
-To build a map to work from, I need a map library.  Load the `tigris` library then grab the map as an `sf` object; there is a `geom_sf` that makes them easy to work with.  Finally, I join the map to the data and build a tool tip to display.
-
-```{r, message=FALSE, warning=FALSE, results='hide', cache=TRUE}
-counties.t <- counties(state = "41", resolution = "500k", class="sf")
-Map.Me <- left_join(counties.t,Oregon.COVID, by=c("NAME" = "County"))
-Res.1 <- Map.Me %>% 
-  filter(date==Sys.Date()) %>% 
-  mutate(Percent.Positive = Number.of.cases / (Number.of.cases + Negative.test.results), 
-         TTip = paste0("Percent Positive: ", Percent.Positive, "<br> Positive Tests: ", Number.of.cases, "<br> Negative Tests: ", Negative.test.results, "<br> Deaths: ", Deaths))
-```
-
 # Summarising the County Data: Two Animations
 
 ## The March to Open
@@ -112,7 +99,7 @@ OR.County.COVID <- left_join(Base.OR.County, Oregon.COVID) %>%
 
 ##  A Horse Race
 
-```{r HorseRace, message=FALSE, warning=FALSE, results='hide'}
+```{r HorseRace, eval=FALSE, message=FALSE, warning=FALSE, results='hide'}
 # The Race to Open
 OR.County.COVID %>% filter(RankC > 26) %>%
     ggplot(aes(x = RankC, y = Number.of.cases, fill=County, color=County, label=County)) +
@@ -130,8 +117,26 @@ OR.County.COVID %>% filter(RankC > 26) %>%
          y="Confirmed COVID-19 Cases") +
     hrbrthemes::theme_ipsum(plot_title_size = 32, subtitle_size = 24, caption_size = 20, base_size = 20) +
     gganimate::transition_time(Scraped.date) -> p1
-p1
+  GGPA <- animate(p1, nframes = 550, end_pause = 100, width = 1200, height = 900)
+  save_animation(GGPA, "./BarAnim.gif")
 ```
+
+![HorseRace](./BarAnim.gif)
+
+
+# A base map
+
+To build a map to work from, I need a map library.  Load the `tigris` library then grab the map as an `sf` object; there is a `geom_sf` that makes them easy to work with.  Finally, I join the map to the data and build a tool tip to display.
+
+```{r, message=FALSE, warning=FALSE, results='hide'}
+counties.t <- counties(state = "41", resolution = "500k", class="sf")
+Map.Me <- left_join(counties.t,Oregon.COVID, by=c("NAME" = "County"))
+Res.1 <- Map.Me %>% 
+  filter(date==Sys.Date()) %>% 
+  mutate(Percent.Positive = Number.of.cases / (Number.of.cases + Negative.test.results), 
+         TTip = paste0("Percent Positive: ", Percent.Positive, "<br> Positive Tests: ", Number.of.cases, "<br> Negative Tests: ", Negative.test.results, "<br> Deaths: ", Deaths))
+```
+
 
 I will use a ggplot to build Oregon's map and fill it with case numbers.  `geom_sf()` plots the geometry.  I have to repel the labels to prevent print overlap, and scheme the colors.  The last step is to animate it by time. If I stop the label repelling, they will not bounce but it adds excitement. There is a  [separate page of daily maps](https://rww.science/r/covid/maps/).
 
