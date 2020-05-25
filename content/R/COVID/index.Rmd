@@ -129,7 +129,7 @@ OR.County.COVID %>% filter(RankC > 26) %>%
 
 To build a map to work from, I need a map library.  Load the `tigris` library then grab the map as an `sf` object; there is a `geom_sf` that makes them easy to work with.  Finally, I join the map to the data and build a tool tip to display.
 
-```{r MapC, message=FALSE, warning=FALSE, results='hide', cache=TRUE}
+```{r MapC, message=FALSE, warning=FALSE, results='hide'}
 counties.t <- counties(state = "41", resolution = "500k", class="sf")
 Map.Me <- left_join(counties.t,Oregon.COVID, by=c("NAME" = "County"))
 Res.1 <- Map.Me %>% 

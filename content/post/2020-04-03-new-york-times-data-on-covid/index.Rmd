@@ -43,6 +43,20 @@ plot4 <- NYT.Totals %>% ggplot(., aes(x=date, y=New.Cases)) + geom_line() + labs
 (plot1 + plot2) / (plot3 + plot4)
 ```
 
+## The Initial vs. The Subsequent
+
+The problem was initially concentrated in New York, New Jersey, Massachusetts, California, and Illinois.  How do things look if we remove those states?
+
+```{r, message=FALSE, warning=FALSE}
+NYT.Totals2 <- Rect.NYT  %>% filter(!(state %in% c("California","Massachusetts","New York","New Jersey","Illinois"))) %>% group_by(date) %>% summarise(Deaths = sum(deaths, na.rm=TRUE), New.Deaths = sum(New.Deaths, na.rm = TRUE), Cases = sum(cases, na.rm=TRUE), New.Cases = sum(New.Cases, na.rm = TRUE)) %>% ungroup()
+plot1a <- NYT.Totals2  %>% ggplot(., aes(x=date, y=Deaths)) + geom_line() + labs(title="Deaths", subtitle="Excluding CA, NY, NJ, IL, MA") + dark_mode()
+plot2a <- NYT.Totals2  %>% ggplot(., aes(x=date, y=New.Deaths)) + geom_line() + labs(title="New Deaths", subtitle="Excluding CA, NY, NJ, IL, MA") + geom_smooth(fill="white") + dark_mode()
+plot3a <- NYT.Totals2  %>%  ggplot(., aes(x=date, y=Cases)) + geom_line() + labs(title="Cases", subtitle="Excluding CA, NY, NJ, IL, MA") + dark_mode()
+plot4a <- NYT.Totals2  %>% ggplot(., aes(x=date, y=New.Cases)) + geom_line() + labs(title="New Cases", subtitle="Excluding CA, NY, NJ, IL, MA") + geom_smooth(fill="white") + dark_mode()
+(plot1a + plot2a) / (plot3a + plot4a)
+```
+
+
 ```{r}
 plot1 <- NYT.Totals %>% ggplot(., aes(x=date, y=Deaths)) + geom_line() + labs(title="Deaths") + scale_y_log10() + dark_mode()
 plot2 <- NYT.Totals %>% ggplot(., aes(x=date, y=New.Deaths)) + geom_line() + labs(title="New Deaths") + geom_smooth(fill="white") + dark_mode()
