@@ -2,6 +2,8 @@
 title: COVID-19 in Oregon
 author: Robert W. Walker
 date: '2020-05-26'
+output: html_document
+runtime: shiny
 ---
 
 <script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
@@ -10,9 +12,12 @@ date: '2020-05-26'
 <script src="/rmarkdown-libs/widgetframe-binding/widgetframe.js"></script>
 
 
-<div id="oregon-covid-data" class="section level1">
+<div id="section-oregon-covid-data" class="section level1">
 <h1>Oregon COVID data</h1>
-<p>I wanted to create a self-updating visualization of <a href="https://govstatus.egov.com/OR-OHA-COVID-19">the data on COVID-19 in the state of Oregon provided by OHA</a>. There is a <a href="https://rww.science/r/covid-maps/">separate page of daily maps</a>. Oregon reports a set of daily snapshots while progression requires ingesting new data each day so I began tracking it March 20; the process of scraping it is detailed in <a href="https://rww.science/r/covid-scraping/">a separate file</a>. This updates, expands, and consolidates two previous posts <a href="https://rww.science/2020/03/21/covid-19-in-oregon/">here</a> and <a href="https://rww.science/2020/03/24/covid-19-county-maps-for-oregon/">here</a>. A few cautionary notes. First, these are cumulative case counts that are almost certainly incomplete. Second, there is reason to believe that the death numbers may also be incomplete because it is dangerous to police and first responders are spread thinly.</p>
+<p>I wanted to create a self-updating visualization of <a href="https://govstatus.egov.com/OR-OHA-COVID-19">the data on COVID-19 in the state of Oregon provided by OHA</a>. I still have yet to do that but decided to <a href="https://rwwalker.shinyapps.io/FDTemp/">build this one to visualize the New York Times data</a>.</p>
+<iframe width="900" height="600" frameborder="no" src="https://rwwalker.shinyapps.io/FDTemp/">
+</iframe>
+<p>There is a <a href="https://rww.science/r/covid-maps/">separate page of daily maps</a>. Oregon reports a set of daily snapshots while progression requires ingesting new data each day so I began tracking it March 20; the process of scraping it is detailed in <a href="https://rww.science/r/covid-scraping/">a separate file</a>. This updates, expands, and consolidates two previous posts <a href="https://rww.science/2020/03/21/covid-19-in-oregon/">here</a> and <a href="https://rww.science/2020/03/24/covid-19-county-maps-for-oregon/">here</a>. A few cautionary notes. First, these are cumulative case counts that are almost certainly incomplete. Second, there is reason to believe that the death numbers may also be incomplete because it is dangerous to police and first responders are spread thinly.</p>
 <p>This post is current as of May 26, 2020; this first bit of R code loads the current data from my github.</p>
 <pre class="r"><code>library(tigris)
 library(rgdal)
@@ -27,7 +32,7 @@ library(hrbrthemes)
 library(widgetframe)
 load(url(paste0(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&quot;,Sys.Date(),&quot;.RData&quot;)))</code></pre>
 <p>Verifying, these data are current as of 2020-05-26 according to the loaded dataset.</p>
-<div id="a-running-commentary-on-the-data" class="section level3">
+<div id="section-a-running-commentary-on-the-data" class="section level3">
 <h3>A running commentary on the data</h3>
 <p>The central takeaway is that the underlying data reports are constantly changing over time. They are reporting new and different quantities and this destroys the comparability of data. Some of it can be reconstructed but much of it is only useful going forward and keeping the schema constant. I hope that will happen at some point.</p>
 <p><em>2020-03-23 and before</em> It started with only three tables. Then four, then five, adding footnotes and rearranging the data structures became common. Until the data structures solidify, maintaining comparability, and feeding appropriate data to the visualization tool continue to pose challenges and require a fair amount of tweaking.</p>
@@ -43,9 +48,9 @@ load(url(paste0(&quot;https://github.com/robertwwalker/rww-science/raw/master/co
 <p><em>2020-05-19</em> For strain on hospitals, Total was renamed to Total.staffed.</p>
 </div>
 </div>
-<div id="summarising-the-county-data-two-animations" class="section level1">
+<div id="section-summarising-the-county-data-two-animations" class="section level1">
 <h1>Summarising the County Data: Two Animations</h1>
-<div id="the-march-to-open" class="section level2">
+<div id="section-the-march-to-open" class="section level2">
 <h2>The March to Open</h2>
 <pre class="r"><code>TabA &lt;- rownames(table(Oregon.COVID$County))
 TabB &lt;- rownames(table(Oregon.COVID$Scraped.date))
@@ -64,7 +69,7 @@ OR.County.COVID &lt;- left_join(Base.OR.County, Oregon.COVID) %&gt;%
     mutate(RankNC = rank(Cases.MA7, ties.method = &quot;first&quot;), RankC = rank(Number.of.cases, ties.method = &quot;first&quot;)) %&gt;% 
     ungroup()</code></pre>
 </div>
-<div id="a-horse-race" class="section level2">
+<div id="section-a-horse-race" class="section level2">
 <h2>A Horse Race</h2>
 <pre class="r"><code># The Race to Open
 OR.County.COVID %&gt;% filter(RankC &gt; 26) %&gt;%
@@ -91,13 +96,13 @@ OR.County.COVID %&gt;% filter(RankC &gt; 26) %&gt;%
 </div>
 </div>
 </div>
-<div id="a-base-map" class="section level1">
+<div id="section-a-base-map" class="section level1">
 <h1>A base map</h1>
 <p>To build a map to work from, I need a map library. Load the <code>tigris</code> library then grab the map as an <code>sf</code> object; there is a <code>geom_sf</code> that makes them easy to work with. Finally, I join the map to the data and build a tool tip to display.</p>
 <pre class="r"><code>counties.t &lt;- counties(state = &quot;41&quot;, resolution = &quot;500k&quot;, class=&quot;sf&quot;)
-Map.Me &lt;- left_join(counties.t,Oregon.COVID, by=c(&quot;NAME&quot; = &quot;County&quot;))
+Map.Me &lt;- merge(counties.t,Oregon.COVID, by.x=&quot;NAME&quot;, by.y = &quot;County&quot;)
 Res.1 &lt;- Map.Me %&gt;% 
-  filter(date==Sys.Date()) %&gt;% 
+  filter(date==max(date)) %&gt;% 
   mutate(Percent.Positive = Number.of.cases / (Number.of.cases + Negative.test.results), 
          TTip = paste0(&quot;Percent Positive: &quot;, Percent.Positive, &quot;&lt;br&gt; Positive Tests: &quot;, Number.of.cases, &quot;&lt;br&gt; Negative Tests: &quot;, Negative.test.results, &quot;&lt;br&gt; Deaths: &quot;, Deaths))</code></pre>
 <p>I will use a ggplot to build Oregon’s map and fill it with case numbers. <code>geom_sf()</code> plots the geometry. I have to repel the labels to prevent print overlap, and scheme the colors. The last step is to animate it by time. If I stop the label repelling, they will not bounce but it adds excitement. There is a <a href="https://rww.science/r/covid/maps/">separate page of daily maps</a>.</p>
@@ -117,7 +122,7 @@ save_animation(GGAnim, file=&quot;./MapAnim.gif&quot;)</code></pre>
 <p class="caption">County animation</p>
 </div>
 </div>
-<div id="percent-positive-for-oregon-counties" class="section level1">
+<div id="section-percent-positive-for-oregon-counties" class="section level1">
 <h1>Percent Positive for Oregon Counties</h1>
 <p>Divide the number of cases by the total number of tests completed and show them by county.</p>
 <pre class="r"><code>library(plotly)
@@ -134,7 +139,7 @@ frameWidget(GGP)</code></pre>
 <div id="htmlwidget-1" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
 <script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/R/COVID/index_files/figure-html//widgets/widget_unnamed-chunk-5.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 </div>
-<div id="testing-in-oregon" class="section level1">
+<div id="section-testing-in-oregon" class="section level1">
 <h1>Testing in Oregon</h1>
 <p>What is the cumulative status of testing? These data, updated daily, render a count of all tests performed since January of 2020. I am cutting it off to the month of April to make the labels read.</p>
 <pre class="r"><code>library(ggrepel); library(magrittr)
@@ -152,14 +157,14 @@ Test1 &lt;- Oregon.Tests %&gt;% filter(date &gt; &quot;2020-05-01&quot;) %&gt;%
   geom_label(data=OR.Testing, aes(x=date, y=Total, label=Total), fill=&quot;white&quot;, color=&quot;black&quot;, inherit.aes = FALSE, vjust = 0, size=1.5)
 Test1</code></pre>
 <p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
-<div id="a-second-look-at-testing" class="section level2">
+<div id="section-a-second-look-at-testing" class="section level2">
 <h2>A Second Look at Testing</h2>
 <p>We should worry about the degree to which tests are applied at all randomly; they are surely not. As a result, what it means to calculate or break down probability based on having been tested is subject to so many important caveats that vary over time. It is important to note that this is also cumulative test percentages/proportions.</p>
 <pre class="r"><code>Test2 &lt;- Oregon.Tests %&gt;% ggplot(.) + aes(x=date, y=Outcome, fill=Category, label=Outcome) + geom_col(position = &quot;fill&quot;) + scale_fill_viridis_d() + labs(title=&quot;Cumulative Outcomes of COVID-19 Testing in Oregon&quot;, y=&quot;Proportion of Tests&quot;, x=&quot;Date&quot;, caption = &quot;data: https://govstatus.egov.com/OR-OHA-COVID-19 \n 04-22 Negative Tests Interpolated&quot;)
 Test2</code></pre>
 <p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 </div>
-<div id="a-better-look-at-this" class="section level2">
+<div id="section-a-better-look-at-this" class="section level2">
 <h2>A Better Look at This</h2>
 <p>Cumulative results are perhaps more informative when viewed alongside the marginal changes from day to day. Here, I show the proportion of test outcomes just considering those test results reported for that day – the daily distribution of test outcomes.</p>
 <pre class="r"><code>library(hrbrthemes); library(ggrepel); library(plotly)
@@ -184,7 +189,7 @@ frameWidget(RGP1)</code></pre>
 <div id="htmlwidget-2" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
 <script type="application/json" data-for="htmlwidget-2">{"x":{"url":"/R/COVID/index_files/figure-html//widgets/widget_unnamed-chunk-8.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 </div>
-<div id="per-capita-testing-by-county" class="section level2">
+<div id="section-per-capita-testing-by-county" class="section level2">
 <h2>Per-capita Testing by County</h2>
 <pre class="r"><code>library(rvest); library(htmltools)
 read_html(&quot;https://www.oregon-demographics.com/counties_by_population&quot;) %&gt;% html_nodes(&quot;table&quot;) %&gt;% .[1] %&gt;% html_table(fill=TRUE) %&gt;% data.frame() -&gt; ORPOP
@@ -200,7 +205,7 @@ frameWidget(R2GPM3)</code></pre>
 <div id="htmlwidget-3" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
 <script type="application/json" data-for="htmlwidget-3">{"x":{"url":"/R/COVID/index_files/figure-html//widgets/widget_unnamed-chunk-9.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 </div>
-<div id="new-cases-moving-average" class="section level2">
+<div id="section-new-cases-moving-average" class="section level2">
 <h2>New Cases: Moving Average</h2>
 <pre class="r"><code>OR.County.COVID &lt;- Oregon.COVID %&gt;% group_by(County) %&gt;% mutate(New.Cases = Number.of.cases - lag(Number.of.cases, order_by = date), New.Deaths = Deaths - lag(Deaths, order_by = date), Cases.MA7 = zoo::rollmean(New.Cases, 7, fill=NA), Deaths.MA7 = zoo::rollmean(New.Deaths, 7, fill=NA))
 OR.County.COVID.L &lt;- OR.County.COVID %&gt;% select(County, date, Cases.MA7, Deaths.MA7) %&gt;% pivot_longer(cols=c(Cases.MA7,Deaths.MA7), names_to = &quot;WhichVar&quot;, values_to = &quot;Outcome&quot;) %&gt;% mutate(WhichVar = str_remove(WhichVar, &quot;.MA7&quot;), date2 = as.Date(&quot;2020-05-20&quot;))
@@ -209,7 +214,7 @@ animate(GGP1, end_pause = 50, nframes=150)</code></pre>
 <p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-10-1.gif" /><!-- --></p>
 </div>
 </div>
-<div id="hospitalization-data-for-oregon" class="section level1">
+<div id="section-hospitalization-data-for-oregon" class="section level1">
 <h1>Hospitalization Data for Oregon</h1>
 <p>How do positive cases and hospitalization relate?</p>
 <pre class="r"><code>Hos1 &lt;- OR.Hosp %&gt;% 
@@ -229,7 +234,7 @@ Hos2 &lt;- OR.Hosp %&gt;%
 Hos1 + Hos2</code></pre>
 <p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 </div>
-<div id="age-data" class="section level1">
+<div id="section-age-data" class="section level1">
 <h1>Age Data</h1>
 <p>How does this break down by age? <em>I had to break this into two parts. They changed the classification method on March 25, 2020.</em></p>
 <pre class="r"><code>OR.Ages1 &lt;- OR.Ages %&gt;% 
@@ -248,7 +253,7 @@ Age2 &lt;- OR.Ages1 %&gt;% ggplot(.) +
  theme_minimal()
 Age1 + Age2</code></pre>
 <p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
-<div id="the-revision" class="section level2">
+<div id="section-the-revision" class="section level2">
 <h2>The Revision</h2>
 <pre class="r"><code>OR.Ages1 &lt;- OR.Ages %&gt;% filter(date &gt; &quot;2020-03-24&quot;)
 Age1 &lt;- OR.Ages1 %&gt;% 
@@ -267,7 +272,7 @@ Age1 + Age2</code></pre>
 <p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 </div>
 </div>
-<div id="males-and-females" class="section level1">
+<div id="section-males-and-females" class="section level1">
 <h1>Males and Females</h1>
 <p>From the outset, there have been more cases reported for females than males.</p>
 <pre class="r"><code>library(hrbrthemes)
@@ -295,14 +300,14 @@ OR.Sex.Reshape %&gt;%
   labs(x=&quot;Date&quot;, y=&quot;Case Fatality Ratio&quot;, title=&quot;Oregon&#39;s Cumulative Case Fatality Ratio by Sex&quot;)</code></pre>
 <p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 </div>
-<div id="analysis-over-time" class="section level1">
+<div id="section-analysis-over-time" class="section level1">
 <h1>Analysis over Time</h1>
-<div id="admissions" class="section level2">
+<div id="section-admissions" class="section level2">
 <h2>Admissions</h2>
 <pre class="r"><code>OR.COVID.Strain %&gt;% filter(COVID.19.Details==&quot;COVID-19 admissions&quot;) %&gt;% ggplot(., aes(x=date, y=COVID19.Patients)) + geom_point() + geom_line() + labs(title=&quot;COVID-19 Admissions&quot;, x=&quot;Date&quot;, y=&quot;Count&quot;, caption = &quot;data: https://govstatus.egov.com/OR-OHA-COVID-19 \n By: @PieRatio&quot;) + theme_ipsum() + theme(axis.text.x = element_text(angle = 90))</code></pre>
 <p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
 </div>
-<div id="hospital-capacity" class="section level2">
+<div id="section-hospital-capacity" class="section level2">
 <h2>Hospital Capacity</h2>
 <pre class="r"><code>OR.Hospital.Caps %&gt;% filter(date &gt; &quot;2020-03-28&quot;) %&gt;%
   filter(Hospital.Capacity != &quot;Ventilators&quot;) %&gt;% 
@@ -327,7 +332,7 @@ OR.Sex.Reshape %&gt;%
     facet_wrap(vars(Hospital.Capacity), scales = &quot;free_y&quot;) + labs(title=&quot;Oregon&#39;s Critical Resource Use&quot;)</code></pre>
 <p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
 </div>
-<div id="icu-beds" class="section level2">
+<div id="section-icu-beds" class="section level2">
 <h2>ICU Beds</h2>
 <pre class="r"><code>ICUB &lt;- OR.COVID.Strain %&gt;% 
   filter(str_detect(COVID.19.Details, &quot;ICU beds&quot;)) %&gt;% 
@@ -341,7 +346,7 @@ ICUB %&gt;%
   theme_ipsum() + theme(axis.text.x = element_text(angle = 90))</code></pre>
 <p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
 </div>
-<div id="ventilators" class="section level2">
+<div id="section-ventilators" class="section level2">
 <h2>Ventilators</h2>
 <pre class="r"><code>Vents &lt;- OR.COVID.Strain %&gt;% 
   filter(str_detect(COVID.19.Details, &quot;ventilators&quot;)) %&gt;% 

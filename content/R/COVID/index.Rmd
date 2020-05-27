@@ -2,6 +2,8 @@
 title: COVID-19 in Oregon
 author: Robert W. Walker
 date: '2020-05-26'
+output: html_document
+runtime: shiny
 ---
 
 ```{r setup, include=FALSE}
@@ -11,7 +13,11 @@ library(tidyverse)
 
 # Oregon COVID data
 
-I wanted to create a self-updating visualization of [the data on COVID-19 in the state of Oregon provided by OHA](https://govstatus.egov.com/OR-OHA-COVID-19).  There is a [separate page of daily maps](https://rww.science/r/covid-maps/).  Oregon reports a set of daily snapshots while progression requires ingesting new data each day so  I began tracking it March 20; the process of scraping it is detailed in [a separate file](https://rww.science/r/covid-scraping/).  This updates, expands, and consolidates two previous posts [here](https://rww.science/2020/03/21/covid-19-in-oregon/) and [here](https://rww.science/2020/03/24/covid-19-county-maps-for-oregon/).  A few cautionary notes.  First, these are cumulative case counts that are almost certainly incomplete.  Second, there is reason to believe that the death numbers may also be incomplete because it is dangerous to police and first responders are spread thinly.
+I wanted to create a self-updating visualization of [the data on COVID-19 in the state of Oregon provided by OHA](https://govstatus.egov.com/OR-OHA-COVID-19).  I still have yet to do that but decided to [build this one to visualize the New York Times data](https://rwwalker.shinyapps.io/FDTemp/).
+
+<iframe width="900" height="600" frameborder="no" src="https://rwwalker.shinyapps.io/FDTemp/"> </iframe>
+
+There is a [separate page of daily maps](https://rww.science/r/covid-maps/).  Oregon reports a set of daily snapshots while progression requires ingesting new data each day so  I began tracking it March 20; the process of scraping it is detailed in [a separate file](https://rww.science/r/covid-scraping/).  This updates, expands, and consolidates two previous posts [here](https://rww.science/2020/03/21/covid-19-in-oregon/) and [here](https://rww.science/2020/03/24/covid-19-county-maps-for-oregon/).  A few cautionary notes.  First, these are cumulative case counts that are almost certainly incomplete.  Second, there is reason to believe that the death numbers may also be incomplete because it is dangerous to police and first responders are spread thinly.
 
 This post is current as of May 26, 2020; this first bit of R code loads the current data from my github.
 
@@ -44,7 +50,7 @@ library(patchwork)
 library(hrbrthemes)
 library(widgetframe); library(here)
 library(magrittr)
-load(paste0(here(),"/content/R/COVID/data/OregonCOVID",Sys.Date(),".RData"))
+load(paste0(here(),"/content/R/COVID/data/OregonCOVID",Sys.Date()-1,".RData"))
 ```
 
 Verifying, these data are current as of `r max(Oregon.COVID$Scraped.date)` according to the loaded dataset.
@@ -131,9 +137,9 @@ To build a map to work from, I need a map library.  Load the `tigris` library th
 
 ```{r MapC, message=FALSE, warning=FALSE, results='hide'}
 counties.t <- counties(state = "41", resolution = "500k", class="sf")
-Map.Me <- left_join(counties.t,Oregon.COVID, by=c("NAME" = "County"))
+Map.Me <- merge(counties.t,Oregon.COVID, by.x="NAME", by.y = "County")
 Res.1 <- Map.Me %>% 
-  filter(date==Sys.Date()) %>% 
+  filter(date==max(date)) %>% 
   mutate(Percent.Positive = Number.of.cases / (Number.of.cases + Negative.test.results), 
          TTip = paste0("Percent Positive: ", Percent.Positive, "<br> Positive Tests: ", Number.of.cases, "<br> Negative Tests: ", Negative.test.results, "<br> Deaths: ", Deaths))
 ```
