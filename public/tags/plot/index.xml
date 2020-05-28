@@ -26,7 +26,7 @@
 
 &lt;div id=&#34;new-york-times-data-for-the-us&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;New York Times data for the US&lt;/h1&gt;
-&lt;p&gt;The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-05-27 13:31:58.&lt;/p&gt;
+&lt;p&gt;The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-05-28 13:41:57.&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;the-basic-state-of-things&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;The Basic State of Things&lt;/h1&gt;
@@ -47,7 +47,7 @@ plot4 &amp;lt;- NYT.Totals %&amp;gt;% ggplot(., aes(x=date, y=New.Cases)) + geom
 &lt;div id=&#34;wheres-the-current-problem&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Where’s the Current Problem?&lt;/h2&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;NYTD1 &amp;lt;- Rect.NYT %&amp;gt;% group_by(state) %&amp;gt;% mutate(Cases.7DD = (cases - lag(cases, 7, order_by = date))/ lag(cases, 7, order_by = date), Deaths.7DD = (deaths - lag(deaths, 7, order_by = date))/ lag(deaths, 7, order_by = date))
-NYTD1 %&amp;gt;% filter(date &amp;gt; as.Date(&amp;quot;2020-05-16&amp;quot;)) %&amp;gt;% mutate(Avg.7DD = mean(Cases.7DD, na.rm=TRUE)) %&amp;gt;% ggplot(., aes(x=forcats::fct_reorder(state, Avg.7DD), y=Avg.7DD, fill=state)) + geom_col() + coord_flip() + guides(fill=FALSE) + labs(x=&amp;quot;&amp;quot;, y=&amp;quot;Avg. 7 Day Change over the last week&amp;quot;, title=&amp;quot;Average 7 Day Percent Change in New COVID-19 Cases \nAveraged over the last week&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+NYTD1 %&amp;gt;% filter(date &amp;gt; Sys.Date()-8) %&amp;gt;% mutate(Avg.7DD = mean(Cases.7DD, na.rm=TRUE)) %&amp;gt;% top_n(25, Avg.7DD) %&amp;gt;% ggplot(., aes(x=forcats::fct_reorder(state, Avg.7DD), y=Avg.7DD, fill=state)) + geom_col() + coord_flip() + guides(fill=FALSE) + labs(x=&amp;quot;&amp;quot;, y=&amp;quot;Avg. 7 Day Change over the last week&amp;quot;, title=&amp;quot;Average 7 Day Percent Change in New COVID-19 Cases \nAveraged over the last week&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2020-04-03-new-york-times-data-on-covid/index_files/figure-html/unnamed-chunk-2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;the-initial-vs.-the-subsequent&#34; class=&#34;section level2&#34;&gt;

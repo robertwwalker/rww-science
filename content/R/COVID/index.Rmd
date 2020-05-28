@@ -19,7 +19,7 @@ I wanted to create a self-updating visualization of [the data on COVID-19 in the
 
 There is a [separate page of daily maps](https://rww.science/r/covid-maps/).  Oregon reports a set of daily snapshots while progression requires ingesting new data each day so  I began tracking it March 20; the process of scraping it is detailed in [a separate file](https://rww.science/r/covid-scraping/).  This updates, expands, and consolidates two previous posts [here](https://rww.science/2020/03/21/covid-19-in-oregon/) and [here](https://rww.science/2020/03/24/covid-19-county-maps-for-oregon/).  A few cautionary notes.  First, these are cumulative case counts that are almost certainly incomplete.  Second, there is reason to believe that the death numbers may also be incomplete because it is dangerous to police and first responders are spread thinly.
 
-This post is current as of May 26, 2020; this first bit of R code loads the current data from my github.
+This post is current as of May 28, 2020; this first bit of R code loads the current data from my github.
 
 ```{r, eval=FALSE}
 library(tigris)
@@ -136,7 +136,7 @@ OR.County.COVID %>% filter(RankC > 26) %>%
 To build a map to work from, I need a map library.  Load the `tigris` library then grab the map as an `sf` object; there is a `geom_sf` that makes them easy to work with.  Finally, I join the map to the data and build a tool tip to display.
 
 ```{r MapC, message=FALSE, warning=FALSE, results='hide'}
-counties.t <- counties(state = "41", resolution = "500k", class="sf")
+load("data/CountyMap.RData")
 Map.Me <- merge(counties.t,Oregon.COVID, by.x="NAME", by.y = "County")
 Res.1 <- Map.Me %>% 
   filter(date==max(date)) %>% 
