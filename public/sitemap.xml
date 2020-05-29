@@ -8,17 +8,12 @@
   </url>
   
   <url>
-    <loc>/r/covid/</loc>
-    <lastmod>2020-05-28T13:49:51-07:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/tags/gganimate/</loc>
     <lastmod>2020-05-28T13:49:51-07:00</lastmod>
   </url>
   
   <url>
-    <loc>/2020/05/26/new-york-times-data-on-covid/</loc>
+    <loc>/2020/05/28/new-york-times-data-on-covid/</loc>
     <lastmod>2020-05-28T13:49:51-07:00</lastmod>
   </url>
   
@@ -39,6 +34,11 @@
   
   <url>
     <loc>/tags/</loc>
+    <lastmod>2020-05-28T13:49:51-07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/r/covid/</loc>
     <lastmod>2020-05-28T13:49:51-07:00</lastmod>
   </url>
   
@@ -188,12 +188,12 @@
   </url>
   
   <url>
-    <loc>/tags/python/</loc>
+    <loc>/categories/python/</loc>
     <lastmod>2020-02-24T00:09:44-08:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/python/</loc>
+    <loc>/tags/python/</loc>
     <lastmod>2020-02-24T00:09:44-08:00</lastmod>
   </url>
   
@@ -233,12 +233,12 @@
   </url>
   
   <url>
-    <loc>/tags/blogdown/</loc>
+    <loc>/categories/blogdown/</loc>
     <lastmod>2020-02-04T14:46:56-08:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/blogdown/</loc>
+    <loc>/tags/blogdown/</loc>
     <lastmod>2020-02-04T14:46:56-08:00</lastmod>
   </url>
   
@@ -433,13 +433,13 @@
   </url>
   
   <url>
-    <loc>/categories/tidytext/</loc>
-    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
+    <loc>/tags/tidytext/</loc>
+    <lastmod>2020-02-05T13:19:17-08:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/tidytext/</loc>
-    <lastmod>2020-02-05T13:19:17-08:00</lastmod>
+    <loc>/categories/tidytext/</loc>
+    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
   </url>
   
   <url>
