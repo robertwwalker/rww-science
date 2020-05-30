@@ -29,7 +29,7 @@
   
   <url>
     <loc>/</loc>
-    <lastmod>2020-05-29T13:01:08-07:00</lastmod>
+    <lastmod>2020-05-30T13:33:43-07:00</lastmod>
   </url>
   
   <url>
@@ -44,7 +44,7 @@
   
   <url>
     <loc>/r/covid-maps/</loc>
-    <lastmod>2020-05-29T13:01:08-07:00</lastmod>
+    <lastmod>2020-05-30T13:33:43-07:00</lastmod>
   </url>
   
   <url>
@@ -188,22 +188,22 @@
   </url>
   
   <url>
-    <loc>/tags/python/</loc>
-    <lastmod>2020-02-24T00:09:44-08:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/categories/python/</loc>
     <lastmod>2020-02-24T00:09:44-08:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/reticulate/</loc>
+    <loc>/tags/python/</loc>
     <lastmod>2020-02-24T00:09:44-08:00</lastmod>
   </url>
   
   <url>
     <loc>/tags/reticulate/</loc>
+    <lastmod>2020-02-24T00:09:44-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/reticulate/</loc>
     <lastmod>2020-02-24T00:09:44-08:00</lastmod>
   </url>
   

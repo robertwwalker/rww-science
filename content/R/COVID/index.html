@@ -31,7 +31,7 @@ library(patchwork)
 library(hrbrthemes)
 library(widgetframe)
 load(url(paste0(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&quot;,Sys.Date(),&quot;.RData&quot;)))</code></pre>
-<p>Verifying, these data are current as of 2020-05-28 according to the loaded dataset.</p>
+<p>Verifying, these data are current as of 2020-05-30 according to the loaded dataset.</p>
 <div id="section-a-running-commentary-on-the-data" class="section level3">
 <h3>A running commentary on the data</h3>
 <p>The central takeaway is that the underlying data reports are constantly changing over time. They are reporting new and different quantities and this destroys the comparability of data. Some of it can be reconstructed but much of it is only useful going forward and keeping the schema constant. I hope that will happen at some point.</p>
@@ -99,7 +99,10 @@ OR.County.COVID %&gt;% filter(RankC &gt; 26) %&gt;%
 <div id="section-a-base-map" class="section level1">
 <h1>A base map</h1>
 <p>To build a map to work from, I need a map library. Load the <code>tigris</code> library then grab the map as an <code>sf</code> object; there is a <code>geom_sf</code> that makes them easy to work with. Finally, I join the map to the data and build a tool tip to display.</p>
-<pre class="r"><code>Map.Me &lt;- merge(counties.t,Oregon.COVID, by.x=&quot;NAME&quot;, by.y = &quot;County&quot;)
+<pre class="r"><code>Names.AXIS &lt;- names(table(counties.t$NAME))
+Date.AXIS &lt;- names(table(Oregon.COVID$date))
+OR.COVG &lt;- expand.grid(NAMES=Names.AXIS, date=Date.AXIS, stringsAsFactors = FALSE) %&gt;% mutate(date = as.Date(date)) %&gt;% left_join(., Oregon.COVID, by = c(&quot;NAMES&quot; = &quot;County&quot;, &quot;date&quot; = &quot;date&quot;))
+Map.Me &lt;- merge(counties.t,OR.COVG, by.x=&quot;NAME&quot;, by.y = &quot;NAMES&quot;)
 Res.1 &lt;- Map.Me %&gt;% 
   filter(date==max(date)) %&gt;% 
   mutate(Percent.Positive = Number.of.cases / (Number.of.cases + Negative.test.results), 
@@ -113,7 +116,7 @@ Res.1 &lt;- Map.Me %&gt;%
     colour = &quot;white&quot;,
     segment.colour = &quot;white&quot;,
     size = 3,
-    box.padding = unit(0.05, &quot;lines&quot;))  + scale_fill_continuous_tableau(&quot;Red&quot;) + theme_minimal() + labs(title=&quot;COVID-19 in Oregon&quot;, subtitle=&quot;{frame_time}&quot;, x=&quot;&quot;, y=&quot;&quot;, caption=&quot;Made with R, ggplot2, and ggrepel by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19&quot;) + transition_time(date)
+    box.padding = unit(0.05, &quot;lines&quot;))  + scale_fill_viridis_c() + theme_minimal() + labs(title=&quot;COVID-19 in Oregon&quot;, subtitle=&quot;{frame_time}&quot;, x=&quot;&quot;, y=&quot;&quot;, caption=&quot;Made with R, ggplot2, and ggrepel by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19&quot;) + transition_time(date)
 GGAnim &lt;- animate(Anim1, end_pause=50, nframes=200, width = 1200, height = 900)
 save_animation(GGAnim, file=&quot;./MapAnim.gif&quot;)</code></pre>
 <div class="figure">

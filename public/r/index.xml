@@ -43,7 +43,7 @@ library(patchwork)
 library(hrbrthemes)
 library(widgetframe)
 load(url(paste0(&amp;quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&amp;quot;,Sys.Date(),&amp;quot;.RData&amp;quot;)))&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Verifying, these data are current as of 2020-05-28 according to the loaded dataset.&lt;/p&gt;
+&lt;p&gt;Verifying, these data are current as of 2020-05-30 according to the loaded dataset.&lt;/p&gt;
 &lt;div id=&#34;section-a-running-commentary-on-the-data&#34; class=&#34;section level3&#34;&gt;
 &lt;h3&gt;A running commentary on the data&lt;/h3&gt;
 &lt;p&gt;The central takeaway is that the underlying data reports are constantly changing over time. They are reporting new and different quantities and this destroys the comparability of data. Some of it can be reconstructed but much of it is only useful going forward and keeping the schema constant. I hope that will happen at some point.&lt;/p&gt;
@@ -111,7 +111,10 @@ OR.County.COVID %&amp;gt;% filter(RankC &amp;gt; 26) %&amp;gt;%
 &lt;div id=&#34;section-a-base-map&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;A base map&lt;/h1&gt;
 &lt;p&gt;To build a map to work from, I need a map library. Load the &lt;code&gt;tigris&lt;/code&gt; library then grab the map as an &lt;code&gt;sf&lt;/code&gt; object; there is a &lt;code&gt;geom_sf&lt;/code&gt; that makes them easy to work with. Finally, I join the map to the data and build a tool tip to display.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Map.Me &amp;lt;- merge(counties.t,Oregon.COVID, by.x=&amp;quot;NAME&amp;quot;, by.y = &amp;quot;County&amp;quot;)
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Names.AXIS &amp;lt;- names(table(counties.t$NAME))
+Date.AXIS &amp;lt;- names(table(Oregon.COVID$date))
+OR.COVG &amp;lt;- expand.grid(NAMES=Names.AXIS, date=Date.AXIS, stringsAsFactors = FALSE) %&amp;gt;% mutate(date = as.Date(date)) %&amp;gt;% left_join(., Oregon.COVID, by = c(&amp;quot;NAMES&amp;quot; = &amp;quot;County&amp;quot;, &amp;quot;date&amp;quot; = &amp;quot;date&amp;quot;))
+Map.Me &amp;lt;- merge(counties.t,OR.COVG, by.x=&amp;quot;NAME&amp;quot;, by.y = &amp;quot;NAMES&amp;quot;)
 Res.1 &amp;lt;- Map.Me %&amp;gt;% 
   filter(date==max(date)) %&amp;gt;% 
   mutate(Percent.Positive = Number.of.cases / (Number.of.cases + Negative.test.results), 
@@ -125,7 +128,7 @@ Res.1 &amp;lt;- Map.Me %&amp;gt;%
     colour = &amp;quot;white&amp;quot;,
     segment.colour = &amp;quot;white&amp;quot;,
     size = 3,
-    box.padding = unit(0.05, &amp;quot;lines&amp;quot;))  + scale_fill_continuous_tableau(&amp;quot;Red&amp;quot;) + theme_minimal() + labs(title=&amp;quot;COVID-19 in Oregon&amp;quot;, subtitle=&amp;quot;{frame_time}&amp;quot;, x=&amp;quot;&amp;quot;, y=&amp;quot;&amp;quot;, caption=&amp;quot;Made with R, ggplot2, and ggrepel by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19&amp;quot;) + transition_time(date)
+    box.padding = unit(0.05, &amp;quot;lines&amp;quot;))  + scale_fill_viridis_c() + theme_minimal() + labs(title=&amp;quot;COVID-19 in Oregon&amp;quot;, subtitle=&amp;quot;{frame_time}&amp;quot;, x=&amp;quot;&amp;quot;, y=&amp;quot;&amp;quot;, caption=&amp;quot;Made with R, ggplot2, and ggrepel by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19&amp;quot;) + transition_time(date)
 GGAnim &amp;lt;- animate(Anim1, end_pause=50, nframes=200, width = 1200, height = 900)
 save_animation(GGAnim, file=&amp;quot;./MapAnim.gif&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
 &lt;div class=&#34;figure&#34;&gt;
