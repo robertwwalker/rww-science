@@ -1,7 +1,7 @@
 ---
 title: COVID-19 Maps for Oregon
 author: Robert W. Walker
-date: '2020-05-20'
+date: '2020-05-30'
 ---
 
 ```{r setup, include=FALSE}
@@ -523,8 +523,21 @@ Plot.COVID("2020-05-28", Map.Me)
 ```
 
 
-
 ## The Result for 05/29/2020
+
+```{r}
+Plot.COVID("2020-05-29", Map.Me)
+```
+
+## The Result for 05/30/2020
+
+```{r}
+Plot.COVID("2020-05-30", Map.Me)
+```
+
+
+
+## The Result for 05/31/2020
 
 ```{r, warning=FALSE, message=FALSE}
 library(widgetframe); library(ggthemes); library(RColorBrewer)
@@ -536,7 +549,7 @@ Res1 <- ggplot(Res.1, aes(geometry=geometry, fill=Number.of.cases, label=NAME, t
   geom_sf() + 
   scale_fill_viridis_c(option = "A") +
   theme_map() + 
-  labs(title="COVID-19 in Oregon", subtitle=Sys.Date()-1, x="", y="", caption="Made with R, ggplot2, and ggrepel by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19", fill="COVID-19 Cases")
+  labs(title="COVID-19 in Oregon", subtitle=Sys.Date(), x="", y="", caption="Made with R, ggplot2, and ggrepel by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19", fill="COVID-19 Cases")
 ```
 
 
