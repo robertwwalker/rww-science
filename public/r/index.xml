@@ -43,7 +43,7 @@ library(patchwork)
 library(hrbrthemes)
 library(widgetframe)
 load(url(paste0(&amp;quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&amp;quot;,Sys.Date(),&amp;quot;.RData&amp;quot;)))&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Verifying, these data are current as of 2020-05-31 according to the loaded dataset.&lt;/p&gt;
+&lt;p&gt;Verifying, these data are current as of 2020-06-01 according to the loaded dataset.&lt;/p&gt;
 &lt;div id=&#34;section-a-running-commentary-on-the-data&#34; class=&#34;section level3&#34;&gt;
 &lt;h3&gt;A running commentary on the data&lt;/h3&gt;
 &lt;p&gt;The central takeaway is that the underlying data reports are constantly changing over time. They are reporting new and different quantities and this destroys the comparability of data. Some of it can be reconstructed but much of it is only useful going forward and keeping the schema constant. I hope that will happen at some point.&lt;/p&gt;
@@ -119,16 +119,16 @@ Res.1 &amp;lt;- Map.Me %&amp;gt;%
   filter(date==max(date)) %&amp;gt;% 
   mutate(Percent.Positive = Number.of.cases / (Number.of.cases + Negative.test.results), 
          TTip = paste0(&amp;quot;Percent Positive: &amp;quot;, Percent.Positive, &amp;quot;&amp;lt;br&amp;gt; Positive Tests: &amp;quot;, Number.of.cases, &amp;quot;&amp;lt;br&amp;gt; Negative Tests: &amp;quot;, Negative.test.results, &amp;quot;&amp;lt;br&amp;gt; Deaths: &amp;quot;, Deaths))&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;I will use a ggplot to build Oregon’s map and fill it with case numbers. &lt;code&gt;geom_sf()&lt;/code&gt; plots the geometry. I have to repel the labels to prevent print overlap, and scheme the colors. The last step is to animate it by time. If I stop the label repelling, they will not bounce but it adds excitement. There is a &lt;a href=&#34;https://rww.science/r/covid/maps/&#34;&gt;separate page of daily maps&lt;/a&gt;.&lt;/p&gt;
+&lt;p&gt;I will use a ggplot to build Oregon’s map and fill it with case numbers. &lt;code&gt;geom_sf()&lt;/code&gt; plots the geometry. Labels for the counties, scheme the colors, and animate it by time to complete the graphic. There is a &lt;a href=&#34;https://rww.science/r/covid/maps/&#34;&gt;separate page of daily maps&lt;/a&gt;.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Anim1 &amp;lt;- Map.Me %&amp;gt;% 
   ggplot(., aes(geometry=geometry, fill=Number.of.cases, label=NAME, group=NAME)) + 
   geom_sf() +
-  geom_label_repel(stat = &amp;quot;sf_coordinates&amp;quot;,
+  geom_label(stat = &amp;quot;sf_coordinates&amp;quot;,
     min.segment.length = 0,
     colour = &amp;quot;white&amp;quot;,
     segment.colour = &amp;quot;white&amp;quot;,
     size = 3,
-    box.padding = unit(0.05, &amp;quot;lines&amp;quot;))  + scale_fill_viridis_c() + theme_minimal() + labs(title=&amp;quot;COVID-19 in Oregon&amp;quot;, subtitle=&amp;quot;{frame_time}&amp;quot;, x=&amp;quot;&amp;quot;, y=&amp;quot;&amp;quot;, caption=&amp;quot;Made with R, ggplot2, and ggrepel by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19&amp;quot;) + transition_time(date)
+    box.padding = unit(0.05, &amp;quot;lines&amp;quot;))  + scale_fill_viridis_c() + theme_minimal() + labs(title=&amp;quot;COVID-19 in Oregon&amp;quot;, subtitle=&amp;quot;{frame_time}&amp;quot;, x=&amp;quot;&amp;quot;, y=&amp;quot;&amp;quot;, caption=&amp;quot;Made with R, ggplot2, and gganimate by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19&amp;quot;) + transition_time(date)
 GGAnim &amp;lt;- animate(Anim1, end_pause=50, nframes=200, width = 1200, height = 900)
 save_animation(GGAnim, file=&amp;quot;./MapAnim.gif&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
 &lt;div class=&#34;figure&#34;&gt;
@@ -402,12 +402,11 @@ library(gganimate)
 library(patchwork)
 library(hrbrthemes)
 load(url(paste0(&amp;quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&amp;quot;,Sys.Date(),&amp;quot;.RData&amp;quot;)))&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Verifying, these data are current as of 2020-05-31 according to the loaded dataset.&lt;/p&gt;
+&lt;p&gt;Verifying, these data are current as of 2020-06-01 according to the loaded dataset.&lt;/p&gt;
 &lt;div id=&#34;a-base-map&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;A base map&lt;/h1&gt;
 &lt;p&gt;To build a map to work from, I need a map library. Load the &lt;code&gt;tigris&lt;/code&gt; library then grab the map as an &lt;code&gt;sf&lt;/code&gt; object; there is a &lt;code&gt;geom_sf&lt;/code&gt; that makes them easy to work with. Finally, I join the map to the data.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;counties.t &amp;lt;- counties(state = &amp;quot;41&amp;quot;, resolution = &amp;quot;500k&amp;quot;, class=&amp;quot;sf&amp;quot;)
-Map.Me &amp;lt;- left_join(counties.t,Oregon.COVID, by=c(&amp;quot;NAME&amp;quot; = &amp;quot;County&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Map.Me &amp;lt;- left_join(counties.t,Oregon.COVID, by=c(&amp;quot;NAME&amp;quot; = &amp;quot;County&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 &lt;div id=&#34;daily-maps&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;Daily Maps&lt;/h1&gt;
@@ -800,6 +799,11 @@ data %&amp;gt;% filter(date==date1) %&amp;gt;%
 &lt;/div&gt;
 &lt;div id=&#34;the-result-for-05312020&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;The Result for 05/31/2020&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Plot.COVID(&amp;quot;2020-05-31&amp;quot;, Map.Me)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/covid-maps/index_files/figure-html/unnamed-chunk-79-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-result-for-06012020&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;The Result for 06/01/2020&lt;/h2&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(widgetframe); library(ggthemes); library(RColorBrewer)
 Map.Me &amp;lt;- Map.Me %&amp;gt;% 
   mutate(TTip = paste0(&amp;quot;Deaths: &amp;quot;,Deaths,&amp;quot;&amp;lt;br&amp;gt; Negative Tests:&amp;quot;,Negative.test.results))
@@ -817,7 +821,7 @@ Res1 &amp;lt;- ggplot(Res.1, aes(geometry=geometry, fill=Number.of.cases, label=
 ggp &amp;lt;- ggplotly(Res1)
 frameWidget(ggp)&lt;/code&gt;&lt;/pre&gt;
 &lt;div id=&#34;htmlwidget-1&#34; style=&#34;width:100%;height:480px;&#34; class=&#34;widgetframe html-widget&#34;&gt;&lt;/div&gt;
-&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-1&#34;&gt;{&#34;x&#34;:{&#34;url&#34;:&#34;/R/covid-maps/index_files/figure-html//widgets/widget_unnamed-chunk-80.html&#34;,&#34;options&#34;:{&#34;xdomain&#34;:&#34;*&#34;,&#34;allowfullscreen&#34;:false,&#34;lazyload&#34;:false}},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-1&#34;&gt;{&#34;x&#34;:{&#34;url&#34;:&#34;/R/covid-maps/index_files/figure-html//widgets/widget_unnamed-chunk-81.html&#34;,&#34;options&#34;:{&#34;xdomain&#34;:&#34;*&#34;,&#34;allowfullscreen&#34;:false,&#34;lazyload&#34;:false}},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 </description>
