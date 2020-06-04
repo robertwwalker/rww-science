@@ -43,7 +43,7 @@ glimpse(Oregon.Nonprofits)
 
 ## A basic zip code map
 
-```{r, tigris_use_cache = TRUE, results='hide'}
+```{r, tigris_use_cache = FALSE, results='hide'}
 or_zips <- zctas(cb = TRUE, starts_with = "97", class="sf")
 or_zips %>% ggplot(., aes(geometry=geometry, group=ZCTA5CE10)) + geom_sf()
 ```
@@ -54,7 +54,7 @@ I am not exactly sure why this happens.  For whatever reason, the map always has
 
 ```{r}
 ON <- Oregon.Nonprofits %>% group_by(zip_code) %>% summarise(Nonprofits = n_distinct(registry_number)) %>% ungroup()
-Map.Me <- left_join(or_zips, ON, by=c("ZCTA5CE10" = "zip_code"))
+Map.Me <- merge(or_zips, ON, by.x= "ZCTA5CE10", by.y = "zip_code")
 Map.Me %>% ggplot(., aes(geometry=geometry, fill=Nonprofits)) + geom_sf() + scale_fill_viridis_c()
 ```
 
@@ -71,5 +71,24 @@ Oregon.Nonprofits %>%
   labs(title="The Distribution of Oregon Non-Profits", fill="Type", x="") + 
   guides(fill=FALSE) + 
   theme_minimal()
+```
+# A Leaflet
+
+```{r}
+library(tidyverse)
+library(leaflet)
+library(stringr)
+library(sf)
+library(here)
+library(widgetframe)
+library(htmlwidgets)
+library(htmltools)
+lf <- Map.Me %>% sf::st_transform(crs = '+proj=longlat +datum=WGS84') %>% leaflet() %>%
+addPolygons(color = "#444444", weight = 1, smoothFactor = 0.5,
+    opacity = 1.0, fillOpacity = 0.5,
+    fillColor = ~colorQuantile("YlOrRd", Nonprofits)(Nonprofits),
+    highlightOptions = highlightOptions(color = "white", weight = 2,
+      bringToFront = TRUE))
+frameWidget(lf)
 ```
 
