@@ -82,7 +82,7 @@ The central takeaway is that the underlying data reports are constantly changing
 
 *2020-05-19* For strain on hospitals, Total was renamed to Total.staffed.
 
-*2020-06-06* The state of Oregon has stopped reporting the full set of tables on weekends, switching instead to a report style.  Those aren't easily made to scrape because the doc titles are variable and the data is unformatted.  For now, I will skip Saturdays and had added a new weekend script to take the daily tables from .csv and merge them.  Only the graphics on testing, cases, and deaths are now a full times series; the rest are M-F.
+*2020-06-06* The state of Oregon has stopped reporting the full set of tables on weekends, switching instead to a report style.  Those aren't easily made to scrape because the doc titles are variable and the data is unformatted.  For now, I will skip Saturdays and had added a new weekend script to take the daily tables from .csv and merge them.  Only the graphics on testing, cases, and deaths are now a full times series; the rest are M-F 
 
 # Summarising the County Data: Two Animations
 

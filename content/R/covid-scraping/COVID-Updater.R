@@ -18,7 +18,7 @@ OHA.Corona <- function(website, date) {
   # Acquire the scraped date from the heading on the page.  The rest is 5
   Scraped.date <- names(COVID.Head)[1] %>% 
     str_remove(.,"X.Data.current.as.of.") %>% 
-    str_remove(., "..8.00.a.m..Updated.daily.")
+    str_remove(., "..12.01.a.m..Updated.Monday...Friday..")
   names(COVID.Head) <- c("Category","Outcome") # Change the names
   COVID.Head <- COVID.Head %>% 
 #    mutate(Outcome = str_replace(Outcome, "Pending*", "NA")) %>%
@@ -37,6 +37,7 @@ OHA.Corona <- function(website, date) {
 #    mutate(Negative = as.integer(str_replace(Negative, "Pending*", "NA"))) %>%
     mutate(date=as.Date(date), # 5
            Scraped.date = as.Date(Scraped.date,"%m.%d.%y"), 
+           Negatives3 = comma.rm.to.numeric(Negatives3),
            Negative.test.results = Negatives3,
            Deaths = Deaths2,
            Number.of.cases = Cases1)
