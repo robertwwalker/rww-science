@@ -1,7 +1,7 @@
 ---
 title: New York Times Data on COVID
 author: Robert W. Walker
-date: '2020-05-30'
+date: '2020-06-07'
 slug: new-york-times-data-on-covid
 categories:
   - R
@@ -28,7 +28,7 @@ projects: []
 
 <div id="new-york-times-data-for-the-us" class="section level1">
 <h1>New York Times data for the US</h1>
-<p>The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-06-08 13:45:38.</p>
+<p>The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-06-09 14:08:49.</p>
 </div>
 <div id="the-basic-state-of-things" class="section level1">
 <h1>The Basic State of Things</h1>
@@ -49,7 +49,7 @@ plot4 &lt;- NYT.Totals %&gt;% ggplot(., aes(x=date, y=New.Cases)) + geom_line() 
 <div id="wheres-the-current-problem" class="section level2">
 <h2>Where’s the Current Problem?</h2>
 <pre class="r"><code>NYTD1 &lt;- Rect.NYT %&gt;% group_by(state) %&gt;% mutate(Cases.7DD = (cases - lag(cases, 7, order_by = date))/ lag(cases, 7, order_by = date), Deaths.7DD = (deaths - lag(deaths, 7, order_by = date))/ lag(deaths, 7, order_by = date))
-NYTD1 %&gt;% filter(date &gt; Sys.Date()-8) %&gt;% mutate(Avg.7DD = mean(Cases.7DD, na.rm=TRUE)) %&gt;% top_n(25, Avg.7DD) %&gt;% ggplot(., aes(x=forcats::fct_reorder(state, Avg.7DD), y=Avg.7DD, fill=state)) + geom_col() + coord_flip() + guides(fill=FALSE) + labs(x=&quot;&quot;, y=&quot;Avg. 7 Day Change over the last week&quot;, title=&quot;Average 7 Day Percent Change in New COVID-19 Cases \nAveraged over the last week&quot;)</code></pre>
+NYTD1 %&gt;% filter(date &gt; Sys.Date()-8) %&gt;% group_by(state) %&gt;% summarise(Avg.7DD = mean(Cases.7DD, na.rm=TRUE)) %&gt;% top_n(20, Avg.7DD) %&gt;% ggplot(., aes(x=forcats::fct_reorder(state, Avg.7DD), y=Avg.7DD, fill=state)) + geom_col() + coord_flip() + guides(fill=FALSE) + labs(x=&quot;&quot;, y=&quot;Avg. 7 Day Change over the last week&quot;, title=&quot;Average 7 Day Percent Change in New COVID-19 Cases \nAveraged over the last week&quot;)</code></pre>
 <p><img src="/post/2020-04-03-new-york-times-data-on-covid/index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
 </div>
 <div id="the-initial-vs.-the-subsequent" class="section level2">

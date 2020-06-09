@@ -1,7 +1,7 @@
 ---
 title: New York Times Data on COVID
 author: Robert W. Walker
-date: '2020-05-30'
+date: '2020-06-07'
 slug: new-york-times-data-on-covid
 categories:
   - R
@@ -47,7 +47,7 @@ plot4 <- NYT.Totals %>% ggplot(., aes(x=date, y=New.Cases)) + geom_line() + labs
 
 ```{r}
 NYTD1 <- Rect.NYT %>% group_by(state) %>% mutate(Cases.7DD = (cases - lag(cases, 7, order_by = date))/ lag(cases, 7, order_by = date), Deaths.7DD = (deaths - lag(deaths, 7, order_by = date))/ lag(deaths, 7, order_by = date))
-NYTD1 %>% filter(date > Sys.Date()-8) %>% mutate(Avg.7DD = mean(Cases.7DD, na.rm=TRUE)) %>% top_n(25, Avg.7DD) %>% ggplot(., aes(x=forcats::fct_reorder(state, Avg.7DD), y=Avg.7DD, fill=state)) + geom_col() + coord_flip() + guides(fill=FALSE) + labs(x="", y="Avg. 7 Day Change over the last week", title="Average 7 Day Percent Change in New COVID-19 Cases \nAveraged over the last week")
+NYTD1 %>% filter(date > Sys.Date()-8) %>% group_by(state) %>% summarise(Avg.7DD = mean(Cases.7DD, na.rm=TRUE)) %>% top_n(20, Avg.7DD) %>% ggplot(., aes(x=forcats::fct_reorder(state, Avg.7DD), y=Avg.7DD, fill=state)) + geom_col() + coord_flip() + guides(fill=FALSE) + labs(x="", y="Avg. 7 Day Change over the last week", title="Average 7 Day Percent Change in New COVID-19 Cases \nAveraged over the last week")
 ```
 
 
