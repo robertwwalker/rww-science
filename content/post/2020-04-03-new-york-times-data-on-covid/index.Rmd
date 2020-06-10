@@ -22,7 +22,7 @@ projects: []
 
 # New York Times data for the US
 
-The New York Times has a wonderful compilation of United States on the novel coronavirus.  The data update automatically so the following graphics were generated with data retrieved at `r Sys.time()`. 
+The New York Times has a wonderful compilation of United States on the novel coronavirus.  The data update automatically so the following graphics were generated with data retrieved at `r Sys.time()`.
 
 
 # The Basic State of Things
