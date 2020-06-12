@@ -14,8 +14,8 @@ runtime: shiny
 
 <div id="section-oregon-covid-data" class="section level1">
 <h1>Oregon COVID data</h1>
-<p>I wanted to create a self-updating visualization of <a href="https://govstatus.egov.com/OR-OHA-COVID-19">the data on COVID-19 in the state of Oregon provided by OHA</a>. I still have yet to do that but decided to <a href="https://rwwalker.shinyapps.io/FDTemp/">build this one to visualize the New York Times data</a>.</p>
-<iframe width="900" height="600" frameborder="no" src="https://rwwalker.shinyapps.io/FDTemp/">
+<p>I wanted to create a self-updating visualization of <a href="https://govstatus.egov.com/OR-OHA-COVID-19">the data on COVID-19 in the state of Oregon provided by OHA</a>. I still have yet to do that but decided to <a href="https://75.164.182.173:3838/rob/COVID19">build this one to visualize the New York Times data</a>.</p>
+<iframe width="900" height="600" frameborder="no" src="https://75.164.182.173:3838/rob/COVID19">
 </iframe>
 <p>There is a <a href="https://rww.science/r/covid-maps/">separate page of daily maps</a>. Oregon reports a set of daily snapshots while progression requires ingesting new data each day so I began tracking it March 20; the process of scraping it is detailed in <a href="https://rww.science/r/covid-scraping/">a separate file</a>. This updates, expands, and consolidates two previous posts <a href="https://rww.science/2020/03/21/covid-19-in-oregon/">here</a> and <a href="https://rww.science/2020/03/24/covid-19-county-maps-for-oregon/">here</a>. A few cautionary notes. First, these are cumulative case counts that are almost certainly incomplete. Second, there is reason to believe that the death numbers may also be incomplete because it is dangerous to police and first responders are spread thinly.</p>
 <p>This post is current as of June 11, 2020; this first bit of R code loads the current data from my github.</p>
