@@ -3,48 +3,48 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>/categories/</loc>
-    <lastmod>2020-06-11T13:11:45-07:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/r/covid/</loc>
-    <lastmod>2020-06-11T13:11:45-07:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/gganimate/</loc>
-    <lastmod>2020-06-11T13:11:45-07:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/2020/06/07/new-york-times-data-on-covid/</loc>
-    <lastmod>2020-06-11T13:11:45-07:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/plot/</loc>
-    <lastmod>2020-06-11T13:11:45-07:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/categories/r/</loc>
-    <lastmod>2020-06-11T13:11:45-07:00</lastmod>
+    <lastmod>2020-06-12T13:46:11-07:00</lastmod>
   </url>
   
   <url>
     <loc>/</loc>
-    <lastmod>2020-06-11T13:11:45-07:00</lastmod>
+    <lastmod>2020-06-12T13:46:11-07:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/</loc>
-    <lastmod>2020-06-11T13:11:45-07:00</lastmod>
+    <loc>/categories/</loc>
+    <lastmod>2020-06-12T13:46:11-07:00</lastmod>
   </url>
   
   <url>
     <loc>/r/covid-maps/</loc>
-    <lastmod>2020-06-11T13:11:45-07:00</lastmod>
+    <lastmod>2020-06-12T13:46:11-07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/gganimate/</loc>
+    <lastmod>2020-06-12T13:46:11-07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/2020/05/30/new-york-times-data-on-covid/</loc>
+    <lastmod>2020-06-12T13:46:11-07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/plot/</loc>
+    <lastmod>2020-06-12T13:46:11-07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/r/</loc>
+    <lastmod>2020-06-12T13:46:11-07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/</loc>
+    <lastmod>2020-06-12T13:46:11-07:00</lastmod>
   </url>
   
   <url>
@@ -233,12 +233,12 @@
   </url>
   
   <url>
-    <loc>/categories/blogdown/</loc>
+    <loc>/tags/blogdown/</loc>
     <lastmod>2020-02-04T14:46:56-08:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/blogdown/</loc>
+    <loc>/categories/blogdown/</loc>
     <lastmod>2020-02-04T14:46:56-08:00</lastmod>
   </url>
   
