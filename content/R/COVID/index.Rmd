@@ -1,7 +1,7 @@
 ---
 title: COVID-19 in Oregon
 author: Robert W. Walker
-date: '2020-06-07'
+date: '2020-06-15'
 output: html_document
 runtime: shiny
 ---
@@ -13,9 +13,9 @@ library(tidyverse)
 
 # Oregon COVID data
 
-I wanted to create a self-updating visualization of [the data on COVID-19 in the state of Oregon provided by OHA](https://govstatus.egov.com/OR-OHA-COVID-19).  I still have yet to do that but decided to [build this one to visualize the New York Times data](https://rwwalker.shinyapps.io/COVID19/).
+I wanted to create a self-updating visualization of [the data on COVID-19 in the state of Oregon provided by OHA](https://govstatus.egov.com/OR-OHA-COVID-19).  I still have yet to do that but decided to [build this one to visualize the New York Times data](https://s8.sytes.net/shiny/COVID19/).
 
-<iframe src="/default.asp" width="100%" height="80%" src="https://rwwalker.shinyapps.io/COVID19/"> </iframe>
+<iframe src="/default.asp" width="100%" height="80%" src="https://s8.sytes.net/shiny/COVID19/"> </iframe>
 
 There is a [separate page of daily maps](https://rww.science/r/covid-maps/).  Oregon reports a set of daily snapshots while progression requires ingesting new data each day so  I began tracking it March 20; the process of scraping it is detailed in [a separate file](https://rww.science/r/covid-scraping/).  This updates, expands, and consolidates two previous posts [here](https://rww.science/2020/03/21/covid-19-in-oregon/) and [here](https://rww.science/2020/03/24/covid-19-county-maps-for-oregon/).  A few cautionary notes.  First, these are cumulative case counts that are almost certainly incomplete.  Second, there is reason to believe that the death numbers may also be incomplete because it is dangerous to police and first responders are spread thinly.
 

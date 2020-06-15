@@ -1,5 +1,5 @@
-load(url(paste0("https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID",Sys.Date()-1,".RData"))) # 1
-library(rvest); library(htmltools); library(tidyverse); library(rlang)
+load(paste0(here(),"/content/R/COVID/data/OregonCOVID",Sys.Date()-1,".RData")) # 1
+library(rvest); library(htmltools); library(tidyverse); library(rlang); library(here)
 # A function to remove commas from numbers.
 comma.rm.to.numeric <- function(variable) {
   as.numeric(str_remove_all( {{variable}}, ",")) 
@@ -138,7 +138,7 @@ if(max(Oregon.COVID$Scraped.date) < as.Date(Today$Header$Scraped.date[[1]],"%m.%
   OR.COVID.Strain <- bind_rows(Today$COVID.Strain, OR.COVID.Strain) %>% distinct(.) # 5 
 # Save the imageformat(Sys.Date(), "%d")
   rm(OHA.Corona)
-  save.image(paste0("~/Sandbox/awful/content/R/COVID/data/OregonCOVID",Sys.Date(),".RData")) # Save the data with a date flag in the name.
+  save.image(paste0(here(),"/content/R/COVID/data/OregonCOVID",Sys.Date(),".RData")) # Save the data with a date flag in the name.
 #  save.image(paste0("content/R/COVID/data/OregonCOVID",Sys.Date(),".RData")) # Save the data with a date flag in the name.
   cat(paste0("Added new data... \n",Sys.time())) # Report the updates
 } else {
