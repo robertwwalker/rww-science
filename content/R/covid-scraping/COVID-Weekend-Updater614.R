@@ -9,8 +9,8 @@ dash.rm.to.numeric <- function(variable) {
   as.numeric(str_remove_all( {{variable}}, "-")) 
 }
 June14.Counties <- read.csv("content/R/COVID/data/June142020.csv") # The data are in an easily cut and pasted table
-June14.COVID <- June14.Counties %>% mutate(Number.of.cases = Cases1, Deaths = Deaths2, Negative.test.results = Negatives3, date=Sys.Date(), Scraped.date = Sys.Date()) %>% select(County, Number.of.cases, Deaths, Negative.test.results, date, Scraped.date)
-Tests.Merge <- June14.Counties %>% filter(County == "Total") %>% mutate(`Total deaths` = Deaths2, `Total persons tested` = Cases1 + Negatives3, Positive = Cases1, Negative = Negatives3, date=Sys.Date(), Scraped.date = Sys.Date()) %>% select(`Total deaths`, `Total persons tested`, date, Scraped.date, Positive, Negative) %>% pivot_longer(., cols=c(Positive,Negative,`Total persons tested`,`Total deaths`), values_to = "Outcome", names_to = "Category") %>% mutate(date = as.Date(date), Scraped.date = as.Date(Scraped.date))
+June14.COVID <- June14.Counties %>% mutate(Number.of.cases = Cases1, Deaths = Deaths2, Negative.test.results = Negatives3, date=Sys.Date()-1, Scraped.date = Sys.Date()-1) %>% select(County, Number.of.cases, Deaths, Negative.test.results, date, Scraped.date)
+Tests.Merge <- June14.Counties %>% filter(County == "Total") %>% mutate(`Total deaths` = Deaths2, `Total persons tested` = Cases1 + Negatives3, Positive = Cases1, Negative = Negatives3, date=Sys.Date()-1, Scraped.date = Sys.Date()-1) %>% select(`Total deaths`, `Total persons tested`, date, Scraped.date, Positive, Negative) %>% pivot_longer(., cols=c(Positive,Negative,`Total persons tested`,`Total deaths`), values_to = "Outcome", names_to = "Category") %>% mutate(date = as.Date(date), Scraped.date = as.Date(Scraped.date))
 Oregon.Tests.All <- bind_rows(Tests.Merge,Oregon.Tests.All)
   # Drop the row of totals and other things.
 Oregon.Tests <- Oregon.Tests.All[!str_detect(Oregon.Tests.All$Category, "Total"),]  # 6
