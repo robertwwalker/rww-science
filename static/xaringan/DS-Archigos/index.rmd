@@ -21,7 +21,9 @@ background-image: url("img/PicAnimNew.gif")
 
 ```{r setup, include=FALSE, message=FALSE, warning=FALSE}
 options(htmltools.dir.version = FALSE, warning=FALSE, message=FALSE, fig.retina = 3)
+knitr::opts_chunk$set(fig.width = 8, message = FALSE, warning = FALSE, comment = "", cache = FALSE, fig.retina = 3)
 library(widgetframe)
+library(magrittr)
 library(ggrepel)
 library(haven)
 library(tidyverse)
@@ -45,6 +47,12 @@ library(here)
 library(wordcloud2)
 library(gganimate)
 library(flipbookr)
+library(hrbrthemes)
+library(survival)
+library(ggkm)
+library(extrafont)
+library(patchwork)
+library(xaringanthemer)
 ```
 
 ---
@@ -74,13 +82,29 @@ class: inverse
 ## Insights from the past
 
 There are at least two core problems:  
-1. Systematic data are lacking as are systematic evaluations.
-2. Counterfactual problems are paramount.  *One leader at a time.*
+1. Systematic data are lacking as are systematic evaluations.  
+--
+  
+2. Counterfactual problems are paramount.  
+     + *One leader at a time.*
 
 ![](https://i.imgur.com/vnUtT52.png)
+---
+class: inverse
+
+# What do Leaders Want?  
+--
+
+### To lead or equivalently: keep their jobs  
+--
+
+1. The tenure of leaders
+2. How do they enter?  
+3. How do they exit?  
+4. Age and Sex
 
 ---
-class: inverse, BounceIn
+class: BounceIn
 
 # The Data
 # Archigos: A Database of National Leaders
@@ -97,7 +121,7 @@ Chiozza, Gleditsch, and Goemans have collected and maintained an encyclopedia of
 - Entry and exit including types
 
 --
-- Real date formats `r emo::ji("sad")`
+- Real date formats `r emo::ji("frowning_woman")`
 
 ```{r}
 Archigos <- read_dta(url("http://www.rochester.edu/college/faculty/hgoemans/Archigos_4.1_stata14.dta"))
@@ -109,6 +133,22 @@ Archigos <- Archigos %>% mutate(leader = utf8_encode(leader))
 ]
 
 ---
+## The Key Quantity
+
+Probability of survival given time in office can be written as:
+
+$$ Pr(Survive|t) = \frac{\textrm{Number Surviving at t+1}}{\textrm{Risk set at t}}  $$
+
+Basically, the number of failures only considering those that have survived number of years.
+
+---
+class: inverse
+
+## A Note on Time
+
+Time is a year without a calendar reference.
+
+---
 
 ## Creating Tenure and a View
 
@@ -118,14 +158,8 @@ Archigos %<>% mutate(tenure = as.duration(eindate %--% eoutdate)) %>% # Create d
 Archigos %>% head() %>% kable(., format="html") %>% kable_styling() %>% scroll_box(width = "800px", height = "400px")
 ```
 
-
-
 ---
-class: center
-
-## Who lead the longest?
-
---
+### If leaders maximize time in office, the `league table`...
 
 ```{r, echo=FALSE}
 WCdata <- Archigos %>% group_by(leader) %>% summarise(TenC = sum(tenureY)) %>% arrange(desc(TenC))
@@ -135,146 +169,313 @@ frameWidget(WCC)
 
 
 ---
-class: inverse, center, middle, bounceOut
-
-# One quantitative variable: Leadership tenure
-## How long do leaders stay in office?
-
----
 class: right
 background-image: url("img/TenureBack.svg")
 background-size: contain
 
-# Visualising Tenure: One numeric variable
-
-
-## choose a scale 
---
-
-### connect points, create polygons, plot statistics
-
-```{r, eval=FALSE, echo=FALSE, fig.width=9, fig.height=5, message=FALSE}
-# This is the background image for this slide.
-Archigos <- Archigos %>% mutate(tenureY = year(enddate) - year(startdate))
-p1 <- Archigos %>% tabyl(., tenureY) %>% ggplot(data=.) + geom_point(aes(x=tenureY, y=n)) + labs(x="Tenure in Years", y="Count of Leader Spells") + theme_economist()
-p2 <- Archigos %>% tabyl(., tenureY) %>% ggplot(data=.) + geom_point(aes(x=tenureY, y=percent)) + labs(x="Tenure in Years", y="Percent of Leader Spells") + theme_economist()
-grid.arrange(p1,p2)
-```
+# Leadership tenure
+## How long do leaders stay in office?
 
 
 ---
 class: inverse
 
-# One numeric variable:  
-### Visualising Tenure
+## A Random Leader Survives How Long?
 
-```{r, eval=FALSE}
-Archigos <- Archigos %>% mutate(tenureY = year(enddate) - year(startdate))
-plt1 <- Archigos %>% ggplot(., aes(tenureY)) + 
-  {{ geom_area(stat="bin", bins=30, fill="#88398A") }} + labs(x="Tenure (in years)", y="Frequency", title="geom_area") + theme_economist_white()
-plt2 <- Archigos %>% ggplot(., aes(tenureY))  +  
-  {{ geom_density(, fill="#88398A") }} + labs(x="Tenure (in years)", y="Frequency", title="geom_density") + theme_economist_white()
-plt3 <- Archigos %>% ggplot(., aes(tenureY)) + 
-  {{ geom_histogram(, fill="#88398A") }} + labs(x="Tenure (in years)", y="Frequency", title="geom_histogram") + theme_economist_white()
-plt4 <- Archigos %>% ggplot(., aes(tenureY)) +  
-  {{ geom_dotplot(, fill="#88398A") }} + labs(x="Tenure (in years)", y="Frequency", title="geom_dotplot") + theme_economist_white()
-grid.arrange(plt1,plt2,plt3,plt4)
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+ArchB <- Archigos %>% mutate(ccode = as.integer(ccode), BYear = year(eindate)) %>% left_join(., countrycode::codelist_panel, by = c("ccode" = "cown", "BYear" = "year")) %>% mutate(Censored = 1-as.numeric(posttenurefate %in% c("Missing: Left Office after 2014-12-31","Leader Still in Office")))
+ggplot(ArchB, aes(time = tenureY, status = Censored)) + 
+  geom_km() + labs(title="Probability of Survival", color="Gender", x="Time in Years") + theme_minimal(base_size = 24)
 ```
 
 ---
-class: inverse, rubberBand, center, middle
+# Most Don't Do So Well
 
-```{r, echo=FALSE, fig.height=5, fig.width=8, warning=FALSE, message=FALSE}
-Archigos <- Archigos %>% mutate(tenure = startdate %--% enddate)
-Archigos <- Archigos %>% mutate(tenureY = year(enddate) - year(startdate))
-library(gridExtra)
-plt1 <- Archigos %>% ggplot(., aes(tenureY)) + geom_area(stat="bin", bins=30, fill="#88398A") + labs(x="Tenure (in years)", y="Frequency", title="geom_area") + theme_economist_white()
-plt2 <- Archigos %>% ggplot(., aes(tenureY))  + geom_density(fill="#88398A") + labs(x="Tenure (in years)", y="Frequency", title="geom_density") + theme_economist_white()
-plt3 <- Archigos %>% ggplot(., aes(tenureY)) + geom_histogram(fill="#88398A") + labs(x="Tenure (in years)", y="Frequency", title="geom_histogram") + theme_economist_white()
-plt4 <- Archigos %>%  ggplot(., aes(tenureY)) + geom_dotplot(fill="#88398A") + labs(x="Tenure (in years)", y="Frequency", title="geom_dotplot") + theme_economist_white()
-grid.arrange(plt1,plt2,plt3,plt4)
-```
-
-
-
----
-class: inverse, zoomInDown
-
-## Using the Percentiles Leads to a Boxplot
-
-```{r, fig.height=5, fig.width=8, warning=FALSE, message=FALSE}
-Archigos %>%  ggplot(., aes(y=tenureY)) +
-  geom_boxplot(fill="#88398A") + labs(x="Tenure (in years)", y="Frequency", title="geom_boxplot") + theme_economist_white()
+```{r}
+ArchB %>% filter(tenureY < 5) %>% ggplot(., aes(x=tenureY)) + geom_histogram(fill = "magenta") + theme_minimal(base_size = 24) + labs(title="Tenure under Five Years", x = "Tenure in Years")
 ```
 
 
 ---
-class: inverse, flash, middle, center
 
-# Two Discrete Variables: 
+# By Continent    
+
+```{r, message=FALSE, warning=FALSE, echo=FALSE, fig.width=8}
+ArchB %>% ggplot(., aes(time = tenureY, status = Censored, color = factor(continent))) + geom_km() + labs(color="Continent", title="Probability of Survival by Continent", x="Time in Years") + theme_minimal(base_size = 24)
+```
+
+---
+
+# By Gender
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, fig.width=8}
+ggplot(ArchB, aes(time = tenureY, status = Censored, color = factor(gender))) + geom_km() + labs(title="Probability of Survival by Gender", color="Gender", x="Time in Years") + theme_minimal(base_size = 24)
+```
+
+---
+class: right
+background-image: url("img/BG2.svg")
+background-size: contain
+
+# Leadership tenure
+## How long do leaders stay in office?
+
+--
+
+## Some caveats
+
+Who counts?  
+What about term limits?  
+[The Polity Project](https://www.systemicpeace.org/inscrdata.html) measures characteristics of political regimes.
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE, results='hide'}
+Polity <- readxl::read_excel("/home/rob/Downloads/p4v2018.xls")
+Polity %>% mutate(GovType = as.character(NA))
+Polity$GovType[Polity$polity > -11 & Polity$polity < -4] <- "Autocracy"
+Polity$GovType[Polity$polity > -5 & Polity$polity < 6] <- "Anocracy"
+Polity$GovType[Polity$polity > 5 & Polity$polity < 11] <- "Democracy"
+Polity$GovType[Polity$polity > -90 & Polity$polity < -50] <- NA
+PolArch <- left_join(ArchB, Polity, by = c("ccode" = "ccode", "BYear" = "year"))
+```
+
+---
+class: inverse
+
+## Classifying Regimes
+
+![Polity](img/Polity.png)
+
+---
+class: inverse
+
+## Based on These Elements
+  
+1. Regulation of Chief Executive Recruitment   
+ + XRCOMP Competitiveness of Executive Recruitment  
+ + XROPEN Openness of Executive Recruitment   
+2. The Independence of Executive Authority   
+ + XCONST Executive Constraints (Decision Rules)  
+3. Political Competition and Opposition   
+ + PARREG Regulation of Participation   
+ + PARCOMP The Competitiveness of Participation   
+
+---
+class: inverse
+
+## The Distribution of Regimes
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE}
+PolArch %>% ggplot(., aes(x=GovType, fill=GovType)) + geom_bar() + theme_minimal(base_size = 24) + labs(x="", fill="Regime Type")
+```
+
+---
+
+### Survival by Government Type
+
+```{r}
+ggplot(PolArch, aes(time = tenureY, status = Censored, color = factor(GovType))) + geom_km() + labs(title="Survival by Government Type", color="Type") + theme_minimal(base_size = 24)
+```
+
+---
+
+## Shown by Tenure
+
+```{r, echo=FALSE, fig.width=10}
+GA <- PolArch %>% ggplot(., aes(y=tenureY, x=GovType, fill=GovType)) + geom_violin(alpha=0.3) + theme_minimal(base_size = 24) + labs(y="Tenure in Years", fill="Regime Type", x="Regime Type") + guides(fill=FALSE)
+GB <- PolArch %>% ggplot(., aes(x=tenureY, fill=GovType)) + geom_histogram() + theme_minimal(base_size = 24) + labs(y="Count", fill="Regime Type", x="Tenure (in years)") + facet_wrap(vars(GovType)) + guides(fill=FALSE)
+GA + GB
+```
+
+---
+
+## 19th vs. 20th Century?
+
+```{r, echo=FALSE}
+PolArch %>% mutate(Twentieth.Century = (BYear > 1899)) %>% ggplot(., aes(time = tenureY, status = Censored, color = factor(Twentieth.Century))) + geom_km() + labs(title="Survival by Century", color="20th Century?") + theme_minimal(base_size = 24)
+```
+
+---
+
+## Not Much Difference by Century Given Type
+
+```{r, echo=FALSE}
+PolArch %>% mutate(Twentieth.Century = (BYear > 1899)) %>% ggplot(., aes(y=tenureY, x=Twentieth.Century, fill=Twentieth.Century)) + geom_violin(alpha=0.3) + theme_minimal(base_size = 24) + labs(x="20th Century?", y="Tenure (in years)") + facet_wrap(vars(GovType)) + guides(fill=FALSE)
+```
+
+---
+
+## Not Much Difference by Century Given Type
+
+```{r, echo=FALSE}
+PolArch %<>% 
+  mutate(Twentieth.Century = (BYear > 1899), Age = BYear - as.numeric(yrborn))
+PolArch %>%
+  filter(Age < 125) %>%
+  ggplot(., aes(x=Age, fill=Twentieth.Century))  + geom_density(alpha=0.3) + theme_minimal(base_size = 24) + labs(x="Age at Start of Spell")
+```
+
+
+---
+class: inverse, center, middle
+
+# How do leaders enter?
+
+```{r Entry, include=FALSE, eval=FALSE}
+Archigos %>% 
+  tabyl(entry) %>% 
+  ggplot(., aes(x=fct_reorder(entry, n), y=n, fill=entry)) + 
+  geom_col() + 
+  theme_minimal(base_size = 24) + 
+  coord_flip() +
+  scale_fill_viridis_d() + 
+  guides(fill=FALSE) + 
+  labs(y="Count of Spells", title="How do Leaders Enter?", x="") 
+```
+
+`r flipbookr::chunk_reveal("Entry")`
+
+---
+# Most Enter Regularly
+
+```{r Enter2, echo=FALSE}
+Archigos %>% 
+  tabyl(entry) %>% 
+  ggplot(., aes(x=fct_reorder(entry, n), y=n, fill=entry)) + 
+  geom_col() + 
+  coord_flip() +
+  theme_minimal(base_size = 24) + 
+  scale_fill_viridis_d() + 
+  guides(fill=FALSE) + 
+  labs(y="Count of Spells", title="How do Leaders Enter?", x="") 
+```
+
+---
+# Survival Given Entry
+
+```{r, echo=FALSE}
+ggplot(PolArch, aes(time = tenureY, status = Censored, color = factor(entry))) + geom_km() + labs(title="Survival by Entry Method", color="Entry") + theme_minimal(base_size = 24)
+```
+
+---
+## Split Entry by Century
+
+```{r TableEnt, include=FALSE}
+PolArch %>% 
+  mutate(Twentieth.Century = (BYear > 1899)) %>% 
+  tabyl(entry, Twentieth.Century) %>%  #BREAK
+  adorn_percentages("col") #BREAK
+```
+
+`r chunk_reveal("TableEnt", break_type = "user")`
+
+---
+# Survival Given Entry and Century
+
+```{r, echo=FALSE}
+PolArch %>% 
+  mutate(Twentieth.Century = (BYear > 1899)) %>% 
+  mutate(Entry.Cent = as.factor(paste(entry,as.numeric(Twentieth.Century+19), sep=":"))) %>% 
+  ggplot(., aes(time = tenureY, status = Censored, color = factor(Entry.Cent))) + geom_km() + labs(title="Survival by Entry Method", color="Entry:Century") + theme_minimal(base_size = 24)
+```
+
+---
+## Age at Entry
+
+```{r}
+PolArch %>% filter(Age < 130) %>% ggplot(., aes(x=entry, y=Age, fill=entry)) + geom_violin() + scale_fill_viridis_d() + labs(title="Age at Entry", x="", y="Age (years)") + guides(fill=FALSE) + theme_minimal(base_size = 24)
+```
+
+
+---
+class: middle, inverse, center
+
+# Entry and Exit
+
+---
 ## A Table
 
+```{r EntEx}
+MyTab <- PolArch %$% table(exit, entry)
+MyTab
+```
 ---
 
-# How do leaders enter and exit?
-
-```{r, warning=FALSE}
-Archigos %>% tabyl(exit,entry)
-Archigos %>% tabyl(exit,entry) %>% adorn_percentages("col") %>% adorn_pct_formatting()
+```{r, echo=FALSE}
+MyTab %>% 
+    data.frame() %>%
+  ggplot(., aes(x=entry, y=exit, fill=Freq)) + 
+  geom_tile() + 
+  theme_minimal(base_size = 24) + 
+  scale_fill_viridis_c() + 
+  labs(y="", title="How do Leaders Enter and Exit?", x="") 
 ```
 
 ---
 class:inverse
 
-# Visualizing Two Categorical Variables
+```{r, echo=FALSE}
+Archigos %>% ggplot(., aes(x=entry,y=exit)) + geom_count(color="purple") + labs(x="How did the Leader Enter?", y="How did the Leader Exit?", title="Leader Entry and Exit by Spell") + theme_minimal(base_size = 24)
+```
 
---
+---
+## Conditional Probability of Exit Given Entry?
 
-The Table is more informative because the *geometry* obscures information.
+```{r, echo=FALSE}
+PolArch %$% table(exit, entry) %>% prop.table(., margin=2) %>% data.frame() %>% 
+  ggplot(., aes(x=entry, y=exit, fill=Freq)) + 
+  geom_tile() + 
+  theme_minimal(base_size = 24) + 
+  scale_fill_viridis_c() + 
+  labs(title="Probability of Exit Given Entry?") 
+```
 
-```{r, fig.width=6, fig.height=4}
-Archigos %>% ggplot(., aes(x=entry,y=exit)) + geom_count(color="purple") + labs(x="How did the Leader Enter?", y="How did the Leader Exit?", title="Leader Entry and Exit by Spell") + theme_economist()
+```{r, eval=FALSE, echo=FALSE, fig.width=9, fig.height=5, message=FALSE}
+# This is a background image
+p1 <- Archigos %>% mutate(tenureY = floor(tenureY)) %>% tabyl(., tenureY) %>% ggplot(data=.) + geom_point(aes(x=tenureY, y=n)) + labs(x="Tenure in Years", y="Count of Leader Spells") + theme_economist() + geom_text(data = data.frame(x = 8.6, y = 353.384518517349, 
+    label = "I am four years"), mapping = aes(x = x, y = y, label = label), inherit.aes=FALSE) + geom_text(data = data.frame(x = 12.6, y = 110, 
+    label = "I am eight years"), mapping = aes(x = x, y = y, label = label), inherit.aes=FALSE)
+p2 <- Archigos %>% mutate(tenureY = floor(tenureY)) %>% tabyl(., tenureY) %>% ggplot(data=.) + geom_point(aes(x=tenureY, y=percent)) + labs(x="Tenure in Years", y="Percent of Leader Spells") + theme_economist_white()
+B3 <- grid.arrange(p1,p2)
+ggsave(B3, file="img/BG2.svg", height=8, width = 10, units = "in")
+```
+
+---
+## Entry and Type
+
+```{r, echo=FALSE}
+PolArch %>% mutate(Combo = paste(entry,GovType, sep=":")) %>%  
+  ggplot(., aes(time = tenureY, status = Censored, color = factor(entry))) + geom_km() + labs(title="Survival by Entry Method and Type", color="Entry") + theme_minimal(base_size = 24) + facet_wrap(vars(GovType))
+```
+---
+# Autocrats Last Longest
+
+But...
+
+```{r FinalTab, echo=FALSE}
+PolArch %$% 
+  prop.table(table(exit,GovType), margin=2) %>% 
+  data.frame() %>% 
+  ggplot(., aes(x=GovType, y=exit, fill=Freq)) + geom_tile() + scale_fill_viridis_c() + labs(x="", y="Exit Method", title="Regime Type and Method of Exit")
 ```
 
 ---
 class: inverse
-
-## Geometries allow area (like maps) on a unit square
-
-It is usually suggested to avoid pie charts because squares are hard enough.
-
-```{r, warning=FALSE, message=FALSE, eval=FALSE, fig.width=10, fig.height=8}
-library(ggmosaic)
-ggplot(data=Archigos) + 
-  geom_mosaic(aes(x = product(exit,entry), fill=exit)) + 
-  labs(y="Method of Exit", x="Method of Entry", main="Entry and Exit by Leaders") + 
-  theme_minimal() + guides(fill=guide_legend(title="Method of Exit")) +
-  theme(axis.text.y =  element_text(size=8, hjust=0.25), axis.text.x =  element_text(size=8, angle=45, vjust=1), 
-                          legend.text = element_text(size=10))
-```
+# That's Timely
 
 
-
----
-class: inverse, heartBeat
-
-
-```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.width=10, fig.height=8}
-library(ggmosaic)
-ggplot(data=Archigos) + geom_mosaic(aes(x = product(exit,entry), fill=exit)) + labs(y="Method of Exit", x="Method of Entry", main="Entry and Exit by Leaders") + theme_minimal() + guides(fill=guide_legend(title="Method of Exit")) + theme(axis.text.y =  element_text(size=8, hjust=0.25), axis.text.x =  element_text(size=8, angle=45, vjust=1), legend.text = element_text(size=10))
-```
-
-
+![](img/DrawLeaderEnds.gif)
 
 ---
 class: bottom
-background-image: url("img/PicAnim.gif")
+background-image: url("img/PicAnimNew.gif")
 background-position: 65% 8%
 
 
 # Thanks!
 
 Slides created via the R package [**xaringan**](https://github.com/yihui/xaringan).
+
+[The shiny](https://s8.sytes.net/shiny/ArchigosDT)
 
 Theme borrowed from `@apreshill` and her `r-ladies` theme.
 
