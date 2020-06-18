@@ -1,3 +1,4 @@
+rm(list=ls())
 load(paste0(here(),"/content/R/COVID/data/OregonCOVID",Sys.Date()-1,".RData")) # 1
 library(rvest); library(htmltools); library(tidyverse); library(rlang); library(here)
 # A function to remove commas from numbers.

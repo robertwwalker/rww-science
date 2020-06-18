@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Visualising Leaders</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Robert W. Walker" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/rladies.css" rel="stylesheet" />
+    <link href="libs/remark-css/rladies-fonts.css" rel="stylesheet" />
+    <script src="libs/kePrint/kePrint.js"></script>
+    <script src="libs/htmlwidgets/htmlwidgets.js"></script>
+    <script src="libs/pymjs/pym.v1.js"></script>
+    <script src="libs/widgetframe-binding/widgetframe.js"></script>
+    <link rel="stylesheet" href="animate.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+
+class: inverse
+background-image: url("img/PicAnimNew.gif")
+
+## Visualising Leaders: Archigos meets ggplot
+
+
+
+---
+class:inverse
+
+# Leadership Studies
+
+**What makes leaders effective?**
+
+--
+
+If you have in this in your bag of tricks, people will usually follow.
+
+![](https://media.giphy.com/media/10pQQtsBUKz0Nq/giphy.gif)
+  
+--
+
+**The rest of us need data to drive decisions.**&lt;sup&gt;*&lt;/sup&gt;
+
+.footnote[
+&lt;sup&gt;*&lt;/sup&gt; The code libraries can be sourced via: `source(url("https://rww.science/talk/DS-Archigos/code/TalkSetup.R"))`.
+]
+
+---
+class: inverse
+
+## Insights from the past
+
+There are at least two core problems:  
+1. Systematic data are lacking as are systematic evaluations.
+2. Counterfactual problems are paramount.  *One leader at a time.*
+
+![](https://i.imgur.com/vnUtT52.png)
+
+---
+class: inverse, BounceIn
+
+# The Data
+# Archigos: A Database of National Leaders
+
+Chiozza, Gleditsch, and Goemans have collected and maintained an encyclopedia of world leaders since the 1870s.&lt;sup&gt;1&lt;/sup&gt;
+
+--
+- Leader spells are units
+
+--
+- Nested in countries
+
+--
+- Entry and exit including types
+
+--
+- Real date formats 😭
+
+
+```r
+Archigos &lt;- read_dta(url("http://www.rochester.edu/college/faculty/hgoemans/Archigos_4.1_stata14.dta"))
+Archigos &lt;- Archigos %&gt;% mutate(leader = utf8_encode(leader))
+```
+
+.footnote[
+&lt;sup&gt;1&lt;/sup&gt; Archigos [on the web](http://www.ksgleditsch.com/archigos.html).
+]
+
+---
+
+## Creating Tenure and a View
+
+
+```r
+Archigos %&lt;&gt;% mutate(tenure = as.duration(eindate %--% eoutdate)) %&gt;% # Create duration for each spell  
+  mutate(tenureY = tenure / dyears(1))    # Measure duration in years.
+Archigos %&gt;% head() %&gt;% kable(., format="html") %&gt;% kable_styling() %&gt;% scroll_box(width = "800px", height = "400px")
+```
+
+&lt;div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:400px; overflow-x: scroll; width:800px; "&gt;&lt;table class="table" style="margin-left: auto; margin-right: auto;"&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"&gt; obsid &lt;/th&gt;
+   &lt;th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"&gt; leadid &lt;/th&gt;
+   &lt;th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"&gt; ccode &lt;/th&gt;
+   &lt;th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"&gt; idacr &lt;/th&gt;
+   &lt;th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"&gt; leader &lt;/th&gt;
+   &lt;th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"&gt; startdate &lt;/th&gt;
+   &lt;th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"&gt; eindate &lt;/th&gt;
+   &lt;th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"&gt; enddate &lt;/th&gt;
+   &lt;th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"&gt; eoutdate &lt;/th&gt;
+   &lt;th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"&gt; entry &lt;/th&gt;
+   &lt;th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"&gt; exit &lt;/th&gt;
+   &lt;th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"&gt; exitcode &lt;/th&gt;
+   &lt;th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"&gt; prevtimesinoffice &lt;/th&gt;
+   &lt;th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"&gt; posttenurefate &lt;/th&gt;
+   &lt;th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"&gt; gender &lt;/th&gt;
+   &lt;th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"&gt; yrborn &lt;/th&gt;
+   &lt;th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"&gt; yrdied &lt;/th&gt;
+   &lt;th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"&gt; borndate &lt;/th&gt;
+   &lt;th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"&gt; ebirthdate &lt;/th&gt;
+   &lt;th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"&gt; deathdate &lt;/th&gt;
+   &lt;th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"&gt; edeathdate &lt;/th&gt;
+   &lt;th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"&gt; dbpediauri &lt;/th&gt;
+   &lt;th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"&gt; numentry &lt;/th&gt;
+   &lt;th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"&gt; numexit &lt;/th&gt;
+   &lt;th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"&gt; numexitcode &lt;/th&gt;
+   &lt;th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"&gt; numposttenurefate &lt;/th&gt;
+   &lt;th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"&gt; fties &lt;/th&gt;
+   &lt;th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"&gt; ftcur &lt;/th&gt;
+   &lt;th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"&gt; tenure &lt;/th&gt;
+   &lt;th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"&gt; tenureY &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; USA-1869 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 81dcc176-1e42-11e4-b4cd-db5882bf8def &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; USA &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Grant &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1869-03-04 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1869-03-04 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1877-03-04 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1877-03-04 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Regular &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Regular &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Regular &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; OK &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; M &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1822 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1885 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; NA &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; NA &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1885-07-23 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1885-07-23 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; https://urldefense.proofpoint.com/v2/url?u=http-3A__dbpedia.org_resource_Ulysses-5FS.-5FGrant&amp;amp;d=BQID-g&amp;amp;c=kbmfwr1Yojg42sGEpaQh5ofMHBeTl9EI2eaqQZhHbOU&amp;amp;r=ZliGVSRwfirWoETOrKCh2RSnoygzVPWEk95Me9L-Kwo&amp;amp;m=EaKyFx9mpkhPdFxsxzvW_fiM3jbYwM3xYLjVbSFoDAg&amp;amp;s=x7yRI4mbwG8b0j8c_AwqAahtkPcCfIY2uH8tdRaReBw&amp;amp;e= &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; NA &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; NA &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 252460800s (~8 years) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8.0000000 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; USA-1877 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 81dcc177-1e42-11e4-b4cd-db5882bf8def &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; USA &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Hayes &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1877-03-04 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1877-03-04 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1881-03-04 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1881-03-04 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Regular &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Regular &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Regular &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; OK &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; M &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1822 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1893 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; NA &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; NA &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1893-01-17 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1893-01-17 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; https://urldefense.proofpoint.com/v2/url?u=http-3A__dbpedia.org_resource_Rutherford-5FB.-5FHayes&amp;amp;d=BQID-g&amp;amp;c=kbmfwr1Yojg42sGEpaQh5ofMHBeTl9EI2eaqQZhHbOU&amp;amp;r=ZliGVSRwfirWoETOrKCh2RSnoygzVPWEk95Me9L-Kwo&amp;amp;m=EaKyFx9mpkhPdFxsxzvW_fiM3jbYwM3xYLjVbSFoDAg&amp;amp;s=8oshcxB52W-Pg-2a6AvRVJEYMU-S-RG55-369eJ-PyY&amp;amp;e= &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; NA &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; NA &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 126230400s (~4 years) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4.0000000 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; USA-1881-1 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 81dcf24a-1e42-11e4-b4cd-db5882bf8def &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; USA &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Garfield &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1881-03-04 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1881-03-04 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1881-09-19 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1881-09-19 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Regular &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Irregular &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Assassination by Unsupported Individual &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Death &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; M &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1831 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1881 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; NA &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; NA &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1881-09-19 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1881-09-19 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; https://urldefense.proofpoint.com/v2/url?u=http-3A__dbpedia.org_resource_James-5FA.-5FGarfield&amp;amp;d=BQID-g&amp;amp;c=kbmfwr1Yojg42sGEpaQh5ofMHBeTl9EI2eaqQZhHbOU&amp;amp;r=ZliGVSRwfirWoETOrKCh2RSnoygzVPWEk95Me9L-Kwo&amp;amp;m=EaKyFx9mpkhPdFxsxzvW_fiM3jbYwM3xYLjVbSFoDAg&amp;amp;s=qTPSlRS-mPD_m8ZM3luuJ4W47DtmOPoXSnSZn-lYsqM&amp;amp;e= &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 11 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; NA &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; NA &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 17193600s (~28.43 weeks) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.5448323 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; USA-1881-2 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 81dcf24b-1e42-11e4-b4cd-db5882bf8def &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; USA &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Arthur &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1881-09-19 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1881-09-19 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1885-03-04 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1885-03-04 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Regular &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Regular &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Regular &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; OK &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; M &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1829 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1886 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; NA &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; NA &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1886-11-18 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1886-11-18 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; https://urldefense.proofpoint.com/v2/url?u=http-3A__dbpedia.org_resource_Chester-5FA.-5FArthur&amp;amp;d=BQID-g&amp;amp;c=kbmfwr1Yojg42sGEpaQh5ofMHBeTl9EI2eaqQZhHbOU&amp;amp;r=ZliGVSRwfirWoETOrKCh2RSnoygzVPWEk95Me9L-Kwo&amp;amp;m=EaKyFx9mpkhPdFxsxzvW_fiM3jbYwM3xYLjVbSFoDAg&amp;amp;s=XiglK4IJ3ZCC1kR4Hmb8eVB-V7A0tQprCtTKzOl42YM&amp;amp;e= &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; NA &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; NA &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 109036800s (~3.46 years) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.4551677 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; USA-1885 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 34fb1558-3bbd-11e5-afeb-eb6f07f9fec7 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; USA &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Cleveland &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1885-03-04 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1885-03-04 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1889-03-04 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1889-03-04 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Regular &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Regular &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Regular &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; OK &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; M &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1837 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1908 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; NA &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; NA &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1908-06-24 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1908-06-24 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; https://urldefense.proofpoint.com/v2/url?u=http-3A__dbpedia.org_resource_Grover-5FCleveland&amp;amp;d=BQID-g&amp;amp;c=kbmfwr1Yojg42sGEpaQh5ofMHBeTl9EI2eaqQZhHbOU&amp;amp;r=ZliGVSRwfirWoETOrKCh2RSnoygzVPWEk95Me9L-Kwo&amp;amp;m=EaKyFx9mpkhPdFxsxzvW_fiM3jbYwM3xYLjVbSFoDAg&amp;amp;s=BH6RahZV58hS1fIGz1muHnQkbAirSz4Yy2wc6chejsQ&amp;amp;e= &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; NA &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; NA &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 126230400s (~4 years) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4.0000000 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; USA-1889 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 81dcf24d-1e42-11e4-b4cd-db5882bf8def &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; USA &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Harrison &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1889-03-04 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1889-03-04 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1893-03-04 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1893-03-04 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Regular &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Regular &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; Regular &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; OK &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; M &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1833 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1901 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; NA &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; NA &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1901-03-13 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; 1901-03-13 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; https://urldefense.proofpoint.com/v2/url?u=http-3A__dbpedia.org_resource_Benjamin-5FHarrison&amp;amp;d=BQID-g&amp;amp;c=kbmfwr1Yojg42sGEpaQh5ofMHBeTl9EI2eaqQZhHbOU&amp;amp;r=ZliGVSRwfirWoETOrKCh2RSnoygzVPWEk95Me9L-Kwo&amp;amp;m=EaKyFx9mpkhPdFxsxzvW_fiM3jbYwM3xYLjVbSFoDAg&amp;amp;s=MA-TUrYNLJuZ9PTyDnsCkyBUtUyUkXWBHX7_p3f3pnA&amp;amp;e= &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; NA &lt;/td&gt;
+   &lt;td style="text-align:left;"&gt; NA &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 126230400s (~4 years) &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4.0000000 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;&lt;/div&gt;
+
+
+
+---
+class: center
+
+## Who lead the longest?
+
+--
+
+<div id="htmlwidget-96a382685334ece92c79" style="width:100%;height:504px;" class="widgetframe html-widget"></div>
+<script type="application/json" data-for="htmlwidget-96a382685334ece92c79">{"x":{"url":"index_files/figure-html//widgets/widget_unnamed-chunk-2.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+
+
+---
+class: inverse, center, middle, bounceOut
+
+# One quantitative variable: Leadership tenure
+## How long do leaders stay in office?
+
+---
+class: right
+background-image: url("img/TenureBack.svg")
+background-size: contain
+
+# Visualising Tenure: One numeric variable
+
+
+## choose a scale 
+--
+
+### connect points, create polygons, plot statistics
+
+
+
+
+---
+class: inverse
+
+# One numeric variable:  
+### Visualising Tenure
+
+
+```r
+Archigos &lt;- Archigos %&gt;% mutate(tenureY = year(enddate) - year(startdate))
+plt1 &lt;- Archigos %&gt;% ggplot(., aes(tenureY)) + 
+  {{ geom_area(stat="bin", bins=30, fill="#88398A") }} + labs(x="Tenure (in years)", y="Frequency", title="geom_area") + theme_economist_white()
+plt2 &lt;- Archigos %&gt;% ggplot(., aes(tenureY))  +  
+  {{ geom_density(, fill="#88398A") }} + labs(x="Tenure (in years)", y="Frequency", title="geom_density") + theme_economist_white()
+plt3 &lt;- Archigos %&gt;% ggplot(., aes(tenureY)) + 
+  {{ geom_histogram(, fill="#88398A") }} + labs(x="Tenure (in years)", y="Frequency", title="geom_histogram") + theme_economist_white()
+plt4 &lt;- Archigos %&gt;% ggplot(., aes(tenureY)) +  
+  {{ geom_dotplot(, fill="#88398A") }} + labs(x="Tenure (in years)", y="Frequency", title="geom_dotplot") + theme_economist_white()
+grid.arrange(plt1,plt2,plt3,plt4)
+```
+
+---
+class: inverse, rubberBand, center, middle
+
+![](index_files/figure-html/unnamed-chunk-5-1.png)&lt;!-- --&gt;
+
+
+
+---
+class: inverse, zoomInDown
+
+## Using the Percentiles Leads to a Boxplot
+
+
+```r
+Archigos %&gt;%  ggplot(., aes(y=tenureY)) +
+  geom_boxplot(fill="#88398A") + labs(x="Tenure (in years)", y="Frequency", title="geom_boxplot") + theme_economist_white()
+```
+
+![](index_files/figure-html/unnamed-chunk-6-1.png)&lt;!-- --&gt;
+
+
+---
+class: inverse, flash, middle, center
+
+# Two Discrete Variables: 
+## A Table
+
+---
+
+# How do leaders enter and exit?
+
+
+```r
+Archigos %&gt;% tabyl(exit,entry)
+```
+
+```
+##                       exit Foreign Imposition Irregular Regular Unknown
+##                    Foreign                  8        22      42       0
+##                  Irregular                  5       255     340       0
+##              Natural Death                  5        40     157       0
+##                    Regular                 21       236    2036       0
+##  Retired Due to Ill Health                  0         5      63       0
+##            Still in Office                  0        12     156       0
+##                    Suicide                  0         1       2       0
+##                    Unknown                  1         0       0       2
+```
+
+```r
+Archigos %&gt;% tabyl(exit,entry) %&gt;% adorn_percentages("col") %&gt;% adorn_pct_formatting()
+```
+
+```
+##                       exit Foreign Imposition Irregular Regular Unknown
+##                    Foreign              20.0%      3.9%    1.5%    0.0%
+##                  Irregular              12.5%     44.7%   12.2%    0.0%
+##              Natural Death              12.5%      7.0%    5.6%    0.0%
+##                    Regular              52.5%     41.3%   72.8%    0.0%
+##  Retired Due to Ill Health               0.0%      0.9%    2.3%    0.0%
+##            Still in Office               0.0%      2.1%    5.6%    0.0%
+##                    Suicide               0.0%      0.2%    0.1%    0.0%
+##                    Unknown               2.5%      0.0%    0.0%  100.0%
+```
+
+---
+class:inverse
+
+# Visualizing Two Categorical Variables
+
+--
+
+The Table is more informative because the *geometry* obscures information.
+
+
+```r
+Archigos %&gt;% ggplot(., aes(x=entry,y=exit)) + geom_count(color="purple") + labs(x="How did the Leader Enter?", y="How did the Leader Exit?", title="Leader Entry and Exit by Spell") + theme_economist()
+```
+
+![](index_files/figure-html/unnamed-chunk-8-1.png)&lt;!-- --&gt;
+
+---
+class: inverse
+
+## Geometries allow area (like maps) on a unit square
+
+It is usually suggested to avoid pie charts because squares are hard enough.
+
+
+```r
+library(ggmosaic)
+ggplot(data=Archigos) + 
+  geom_mosaic(aes(x = product(exit,entry), fill=exit)) + 
+  labs(y="Method of Exit", x="Method of Entry", main="Entry and Exit by Leaders") + 
+  theme_minimal() + guides(fill=guide_legend(title="Method of Exit")) +
+  theme(axis.text.y =  element_text(size=8, hjust=0.25), axis.text.x =  element_text(size=8, angle=45, vjust=1), 
+                          legend.text = element_text(size=10))
+```
+
+
+
+---
+class: inverse, heartBeat
+
+
+![](index_files/figure-html/unnamed-chunk-10-1.png)&lt;!-- --&gt;
+
+
+
+---
+class: bottom
+background-image: url("img/PicAnim.gif")
+background-position: 65% 8%
+
+
+# Thanks!
+
+Slides created via the R package [**xaringan**](https://github.com/yihui/xaringan).
+
+Theme borrowed from `@apreshill` and her `r-ladies` theme.
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

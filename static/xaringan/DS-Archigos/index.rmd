@@ -1,0 +1,280 @@
+---
+title: "Visualising Leaders"
+subtitle: "Archigos meets ggplot"
+author: "Robert W. Walker"
+institute: "Atkinson Graduate School of Management"
+date: "2020/06/10 (updated: `r Sys.Date()`)"
+output:
+  xaringan::moon_reader:
+    css: [default, rladies, rladies-fonts, animate.css]
+    seal: false
+    lib_dir: libs
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+class: inverse
+background-image: url("img/PicAnimNew.gif")
+
+## Visualising Leaders: Archigos meets ggplot
+
+```{r setup, include=FALSE, message=FALSE, warning=FALSE}
+options(htmltools.dir.version = FALSE, warning=FALSE, message=FALSE, fig.retina = 3)
+library(widgetframe)
+library(ggrepel)
+library(haven)
+library(tidyverse)
+library(osmdata)
+library(sf)
+library(ggmap)
+library(emojifont)
+library(kableExtra)
+library(OpenStreetMap)
+library(lubridate)
+library(utf8)
+library(emoGG)
+library(ggthemes)
+library(janitor)
+library(ggridges)
+library(viridis)
+library(ggrepel)
+library(ggmosaic)
+library(gridExtra)
+library(here)
+library(wordcloud2)
+library(gganimate)
+library(flipbookr)
+```
+
+---
+class:inverse
+
+# Leadership Studies
+
+**What makes leaders effective?**
+
+--
+
+If you have in this in your bag of tricks, people will usually follow.
+
+![](https://media.giphy.com/media/10pQQtsBUKz0Nq/giphy.gif)
+  
+--
+
+**The rest of us need data to drive decisions.**<sup>*</sup>
+
+.footnote[
+<sup>*</sup> The code libraries can be sourced via: `source(url("https://rww.science/talk/DS-Archigos/code/TalkSetup.R"))`.
+]
+
+---
+class: inverse
+
+## Insights from the past
+
+There are at least two core problems:  
+1. Systematic data are lacking as are systematic evaluations.
+2. Counterfactual problems are paramount.  *One leader at a time.*
+
+![](https://i.imgur.com/vnUtT52.png)
+
+---
+class: inverse, BounceIn
+
+# The Data
+# Archigos: A Database of National Leaders
+
+Chiozza, Gleditsch, and Goemans have collected and maintained an encyclopedia of world leaders since the 1870s.<sup>1</sup>
+
+--
+- Leader spells are units
+
+--
+- Nested in countries
+
+--
+- Entry and exit including types
+
+--
+- Real date formats `r emo::ji("sad")`
+
+```{r}
+Archigos <- read_dta(url("http://www.rochester.edu/college/faculty/hgoemans/Archigos_4.1_stata14.dta"))
+Archigos <- Archigos %>% mutate(leader = utf8_encode(leader))
+```
+
+.footnote[
+<sup>1</sup> Archigos [on the web](http://www.ksgleditsch.com/archigos.html).
+]
+
+---
+
+## Creating Tenure and a View
+
+```{r ArchData, results="asis"}
+Archigos %<>% mutate(tenure = as.duration(eindate %--% eoutdate)) %>% # Create duration for each spell  
+  mutate(tenureY = tenure / dyears(1))    # Measure duration in years.
+Archigos %>% head() %>% kable(., format="html") %>% kable_styling() %>% scroll_box(width = "800px", height = "400px")
+```
+
+
+
+---
+class: center
+
+## Who lead the longest?
+
+--
+
+```{r, echo=FALSE}
+WCdata <- Archigos %>% group_by(leader) %>% summarise(TenC = sum(tenureY)) %>% arrange(desc(TenC))
+WCC <- WCdata %>% mutate(word=leader, freq=TenC) %>% wordcloud2(data=., color="random-dark", rotateRatio = 1, size=0.4)
+frameWidget(WCC)
+```
+
+
+---
+class: inverse, center, middle, bounceOut
+
+# One quantitative variable: Leadership tenure
+## How long do leaders stay in office?
+
+---
+class: right
+background-image: url("img/TenureBack.svg")
+background-size: contain
+
+# Visualising Tenure: One numeric variable
+
+
+## choose a scale 
+--
+
+### connect points, create polygons, plot statistics
+
+```{r, eval=FALSE, echo=FALSE, fig.width=9, fig.height=5, message=FALSE}
+# This is the background image for this slide.
+Archigos <- Archigos %>% mutate(tenureY = year(enddate) - year(startdate))
+p1 <- Archigos %>% tabyl(., tenureY) %>% ggplot(data=.) + geom_point(aes(x=tenureY, y=n)) + labs(x="Tenure in Years", y="Count of Leader Spells") + theme_economist()
+p2 <- Archigos %>% tabyl(., tenureY) %>% ggplot(data=.) + geom_point(aes(x=tenureY, y=percent)) + labs(x="Tenure in Years", y="Percent of Leader Spells") + theme_economist()
+grid.arrange(p1,p2)
+```
+
+
+---
+class: inverse
+
+# One numeric variable:  
+### Visualising Tenure
+
+```{r, eval=FALSE}
+Archigos <- Archigos %>% mutate(tenureY = year(enddate) - year(startdate))
+plt1 <- Archigos %>% ggplot(., aes(tenureY)) + 
+  {{ geom_area(stat="bin", bins=30, fill="#88398A") }} + labs(x="Tenure (in years)", y="Frequency", title="geom_area") + theme_economist_white()
+plt2 <- Archigos %>% ggplot(., aes(tenureY))  +  
+  {{ geom_density(, fill="#88398A") }} + labs(x="Tenure (in years)", y="Frequency", title="geom_density") + theme_economist_white()
+plt3 <- Archigos %>% ggplot(., aes(tenureY)) + 
+  {{ geom_histogram(, fill="#88398A") }} + labs(x="Tenure (in years)", y="Frequency", title="geom_histogram") + theme_economist_white()
+plt4 <- Archigos %>% ggplot(., aes(tenureY)) +  
+  {{ geom_dotplot(, fill="#88398A") }} + labs(x="Tenure (in years)", y="Frequency", title="geom_dotplot") + theme_economist_white()
+grid.arrange(plt1,plt2,plt3,plt4)
+```
+
+---
+class: inverse, rubberBand, center, middle
+
+```{r, echo=FALSE, fig.height=5, fig.width=8, warning=FALSE, message=FALSE}
+Archigos <- Archigos %>% mutate(tenure = startdate %--% enddate)
+Archigos <- Archigos %>% mutate(tenureY = year(enddate) - year(startdate))
+library(gridExtra)
+plt1 <- Archigos %>% ggplot(., aes(tenureY)) + geom_area(stat="bin", bins=30, fill="#88398A") + labs(x="Tenure (in years)", y="Frequency", title="geom_area") + theme_economist_white()
+plt2 <- Archigos %>% ggplot(., aes(tenureY))  + geom_density(fill="#88398A") + labs(x="Tenure (in years)", y="Frequency", title="geom_density") + theme_economist_white()
+plt3 <- Archigos %>% ggplot(., aes(tenureY)) + geom_histogram(fill="#88398A") + labs(x="Tenure (in years)", y="Frequency", title="geom_histogram") + theme_economist_white()
+plt4 <- Archigos %>%  ggplot(., aes(tenureY)) + geom_dotplot(fill="#88398A") + labs(x="Tenure (in years)", y="Frequency", title="geom_dotplot") + theme_economist_white()
+grid.arrange(plt1,plt2,plt3,plt4)
+```
+
+
+
+---
+class: inverse, zoomInDown
+
+## Using the Percentiles Leads to a Boxplot
+
+```{r, fig.height=5, fig.width=8, warning=FALSE, message=FALSE}
+Archigos %>%  ggplot(., aes(y=tenureY)) +
+  geom_boxplot(fill="#88398A") + labs(x="Tenure (in years)", y="Frequency", title="geom_boxplot") + theme_economist_white()
+```
+
+
+---
+class: inverse, flash, middle, center
+
+# Two Discrete Variables: 
+## A Table
+
+---
+
+# How do leaders enter and exit?
+
+```{r, warning=FALSE}
+Archigos %>% tabyl(exit,entry)
+Archigos %>% tabyl(exit,entry) %>% adorn_percentages("col") %>% adorn_pct_formatting()
+```
+
+---
+class:inverse
+
+# Visualizing Two Categorical Variables
+
+--
+
+The Table is more informative because the *geometry* obscures information.
+
+```{r, fig.width=6, fig.height=4}
+Archigos %>% ggplot(., aes(x=entry,y=exit)) + geom_count(color="purple") + labs(x="How did the Leader Enter?", y="How did the Leader Exit?", title="Leader Entry and Exit by Spell") + theme_economist()
+```
+
+---
+class: inverse
+
+## Geometries allow area (like maps) on a unit square
+
+It is usually suggested to avoid pie charts because squares are hard enough.
+
+```{r, warning=FALSE, message=FALSE, eval=FALSE, fig.width=10, fig.height=8}
+library(ggmosaic)
+ggplot(data=Archigos) + 
+  geom_mosaic(aes(x = product(exit,entry), fill=exit)) + 
+  labs(y="Method of Exit", x="Method of Entry", main="Entry and Exit by Leaders") + 
+  theme_minimal() + guides(fill=guide_legend(title="Method of Exit")) +
+  theme(axis.text.y =  element_text(size=8, hjust=0.25), axis.text.x =  element_text(size=8, angle=45, vjust=1), 
+                          legend.text = element_text(size=10))
+```
+
+
+
+---
+class: inverse, heartBeat
+
+
+```{r, warning=FALSE, message=FALSE, echo=FALSE, fig.width=10, fig.height=8}
+library(ggmosaic)
+ggplot(data=Archigos) + geom_mosaic(aes(x = product(exit,entry), fill=exit)) + labs(y="Method of Exit", x="Method of Entry", main="Entry and Exit by Leaders") + theme_minimal() + guides(fill=guide_legend(title="Method of Exit")) + theme(axis.text.y =  element_text(size=8, hjust=0.25), axis.text.x =  element_text(size=8, angle=45, vjust=1), legend.text = element_text(size=10))
+```
+
+
+
+---
+class: bottom
+background-image: url("img/PicAnim.gif")
+background-position: 65% 8%
+
+
+# Thanks!
+
+Slides created via the R package [**xaringan**](https://github.com/yihui/xaringan).
+
+Theme borrowed from `@apreshill` and her `r-ladies` theme.
+

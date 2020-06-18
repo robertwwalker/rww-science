@@ -1,0 +1,11 @@
+library(magick)
+img1 <- image_resize(image_read("~/OldHome/Downloads/portrait.jpg"), "450x450") 
+img2 <- image_resize(image_read("~/OldHome/Downloads/AGSMlogo.jpeg"), "450x450")
+img3 <- image_annotate(img1, "Visualising Leaders", size = 25, gravity = "northwest", color = "white")
+img4 <- image_annotate(img1, "Visualising Leaders: \nArchigos meets ggplot", size = 25, gravity = "northwest", color = "white")
+frames <- image_morph(c(img1, img2, img3, img4, img1), frames=300)
+animation <- image_animate(frames)
+image_write(animation, "~/Sandbox/awful/static/xaringan/DS-Archigos/img/PicAnim.gif")
+
+library(magick)
+img1 <- image_resize(image_read("~/Desktop/portrait.jpg"), "450x450")
