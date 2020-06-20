@@ -363,8 +363,8 @@ Archigos %&gt;% head() %&gt;% kable(., format="html") %&gt;% kable_styling() %&g
 ---
 ### If leaders maximize time in office, the `league table`...
 
-<div id="htmlwidget-08655cbb4ee2af19ff18" style="width:100%;height:504px;" class="widgetframe html-widget"></div>
-<script type="application/json" data-for="htmlwidget-08655cbb4ee2af19ff18">{"x":{"url":"index_files/figure-html//widgets/widget_unnamed-chunk-2.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-12fd4b6162e0e24f24c0" style="width:100%;height:504px;" class="widgetframe html-widget"></div>
+<script type="application/json" data-for="htmlwidget-12fd4b6162e0e24f24c0">{"x":{"url":"index_files/figure-html//widgets/widget_unnamed-chunk-2.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 
 
 ---
@@ -873,9 +873,21 @@ But...
 ---
 class: inverse
 # That's Timely
+Opportunities are on the rise.
 
 
 ![](img/DrawLeaderEnds.gif)
+
+---
+### Opportunities Abound for Females
+
+
+```r
+Archigos %&gt;% ggplot(aes(x=eindate, color=gender)) + geom_density() + theme_ipsum_rc()
+```
+
+&lt;img src="index_files/figure-html/unnamed-chunk-22-1.png" width="576" /&gt;
+
 
 ---
 class: bottom

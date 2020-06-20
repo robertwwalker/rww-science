@@ -21,7 +21,7 @@ library(gganimate)
 library(patchwork)
 library(hrbrthemes)
 load(url(paste0(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&quot;,Sys.Date(),&quot;.RData&quot;)))</code></pre>
-<p>Verifying, these data are current as of 2020-06-18 according to the loaded dataset.</p>
+<p>Verifying, these data are current as of 2020-06-19 according to the loaded dataset.</p>
 <div id="a-base-map" class="section level1">
 <h1>A base map</h1>
 <p>To build a map to work from, I need a map library. Load the <code>tigris</code> library then grab the map as an <code>sf</code> object; there is a <code>geom_sf</code> that makes them easy to work with. Finally, I join the map to the data.</p>
@@ -501,13 +501,13 @@ data %&gt;% filter(date==date1) %&gt;%
 <pre class="r"><code>Plot.COVID(&quot;2020-06-16&quot;, Map.Me)</code></pre>
 <p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-95-1.png" width="672" /></p>
 </div>
-<div id="the-result-for-06172020" class="section level2">
-<h2>The Result for 06/17/2020</h2>
-<pre class="r"><code>Plot.COVID(&quot;2020-06-17&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-96-1.png" width="672" /></p>
-</div>
 <div id="the-result-for-06182020" class="section level2">
 <h2>The Result for 06/18/2020</h2>
+<pre class="r"><code>Plot.COVID(&quot;2020-06-18&quot;, Map.Me)</code></pre>
+<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-96-1.png" width="672" /></p>
+</div>
+<div id="the-result-for-06192020" class="section level2">
+<h2>The Result for 06/19/2020</h2>
 <pre class="r"><code>library(widgetframe); library(ggthemes); library(RColorBrewer)
 Map.Me &lt;- Map.Me %&gt;% 
   mutate(TTip = paste0(&quot;Deaths: &quot;,Deaths,&quot;&lt;br&gt; Negative Tests:&quot;,Negative.test.results))

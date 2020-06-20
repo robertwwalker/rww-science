@@ -461,9 +461,18 @@ PolArch %$%
 ---
 class: inverse
 # That's Timely
+Opportunities are on the rise.
 
 
 ![](img/DrawLeaderEnds.gif)
+
+---
+### Opportunities Abound for Females
+
+```{r}
+Archigos %>% ggplot(aes(x=eindate, color=gender)) + geom_density() + theme_ipsum_rc()
+```
+
 
 ---
 class: bottom
