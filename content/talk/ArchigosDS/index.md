@@ -1,12 +1,12 @@
 +++
-date = 2019-04-20T15:00:00  # Schedule page publish date.
+date = 2020-06-18T17:00:00  # Schedule page publish date.
 
 title = "Visualizing National Leaders"
 time_start = 2020-06-18T17:00:00
 time_end = 2020-06-18T18:00:00
 abstract = "Exploring the grammar of graphics using Archigos, the database of leaders."
 abstract_short = "Leaders with Grammars of Graphics"
-event = "AGSM Welcome"
+event = "Data Science Happy Hour"
 event_url = "https://agsm.willamette.edu"
 location = "Salem, OR USA"
 

@@ -4,12 +4,17 @@
   
   <url>
     <loc>/r/covid/</loc>
-    <lastmod>2020-06-17T17:13:41-07:00</lastmod>
+    <lastmod>2020-06-22T14:07:15-07:00</lastmod>
   </url>
   
   <url>
     <loc>/</loc>
-    <lastmod>2020-06-19T17:25:00-07:00</lastmod>
+    <lastmod>2020-06-22T14:07:15-07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/talk/archigosds/</loc>
+    <lastmod>2020-06-22T14:07:15-07:00</lastmod>
   </url>
   
   <url>
@@ -44,7 +49,7 @@
   
   <url>
     <loc>/r/covid-maps/</loc>
-    <lastmod>2020-06-19T17:25:00-07:00</lastmod>
+    <lastmod>2020-06-22T14:07:15-07:00</lastmod>
   </url>
   
   <url>
@@ -433,13 +438,13 @@
   </url>
   
   <url>
-    <loc>/tags/tidytext/</loc>
-    <lastmod>2020-02-05T13:19:17-08:00</lastmod>
+    <loc>/categories/tidytext/</loc>
+    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/tidytext/</loc>
-    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
+    <loc>/tags/tidytext/</loc>
+    <lastmod>2020-02-05T13:19:17-08:00</lastmod>
   </url>
   
   <url>
@@ -455,11 +460,6 @@
   <url>
     <loc>/talk/table-probability/</loc>
     <lastmod>2020-02-05T13:36:46-08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/talk/archigosds/</loc>
-    <lastmod>2019-04-20T15:00:00-07:00</lastmod>
   </url>
   
   <url>
