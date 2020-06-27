@@ -22,7 +22,7 @@ OHA.Corona <- function(website, date) {
     str_remove(., "..12.01.a.m..Updated.Monday...Friday..")
   names(COVID.Head) <- c("Category","Outcome") # Change the names
   COVID.Head <- COVID.Head %>% 
-#    mutate(Outcome = str_replace(Outcome, "Pending*", "NA")) %>%
+    mutate(Outcome = str_replace(Outcome, "Pending*", "NA")) %>%
     mutate(Outcome = parse_number(Outcome), 
            date=as.Date(date), 
            Scraped.date = as.Date(Scraped.date,"%m.%d.%y")) # Create a few variables including the date for checking
