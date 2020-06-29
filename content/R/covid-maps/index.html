@@ -21,7 +21,7 @@ library(gganimate)
 library(patchwork)
 library(hrbrthemes)
 load(url(paste0(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&quot;,Sys.Date(),&quot;.RData&quot;)))</code></pre>
-<p>Verifying, these data are current as of 2020-06-26 according to the loaded dataset.</p>
+<p>Verifying, these data are current as of 2020-06-29 according to the loaded dataset.</p>
 <div id="a-base-map" class="section level1">
 <h1>A base map</h1>
 <p>To build a map to work from, I need a map library. Load the <code>tigris</code> library then grab the map as an <code>sf</code> object; there is a <code>geom_sf</code> that makes them easy to work with. Finally, I join the map to the data.</p>
@@ -543,6 +543,21 @@ data %&gt;% filter(date==date1) %&gt;%
 </div>
 <div id="the-result-for-06262020" class="section level2">
 <h2>The Result for 06/26/2020</h2>
+<pre class="r"><code>Plot.COVID(&quot;2020-06-26&quot;, Map.Me)</code></pre>
+<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-104-1.png" width="672" /></p>
+</div>
+<div id="the-result-for-06272020" class="section level2">
+<h2>The Result for 06/27/2020</h2>
+<pre class="r"><code>Plot.COVID(&quot;2020-06-27&quot;, Map.Me)</code></pre>
+<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-105-1.png" width="672" /></p>
+</div>
+<div id="the-result-for-06282020" class="section level2">
+<h2>The Result for 06/28/2020</h2>
+<pre class="r"><code>Plot.COVID(&quot;2020-06-28&quot;, Map.Me)</code></pre>
+<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-106-1.png" width="672" /></p>
+</div>
+<div id="the-result-for-06292020" class="section level2">
+<h2>The Result for 06/29/2020</h2>
 <pre class="r"><code>library(widgetframe); library(ggthemes); library(RColorBrewer)
 Map.Me &lt;- Map.Me %&gt;% 
   mutate(TTip = paste0(&quot;Deaths: &quot;,Deaths,&quot;&lt;br&gt; Negative Tests:&quot;,Negative.test.results))
@@ -560,6 +575,6 @@ Res1 &lt;- ggplot(Res.1, aes(geometry=geometry, fill=Number.of.cases, label=NAME
 ggp &lt;- ggplotly(Res1)
 frameWidget(ggp)</code></pre>
 <div id="htmlwidget-1" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/R/covid-maps/index_files/figure-html//widgets/widget_unnamed-chunk-105.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/R/covid-maps/index_files/figure-html//widgets/widget_unnamed-chunk-108.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
