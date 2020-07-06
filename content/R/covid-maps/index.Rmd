@@ -724,9 +724,32 @@ Plot.COVID("2020-06-30", Map.Me)
 Plot.COVID("2020-07-01", Map.Me)
 ```
 
-
-
 ## The Result for 07/02/2020
+
+```{r}
+Plot.COVID("2020-07-02", Map.Me)
+```
+
+## The Result for 07/03/2020
+
+```{r}
+Plot.COVID("2020-07-03", Map.Me)
+```
+
+## The Result for 07/04/2020
+
+```{r}
+Plot.COVID("2020-07-04", Map.Me)
+```
+
+## The Result for 07/05/2020
+
+```{r}
+Plot.COVID("2020-07-05", Map.Me)
+```
+
+
+## The Result for 07/06/2020
 
 ```{r, warning=FALSE, message=FALSE}
 library(widgetframe); library(ggthemes); library(RColorBrewer)

@@ -85,6 +85,8 @@ The central takeaway is that the underlying data reports are constantly changing
 
 *2020-06-06* The state of Oregon has stopped reporting the full set of tables on weekends, switching instead to a report style.  Those aren't easily made to scrape because the doc titles are variable and the data is unformatted.  For now, I will skip Saturdays and had added a new weekend script to take the daily tables from .csv and merge them.  Only the graphics on testing, cases, and deaths are now a full times series; the rest are M-F 
 
+*2020-07-03 through 2020-07-05* Apparently OHA took a long July 4 weekend.  The daily update data on tests and cases was produced, with all PENDING on one day that became missing.
+
 # Summarising the County Data: Two Animations
 
 ## The March to Open
@@ -189,7 +191,7 @@ frameWidget(GGP)
 
 # Testing in Oregon
 
-What is the cumulative status of testing?  These data, updated daily, render a count of all tests performed since January of 2020.  I am cutting it off to the month of April to make the labels read.
+What is the cumulative status of testing?  These data, updated daily, render a count of all tests performed since January of 2020.  I am cutting it off to the start of June to make the labels easier to read.
 
 ```{r}
 library(ggrepel); library(magrittr)
