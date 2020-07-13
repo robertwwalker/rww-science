@@ -43,7 +43,7 @@ library(patchwork)
 library(hrbrthemes)
 library(widgetframe)
 load(url(paste0(&amp;quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&amp;quot;,Sys.Date(),&amp;quot;.RData&amp;quot;)))&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Verifying, these data are current as of 2020-07-08 according to the loaded dataset.&lt;/p&gt;
+&lt;p&gt;Verifying, these data are current as of 2020-07-13 according to the loaded dataset.&lt;/p&gt;
 &lt;div id=&#34;a-running-commentary-on-the-data&#34; class=&#34;section level3&#34;&gt;
 &lt;h3&gt;A running commentary on the data&lt;/h3&gt;
 &lt;p&gt;The central takeaway is that the underlying data reports are constantly changing over time. They are reporting new and different quantities and this destroys the comparability of data. Some of it can be reconstructed but much of it is only useful going forward and keeping the schema constant. I hope that will happen at some point.&lt;/p&gt;
