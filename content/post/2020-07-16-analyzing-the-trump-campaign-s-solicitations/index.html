@@ -1,0 +1,128 @@
+---
+title: Analyzing the Trump Campaign's Solicitations
+author: Robert W. Walker
+date: '2020-07-16'
+slug: analyzing-the-trump-campaign-s-solicitations
+categories:
+  - R
+  - dataviz
+tags:
+  - gmailr
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2020-07-16T22:51:38-07:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<div id="tldr" class="section level1">
+<h1>tl;dr</h1>
+<p>In September of 2018, I began to track email solicitations by the Trump Campaign. I have noticed a striking pattern of increasing fundraising activity that started just after the July 4 weekend but I wanted to verify this over the span of the data. In short, something is up.</p>
+<div id="the-data" class="section level2">
+<h2>The Data</h2>
+<p>I will use the wonderful <code>gmailr</code> package to access my gmail. You need a key and an id that the vignette gives guidance on. I invoke those elsewhere to keep the tokens safe. First, let me grab all the solicitations; I identify them by the domain in from <em>rnchq.com</em>.</p>
+<pre class="r"><code>my.messages &lt;- gm_messages(&quot;rnchq.com&quot;, 1000)
+get_emails &lt;- function(message_ids) {
+results &lt;- list()
+for (message_id in message_ids) {
+results[[message_id]] &lt;- message(message_id)
+}
+return(results)
+}
+get_message_ids &lt;- function(gmailr_obj) {
+message_ids &lt;- character()
+for (elem in gmailr_obj) {
+messages &lt;- elem[[&#39;messages&#39;]]
+for (i in seq_along(messages)) {
+message_ids &lt;- append(message_ids, messages[[i]][[&#39;id&#39;]])
+}
+}
+return(message_ids)
+}
+message_ids &lt;- get_message_ids(my.messages)
+# message_ids
+my.Trump.mails &lt;- get_emails(message_ids)</code></pre>
+<p>I now have a list with identifiers for each of the messages that they have sent. Now I want to extract a few features from them to analyze: date sent and by whom. This was amazingly simple to do because I ran across <a href="https://embracingtherandom.com/r/web-scraping/email/apis/trying-to-get-to-the-top-of-r-bloggers-emails/">a blog entry that asked similar data questions on embracing the random</a>.</p>
+<div id="what-date" class="section level3">
+<h3>What Date?</h3>
+<pre class="r"><code>get_email_date &lt;- function(email_obj) {
+headers &lt;- as.data.table(do.call(rbind, email_obj$payload$headers))
+email_date &lt;- headers[name==&#39;Date&#39;, value][[1]]
+return(email_date)
+}
+library(data.table)
+library(stringr)
+create_date_features &lt;- function(email_date_dt) {
+  email_date_dt[, `:=`(
+    email_date = date(email_date_posix),
+    email_day = day(email_date_posix),
+    email_month = month(email_date_posix),
+    email_year = year(email_date_posix),
+    email_weekday = wday(email_date_posix),
+    email_hour = hour(email_date_posix),
+    email_minute = minute(email_date_posix),
+    email_second = second(email_date_posix)
+  )]
+  return(email_date_dt)
+}
+make_email_dates_dt &lt;- function(emails_list) {
+result &lt;- data.table()
+for (email in emails_list) {
+email_id &lt;- email$id
+# deal with our email header `Date`
+email_date &lt;- get_email_date(email)
+email_date_posix &lt;- convert_email_date(email_date)
+# create our intermediate results
+temp_result &lt;- data.table(email_id=email_id, email_date=email_date,
+email_date_posix=email_date_posix)
+result &lt;- rbind(result, temp_result)
+}
+result &lt;- create_date_features(result)
+return(result)
+}
+convert_email_date &lt;- function(email_date_str) {
+email_date_posix &lt;- as_datetime(email_date_str, format=&#39;%a, %d %b %Y %H:%M:%S %z&#39;)
+return(as.POSIXct(email_date_posix))
+}
+library(lubridate); library(hrbrthemes)
+Trump.dates &lt;- make_email_dates_dt(my.Trump.mails)
+# Trump.dates
+Trump.dates %&gt;% group_by(email_date) %&gt;% summarise(Count = n()) -&gt; Trump.dates.Counted
+Trump.dates.Counted %&gt;% ggplot(., aes(x=email_date, y=Count)) + geom_line(color=&quot;red&quot;) + labs(title=&quot;Trump Fundraising Emails&quot;, x=&quot;Date of Email&quot;, y=&quot;Solicitations&quot;) + theme_ipsum_rc()</code></pre>
+<p><img src="/post/2020-07-16-analyzing-the-trump-campaign-s-solicitations/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+</div>
+</div>
+<div id="sent-by-whom" class="section level2">
+<h2>Sent by Whom?</h2>
+<p>I guess this answers the question of sibling rivalry. Eric and Lara are clearly the favorites. Poor Don Jr. is just ahead of the campaign store, Newt Gingrich, and Brad Parscale [fired yesterday].</p>
+<pre class="r"><code>get_email_from &lt;- function(email_obj) {
+headers &lt;- as.data.table(do.call(rbind, email_obj$payload$headers))
+email_date &lt;- headers[name==&#39;From&#39;, value][[1]]
+return(email_date)
+}
+make_email_from_dt &lt;- function(emails_list) {
+result &lt;- data.table()
+for (email in emails_list) {
+email_id &lt;- email$id
+# deal with our email header `Date`
+email_from &lt;- get_email_from(email)
+# create our intermediate results
+temp_result &lt;- data.table(email_id=email_id, email_from=email_from)
+result &lt;- rbind(result, temp_result)
+}
+return(result)
+}
+Trump.from &lt;- make_email_from_dt(my.Trump.mails)
+Trump.from %&gt;% mutate(email_From = str_remove(email_from, &quot;&lt;contact@victory.donaldtrump.com&gt;&quot;)) %&gt;% mutate(email_From = str_remove(email_From, &quot;&lt;contact@campaigns.rnchq.com&gt;&quot;)) %&gt;% group_by(email_From) %&gt;% summarise(Count = n()) %&gt;%  ggplot(., aes(x=fct_reorder(email_From, Count), y=Count, fill=email_From)) + geom_col() + coord_flip() + guides(fill=FALSE) + labs(x=&quot;From Whom?&quot;)</code></pre>
+<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
+<p><img src="/post/2020-07-16-analyzing-the-trump-campaign-s-solicitations/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
+</div>
