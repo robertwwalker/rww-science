@@ -809,14 +809,38 @@ Plot.COVID("2020-07-14", Map.Me)
 Plot.COVID("2020-07-15", Map.Me)
 ```
 
-## The Result for 07/15/2020
+## The Result for 07/16/2020
 
 ```{r}
-Plot.COVID("2020-07-15", Map.Me)
+Plot.COVID("2020-07-16", Map.Me)
+```
+
+## The Result for 07/17/2020
+
+```{r}
+Plot.COVID("2020-07-17", Map.Me)
+```
+
+## The Result for 07/18/2020
+
+```{r}
+Plot.COVID("2020-07-18", Map.Me)
+```
+
+## The Result for 07/19/2020
+
+```{r}
+Plot.COVID("2020-07-19", Map.Me)
+```
+
+## The Result for 07/20/2020
+
+```{r}
+Plot.COVID("2020-07-20", Map.Me)
 ```
 
 
-## The Result for 07/17/2020
+## The Result for 07/21/2020
 
 ```{r, warning=FALSE, message=FALSE}
 library(widgetframe); library(ggthemes); library(RColorBrewer)
