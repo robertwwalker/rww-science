@@ -15,7 +15,7 @@
     <item>
       <title>COVID-19 in Oregon</title>
       <link>/r/covid/</link>
-      <pubDate>Fri, 17 Jul 2020 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 20 Jul 2020 00:00:00 +0000</pubDate>
       <guid>/r/covid/</guid>
       <description>
 &lt;script src=&#34;/rmarkdown-libs/header-attrs/header-attrs.js&#34;&gt;&lt;/script&gt;
@@ -30,7 +30,7 @@
 &lt;iframe width=&#34;100%&#34; height=&#34;80%&#34; src=&#34;https://rwwalker.shinyapps.io/COVID19/&#34;&gt;
 &lt;/iframe&gt;
 &lt;p&gt;There is a &lt;a href=&#34;https://rww.science/r/covid-maps/&#34;&gt;separate page of daily maps&lt;/a&gt;. Oregon reports a set of daily snapshots while progression requires ingesting new data each day so I began tracking it March 20; the process of scraping it is detailed in &lt;a href=&#34;https://rww.science/r/covid-scraping/&#34;&gt;a separate file&lt;/a&gt;. This updates, expands, and consolidates two previous posts &lt;a href=&#34;https://rww.science/2020/03/21/covid-19-in-oregon/&#34;&gt;here&lt;/a&gt; and &lt;a href=&#34;https://rww.science/2020/03/24/covid-19-county-maps-for-oregon/&#34;&gt;here&lt;/a&gt;. A few cautionary notes. First, these are cumulative case counts that are almost certainly incomplete. Second, there is reason to believe that the death numbers may also be incomplete because it is dangerous to police and first responders are spread thinly.&lt;/p&gt;
-&lt;p&gt;This post is current as of July 16, 2020; this first bit of R code loads the current data from my github.&lt;/p&gt;
+&lt;p&gt;This post is current as of July 23, 2020; this first bit of R code loads the current data from my github.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(tigris)
 library(rgdal)
 library(htmltools)
@@ -43,7 +43,7 @@ library(patchwork)
 library(hrbrthemes)
 library(widgetframe)
 load(url(paste0(&amp;quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&amp;quot;,Sys.Date(),&amp;quot;.RData&amp;quot;)))&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Verifying, these data are current as of 2020-07-21 according to the loaded dataset.&lt;/p&gt;
+&lt;p&gt;Verifying, these data are current as of 2020-07-24 according to the loaded dataset.&lt;/p&gt;
 &lt;div id=&#34;a-running-commentary-on-the-data&#34; class=&#34;section level3&#34;&gt;
 &lt;h3&gt;A running commentary on the data&lt;/h3&gt;
 &lt;p&gt;The central takeaway is that the underlying data reports are constantly changing over time. They are reporting new and different quantities and this destroys the comparability of data. Some of it can be reconstructed but much of it is only useful going forward and keeping the schema constant. I hope that will happen at some point.&lt;/p&gt;
@@ -405,7 +405,7 @@ library(gganimate)
 library(patchwork)
 library(hrbrthemes)
 load(url(paste0(&amp;quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&amp;quot;,Sys.Date(),&amp;quot;.RData&amp;quot;)))&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Verifying, these data are current as of 2020-07-23 according to the loaded dataset.&lt;/p&gt;
+&lt;p&gt;Verifying, these data are current as of 2020-07-24 according to the loaded dataset.&lt;/p&gt;
 &lt;div id=&#34;a-base-map&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;A base map&lt;/h1&gt;
 &lt;p&gt;To build a map to work from, I need a map library. Load the &lt;code&gt;tigris&lt;/code&gt; library then grab the map as an &lt;code&gt;sf&lt;/code&gt; object; there is a &lt;code&gt;geom_sf&lt;/code&gt; that makes them easy to work with. Finally, I join the map to the data.&lt;/p&gt;
@@ -1062,6 +1062,11 @@ data %&amp;gt;% filter(date==date1) %&amp;gt;%
 &lt;/div&gt;
 &lt;div id=&#34;the-result-for-07232020&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;The Result for 07/23/2020&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Plot.COVID(&amp;quot;2020-07-23&amp;quot;, Map.Me)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/covid-maps/index_files/figure-html/unnamed-chunk-131-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-result-for-07242020&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;The Result for 07/24/2020&lt;/h2&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(widgetframe); library(ggthemes); library(RColorBrewer)
 Map.Me &amp;lt;- Map.Me %&amp;gt;% 
   mutate(TTip = paste0(&amp;quot;Deaths: &amp;quot;,Deaths,&amp;quot;&amp;lt;br&amp;gt; Negative Tests:&amp;quot;,Negative.test.results))
@@ -1079,7 +1084,7 @@ Res1 &amp;lt;- ggplot(Res.1, aes(geometry=geometry, fill=Number.of.cases, label=
 ggp &amp;lt;- ggplotly(Res1)
 frameWidget(ggp)&lt;/code&gt;&lt;/pre&gt;
 &lt;div id=&#34;htmlwidget-1&#34; style=&#34;width:100%;height:480px;&#34; class=&#34;widgetframe html-widget&#34;&gt;&lt;/div&gt;
-&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-1&#34;&gt;{&#34;x&#34;:{&#34;url&#34;:&#34;/R/covid-maps/index_files/figure-html//widgets/widget_unnamed-chunk-132.html&#34;,&#34;options&#34;:{&#34;xdomain&#34;:&#34;*&#34;,&#34;allowfullscreen&#34;:false,&#34;lazyload&#34;:false}},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-1&#34;&gt;{&#34;x&#34;:{&#34;url&#34;:&#34;/R/covid-maps/index_files/figure-html//widgets/widget_unnamed-chunk-133.html&#34;,&#34;options&#34;:{&#34;xdomain&#34;:&#34;*&#34;,&#34;allowfullscreen&#34;:false,&#34;lazyload&#34;:false}},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 </description>

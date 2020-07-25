@@ -1,7 +1,7 @@
 ---
 title: COVID-19 in Oregon
 author: Robert W. Walker
-date: '2020-07-17'
+date: '2020-07-20'
 output: html_document
 ---
 
@@ -18,7 +18,7 @@ I wanted to create a self-updating visualization of [the data on COVID-19 in the
 
 There is a [separate page of daily maps](https://rww.science/r/covid-maps/).  Oregon reports a set of daily snapshots while progression requires ingesting new data each day so  I began tracking it March 20; the process of scraping it is detailed in [a separate file](https://rww.science/r/covid-scraping/).  This updates, expands, and consolidates two previous posts [here](https://rww.science/2020/03/21/covid-19-in-oregon/) and [here](https://rww.science/2020/03/24/covid-19-county-maps-for-oregon/).  A few cautionary notes.  First, these are cumulative case counts that are almost certainly incomplete.  Second, there is reason to believe that the death numbers may also be incomplete because it is dangerous to police and first responders are spread thinly.
 
-This post is current as of July 16, 2020; this first bit of R code loads the current data from my github.
+This post is current as of July 23, 2020; this first bit of R code loads the current data from my github.
 
 
 

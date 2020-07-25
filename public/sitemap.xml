@@ -3,43 +3,13 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
+    <loc>/2020/07/24/analyzing-the-trump-campaign-s-solicitations/</loc>
+    <lastmod>2020-07-21T16:38:25-07:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/categories/</loc>
-    <lastmod>2020-07-21T16:38:25-07:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/gganimate/</loc>
-    <lastmod>2020-07-21T16:38:25-07:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/2020/07/22/new-york-times-data-on-covid/</loc>
-    <lastmod>2020-07-21T16:38:25-07:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/plot/</loc>
-    <lastmod>2020-07-21T16:38:25-07:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/categories/r/</loc>
-    <lastmod>2020-07-21T16:38:25-07:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/</loc>
-    <lastmod>2020-07-21T16:38:25-07:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/tags/</loc>
-    <lastmod>2020-07-21T16:38:25-07:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/2020/07/19/analyzing-the-trump-campaign-s-solicitations/</loc>
-    <lastmod>2020-07-21T16:38:25-07:00</lastmod>
+    <lastmod>2020-07-23T14:48:03-07:00</lastmod>
   </url>
   
   <url>
@@ -50,6 +20,36 @@
   <url>
     <loc>/tags/gmailr/</loc>
     <lastmod>2020-07-21T16:38:25-07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/r/</loc>
+    <lastmod>2020-07-23T14:48:03-07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/</loc>
+    <lastmod>2020-07-23T14:48:03-07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/</loc>
+    <lastmod>2020-07-23T14:48:03-07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/gganimate/</loc>
+    <lastmod>2020-07-23T14:48:03-07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/2020/07/23/new-york-times-data-on-covid/</loc>
+    <lastmod>2020-07-23T14:48:03-07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/plot/</loc>
+    <lastmod>2020-07-23T14:48:03-07:00</lastmod>
   </url>
   
   <url>
@@ -64,7 +64,7 @@
   
   <url>
     <loc>/r/covid-maps/</loc>
-    <lastmod>2020-07-21T16:38:25-07:00</lastmod>
+    <lastmod>2020-07-23T14:48:03-07:00</lastmod>
   </url>
   
   <url>
@@ -208,12 +208,12 @@
   </url>
   
   <url>
-    <loc>/tags/python/</loc>
+    <loc>/categories/python/</loc>
     <lastmod>2020-02-24T00:09:44-08:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/python/</loc>
+    <loc>/tags/python/</loc>
     <lastmod>2020-02-24T00:09:44-08:00</lastmod>
   </url>
   
@@ -253,12 +253,12 @@
   </url>
   
   <url>
-    <loc>/tags/blogdown/</loc>
+    <loc>/categories/blogdown/</loc>
     <lastmod>2020-02-04T14:46:56-08:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/blogdown/</loc>
+    <loc>/tags/blogdown/</loc>
     <lastmod>2020-02-04T14:46:56-08:00</lastmod>
   </url>
   
