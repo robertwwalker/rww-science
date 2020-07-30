@@ -30,7 +30,7 @@ library(patchwork)
 library(hrbrthemes)
 library(widgetframe)
 load(url(paste0(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&quot;,Sys.Date(),&quot;.RData&quot;)))</code></pre>
-<p>Verifying, these data are current as of 2020-07-29 according to the loaded dataset.</p>
+<p>Verifying, these data are current as of 2020-07-30 according to the loaded dataset.</p>
 <div id="a-running-commentary-on-the-data" class="section level3">
 <h3>A running commentary on the data</h3>
 <p>The central takeaway is that the underlying data reports are constantly changing over time. They are reporting new and different quantities and this destroys the comparability of data. Some of it can be reconstructed but much of it is only useful going forward and keeping the schema constant. I hope that will happen at some point.</p>
@@ -148,15 +148,15 @@ frameWidget(GGP)</code></pre>
 <p>What is the cumulative status of testing? These data, updated daily, render a count of all tests performed since January of 2020. I am cutting it off to the start of June to make the labels easier to read.</p>
 <pre class="r"><code>library(ggrepel); library(magrittr)
 Oregon.Tests %&lt;&gt;% filter(Category!=&quot;Pending&quot;)
-OR.Testing &lt;- Oregon.Tests %&gt;% group_by(date) %&gt;% summarise(Total = sum(Outcome, na.rm=TRUE)) %&gt;% filter(date &gt; &quot;2020-05-01&quot;)
-Test1 &lt;- Oregon.Tests %&gt;% filter(date &gt; &quot;2020-05-01&quot;) %&gt;%
+OR.Testing &lt;- Oregon.Tests %&gt;% group_by(date) %&gt;% summarise(Total = sum(Outcome, na.rm=TRUE)) %&gt;% filter(date &gt; &quot;2020-07-01&quot;)
+Test1 &lt;- Oregon.Tests %&gt;% filter(date &gt; &quot;2020-07-01&quot;) %&gt;%
   ggplot(.) + 
   aes(x=date, y=Outcome, fill=Category, label=Outcome) + 
   geom_col() + 
   geom_label(col=&quot;magenta&quot;, show.legend = FALSE, vjust=1, size=1.5) + 
   scale_fill_viridis_d() + 
 #  scale_color_viridis_d() + 
-  labs(title=&quot;Cumulative [since January 2020] COVID-19 Testing in Oregon \n Shown from May 1&quot;, y=&quot;Completed Tests&quot;, x=&quot;Date&quot;, subtitle=&quot;Total appears in black and white&quot;, caption = &quot;data: https://govstatus.egov.com/OR-OHA-COVID-19&quot;) + 
+  labs(title=&quot;Cumulative [since January 2020] COVID-19 Testing in Oregon \n Shown from July 1&quot;, y=&quot;Completed Tests&quot;, x=&quot;Date&quot;, subtitle=&quot;Total appears in black and white&quot;, caption = &quot;data: https://govstatus.egov.com/OR-OHA-COVID-19&quot;) + 
   guides(fill=FALSE) +
   geom_label(data=OR.Testing, aes(x=date, y=Total, label=Total), fill=&quot;white&quot;, color=&quot;black&quot;, inherit.aes = FALSE, vjust = 0, size=1.5)
 Test1</code></pre>
@@ -164,7 +164,11 @@ Test1</code></pre>
 <div id="a-second-look-at-testing" class="section level2">
 <h2>A Second Look at Testing</h2>
 <p>We should worry about the degree to which tests are applied at all randomly; they are surely not. As a result, what it means to calculate or break down probability based on having been tested is subject to so many important caveats that vary over time. It is important to note that this is also cumulative test percentages/proportions.</p>
-<pre class="r"><code>Test2 &lt;- Oregon.Tests %&gt;% ggplot(.) + aes(x=date, y=Outcome, fill=Category, label=Outcome) + geom_col(position = &quot;fill&quot;) + scale_fill_viridis_d() + labs(title=&quot;Cumulative Outcomes of COVID-19 Testing in Oregon&quot;, y=&quot;Proportion of Tests&quot;, x=&quot;Date&quot;, caption = &quot;data: https://govstatus.egov.com/OR-OHA-COVID-19 \n 04-22 Negative Tests Interpolated&quot;)
+<pre class="r"><code>Test2 &lt;- Oregon.Tests %&gt;% 
+  ggplot(.) + aes(x=date, y=Outcome, fill=Category, label=Outcome) + 
+  geom_col(position = &quot;fill&quot;) + 
+  scale_fill_viridis_d() + 
+  labs(title=&quot;Cumulative Outcomes of COVID-19 Testing in Oregon&quot;, y=&quot;Proportion of Tests&quot;, x=&quot;Date&quot;, caption = &quot;data: https://govstatus.egov.com/OR-OHA-COVID-19 \n 04-22 Negative Tests Interpolated&quot;)
 Test2</code></pre>
 <p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 </div>
@@ -287,6 +291,7 @@ OR.Sex.Reshape &lt;- OR.Gender %&gt;%
   pivot_longer(., c(Actives,Deaths), names_to = &quot;Outcome&quot;, values_to  = &quot;Count&quot;)
 OR.Sex.Reshape %&gt;% 
   mutate(Category = paste(Sex, Outcome, sep=&quot;:&quot;)) %&gt;% 
+  filter(date &gt; as.Date(&quot;2020-06-01&quot;)) %&gt;%
   ggplot(., aes(x=date, y=Count, fill=Outcome)) + 
   geom_col(position=&quot;stack&quot;) + 
   scale_fill_ipsum() + 

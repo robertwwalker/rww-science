@@ -196,15 +196,15 @@ What is the cumulative status of testing?  These data, updated daily, render a c
 ```{r}
 library(ggrepel); library(magrittr)
 Oregon.Tests %<>% filter(Category!="Pending")
-OR.Testing <- Oregon.Tests %>% group_by(date) %>% summarise(Total = sum(Outcome, na.rm=TRUE)) %>% filter(date > "2020-05-01")
-Test1 <- Oregon.Tests %>% filter(date > "2020-05-01") %>%
+OR.Testing <- Oregon.Tests %>% group_by(date) %>% summarise(Total = sum(Outcome, na.rm=TRUE)) %>% filter(date > "2020-07-01")
+Test1 <- Oregon.Tests %>% filter(date > "2020-07-01") %>%
   ggplot(.) + 
   aes(x=date, y=Outcome, fill=Category, label=Outcome) + 
   geom_col() + 
   geom_label(col="magenta", show.legend = FALSE, vjust=1, size=1.5) + 
   scale_fill_viridis_d() + 
 #  scale_color_viridis_d() + 
-  labs(title="Cumulative [since January 2020] COVID-19 Testing in Oregon \n Shown from May 1", y="Completed Tests", x="Date", subtitle="Total appears in black and white", caption = "data: https://govstatus.egov.com/OR-OHA-COVID-19") + 
+  labs(title="Cumulative [since January 2020] COVID-19 Testing in Oregon \n Shown from July 1", y="Completed Tests", x="Date", subtitle="Total appears in black and white", caption = "data: https://govstatus.egov.com/OR-OHA-COVID-19") + 
   guides(fill=FALSE) +
   geom_label(data=OR.Testing, aes(x=date, y=Total, label=Total), fill="white", color="black", inherit.aes = FALSE, vjust = 0, size=1.5)
 Test1
@@ -215,7 +215,11 @@ Test1
 We should worry about the degree to which tests are applied at all randomly; they are surely not.  As a result, what it means to calculate or break down probability based on having been tested is subject to so many important caveats that vary over time.  It is important to note that this is also cumulative test percentages/proportions.
 
 ```{r}
-Test2 <- Oregon.Tests %>% ggplot(.) + aes(x=date, y=Outcome, fill=Category, label=Outcome) + geom_col(position = "fill") + scale_fill_viridis_d() + labs(title="Cumulative Outcomes of COVID-19 Testing in Oregon", y="Proportion of Tests", x="Date", caption = "data: https://govstatus.egov.com/OR-OHA-COVID-19 \n 04-22 Negative Tests Interpolated")
+Test2 <- Oregon.Tests %>% 
+  ggplot(.) + aes(x=date, y=Outcome, fill=Category, label=Outcome) + 
+  geom_col(position = "fill") + 
+  scale_fill_viridis_d() + 
+  labs(title="Cumulative Outcomes of COVID-19 Testing in Oregon", y="Proportion of Tests", x="Date", caption = "data: https://govstatus.egov.com/OR-OHA-COVID-19 \n 04-22 Negative Tests Interpolated")
 Test2
 ```
 
@@ -348,6 +352,7 @@ OR.Sex.Reshape <- OR.Gender %>%
   pivot_longer(., c(Actives,Deaths), names_to = "Outcome", values_to  = "Count")
 OR.Sex.Reshape %>% 
   mutate(Category = paste(Sex, Outcome, sep=":")) %>% 
+  filter(date > as.Date("2020-06-01")) %>%
   ggplot(., aes(x=date, y=Count, fill=Outcome)) + 
   geom_col(position="stack") + 
   scale_fill_ipsum() + 
