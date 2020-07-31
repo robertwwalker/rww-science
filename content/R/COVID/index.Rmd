@@ -196,7 +196,7 @@ What is the cumulative status of testing?  These data, updated daily, render a c
 ```{r}
 library(ggrepel); library(magrittr)
 Oregon.Tests %<>% filter(Category!="Pending")
-OR.Testing <- Oregon.Tests %>% group_by(date) %>% summarise(Total = sum(Outcome, na.rm=TRUE)) %>% filter(date > "2020-07-01")
+OR.Testing <- Oregon.Tests %>% group_by(date) %>% summarise(Total = sum(Outcome, na.rm=TRUE))
 Test1 <- Oregon.Tests %>% filter(date > "2020-07-01") %>%
   ggplot(.) + 
   aes(x=date, y=Outcome, fill=Category, label=Outcome) + 
