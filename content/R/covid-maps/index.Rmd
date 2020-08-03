@@ -900,8 +900,25 @@ Plot.COVID("2020-07-29", Map.Me)
 Plot.COVID("2020-07-30", Map.Me)
 ```
 
-
 ## The Result for 07/31/2020
+
+```{r}
+Plot.COVID("2020-07-31", Map.Me)
+```
+
+## The Result for 08/01/2020
+
+```{r}
+Plot.COVID("2020-08-01", Map.Me)
+```
+
+## The Result for 08/02/2020
+
+```{r}
+Plot.COVID("2020-08-02", Map.Me)
+```
+
+## The Result for 08/03/2020
 
 ```{r, warning=FALSE, message=FALSE}
 library(widgetframe); library(ggthemes); library(RColorBrewer)
