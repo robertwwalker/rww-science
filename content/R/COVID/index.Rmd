@@ -1,7 +1,7 @@
 ---
 title: COVID-19 in Oregon
 author: Robert W. Walker
-date: '2020-08-03'
+date: '2020-08-04'
 output: html_document
 ---
 
@@ -90,7 +90,8 @@ The central takeaway is that the underlying data reports are constantly changing
 # Summarising the County Data: Two Animations
 
 ## The March to Open
- 
+
+
 ```{r, message=FALSE, warning=FALSE}
 TabA <- rownames(table(Oregon.COVID$County))
 TabB <- rownames(table(Oregon.COVID$Scraped.date))
@@ -154,7 +155,7 @@ Res.1 <- Map.Me %>%
 ```
 
 
-I will use a ggplot to build Oregon's map and fill it with case numbers.  `geom_sf()` plots the geometry.  Labels for the counties, scheme the colors, and animate it by time to complete the graphic.  There is a  [separate page of daily maps](https://rww.science/r/covid/maps/).
+I will use a ggplot to build Oregon's map and fill it with case numbers. `geom_sf()` plots the geometry.  Labels for the counties, scheme the colors, and animate it by time to complete the graphic.  There is a  [separate page of daily maps](https://rww.science/r/covid/maps/).
 
 ```{r, message=FALSE, warning=FALSE, eval=FALSE}
 Anim1 <- Map.Me %>% 
