@@ -1,7 +1,7 @@
 ---
 title: Analyzing the Trump Campaign's Solicitations
 author: Robert W. Walker
-date: '2020-08-04'
+date: '2020-08-05'
 slug: analyzing-the-trump-campaign-s-solicitations
 categories:
   - R
@@ -121,7 +121,8 @@ result &lt;- rbind(result, temp_result)
 return(result)
 }
 Trump.from &lt;- make_email_from_dt(my.Trump.mails)
-Trump.from %&gt;% mutate(email_From = str_remove(email_from, &quot;&lt;contact@victory.donaldtrump.com&gt;&quot;)) %&gt;% mutate(email_From = str_remove(email_From, &quot;&lt;contact@campaigns.rnchq.com&gt;&quot;)) %&gt;% mutate(email_From = str_remove(email_from, &quot;&lt;info@team.gop.com&gt;&quot;)) %&gt;% mutate(email_From = str_remove(email_from, &quot;&lt;contact@team.donaldtrump.com&gt;&quot;)) %&gt;% group_by(email_From) %&gt;% summarise(Count = n()) %&gt;%  ggplot(., aes(x=fct_reorder(email_From, Count), y=Count, fill=email_From)) + geom_col() + coord_flip() + guides(fill=FALSE) + labs(x=&quot;From Whom?&quot;)</code></pre>
+Trump.from %&gt;% mutate(email_From = str_remove(email_from, &quot;&lt;contact@victory.donaldtrump.com&gt;&quot;)) %&gt;% mutate(email_From = str_remove(email_From, &quot;&lt;contact@campaigns.rnchq.com&gt;&quot;)) %&gt;% mutate(email_From = str_remove(email_From, &quot;&lt;info@team.gop.com&gt;&quot;)) %&gt;% mutate(email_From = str_remove(email_From, &quot;&lt;contact@team.donaldtrump.com&gt;&quot;)) %&gt;% group_by(email_From) %&gt;% summarise(Count = n()) %&gt;%  
+  ggplot(., aes(x=fct_reorder(email_From, Count), y=Count, fill=email_From)) + geom_col() + coord_flip() + guides(fill=FALSE) + labs(x=&quot;From Whom?&quot;) + theme_ipsum_rc(base_size = 10)</code></pre>
 <pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
 <p><img src="/post/2020-07-16-analyzing-the-trump-campaign-s-solicitations/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 </div>

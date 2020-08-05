@@ -1,7 +1,7 @@
 ---
 title: Analyzing the Trump Campaign's Solicitations
 author: Robert W. Walker
-date: '2020-08-04'
+date: '2020-08-05'
 slug: analyzing-the-trump-campaign-s-solicitations
 categories:
   - R
@@ -130,6 +130,7 @@ result <- rbind(result, temp_result)
 return(result)
 }
 Trump.from <- make_email_from_dt(my.Trump.mails)
-Trump.from %>% mutate(email_From = str_remove(email_from, "<contact@victory.donaldtrump.com>")) %>% mutate(email_From = str_remove(email_From, "<contact@campaigns.rnchq.com>")) %>% mutate(email_From = str_remove(email_from, "<info@team.gop.com>")) %>% mutate(email_From = str_remove(email_from, "<contact@team.donaldtrump.com>")) %>% group_by(email_From) %>% summarise(Count = n()) %>%  ggplot(., aes(x=fct_reorder(email_From, Count), y=Count, fill=email_From)) + geom_col() + coord_flip() + guides(fill=FALSE) + labs(x="From Whom?")
+Trump.from %>% mutate(email_From = str_remove(email_from, "<contact@victory.donaldtrump.com>")) %>% mutate(email_From = str_remove(email_From, "<contact@campaigns.rnchq.com>")) %>% mutate(email_From = str_remove(email_From, "<info@team.gop.com>")) %>% mutate(email_From = str_remove(email_From, "<contact@team.donaldtrump.com>")) %>% group_by(email_From) %>% summarise(Count = n()) %>%  
+  ggplot(., aes(x=fct_reorder(email_From, Count), y=Count, fill=email_From)) + geom_col() + coord_flip() + guides(fill=FALSE) + labs(x="From Whom?") + theme_ipsum_rc(base_size = 10)
 ```
 
