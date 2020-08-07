@@ -663,11 +663,11 @@
     
     
     <div>
-      <h2><a href="/r/covid/" >COVID-19 in Oregon</a></h2>
+      <h2><a href="/r/covid-maps/" >COVID-19 Maps for Oregon</a></h2>
       <div class="article-style">
         
-          Oregon COVID data I wanted to create a self-updating visualization of the data on COVID-19 in the state of Oregon provided by OHA. I still have yet to do that but decided to build this one to visualize the New York Times data.
- There is a separate page of daily maps. Oregon reports a set of daily snapshots while progression requires ingesting new data each day so I began tracking it March 20; the process of scraping it is detailed in a separate file.
+          library(tigris) library(rgdal) library(htmltools) library(viridis) library(sf) library(ggrepel) library(ggthemes) library(gganimate) library(patchwork) library(hrbrthemes) load(url(paste0(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&quot;,Sys.Date(),&quot;.RData&quot;))) Verifying, these data are current as of 2020-08-06 according to the loaded dataset.
+A base map To build a map to work from, I need a map library. Load the tigris library then grab the map as an sf object; there is a geom_sf that makes them easy to work with. Finally, I join the map to the data.
         
       </div>
     </div>
@@ -676,11 +676,11 @@
     
     
     <div>
-      <h2><a href="/r/covid-maps/" >COVID-19 Maps for Oregon</a></h2>
+      <h2><a href="/r/covid/" >COVID-19 in Oregon</a></h2>
       <div class="article-style">
         
-          library(tigris) library(rgdal) library(htmltools) library(viridis) library(sf) library(ggrepel) library(ggthemes) library(gganimate) library(patchwork) library(hrbrthemes) load(url(paste0(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&quot;,Sys.Date(),&quot;.RData&quot;))) Verifying, these data are current as of 2020-08-05 according to the loaded dataset.
-A base map To build a map to work from, I need a map library. Load the tigris library then grab the map as an sf object; there is a geom_sf that makes them easy to work with. Finally, I join the map to the data.
+          Oregon COVID data I wanted to create a self-updating visualization of the data on COVID-19 in the state of Oregon provided by OHA. I still have yet to do that but decided to build this one to visualize the New York Times data.
+ There is a separate page of daily maps. Oregon reports a set of daily snapshots while progression requires ingesting new data each day so I began tracking it March 20; the process of scraping it is detailed in a separate file.
         
       </div>
     </div>
