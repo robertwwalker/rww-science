@@ -107,7 +107,7 @@ OHA.Corona <- function(website, date) {
 Today <- OHA.Corona(website="https://govstatus.egov.com/OR-OHA-COVID-19", date=as.character(Sys.Date()-1)) # 2
 if(max(Oregon.COVID$Scraped.date) < as.Date(Today$Header$Scraped.date[[1]],"%m.%d.%y")) { # 3
   # Store Today
-  eval(parse_expr(paste(months(Sys.Date()),format(Sys.Date(), "%d")," <- Today", sep=""))) # 4
+  eval(parse_expr(paste(months(Sys.Date()),format(Sys.Date()-1, "%d")," <- Today", sep=""))) # 4
   # Create test data
   Oregon.Tests.All <- bind_rows(Today$Header,Oregon.Tests.All) %>% distinct(.) # 5
   # Drop the row of totals and other things.
