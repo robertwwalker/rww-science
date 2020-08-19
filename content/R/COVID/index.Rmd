@@ -155,7 +155,7 @@ Res.1 <- Map.Me %>%
 ```
 
 
-I will use a ggplot to build Oregon's map and fill it with case numbers. `geom_sf()` plots the geometry.  Labels for the counties, scheme the colors, and animate it by time to complete the graphic.  There is a  [separate page of daily maps](https://rww.science/r/covid/maps/).
+I will use a ggplot to build Oregon's map and fill it with case numbers. `geom_sf()` plots the geometry.  Labels for the counties, scheme the colors, and animate it by time to complete the graphic.  There is a  [separate page of daily maps](https://rww.science/r/covid/maps/). 
 
 ```{r, message=FALSE, warning=FALSE, eval=FALSE}
 Anim1 <- Map.Me %>% 
