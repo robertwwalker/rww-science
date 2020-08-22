@@ -87,7 +87,6 @@ The central takeaway is that the underlying data reports are constantly changing
 
 *2020-07-03 through 2020-07-05* Apparently OHA took a long July 4 weekend.  The daily update data on tests and cases was produced, with all PENDING on one day that became missing.
 
-*2020-08-20* There is no apparent update via the waybackmachine and the only data appears to be in a .pdf report.
 
 # Summarising the County Data: Two Animations
 
