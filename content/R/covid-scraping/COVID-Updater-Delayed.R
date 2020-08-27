@@ -104,7 +104,7 @@ OHA.Corona <- function(website, date) {
     mutate(COVID.19.Details = str_replace(COVID.19.Details, "Current patients", "COVID-19 patients"))
   return(list(Header=COVID.Head, Counties = COVID.County, Gender = COVID.Gender, Ages = COVID.Age, Hospitalized = COVID.Hospitalized, Hospital.Cap=COVID.Hospital.Cap, COVID.Strain = COVID.Strain))
 }
-Today <- OHA.Corona(website="https://web.archive.org/web/20200821013618/https://govstatus.egov.com/OR-OHA-COVID-19", date=as.character(Sys.Date()-1)) # 2
+Today <- OHA.Corona(website="https://govstatus.egov.com/OR-OHA-COVID-19", date=as.character(Sys.Date()-1)) # 2
 if(max(Oregon.COVID$Scraped.date) < as.Date(Today$Header$Scraped.date[[1]],"%m.%d.%y")) { # 3
   # Store Today
   eval(parse_expr(paste(months(Sys.Date()),format(Sys.Date()-1, "%d")," <- Today", sep=""))) # 4

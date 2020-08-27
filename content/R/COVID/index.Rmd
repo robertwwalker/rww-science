@@ -168,7 +168,7 @@ Anim1 <- Map.Me %>%
     segment.colour = "white",
     size = 3,
     box.padding = unit(0.05, "lines"))  + scale_fill_viridis_c() + theme_minimal() + labs(title="COVID-19 in Oregon", subtitle="{frame_time}", x="", y="", caption="Made with R, ggplot2, and gganimate by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19") + transition_time(date)
-GGAnim <- animate(Anim1, end_pause=50, nframes=200, width = 1200, height = 900)
+GGAnim <- animate(Anim1, end_pause=50, nframes=300, width = 1200, height = 900)
 save_animation(GGAnim, file="./MapAnim.gif")
 ```
 ![County animation](./MapAnim.gif)

@@ -30,7 +30,7 @@ library(patchwork)
 library(hrbrthemes)
 library(widgetframe)
 load(url(paste0(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&quot;,Sys.Date(),&quot;.RData&quot;)))</code></pre>
-<p>Verifying, these data are current as of 2020-08-24 according to the loaded dataset.</p>
+<p>Verifying, these data are current as of 2020-08-26 according to the loaded dataset.</p>
 <div id="a-running-commentary-on-the-data" class="section level3">
 <h3>A running commentary on the data</h3>
 <p>The central takeaway is that the underlying data reports are constantly changing over time. They are reporting new and different quantities and this destroys the comparability of data. Some of it can be reconstructed but much of it is only useful going forward and keeping the schema constant. I hope that will happen at some point.</p>
@@ -119,7 +119,7 @@ Res.1 &lt;- Map.Me %&gt;%
     segment.colour = &quot;white&quot;,
     size = 3,
     box.padding = unit(0.05, &quot;lines&quot;))  + scale_fill_viridis_c() + theme_minimal() + labs(title=&quot;COVID-19 in Oregon&quot;, subtitle=&quot;{frame_time}&quot;, x=&quot;&quot;, y=&quot;&quot;, caption=&quot;Made with R, ggplot2, and gganimate by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19&quot;) + transition_time(date)
-GGAnim &lt;- animate(Anim1, end_pause=50, nframes=200, width = 1200, height = 900)
+GGAnim &lt;- animate(Anim1, end_pause=50, nframes=300, width = 1200, height = 900)
 save_animation(GGAnim, file=&quot;./MapAnim.gif&quot;)</code></pre>
 <div class="figure">
 <img src="MapAnim.gif" alt="" />
