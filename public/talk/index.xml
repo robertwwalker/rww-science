@@ -13,6 +13,17 @@
     </image>
     
     <item>
+      <title>DADM Kickoff</title>
+      <link>/talk/dadmko/</link>
+      <pubDate>Thu, 27 Aug 2020 10:30:00 -0700</pubDate>
+      <guid>/talk/dadmko/</guid>
+      <description>&lt;p&gt;Slides in 
+&lt;a href=&#34;https://rww.science/xaringan/DADMKO/DADMKO.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;xaringan&lt;/a&gt;
+&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Visualizing National Leaders</title>
       <link>/talk/archigosds/</link>
       <pubDate>Thu, 18 Jun 2020 17:00:00 -0700</pubDate>
@@ -30,6 +41,17 @@
       <guid>/talk/osinfer/</guid>
       <description>&lt;p&gt;Slides in 
 &lt;a href=&#34;https://rww.science/xaringan/testest/index.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;xaringan&lt;/a&gt;
+&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>MBAP Tidy</title>
+      <link>/talk/tidy-crash-r/</link>
+      <pubDate>Wed, 22 Jan 2020 00:00:00 -0800</pubDate>
+      <guid>/talk/tidy-crash-r/</guid>
+      <description>&lt;p&gt;Slides in 
+&lt;a href=&#34;https://rww.science/xaringan/tidy/tidy.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;xaringan&lt;/a&gt;
 &lt;/p&gt;
 </description>
     </item>
@@ -53,17 +75,6 @@
       <description>&lt;p&gt;Slides in 
 &lt;a href=&#34;https://rww.science/xaringan/tables-probability/probability.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;xaringan&lt;/a&gt;
  😄&lt;/p&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>dplyr verbs and tidy tools</title>
-      <link>/talk/tidy-crash-r/</link>
-      <pubDate>Sun, 01 Jan 2017 00:00:00 -0800</pubDate>
-      <guid>/talk/tidy-crash-r/</guid>
-      <description>&lt;p&gt;Slides in 
-&lt;a href=&#34;https://rww.science/xaringan/tidy/tidy.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;xaringan&lt;/a&gt;
-&lt;/p&gt;
 </description>
     </item>
     
