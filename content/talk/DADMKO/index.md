@@ -1,5 +1,5 @@
 +++
-date = 2020-08-27T10:30:00  # Schedule page publish date.
+date = 2020-08-20T10:30:00  # Schedule page publish date.
 
 title = "DADM Kickoff"
 time_start = 2020-08-27T10:30:00

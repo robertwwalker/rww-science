@@ -1,7 +1,7 @@
 +++
 date = 2020-03-20T00:00:00  # Schedule page publish date.
 
-title = "dplyr verbs and tidy tools"
+title = "Inference"
 time_start = 2020-03-21T18:00:00
 time_end = 2020-03-21T22:00:00
 abstract = "One and Two Sample Inference"
