@@ -239,7 +239,7 @@
   <meta property="og:description" content="Associate Professor of Quantitative Methods"><meta property="og:image" content="/img/portrait.jpg">
   <meta property="twitter:image" content="/img/portrait.jpg"><meta property="og:locale" content="en-us">
   
-    <meta property="og:updated_time" content="2020-08-25T00:00:00&#43;00:00">
+    <meta property="og:updated_time" content="2020-08-26T00:00:00&#43;00:00">
   
 
   
@@ -1168,7 +1168,7 @@
   
   <span class="middot-divider"></span>
   <span class="article-reading-time">
-    7 min read
+    3 min read
   </span>
   
 
@@ -1180,7 +1180,7 @@
   
   <span class="middot-divider"></span>
   <span class="article-categories">
-    <i class="fas fa-folder mr-1"></i><a href="/categories/r/">R</a></span>
+    <i class="fas fa-folder mr-1"></i><a href="/categories/r/">R</a>, <a href="/categories/dataviz/">dataviz</a></span>
   
 
 </div>
@@ -1192,13 +1192,13 @@
   
 
   <h3 class="article-title mb-1 mt-3">
-    <a href="/2020/08/25/new-york-times-data-on-covid/">New York Times Data on COVID</a>
+    <a href="/2020/08/26/analyzing-the-trump-campaign-s-solicitations/">Analyzing the Trump Campaign&#39;s Solicitations</a>
   </h3>
 
   
   <div class="article-style">
-    <p>New York Times data for the US The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-08-26 15:42:07.
- The Basic State of Things options(scipen=9) library(tidyverse); library(hrbrthemes); library(patchwork); library(plotly); library(ggdark); library(ggrepel) CTP &lt;- read.csv(&quot;https://covidtracking.com/api/v1/states/daily.csv&quot;) state.data &lt;- read_csv(url(&quot;https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv&quot;)) Rect.NYT &lt;- complete(state.data, state,date) Rect.NYT &lt;- Rect.NYT %&gt;% group_by(state) %&gt;% mutate(New.</p>
+    <p>tl;dr In September of 2018, I began to track email solicitations by the Trump Campaign. I have noticed a striking pattern of increasing fundraising activity that started just after the July 4 weekend but I wanted to verify this over the span of the data. In short, something is up.
+The Data I will use the wonderful gmailr package to access my gmail. You need a key and an id that the vignette gives guidance on.</p>
   </div>
   
 
@@ -1250,7 +1250,7 @@
   
   <span class="middot-divider"></span>
   <span class="article-reading-time">
-    3 min read
+    7 min read
   </span>
   
 
@@ -1262,7 +1262,7 @@
   
   <span class="middot-divider"></span>
   <span class="article-categories">
-    <i class="fas fa-folder mr-1"></i><a href="/categories/r/">R</a>, <a href="/categories/dataviz/">dataviz</a></span>
+    <i class="fas fa-folder mr-1"></i><a href="/categories/r/">R</a></span>
   
 
 </div>
@@ -1274,13 +1274,13 @@
   
 
   <h3 class="article-title mb-1 mt-3">
-    <a href="/2020/08/24/analyzing-the-trump-campaign-s-solicitations/">Analyzing the Trump Campaign&#39;s Solicitations</a>
+    <a href="/2020/08/26/new-york-times-data-on-covid/">New York Times Data on COVID</a>
   </h3>
 
   
   <div class="article-style">
-    <p>tl;dr In September of 2018, I began to track email solicitations by the Trump Campaign. I have noticed a striking pattern of increasing fundraising activity that started just after the July 4 weekend but I wanted to verify this over the span of the data. In short, something is up.
-The Data I will use the wonderful gmailr package to access my gmail. You need a key and an id that the vignette gives guidance on.</p>
+    <p>New York Times data for the US The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-08-27 21:59:37.
+ The Basic State of Things options(scipen=9) library(tidyverse); library(hrbrthemes); library(patchwork); library(plotly); library(ggdark); library(ggrepel) CTP &lt;- read.csv(&quot;https://covidtracking.com/api/v1/states/daily.csv&quot;) state.data &lt;- read_csv(url(&quot;https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv&quot;)) Rect.NYT &lt;- complete(state.data, state,date) Rect.NYT &lt;- Rect.NYT %&gt;% group_by(state) %&gt;% mutate(New.</p>
   </div>
   
 
