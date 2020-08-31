@@ -1077,6 +1077,24 @@ Plot.COVID("2020-08-27", Map.Me)
 
 ## The Result for 08/28/2020
 
+```{r}
+Plot.COVID("2020-08-28", Map.Me)
+```
+
+## The Result for 08/29/2020
+
+```{r}
+Plot.COVID("2020-08-29", Map.Me)
+```
+
+## The Result for 08/30/2020
+
+```{r}
+Plot.COVID("2020-08-30", Map.Me)
+```
+
+## The Result for 08/31/2020
+
 ```{r, warning=FALSE, message=FALSE}
 library(widgetframe); library(ggthemes); library(RColorBrewer)
 Map.Me <- Map.Me %>% 
