@@ -1,7 +1,7 @@
 ---
 title: COVID-19 in Oregon
 author: Robert W. Walker
-date: '2020-08-23'
+date: '2020-08-31'
 output: html_document
 ---
 
