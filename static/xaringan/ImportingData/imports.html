@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Data Files and Variable Types</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Robert W. Walker" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link href="libs/remark-css/default.css" rel="stylesheet" />
+    <link href="libs/remark-css/default-fonts.css" rel="stylesheet" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Data Files and Variable Types
+## DADM
+### Robert W. Walker
+### AGSM/Willamette
+### 2020/08/27 (updated: 2020-09-03)
+
+---
+
+
+
+
+# Data are Ubiquitous
+
+We can talk about them in terms of formats and types.  
+
+**A format describes a machine readable method for storing and transporting data.**  Examples include .csv, .tsv, .dta, .xls, .xlsx, .por and many, many others.
+
+**A type (or better, a storage type) describes the language of machine readability for any given variable.**  Examples include dates and times, numeric [double/float/single], integer, character, factor, logical [TRUE/FALSE], and complex [combining real and imaginary parts].
+
+---
+
+# Formats
+
+Proprietary software often has a unique data format.  Stata has *.dta*  SAS files and SPSS .sav and .por files can be imported.
+
+We will work with `.xls` and `.xlsx` formats most.  These are Excel's spreadsheet formats.  These are not generally human readable.
+
+I often use .csv files; these are basic text files where a comma *delimits* -- separates -- cells.  These are human readable.  **I prefer that in the name of transparency.**
+
+---
+## Importing Data
+
+The action is here [and it works for both URL and local files]:
+
+![](https://github.com/robertwwalker/DADMStuff/raw/master/ImportFile.png)
+
+---
+
+## Import from Excel
+
+
+```r
+library(readxl)
+url &lt;- "https://github.com/robertwwalker/DADMStuff/raw/master/AnimalCrossing.xlsx"
+destfile &lt;- "ACrossing.xlsx"
+curl::curl_download(url, destfile)
+Critic &lt;- read_excel(destfile, sheet="critic")
+Items &lt;- read_excel(destfile, sheet="Items")
+Villagers &lt;- read_excel(destfile, sheet="Villagers")
+User_reviews &lt;- read_excel(destfile, sheet="User_reviews")
+# One of your classmates noted that I mixed up the sheets.
+Items &lt;- read_excel(destfile, sheet="Villagers")
+Villagers &lt;- read_excel(destfile, sheet="Items")
+```
+
+Cool.  The url for the images are in the data so RMarkdown can access them.
+
+![admiral](https://villagerdb.com/images/villagers/thumb/admiral.98206ee.png)
+![angus](https://villagerdb.com/images/villagers/thumb/ankha.8bffa26.png)
+
+---
+## Importing from .csv
+
+They are text files.  Let's actually look at brexit.csv.  Three variables: date, percent right, percent wrong.  Separated by commas.  The comma is the 'delimiter'.
+
+![](https://github.com/robertwwalker/DADMStuff/raw/master/CSV.png)
+
+---
+# Importing .csv
+
+Grab the economist data.
+
+
+```r
+brexit &lt;- read.csv("https://github.com/robertwwalker/DADMStuff/raw/master/brexit.csv")
+corbyn &lt;- read.csv("https://github.com/robertwwalker/DADMStuff/raw/master/corbyn.csv")
+eu_balance &lt;- read.csv("https://github.com/robertwwalker/DADMStuff/raw/master/eu_balance.csv")
+pensions &lt;- read.csv("https://github.com/robertwwalker/DADMStuff/raw/master/pensions.csv")
+dogs &lt;- read.csv("https://github.com/robertwwalker/DADMStuff/raw/master/dogs.csv")
+trade &lt;- read.csv("https://github.com/robertwwalker/DADMStuff/raw/master/trade.csv")
+women_research &lt;- read.csv("https://github.com/robertwwalker/DADMStuff/raw/master/women_research.csv")
+```
+
+---
+# brexit in R
+
+
+```r
+brexit
+```
+
+```
+##        date percent_responding_right percent_responding_wrong
+## 1  02/08/16                       46                       42
+## 2  09/08/16                       45                       44
+## 3  17/08/16                       46                       43
+## 4  23/08/16                       45                       43
+## 5  31/08/16                       47                       44
+## 6  14/09/16                       46                       43
+## 7  12/10/16                       45                       44
+## 8  20/10/16                       45                       44
+## 9  15/11/16                       46                       43
+## 10 29/11/16                       44                       45
+## 11 05/12/16                       44                       42
+## 12 19/12/16                       44                       44
+## 13 04/01/17                       47                       43
+## 14 10/01/17                       46                       42
+## 15 18/01/17                       46                       42
+## 16 31/01/17                       45                       42
+## 17 13/02/17                       46                       42
+## 18 22/02/17                       45                       45
+## 19 28/02/17                       45                       44
+## 20 14/03/17                       44                       42
+## 21 15/03/17                       46                       41
+## 22 21/03/17                       44                       44
+## 23 27/03/17                       44                       43
+## 24 06/04/17                       46                       42
+## 25 13/04/17                       45                       43
+## 26 19/04/17                       46                       43
+## 27 21/04/17                       44                       44
+## 28 26/04/17                       43                       45
+## 29 03/05/17                       46                       43
+## 30 10/05/17                       44                       45
+## 31 14/05/17                       45                       41
+## 32 17/05/17                       46                       43
+## 33 25/05/17                       46                       43
+## 34 31/05/17                       44                       45
+## 35 07/06/17                       45                       45
+## 36 13/06/17                       44                       45
+## 37 22/06/17                       44                       45
+## 38 11/07/17                       45                       43
+## 39 19/07/17                       43                       43
+## 40 01/08/17                       45                       45
+## 41 22/08/17                       43                       45
+## 42 31/08/17                       44                       44
+## 43 24/09/17                       44                       45
+## 44 11/10/17                       42                       47
+## 45 19/10/17                       42                       45
+## 46 20/10/17                       42                       44
+## 47 24/10/17                       43                       45
+## 48 08/11/17                       42                       46
+## 49 05/12/17                       42                       45
+## 50 11/12/17                       44                       45
+## 51 20/12/17                       42                       45
+## 52 08/01/18                       42                       46
+## 53 17/01/18                       45                       44
+## 54 29/01/18                       40                       46
+## 55 06/02/18                       43                       44
+## 56 13/02/18                       42                       46
+## 57 20/02/18                       42                       45
+## 58 27/02/18                       44                       45
+## 59 06/03/18                       43                       45
+## 60 23/03/18                       44                       48
+## 61 27/03/18                       42                       45
+## 62 10/04/18                       42                       46
+## 63 17/04/18                       42                       45
+## 64 25/04/18                       42                       45
+## 65 01/05/18                       42                       47
+## 66 09/05/18                       43                       45
+## 67 14/05/18                       44                       45
+## 68 21/05/18                       43                       44
+## 69 29/05/18                       40                       47
+## 70 05/06/18                       44                       44
+## 71 12/06/18                       43                       46
+## 72 19/06/18                       43                       44
+## 73 20/06/18                       44                       45
+## 74 26/06/18                       43                       46
+## 75 04/07/18                       41                       46
+## 76 09/07/18                       42                       46
+## 77 11/07/18                       41                       46
+## 78 17/07/18                       42                       47
+## 79 23/07/18                       42                       46
+## 80 09/08/18                       42                       45
+## 81 13/08/18                       43                       47
+## 82 14/08/18                       43                       45
+## 83 21/08/18                       41                       47
+## 84 29/08/18                       42                       47
+## 85 04/09/18                       42                       48
+```
+
+---
+# Fixing the Dates
+
+Dates are difficult.  Generically, they need to scale to hours, minutes, seconds, and perhaps worst, time zones.  In addition, they can be formatted in myriad ways.
+
+
+```r
+brexit &lt;- brexit %&gt;% mutate(date = as.Date(date, format="%d/%m/%y")) # These are dd/mm/yy
+```
+
+This is important, particularly if we wish to sequence them according to time, and we do when we visualize them.
+
+---
+# To Esquisse
+
+We will need to reorganize the data.
+
+
+```r
+brexitL &lt;- brexit %&gt;% pivot_longer(., c(percent_responding_right,percent_responding_wrong), names_to = "Choice", values_to="Percent")
+```
+
+
+---
+# A Plot
+
+
+```r
+ggplot(brexitL) +
+ aes(x = date, y = Percent, colour = Choice) +
+ geom_line(size = 1L) + geom_point() +
+ scale_color_viridis_d(option = "cividis") +
+ ggthemes::theme_tufte()
+```
+
+---
+
+![](imports_files/figure-html/unnamed-chunk-6-1.png)&lt;!-- --&gt;
+
+---
+# Better
+
+
+```r
+ggplot(brexitL) +
+ aes(x = date, y = Percent, colour = Choice) +
+ geom_smooth() + geom_point() +
+ scale_color_viridis_d(option = "cividis") +
+ theme_minimal()
+```
+
+---
+
+![](imports_files/figure-html/unnamed-chunk-8-1.png)&lt;!-- --&gt;
+
+---
+# Pensions
+
+
+```r
+ggplot(pensions) +
+ aes(x = pop_65_percent, y = gov_spend_percent_gdp) +
+ geom_point(size = 1L, colour = "#0c4c8a") +
+ labs(x = "Population 65+
+", y = "Government Spending to GDP") +
+ theme_minimal()
+```
+
+![](imports_files/figure-html/unnamed-chunk-9-1.png)&lt;!-- --&gt;
+
+---
+# Better [label and geom_text]
+
+
+```r
+ggplot(pensions) +
+ aes(x = pop_65_percent, y = gov_spend_percent_gdp, label = country) +
+ geom_text() +
+ labs(x = "Population 65+
+", y = "Government Spending to GDP") +
+ theme_minimal()
+```
+
+---
+# Better [label and geom_text]
+
+![](imports_files/figure-html/unnamed-chunk-11-1.png)&lt;!-- --&gt;
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
