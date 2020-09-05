@@ -1,7 +1,7 @@
 ---
 title: COVID-19 in Oregon
 author: Robert W. Walker
-date: '2020-08-31'
+date: '2020-09-03'
 output: html_document
 ---
 
@@ -30,7 +30,7 @@ library(patchwork)
 library(hrbrthemes)
 library(widgetframe)
 load(url(paste0(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&quot;,Sys.Date(),&quot;.RData&quot;)))</code></pre>
-<p>Verifying, these data are current as of 2020-09-01 according to the loaded dataset.</p>
+<p>Verifying, these data are current as of 2020-09-04 according to the loaded dataset.</p>
 <div id="a-running-commentary-on-the-data" class="section level3">
 <h3>A running commentary on the data</h3>
 <p>The central takeaway is that the underlying data reports are constantly changing over time. They are reporting new and different quantities and this destroys the comparability of data. Some of it can be reconstructed but much of it is only useful going forward and keeping the schema constant. I hope that will happen at some point.</p>
@@ -149,14 +149,14 @@ frameWidget(GGP)</code></pre>
 <pre class="r"><code>library(ggrepel); library(magrittr)
 Oregon.Tests %&lt;&gt;% filter(Category!=&quot;Pending&quot;)
 OR.Testing &lt;- Oregon.Tests %&gt;% group_by(date) %&gt;% summarise(Total = sum(Outcome, na.rm=TRUE))
-Test1 &lt;- Oregon.Tests %&gt;% filter(date &gt; &quot;2020-07-01&quot;) %&gt;%
+Test1 &lt;- Oregon.Tests %&gt;% filter(date &gt; &quot;2020-08-01&quot;) %&gt;%
   ggplot(.) + 
   aes(x=date, y=Outcome, fill=Category, label=Outcome) + 
   geom_col() + 
   geom_label(col=&quot;magenta&quot;, show.legend = FALSE, vjust=1, size=1.5) + 
   scale_fill_viridis_d() + 
 #  scale_color_viridis_d() + 
-  labs(title=&quot;Cumulative [since January 2020] COVID-19 Testing in Oregon \n Shown from July 1&quot;, y=&quot;Completed Tests&quot;, x=&quot;Date&quot;, subtitle=&quot;Total appears in black and white&quot;, caption = &quot;data: https://govstatus.egov.com/OR-OHA-COVID-19&quot;) + 
+  labs(title=&quot;Cumulative [since January 2020] COVID-19 Testing in Oregon \n Shown from August 1&quot;, y=&quot;Completed Tests&quot;, x=&quot;Date&quot;, subtitle=&quot;Total appears in black and white&quot;, caption = &quot;data: https://govstatus.egov.com/OR-OHA-COVID-19&quot;) + 
   guides(fill=FALSE) +
   geom_label(data=OR.Testing, aes(x=date, y=Total, label=Total), fill=&quot;white&quot;, color=&quot;black&quot;, inherit.aes = FALSE, vjust = 0, size=1.5)
 Test1</code></pre>
