@@ -177,6 +177,7 @@ FastFood
 ```
 
 ---
+class: inverse
 
 ```{r eval=require('DT'), tidy=FALSE, echo=FALSE}
 DT::datatable(FastFood)
