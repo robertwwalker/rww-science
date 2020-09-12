@@ -1,7 +1,7 @@
 ---
 title: COVID-19 Maps for Oregon
 author: Robert W. Walker
-date: '2020-09-02'
+date: '2020-09-09'
 ---
 
 ```{r setup, include=FALSE}
@@ -1144,8 +1144,26 @@ Plot.COVID("2020-09-06", Map.Me)
 Plot.COVID("2020-09-07", Map.Me)
 ```
 
+## The Result for 09/08/2020
 
-## The Result for 09/07/2020
+```{r}
+Plot.COVID("2020-09-08", Map.Me)
+```
+
+## The Result for 09/09/2020
+
+```{r}
+Plot.COVID("2020-09-09", Map.Me)
+```
+
+## The Result for 09/10/2020
+
+```{r}
+Plot.COVID("2020-09-10", Map.Me)
+```
+
+
+## The Result for 09/11/2020
 
 ```{r, warning=FALSE, message=FALSE}
 library(widgetframe); library(ggthemes); library(RColorBrewer)

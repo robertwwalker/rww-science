@@ -395,6 +395,6 @@ $Pr(User | +) = \frac{0.099}{0.144} = 0.6875$
 
 
 ---
-# The Ultimate Problem is in Going Backward
+# Dichotomization is Prone to Error
 
 As Jaynes suggests, probability is the extension of Aristotellian logic, but we are trying to go back to binary.
