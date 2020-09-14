@@ -13,6 +13,294 @@
     </image>
     
     <item>
+      <title>Visualizing One Qualitative and One Quantitative Variable</title>
+      <link>/r/visualize-mixed-data/</link>
+      <pubDate>Mon, 14 Sep 2020 00:00:00 +0000</pubDate>
+      <guid>/r/visualize-mixed-data/</guid>
+      <description>
+&lt;script src=&#34;/rmarkdown-libs/header-attrs/header-attrs.js&#34;&gt;&lt;/script&gt;
+
+
+&lt;div id=&#34;bonds&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Bonds&lt;/h1&gt;
+&lt;p&gt;A dataset for illustrating the various available visualizations needs a certain degree of richness with manageable size. The dataset on &lt;em&gt;Bonds&lt;/em&gt; contains three categorical and a few quantitative indicators sufficient to show what we might wish.&lt;/p&gt;
+&lt;div id=&#34;loading-the-data&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Loading the Data&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds &amp;lt;- read.csv(url(&amp;quot;https://raw.githubusercontent.com/robertwwalker/DADMStuff/master/BondFunds.csv&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;a-summary&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;A Summary&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(skimr)
+Bonds %&amp;gt;% skim()&lt;/code&gt;&lt;/pre&gt;
+&lt;table&gt;
+&lt;caption&gt;&lt;span id=&#34;tab:unnamed-chunk-2&#34;&gt;Table 1: &lt;/span&gt;Data summary&lt;/caption&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Name&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Piped data&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Number of rows&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;184&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Number of columns&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;9&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;_______________________&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Column type frequency:&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;character&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;4&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;numeric&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;5&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;________________________&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Group variables&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;None&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;Variable type: character&lt;/strong&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;left&#34;&gt;skim_variable&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;n_missing&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;complete_rate&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;min&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;max&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;empty&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;n_unique&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;whitespace&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Fund.Number&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;184&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Type&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;20&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;23&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Fees&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Risk&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;7&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;13&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;Variable type: numeric&lt;/strong&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;left&#34;&gt;skim_variable&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;n_missing&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;complete_rate&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;mean&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;sd&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p0&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p25&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p50&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p75&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p100&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;hist&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Assets&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;910.65&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2253.27&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;12.40&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;113.72&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;268.4&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;621.95&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;18603.50&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▁▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Expense.Ratio&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.71&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.26&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.12&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.53&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.7&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.90&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.94&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▂▇▅▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Return.2009&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;7.16&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6.09&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-8.80&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3.48&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6.4&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;10.72&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;32.00&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▁▇▅▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;X3.Year.Return&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4.66&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2.52&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-13.80&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4.05&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;5.1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6.10&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;9.40&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▁▁▁▅▇&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;X5.Year.Return&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3.99&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.49&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-7.30&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3.60&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4.3&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4.90&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6.80&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▁▁▁▅▇&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Most data types are represented. There is no time variable so dates and the visualizations that go with time series are omitted.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;data-visualization&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Data Visualization&lt;/h1&gt;
+&lt;p&gt;There are three primary visualizations that we might use for the combination of one qualitative and one quantitative indicator. I will deploy boxplots, violin plots, overlaid densities, and dotplots.&lt;/p&gt;
+&lt;div id=&#34;geom_boxplot&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;&lt;code&gt;geom_boxplot()&lt;/code&gt;&lt;/h2&gt;
+&lt;p&gt;This will construct a boxplot of quantitative y for each value of the qualitative variable placed on x. This is very hard to read because of the extrema.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot(., aes(x = Risk, y = Assets)) + geom_boxplot()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-14-visualizing-mixed-data/index_files/figure-html/unnamed-chunk-3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;geom_dotplot&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;&lt;code&gt;geom_dotplot()&lt;/code&gt;&lt;/h2&gt;
+&lt;p&gt;The number of bins, the axis they are placed on, and the size of the dots are core to dotplots. It is often simply a matter of trial and error.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot(., aes(x = Risk, y = Assets, color = Risk)) + geom_dotplot(binaxis = &amp;quot;y&amp;quot;, 
+    bins = 50, dotsize = 0.3)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning: Ignoring unknown parameters: bins&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## `stat_bindot()` using `bins = 30`. Pick better value with `binwidth`.&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-14-visualizing-mixed-data/index_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;div id=&#34;improved&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Improved&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot(., aes(x = Risk, y = Assets, color = Risk)) + geom_dotplot(binaxis = &amp;quot;y&amp;quot;, 
+    bins = 50, dotsize = 0.3) + guides(color = FALSE) + theme_minimal()&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Warning: Ignoring unknown parameters: bins&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## `stat_bindot()` using `bins = 30`. Pick better value with `binwidth`.&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-14-visualizing-mixed-data/index_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;geom_violin&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;&lt;code&gt;geom_violin()&lt;/code&gt;&lt;/h2&gt;
+&lt;p&gt;The most basic violin plot shows a two-sided density plot for each value of x. By default, all violins have the same area.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot(., aes(x = Risk, y = Assets)) + geom_violin()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-14-visualizing-mixed-data/index_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;672&#34; /&gt;
+### Adjusting the area: &lt;code&gt;scale=count&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;We can adjust the violins to have area proportional to the count of observations by deploying the scale argument set equal to count.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot(., aes(x = Risk, y = Assets)) + geom_violin(scale = &amp;quot;count&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-14-visualizing-mixed-data/index_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;div id=&#34;adjusting-the-area-scalewidth&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Adjusting the area: &lt;code&gt;scale=width&lt;/code&gt;&lt;/h3&gt;
+&lt;p&gt;We can also adjust the violins to have equal width.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot(., aes(x = Risk, y = Assets)) + geom_violin(scale = &amp;quot;width&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-14-visualizing-mixed-data/index_files/figure-html/unnamed-chunk-8-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;adjusting-the-bandwidth&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Adjusting the bandwidth&lt;/h3&gt;
+&lt;p&gt;We can also make the violins smoother or more rigid with the &lt;code&gt;adjust=&lt;/code&gt; argument. Numbers greater than one make it smoother.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot(., aes(x = Risk, y = Assets)) + geom_violin(scale = &amp;quot;count&amp;quot;, adjust = 2)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-14-visualizing-mixed-data/index_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Numbers less than one make it less smooth.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot(., aes(x = Risk, y = Assets)) + geom_violin(scale = &amp;quot;count&amp;quot;, adjust = 1/2)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-14-visualizing-mixed-data/index_files/figure-html/unnamed-chunk-10-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;geom_density-with-colorfill&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;&lt;code&gt;geom_density()&lt;/code&gt; with color/fill&lt;/h2&gt;
+&lt;p&gt;We can color the lines of a density plot to try and showcase the various distributions.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot(., aes(x = Assets, color = Risk)) + geom_density()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-14-visualizing-mixed-data/index_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;672&#34; /&gt;
+We fill the shape of density plot to try and showcase the various distributions.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot(., aes(x = Assets, fill = Risk)) + geom_density()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-14-visualizing-mixed-data/index_files/figure-html/unnamed-chunk-12-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;This almost always needs lightening.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot(., aes(x = Assets, fill = Risk)) + geom_density(alpha = 0.2)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-14-visualizing-mixed-data/index_files/figure-html/unnamed-chunk-13-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;In this case, it helps to remove the outline.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot(., aes(x = Assets, fill = Risk)) + geom_density(alpha = 0.2, color = NA)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-14-visualizing-mixed-data/index_files/figure-html/unnamed-chunk-14-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;geom_beeswarm&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;&lt;code&gt;geom_beeswarm()&lt;/code&gt;&lt;/h2&gt;
+&lt;p&gt;Related to the dotplot is the beeswarm. It requires installing a package with the geometry known as ggbeeswarm.&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;install.packages(&amp;quot;ggbeeswarm&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(ggbeeswarm)
+Bonds %&amp;gt;% ggplot() + aes(x = Risk, y = Assets) + geom_beeswarm()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-14-visualizing-mixed-data/index_files/figure-html/unnamed-chunk-15-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(ggbeeswarm)
+Bonds %&amp;gt;% ggplot() + aes(x = Risk, y = Assets, color = Risk) + geom_beeswarm() + 
+    guides(color = FALSE)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-14-visualizing-mixed-data/index_files/figure-html/unnamed-chunk-16-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Importing Excel Data</title>
       <link>/r/importing-excel-data/</link>
       <pubDate>Sun, 13 Sep 2020 00:00:00 +0000</pubDate>
@@ -816,28 +1104,42 @@ Bonds %&amp;gt;% skim()&lt;/code&gt;&lt;/pre&gt;
 &lt;h2&gt;&lt;code&gt;geom_tile&lt;/code&gt;&lt;/h2&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;BTDF %&amp;gt;% ggplot(., aes(x = Risk, y = Fees, fill = Count)) + geom_tile() + scale_fill_viridis_c() + 
     theme_minimal() + labs(fill = &amp;quot;Number of Funds&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/R/2020-09-13-visualizing-two-qualities/index_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;672&#34; /&gt;
-# Raw Data Plots&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-13-visualizing-two-qualities/index_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
+&lt;div id=&#34;geom_label-a-visual-table&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;&lt;code&gt;geom_label&lt;/code&gt; a visual table&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;BTDF %&amp;gt;% ggplot(., aes(x = Risk, y = Fees, label = Count)) + geom_label() + theme_minimal() + 
+    labs(subtitle = &amp;quot;Counts of Funds Shown&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-13-visualizing-two-qualities/index_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;div id=&#34;a-tile-table&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;A Tile Table&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;BTDF %&amp;gt;% ggplot(., aes(x = Risk, y = Fees, label = Count, fill = Count)) + geom_tile(alpha = 0.2) + 
+    scale_fill_viridis_c() + geom_text() + theme_minimal() + labs(subtitle = &amp;quot;Counts of Funds Shown&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-13-visualizing-two-qualities/index_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;raw-data-plots&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Raw Data Plots&lt;/h1&gt;
 &lt;div id=&#34;geom_count&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;&lt;code&gt;geom_count()&lt;/code&gt;&lt;/h2&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot() + aes(x = Risk, y = Fees) + geom_count() + theme_minimal()&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/R/2020-09-13-visualizing-two-qualities/index_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-13-visualizing-two-qualities/index_files/figure-html/unnamed-chunk-8-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 &lt;div id=&#34;geom_barfill&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;&lt;code&gt;geom_bar(fill=)&lt;/code&gt;&lt;/h1&gt;
 &lt;p&gt;Now let us look at the bar plot. First, start with Risk.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot() + aes(x = Risk) + geom_bar()&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/R/2020-09-13-visualizing-two-qualities/index_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-13-visualizing-two-qualities/index_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;To add Fees to the plot, we can fill the bars.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot() + aes(x = Risk, fill = Fees) + geom_bar()&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/R/2020-09-13-visualizing-two-qualities/index_files/figure-html/unnamed-chunk-8-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-13-visualizing-two-qualities/index_files/figure-html/unnamed-chunk-10-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;div id=&#34;conditional-probability-positionfill&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Conditional Probability: &lt;code&gt;(position=&#34;fill&#34;)&lt;/code&gt;&lt;/h2&gt;
 &lt;p&gt;We can also plot this normalized by the number in each category of x so that the plots represent conditional probability.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot() + aes(x = Risk, fill = Fees) + geom_bar(position = &amp;quot;fill&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/R/2020-09-13-visualizing-two-qualities/index_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-13-visualizing-two-qualities/index_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 </description>
@@ -3622,6 +3924,7 @@ polygon(x = c(15.4+seq(2.14,5, by=0.01)*0.7478, 17), y = c(dt(seq(2.14,5, by=0.0
       <pubDate>Wed, 09 Oct 2019 00:00:00 +0000</pubDate>
       <guid>/r/alluvials/</guid>
       <description>
+&lt;script src=&#34;/rmarkdown-libs/header-attrs/header-attrs.js&#34;&gt;&lt;/script&gt;
 
 
 &lt;div id=&#34;alluvial-and-sankey-diagrams&#34; class=&#34;section level2&#34;&gt;
@@ -3672,7 +3975,7 @@ UCBAdmissions  # What does it look like?&lt;/code&gt;&lt;/pre&gt;
 ## Admit      Male Female
 ##   Admitted   22     24
 ##   Rejected  351    317&lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;UCBADF &amp;lt;- data.frame(UCBAdmissions)  # For it into a data.frame
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;UCBADF &amp;lt;- data.frame(UCBAdmissions)  # Force it into a data.frame
 UCBADF  # This is what the data structure needs to look like.&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;##       Admit Gender Dept Freq
 ## 1  Admitted   Male    A  512
@@ -3729,12 +4032,17 @@ DUCBT&lt;/code&gt;&lt;/pre&gt;
 ##  9 Female E     No      299
 ## 10 Female E     Yes      94
 ## # … with 14 more rows&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;The alluvial requires an additional package &lt;code&gt;ggalluvial&lt;/code&gt;. We can install it through &lt;code&gt;install.packages(&amp;quot;ggalluvial&amp;quot;)&lt;/code&gt;. What can it do? It needs data. The y axis is always the total counts in the cells. Then we set axes with a number after to show the phases from left to right. So here, axis1 will be gender and axis two will be Department. Admitted and non-admitted students will be &lt;code&gt;flowed&lt;/code&gt; with colors depicting them move through the system. We want to track them by their admitted status. The alluvial itself has y as Frequency and the various axis* as the phases to track. The outcome of interest enters the fill so that color shows the outcome of interest flowing through the strata.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;ggalluvial&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;&lt;code&gt;ggalluvial()&lt;/code&gt;&lt;/h2&gt;
+&lt;p&gt;The alluvial requires an additional package &lt;code&gt;ggalluvial&lt;/code&gt;. We can install it through&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;install.packages(&amp;quot;ggalluvial&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;What can it do? It needs data. The y axis is always the total counts in the cells. Then we set axes with a number after to show the phases from left to right. So here, axis1 will be gender and axis two will be Department. Admitted and non-admitted students &lt;code&gt;flowed&lt;/code&gt; with colors depicting them move through the system. We want to track them by their admitted status. The alluvial itself has y as Frequency and the various axis* as the phases to track. The outcome of interest enters the fill so that color shows the outcome of interest flowing through the strata.&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;with-the-system-data&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;With the system data&lt;/h2&gt;
 &lt;p&gt;This is the vignette solution to these data with the package. Extending it to any data is a two step process.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggplot(UCBADF,
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;UCBADF %&amp;gt;% ggplot(.,
        aes(y = Freq, axis1 = Gender, axis2 = Dept)) +
   geom_alluvium(aes(fill = Admit), width = 1/12) +
   geom_stratum(width = 1/12, fill = &amp;quot;black&amp;quot;, color = &amp;quot;grey&amp;quot;) +
@@ -3742,7 +4050,7 @@ DUCBT&lt;/code&gt;&lt;/pre&gt;
   scale_x_discrete(limits = c(&amp;quot;Gender&amp;quot;, &amp;quot;Dept&amp;quot;), expand = c(.05, .05)) + # Fix the x axis
   scale_fill_brewer(type = &amp;quot;qual&amp;quot;, palette = &amp;quot;Set1&amp;quot;) + # Give it nice colors
   ggtitle(&amp;quot;UC Berkeley admissions and rejections, by sex and department&amp;quot;) # give it a title&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/R/Alluvials/index_files/figure-html/unnamed-chunk-2-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/R/Alluvials/index_files/figure-html/unnamed-chunk-3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;a-simple-one-or-as-simple-as-i-can&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;A simple one [or as simple as I can]&lt;/h1&gt;
@@ -3752,14 +4060,14 @@ DUCBT&lt;/code&gt;&lt;/pre&gt;
   geom_alluvium(aes(fill = Admit), width = 1/12) + # what variable will fill the paths; Admission here.
   geom_stratum(width = 1/12, fill = &amp;quot;black&amp;quot;, color = &amp;quot;grey&amp;quot;) + # This set the strata that our people will move through The one 12 is 12 combinations; the two colors here dfine the background and text for the labels.
   geom_label(stat = &amp;quot;stratum&amp;quot;, label.strata = TRUE)  # This labels them.&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/R/Alluvials/index_files/figure-html/unnamed-chunk-3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/R/Alluvials/index_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;p&gt;Same with our data.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggplot(DUCBT,
        aes(y = count, axis1 = M.F, axis2 = Dept)) +
   geom_alluvium(aes(fill = Admit), width = 1/12) +
   geom_stratum(width = 1/12, fill = &amp;quot;black&amp;quot;, color = &amp;quot;grey&amp;quot;) +
   geom_label(stat = &amp;quot;stratum&amp;quot;, label.strata = TRUE) &lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/R/Alluvials/index_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/R/Alluvials/index_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;div id=&#34;the-titanic-multiple-phases&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;The Titanic: Multiple Phases&lt;/h2&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;data(&amp;quot;Titanic&amp;quot;)
@@ -3842,34 +4150,24 @@ TDF&lt;/code&gt;&lt;/pre&gt;
   scale_x_discrete(limits = c(&amp;quot;Class&amp;quot;, &amp;quot;Age&amp;quot;, &amp;quot;Sex&amp;quot;)) + # Fix the x axis
   scale_fill_brewer(type = &amp;quot;qual&amp;quot;, palette = &amp;quot;Set1&amp;quot;) + # Give it nice colors
   ggtitle(&amp;quot;The Fate of Titanic Passengers&amp;quot;, subtitle=&amp;quot;Class, Sex, Age&amp;quot;) # give it a title &lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/R/Alluvials/index_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;p&gt;Now for one better, we can combine variables. I will use the titanic data and combine Age and Sex into a new variable people. THey will now flow through Class to Survival starting with four types of people. I recently discovered Beyonce palettes; I will use Beyonce 56 for this alluvial.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(beyonce)
-TDF2 &amp;lt;- TDF %&amp;gt;% mutate(People = Sex:Age)
-TDF2 %&amp;gt;% group_by(People,Class,Survived) %&amp;gt;% ungroup()&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## # A tibble: 32 x 6
-##    Class Sex    Age   Survived  Freq People      
-##    &amp;lt;fct&amp;gt; &amp;lt;fct&amp;gt;  &amp;lt;fct&amp;gt; &amp;lt;fct&amp;gt;    &amp;lt;dbl&amp;gt; &amp;lt;fct&amp;gt;       
-##  1 1st   Male   Child No           0 Male:Child  
-##  2 2nd   Male   Child No           0 Male:Child  
-##  3 3rd   Male   Child No          35 Male:Child  
-##  4 Crew  Male   Child No           0 Male:Child  
-##  5 1st   Female Child No           0 Female:Child
-##  6 2nd   Female Child No           0 Female:Child
-##  7 3rd   Female Child No          17 Female:Child
-##  8 Crew  Female Child No           0 Female:Child
-##  9 1st   Male   Adult No         118 Male:Adult  
-## 10 2nd   Male   Adult No         154 Male:Adult  
-## # … with 22 more rows&lt;/code&gt;&lt;/pre&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;ggplot(TDF2,
+&lt;p&gt;&lt;img src=&#34;/R/Alluvials/index_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;div id=&#34;beyonce-palettes&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Beyonce Palettes&lt;/h3&gt;
+&lt;p&gt;Now for one better, we can combine variables. I will use the titanic data and combine Age and Sex into a new variable people. They will now flow through Class to Survival starting with four types of people. I recently discovered Beyonce palettes; I will use Beyonce 41 for this alluvial.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# devtools::install_github(&amp;quot;dill/beyonce&amp;quot;)
+library(beyonce)
+TDF2 &amp;lt;- TDF %&amp;gt;% mutate(People = Sex:Age, AgeS = Age:Survived)
+ggplot(TDF2,
        aes(y = Freq, axis1 = People, axis2 = Class, axis3=Survived)) +
-  geom_alluvium(aes(fill = Survived), width = 1/24) +
+  geom_alluvium(aes(fill = AgeS), width = 1/24) +
   geom_stratum(width = 1/12, fill = &amp;quot;white&amp;quot;, color = &amp;quot;black&amp;quot;) +
   geom_label(stat = &amp;quot;stratum&amp;quot;, label.strata = TRUE) +
   scale_x_discrete(limits = c(&amp;quot;People&amp;quot;, &amp;quot;Class&amp;quot;, &amp;quot;Survived&amp;quot;)) + # Fix the x axis
-  scale_fill_manual(values = beyonce_palette(56)) + # Give it nice colors
-  ggtitle(&amp;quot;The Fate of Titanic Passengers&amp;quot;, subtitle=&amp;quot;Class, People&amp;quot;) # give it a title &lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/R/Alluvials/index_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+  scale_fill_manual(values = beyonce_palette(41)) + # Give it nice colors
+  ggtitle(&amp;quot;The Fate of Titanic Passengers&amp;quot;, subtitle=&amp;quot;Class, People&amp;quot;) + # give it a title
+  theme_minimal()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/Alluvials/index_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 </description>

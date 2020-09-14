@@ -1,0 +1,300 @@
+---
+title: Visualizing One Qualitative and One Quantitative Variable
+author: Robert W. Walker
+date: '2020-09-14'
+slug: visualize-mixed-data
+categories:
+  - R
+tags:
+  - plot
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2020-09-13T20:04:06-07:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<div id="bonds" class="section level1">
+<h1>Bonds</h1>
+<p>A dataset for illustrating the various available visualizations needs a certain degree of richness with manageable size. The dataset on <em>Bonds</em> contains three categorical and a few quantitative indicators sufficient to show what we might wish.</p>
+<div id="loading-the-data" class="section level2">
+<h2>Loading the Data</h2>
+<pre class="r"><code>Bonds &lt;- read.csv(url(&quot;https://raw.githubusercontent.com/robertwwalker/DADMStuff/master/BondFunds.csv&quot;))</code></pre>
+</div>
+<div id="a-summary" class="section level2">
+<h2>A Summary</h2>
+<pre class="r"><code>library(skimr)
+Bonds %&gt;% skim()</code></pre>
+<table>
+<caption><span id="tab:unnamed-chunk-2">Table 1: </span>Data summary</caption>
+<tbody>
+<tr class="odd">
+<td align="left">Name</td>
+<td align="left">Piped data</td>
+</tr>
+<tr class="even">
+<td align="left">Number of rows</td>
+<td align="left">184</td>
+</tr>
+<tr class="odd">
+<td align="left">Number of columns</td>
+<td align="left">9</td>
+</tr>
+<tr class="even">
+<td align="left">_______________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Column type frequency:</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">character</td>
+<td align="left">4</td>
+</tr>
+<tr class="odd">
+<td align="left">numeric</td>
+<td align="left">5</td>
+</tr>
+<tr class="even">
+<td align="left">________________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Group variables</td>
+<td align="left">None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: character</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">min</th>
+<th align="right">max</th>
+<th align="right">empty</th>
+<th align="right">n_unique</th>
+<th align="right">whitespace</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Fund.Number</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">6</td>
+<td align="right">0</td>
+<td align="right">184</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">Type</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">20</td>
+<td align="right">23</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">Fees</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">Risk</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">7</td>
+<td align="right">13</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">p0</th>
+<th align="right">p25</th>
+<th align="right">p50</th>
+<th align="right">p75</th>
+<th align="right">p100</th>
+<th align="left">hist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Assets</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">910.65</td>
+<td align="right">2253.27</td>
+<td align="right">12.40</td>
+<td align="right">113.72</td>
+<td align="right">268.4</td>
+<td align="right">621.95</td>
+<td align="right">18603.50</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">Expense.Ratio</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0.71</td>
+<td align="right">0.26</td>
+<td align="right">0.12</td>
+<td align="right">0.53</td>
+<td align="right">0.7</td>
+<td align="right">0.90</td>
+<td align="right">1.94</td>
+<td align="left">▂▇▅▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">Return.2009</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">7.16</td>
+<td align="right">6.09</td>
+<td align="right">-8.80</td>
+<td align="right">3.48</td>
+<td align="right">6.4</td>
+<td align="right">10.72</td>
+<td align="right">32.00</td>
+<td align="left">▁▇▅▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">X3.Year.Return</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">4.66</td>
+<td align="right">2.52</td>
+<td align="right">-13.80</td>
+<td align="right">4.05</td>
+<td align="right">5.1</td>
+<td align="right">6.10</td>
+<td align="right">9.40</td>
+<td align="left">▁▁▁▅▇</td>
+</tr>
+<tr class="odd">
+<td align="left">X5.Year.Return</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">3.99</td>
+<td align="right">1.49</td>
+<td align="right">-7.30</td>
+<td align="right">3.60</td>
+<td align="right">4.3</td>
+<td align="right">4.90</td>
+<td align="right">6.80</td>
+<td align="left">▁▁▁▅▇</td>
+</tr>
+</tbody>
+</table>
+<p>Most data types are represented. There is no time variable so dates and the visualizations that go with time series are omitted.</p>
+</div>
+</div>
+<div id="data-visualization" class="section level1">
+<h1>Data Visualization</h1>
+<p>There are three primary visualizations that we might use for the combination of one qualitative and one quantitative indicator. I will deploy boxplots, violin plots, overlaid densities, and dotplots.</p>
+<div id="geom_boxplot" class="section level2">
+<h2><code>geom_boxplot()</code></h2>
+<p>This will construct a boxplot of quantitative y for each value of the qualitative variable placed on x. This is very hard to read because of the extrema.</p>
+<pre class="r"><code>Bonds %&gt;% ggplot(., aes(x = Risk, y = Assets)) + geom_boxplot()</code></pre>
+<p><img src="/R/2020-09-14-visualizing-mixed-data/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+</div>
+<div id="geom_dotplot" class="section level2">
+<h2><code>geom_dotplot()</code></h2>
+<p>The number of bins, the axis they are placed on, and the size of the dots are core to dotplots. It is often simply a matter of trial and error.</p>
+<pre class="r"><code>Bonds %&gt;% ggplot(., aes(x = Risk, y = Assets, color = Risk)) + geom_dotplot(binaxis = &quot;y&quot;, 
+    bins = 50, dotsize = 0.3)</code></pre>
+<pre><code>## Warning: Ignoring unknown parameters: bins</code></pre>
+<pre><code>## `stat_bindot()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="/R/2020-09-14-visualizing-mixed-data/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<div id="improved" class="section level3">
+<h3>Improved</h3>
+<pre class="r"><code>Bonds %&gt;% ggplot(., aes(x = Risk, y = Assets, color = Risk)) + geom_dotplot(binaxis = &quot;y&quot;, 
+    bins = 50, dotsize = 0.3) + guides(color = FALSE) + theme_minimal()</code></pre>
+<pre><code>## Warning: Ignoring unknown parameters: bins</code></pre>
+<pre><code>## `stat_bindot()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
+<p><img src="/R/2020-09-14-visualizing-mixed-data/index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+</div>
+</div>
+<div id="geom_violin" class="section level2">
+<h2><code>geom_violin()</code></h2>
+<p>The most basic violin plot shows a two-sided density plot for each value of x. By default, all violins have the same area.</p>
+<pre class="r"><code>Bonds %&gt;% ggplot(., aes(x = Risk, y = Assets)) + geom_violin()</code></pre>
+<p><img src="/R/2020-09-14-visualizing-mixed-data/index_files/figure-html/unnamed-chunk-6-1.png" width="672" />
+### Adjusting the area: <code>scale=count</code></p>
+<p>We can adjust the violins to have area proportional to the count of observations by deploying the scale argument set equal to count.</p>
+<pre class="r"><code>Bonds %&gt;% ggplot(., aes(x = Risk, y = Assets)) + geom_violin(scale = &quot;count&quot;)</code></pre>
+<p><img src="/R/2020-09-14-visualizing-mixed-data/index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<div id="adjusting-the-area-scalewidth" class="section level3">
+<h3>Adjusting the area: <code>scale=width</code></h3>
+<p>We can also adjust the violins to have equal width.</p>
+<pre class="r"><code>Bonds %&gt;% ggplot(., aes(x = Risk, y = Assets)) + geom_violin(scale = &quot;width&quot;)</code></pre>
+<p><img src="/R/2020-09-14-visualizing-mixed-data/index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+</div>
+<div id="adjusting-the-bandwidth" class="section level3">
+<h3>Adjusting the bandwidth</h3>
+<p>We can also make the violins smoother or more rigid with the <code>adjust=</code> argument. Numbers greater than one make it smoother.</p>
+<pre class="r"><code>Bonds %&gt;% ggplot(., aes(x = Risk, y = Assets)) + geom_violin(scale = &quot;count&quot;, adjust = 2)</code></pre>
+<p><img src="/R/2020-09-14-visualizing-mixed-data/index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p>Numbers less than one make it less smooth.</p>
+<pre class="r"><code>Bonds %&gt;% ggplot(., aes(x = Risk, y = Assets)) + geom_violin(scale = &quot;count&quot;, adjust = 1/2)</code></pre>
+<p><img src="/R/2020-09-14-visualizing-mixed-data/index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+</div>
+</div>
+<div id="geom_density-with-colorfill" class="section level2">
+<h2><code>geom_density()</code> with color/fill</h2>
+<p>We can color the lines of a density plot to try and showcase the various distributions.</p>
+<pre class="r"><code>Bonds %&gt;% ggplot(., aes(x = Assets, color = Risk)) + geom_density()</code></pre>
+<p><img src="/R/2020-09-14-visualizing-mixed-data/index_files/figure-html/unnamed-chunk-11-1.png" width="672" />
+We fill the shape of density plot to try and showcase the various distributions.</p>
+<pre class="r"><code>Bonds %&gt;% ggplot(., aes(x = Assets, fill = Risk)) + geom_density()</code></pre>
+<p><img src="/R/2020-09-14-visualizing-mixed-data/index_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p>This almost always needs lightening.</p>
+<pre class="r"><code>Bonds %&gt;% ggplot(., aes(x = Assets, fill = Risk)) + geom_density(alpha = 0.2)</code></pre>
+<p><img src="/R/2020-09-14-visualizing-mixed-data/index_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p>In this case, it helps to remove the outline.</p>
+<pre class="r"><code>Bonds %&gt;% ggplot(., aes(x = Assets, fill = Risk)) + geom_density(alpha = 0.2, color = NA)</code></pre>
+<p><img src="/R/2020-09-14-visualizing-mixed-data/index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+</div>
+<div id="geom_beeswarm" class="section level2">
+<h2><code>geom_beeswarm()</code></h2>
+<p>Related to the dotplot is the beeswarm. It requires installing a package with the geometry known as ggbeeswarm.</p>
+<pre><code>install.packages(&quot;ggbeeswarm&quot;)</code></pre>
+<pre class="r"><code>library(ggbeeswarm)
+Bonds %&gt;% ggplot() + aes(x = Risk, y = Assets) + geom_beeswarm()</code></pre>
+<p><img src="/R/2020-09-14-visualizing-mixed-data/index_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<pre class="r"><code>library(ggbeeswarm)
+Bonds %&gt;% ggplot() + aes(x = Risk, y = Assets, color = Risk) + geom_beeswarm() + 
+    guides(color = FALSE)</code></pre>
+<p><img src="/R/2020-09-14-visualizing-mixed-data/index_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+</div>
+</div>

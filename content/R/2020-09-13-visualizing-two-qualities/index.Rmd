@@ -70,6 +70,24 @@ BTDF %>%
   scale_fill_viridis_c() + 
   theme_minimal() + labs(fill="Number of Funds")
 ```
+
+## `geom_label` a visual table
+
+```{r}
+BTDF %>% 
+  ggplot(., aes(x=Risk, y=Fees, label=Count)) + geom_label() + theme_minimal() + labs(subtitle="Counts of Funds Shown")
+```
+
+### A Tile Table
+
+```{r}
+BTDF %>% 
+  ggplot(., aes(x=Risk, y=Fees, label=Count, fill=Count)) +   geom_tile(alpha=0.2) +
+  scale_fill_viridis_c() + geom_text() + theme_minimal() + labs(subtitle="Counts of Funds Shown")
+```
+
+
+
 # Raw Data Plots
 
 ## `geom_count()`

@@ -8,6 +8,7 @@ header:
   preview: yes
 ---
 
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 
 
 <div id="alluvial-and-sankey-diagrams" class="section level2">
@@ -58,7 +59,7 @@ UCBAdmissions  # What does it look like?</code></pre>
 ## Admit      Male Female
 ##   Admitted   22     24
 ##   Rejected  351    317</code></pre>
-<pre class="r"><code>UCBADF &lt;- data.frame(UCBAdmissions)  # For it into a data.frame
+<pre class="r"><code>UCBADF &lt;- data.frame(UCBAdmissions)  # Force it into a data.frame
 UCBADF  # This is what the data structure needs to look like.</code></pre>
 <pre><code>##       Admit Gender Dept Freq
 ## 1  Admitted   Male    A  512
@@ -115,12 +116,17 @@ DUCBT</code></pre>
 ##  9 Female E     No      299
 ## 10 Female E     Yes      94
 ## # … with 14 more rows</code></pre>
-<p>The alluvial requires an additional package <code>ggalluvial</code>. We can install it through <code>install.packages(&quot;ggalluvial&quot;)</code>. What can it do? It needs data. The y axis is always the total counts in the cells. Then we set axes with a number after to show the phases from left to right. So here, axis1 will be gender and axis two will be Department. Admitted and non-admitted students will be <code>flowed</code> with colors depicting them move through the system. We want to track them by their admitted status. The alluvial itself has y as Frequency and the various axis* as the phases to track. The outcome of interest enters the fill so that color shows the outcome of interest flowing through the strata.</p>
+</div>
+<div id="ggalluvial" class="section level2">
+<h2><code>ggalluvial()</code></h2>
+<p>The alluvial requires an additional package <code>ggalluvial</code>. We can install it through</p>
+<pre><code>install.packages(&quot;ggalluvial&quot;)</code></pre>
+<p>What can it do? It needs data. The y axis is always the total counts in the cells. Then we set axes with a number after to show the phases from left to right. So here, axis1 will be gender and axis two will be Department. Admitted and non-admitted students <code>flowed</code> with colors depicting them move through the system. We want to track them by their admitted status. The alluvial itself has y as Frequency and the various axis* as the phases to track. The outcome of interest enters the fill so that color shows the outcome of interest flowing through the strata.</p>
 </div>
 <div id="with-the-system-data" class="section level2">
 <h2>With the system data</h2>
 <p>This is the vignette solution to these data with the package. Extending it to any data is a two step process.</p>
-<pre class="r"><code>ggplot(UCBADF,
+<pre class="r"><code>UCBADF %&gt;% ggplot(.,
        aes(y = Freq, axis1 = Gender, axis2 = Dept)) +
   geom_alluvium(aes(fill = Admit), width = 1/12) +
   geom_stratum(width = 1/12, fill = &quot;black&quot;, color = &quot;grey&quot;) +
@@ -128,7 +134,7 @@ DUCBT</code></pre>
   scale_x_discrete(limits = c(&quot;Gender&quot;, &quot;Dept&quot;), expand = c(.05, .05)) + # Fix the x axis
   scale_fill_brewer(type = &quot;qual&quot;, palette = &quot;Set1&quot;) + # Give it nice colors
   ggtitle(&quot;UC Berkeley admissions and rejections, by sex and department&quot;) # give it a title</code></pre>
-<p><img src="/R/Alluvials/index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p><img src="/R/Alluvials/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 </div>
 <div id="a-simple-one-or-as-simple-as-i-can" class="section level1">
 <h1>A simple one [or as simple as I can]</h1>
@@ -138,14 +144,14 @@ DUCBT</code></pre>
   geom_alluvium(aes(fill = Admit), width = 1/12) + # what variable will fill the paths; Admission here.
   geom_stratum(width = 1/12, fill = &quot;black&quot;, color = &quot;grey&quot;) + # This set the strata that our people will move through The one 12 is 12 combinations; the two colors here dfine the background and text for the labels.
   geom_label(stat = &quot;stratum&quot;, label.strata = TRUE)  # This labels them.</code></pre>
-<p><img src="/R/Alluvials/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p><img src="/R/Alluvials/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 <p>Same with our data.</p>
 <pre class="r"><code>ggplot(DUCBT,
        aes(y = count, axis1 = M.F, axis2 = Dept)) +
   geom_alluvium(aes(fill = Admit), width = 1/12) +
   geom_stratum(width = 1/12, fill = &quot;black&quot;, color = &quot;grey&quot;) +
   geom_label(stat = &quot;stratum&quot;, label.strata = TRUE) </code></pre>
-<p><img src="/R/Alluvials/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="/R/Alluvials/index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <div id="the-titanic-multiple-phases" class="section level2">
 <h2>The Titanic: Multiple Phases</h2>
 <pre class="r"><code>data(&quot;Titanic&quot;)
@@ -228,33 +234,23 @@ TDF</code></pre>
   scale_x_discrete(limits = c(&quot;Class&quot;, &quot;Age&quot;, &quot;Sex&quot;)) + # Fix the x axis
   scale_fill_brewer(type = &quot;qual&quot;, palette = &quot;Set1&quot;) + # Give it nice colors
   ggtitle(&quot;The Fate of Titanic Passengers&quot;, subtitle=&quot;Class, Sex, Age&quot;) # give it a title </code></pre>
-<p><img src="/R/Alluvials/index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
-<p>Now for one better, we can combine variables. I will use the titanic data and combine Age and Sex into a new variable people. THey will now flow through Class to Survival starting with four types of people. I recently discovered Beyonce palettes; I will use Beyonce 56 for this alluvial.</p>
-<pre class="r"><code>library(beyonce)
-TDF2 &lt;- TDF %&gt;% mutate(People = Sex:Age)
-TDF2 %&gt;% group_by(People,Class,Survived) %&gt;% ungroup()</code></pre>
-<pre><code>## # A tibble: 32 x 6
-##    Class Sex    Age   Survived  Freq People      
-##    &lt;fct&gt; &lt;fct&gt;  &lt;fct&gt; &lt;fct&gt;    &lt;dbl&gt; &lt;fct&gt;       
-##  1 1st   Male   Child No           0 Male:Child  
-##  2 2nd   Male   Child No           0 Male:Child  
-##  3 3rd   Male   Child No          35 Male:Child  
-##  4 Crew  Male   Child No           0 Male:Child  
-##  5 1st   Female Child No           0 Female:Child
-##  6 2nd   Female Child No           0 Female:Child
-##  7 3rd   Female Child No          17 Female:Child
-##  8 Crew  Female Child No           0 Female:Child
-##  9 1st   Male   Adult No         118 Male:Adult  
-## 10 2nd   Male   Adult No         154 Male:Adult  
-## # … with 22 more rows</code></pre>
-<pre class="r"><code>ggplot(TDF2,
+<p><img src="/R/Alluvials/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<div id="beyonce-palettes" class="section level3">
+<h3>Beyonce Palettes</h3>
+<p>Now for one better, we can combine variables. I will use the titanic data and combine Age and Sex into a new variable people. They will now flow through Class to Survival starting with four types of people. I recently discovered Beyonce palettes; I will use Beyonce 41 for this alluvial.</p>
+<pre class="r"><code># devtools::install_github(&quot;dill/beyonce&quot;)
+library(beyonce)
+TDF2 &lt;- TDF %&gt;% mutate(People = Sex:Age, AgeS = Age:Survived)
+ggplot(TDF2,
        aes(y = Freq, axis1 = People, axis2 = Class, axis3=Survived)) +
-  geom_alluvium(aes(fill = Survived), width = 1/24) +
+  geom_alluvium(aes(fill = AgeS), width = 1/24) +
   geom_stratum(width = 1/12, fill = &quot;white&quot;, color = &quot;black&quot;) +
   geom_label(stat = &quot;stratum&quot;, label.strata = TRUE) +
   scale_x_discrete(limits = c(&quot;People&quot;, &quot;Class&quot;, &quot;Survived&quot;)) + # Fix the x axis
-  scale_fill_manual(values = beyonce_palette(56)) + # Give it nice colors
-  ggtitle(&quot;The Fate of Titanic Passengers&quot;, subtitle=&quot;Class, People&quot;) # give it a title </code></pre>
-<p><img src="/R/Alluvials/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+  scale_fill_manual(values = beyonce_palette(41)) + # Give it nice colors
+  ggtitle(&quot;The Fate of Titanic Passengers&quot;, subtitle=&quot;Class, People&quot;) + # give it a title
+  theme_minimal()</code></pre>
+<p><img src="/R/Alluvials/index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+</div>
 </div>
 </div>

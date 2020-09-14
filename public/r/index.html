@@ -663,6 +663,19 @@
     
     
     <div>
+      <h2><a href="/r/visualize-mixed-data/" >Visualizing One Qualitative and One Quantitative Variable</a></h2>
+      <div class="article-style">
+        
+          Bonds A dataset for illustrating the various available visualizations needs a certain degree of richness with manageable size. The dataset on Bonds contains three categorical and a few quantitative indicators sufficient to show what we might wish.
+Loading the Data Bonds &lt;- read.csv(url(&quot;https://raw.githubusercontent.com/robertwwalker/DADMStuff/master/BondFunds.csv&quot;))  A Summary library(skimr) Bonds %&gt;% skim()  Table 1: Data summary  Name Piped data  Number of rows 184  Number of columns 9  _______________________   Column type frequency:   character 4  numeric 5  ________________________   Group variables None    Variable type: character
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
       <h2><a href="/r/importing-excel-data/" >Importing Excel Data</a></h2>
       <div class="article-style">
         
@@ -772,20 +785,6 @@ Building Oregon COVID data I have a few days of data now. To rebuild it, I will 
         
           As is often the case with \(R\), there are many ways to do things that are equivalent or nearly equivalent. It is the nearly equivalent part that is frustrating; one of the first encounters with this can come with attempts to predict a regression. The ultimate source of troubles is scoping and environments; the use of the $ syntax sometimes has unintended side effects.
 lm() Syntax is Important I will refer to an example from a recent homework on regression.
-        
-      </div>
-    </div>
-  
-    
-    
-    
-    <div>
-      <h2><a href="/r/finreportr-is-awesome/" >Financial Analysis of SEC Reports in R</a></h2>
-      <div class="article-style">
-        
-          The Package: finreport The key tool to facilitate the financial analysis of companies that file regular SEC reports of certain forms is finreportr. To make use of it, we must first have R install it and dependencies. To install it, install.packages(&quot;finreportr&quot;, dependencies=TRUE).
- The Commands The first command is CompanyInfo().
-library(finreportr) CompanyInfo(&quot;JPM&quot;) ## company CIK SIC state state.inc FY.end street.address ## 1 JPMORGAN CHASE &amp; CO 0000019617 6021 NY DE 1231 383 MADISON AVENUE ## city.
         
       </div>
     </div>

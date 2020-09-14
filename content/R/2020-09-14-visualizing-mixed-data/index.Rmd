@@ -1,0 +1,182 @@
+---
+title: Visualizing One Qualitative and One Quantitative Variable
+author: Robert W. Walker
+date: '2020-09-14'
+slug: visualize-mixed-data
+categories:
+  - R
+tags:
+  - plot
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2020-09-13T20:04:06-07:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, tidy=TRUE)
+library(tidyverse)
+```
+
+# Bonds
+
+A dataset for illustrating the various available visualizations needs a certain degree of richness with manageable size.  The dataset on *Bonds* contains three categorical and a few quantitative indicators sufficient to show what we might wish.
+
+## Loading the Data
+
+```{r}
+Bonds <- read.csv(url("https://raw.githubusercontent.com/robertwwalker/DADMStuff/master/BondFunds.csv"))
+```
+
+## A Summary
+
+```{r}
+library(skimr)
+Bonds %>% 
+  skim()
+```
+
+Most data types are represented.  There is no time variable so dates and the visualizations that go with time series are omitted.
+
+# Data Visualization
+
+There are three primary visualizations that we might use for the combination of one qualitative and one quantitative indicator.  I will deploy boxplots, violin plots, overlaid densities, and dotplots.
+
+
+## `geom_boxplot()`
+
+This will construct a boxplot of quantitative y for each value of the qualitative variable placed on x.  This is very hard to read because of the extrema.
+
+```{r}
+Bonds %>% 
+  ggplot(., aes(x=Risk, y=Assets)) + 
+  geom_boxplot()
+```
+
+## `geom_dotplot()`
+
+The number of bins, the axis they are placed on, and the size of the dots are core to dotplots.  It is often simply a matter of trial and error.
+
+```{r}
+Bonds %>% 
+  ggplot(., aes(x=Risk, y=Assets, color=Risk)) + 
+  geom_dotplot(binaxis="y", bins=50, dotsize=0.3)
+```
+
+### Improved
+
+```{r}
+Bonds %>% 
+  ggplot(., aes(x=Risk, y=Assets, color=Risk)) + 
+  geom_dotplot(binaxis="y", bins=50, dotsize=0.3) + guides(color=FALSE) + theme_minimal()
+```
+
+
+## `geom_violin()`
+
+The most basic violin plot shows a two-sided density plot for each value of x.  By default, all violins have the same area.
+
+```{r}
+Bonds %>% 
+  ggplot(., aes(x=Risk, y=Assets)) + 
+  geom_violin()
+```
+### Adjusting the area: `scale=count`
+
+We can adjust the violins to have area proportional to the count of observations by deploying the scale argument set equal to count.
+
+```{r}
+Bonds %>% 
+  ggplot(., aes(x=Risk, y=Assets)) + 
+  geom_violin(scale="count")
+```
+
+### Adjusting the area: `scale=width`
+
+We can also adjust the violins to have equal width.
+
+```{r}
+Bonds %>% 
+  ggplot(., aes(x=Risk, y=Assets)) + 
+  geom_violin(scale="width")
+```
+
+### Adjusting the bandwidth
+
+We can also make the violins smoother or more rigid with the `adjust=` argument.  Numbers greater than one make it smoother.
+
+```{r}
+Bonds %>% 
+  ggplot(., aes(x=Risk, y=Assets)) + 
+  geom_violin(scale="count", adjust=2)
+```
+
+Numbers less than one make it less smooth.
+
+
+```{r}
+Bonds %>% 
+  ggplot(., aes(x=Risk, y=Assets)) + 
+  geom_violin(scale="count", adjust=1/2)
+```
+
+
+## `geom_density()` with color/fill
+
+We can color the lines of a density plot to try and showcase the various distributions.
+
+```{r}
+Bonds %>% 
+  ggplot(., aes(x=Assets, color=Risk)) + 
+  geom_density()
+```
+We fill the shape of density plot to try and showcase the various distributions.
+
+```{r}
+Bonds %>% 
+  ggplot(., aes(x=Assets, fill=Risk)) + 
+  geom_density()
+```
+
+This almost always needs lightening.
+
+```{r}
+Bonds %>% 
+  ggplot(., aes(x=Assets, fill=Risk)) + 
+  geom_density(alpha=0.2)
+```
+
+In this case, it helps to remove the outline.
+
+```{r}
+Bonds %>% 
+    ggplot(., aes(x=Assets, fill=Risk)) + 
+    geom_density(alpha=0.2, color=NA)
+```
+
+
+
+## `geom_beeswarm()`
+
+Related to the dotplot is the beeswarm.  It requires installing a package with the geometry known as ggbeeswarm.
+
+```
+install.packages("ggbeeswarm")
+```
+
+```{r}
+library(ggbeeswarm)
+Bonds %>% ggplot() + aes(x=Risk, y=Assets) + geom_beeswarm()
+```
+
+```{r}
+library(ggbeeswarm)
+Bonds %>% ggplot() + aes(x=Risk, y=Assets, color=Risk) + geom_beeswarm() + guides(color=FALSE)
+```

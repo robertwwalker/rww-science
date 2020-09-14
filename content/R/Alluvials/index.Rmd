@@ -17,12 +17,12 @@ knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
 
 The aforementioned plots are methods for visualising the flow of data through a stream of markers.  I was motivated to show this because enough of you deal in orders, tickets, and the like the flow visualisation of a system might prove of use.  I will work with a familiar dataset.  These are data on Admissions at the University of California Berkeley.  The data exist as an internal R file in tabular form.
 
-```{r cars, message=FALSE}
+```{r, message=FALSE}
 library(tidyverse)
 library(ggalluvial) # if this is not installed, install.packages("ggalluvial")
 data("UCBAdmissions") # This dataset is built in as a set of tables.
 UCBAdmissions  # What does it look like?
-UCBADF <- data.frame(UCBAdmissions)  # For it into a data.frame
+UCBADF <- data.frame(UCBAdmissions)  # Force it into a data.frame
 UCBADF  # This is what the data structure needs to look like.
 ```
 
@@ -43,14 +43,22 @@ DUCBT
 ```
 
 
-The alluvial requires an additional package `ggalluvial`.  We can install it through `install.packages("ggalluvial")`.  What can it do?  It needs data.  The y axis is always the total counts in the cells.  Then we set axes with a number after to show the phases from left to right.  So here, axis1 will be gender and axis two will be Department.  Admitted and non-admitted students will be `flowed` with colors depicting them move through the system.  We want to track them by their admitted status.  The alluvial itself has y as Frequency and the various axis* as the phases to track.  The outcome of interest enters the fill so that color shows the outcome of interest flowing through the strata.
+## `ggalluvial()`
+
+The alluvial requires an additional package `ggalluvial`.  We can install it through 
+
+```
+install.packages("ggalluvial")
+```
+
+What can it do?  It needs data.  The y axis is always the total counts in the cells.  Then we set axes with a number after to show the phases from left to right.  So here, axis1 will be gender and axis two will be Department.  Admitted and non-admitted students `flowed` with colors depicting them move through the system.  We want to track them by their admitted status.  The alluvial itself has y as Frequency and the various axis* as the phases to track.  The outcome of interest enters the fill so that color shows the outcome of interest flowing through the strata.
 
 ## With the system data
 
 This is the vignette solution to these data with the package.  Extending it to any data is a two step process.
 
 ```{r}
-ggplot(UCBADF,
+UCBADF %>% ggplot(.,
        aes(y = Freq, axis1 = Gender, axis2 = Dept)) +
   geom_alluvium(aes(fill = Admit), width = 1/12) +
   geom_stratum(width = 1/12, fill = "black", color = "grey") +
@@ -100,20 +108,23 @@ ggplot(TDF,
 
 ```
 
-Now for one better, we can combine variables.  I will use the titanic data and combine Age and Sex into a new variable people.  THey will now flow through Class to Survival starting with four types of people.  I recently discovered Beyonce palettes; I will use Beyonce 56 for this alluvial.
+### Beyonce Palettes
+
+Now for one better, we can combine variables.  I will use the titanic data and combine Age and Sex into a new variable people.  They will now flow through Class to Survival starting with four types of people.  I recently discovered Beyonce palettes; I will use Beyonce 41 for this alluvial.
 
 ```{r}
+# devtools::install_github("dill/beyonce")
 library(beyonce)
-TDF2 <- TDF %>% mutate(People = Sex:Age)
-TDF2 %>% group_by(People,Class,Survived) %>% ungroup()
+TDF2 <- TDF %>% mutate(People = Sex:Age, AgeS = Age:Survived)
 ggplot(TDF2,
        aes(y = Freq, axis1 = People, axis2 = Class, axis3=Survived)) +
-  geom_alluvium(aes(fill = Survived), width = 1/24) +
+  geom_alluvium(aes(fill = AgeS), width = 1/24) +
   geom_stratum(width = 1/12, fill = "white", color = "black") +
   geom_label(stat = "stratum", label.strata = TRUE) +
   scale_x_discrete(limits = c("People", "Class", "Survived")) + # Fix the x axis
-  scale_fill_manual(values = beyonce_palette(56)) + # Give it nice colors
-  ggtitle("The Fate of Titanic Passengers", subtitle="Class, People") # give it a title 
+  scale_fill_manual(values = beyonce_palette(41)) + # Give it nice colors
+  ggtitle("The Fate of Titanic Passengers", subtitle="Class, People") + # give it a title
+  theme_minimal()
 ```
 
 

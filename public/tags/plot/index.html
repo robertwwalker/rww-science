@@ -239,7 +239,7 @@
   <meta property="og:description" content="Associate Professor of Quantitative Methods"><meta property="og:image" content="/img/portrait.jpg">
   <meta property="twitter:image" content="/img/portrait.jpg"><meta property="og:locale" content="en-us">
   
-    <meta property="og:updated_time" content="2020-09-13T00:00:00&#43;00:00">
+    <meta property="og:updated_time" content="2020-09-14T00:00:00&#43;00:00">
   
 
   
@@ -654,6 +654,19 @@
     
     
     <div>
+      <h2><a href="/r/visualize-mixed-data/" >Visualizing One Qualitative and One Quantitative Variable</a></h2>
+      <div class="article-style">
+        
+          Bonds A dataset for illustrating the various available visualizations needs a certain degree of richness with manageable size. The dataset on Bonds contains three categorical and a few quantitative indicators sufficient to show what we might wish.
+Loading the Data Bonds &lt;- read.csv(url(&quot;https://raw.githubusercontent.com/robertwwalker/DADMStuff/master/BondFunds.csv&quot;))  A Summary library(skimr) Bonds %&gt;% skim()  Table 1: Data summary  Name Piped data  Number of rows 184  Number of columns 9  _______________________   Column type frequency:   character 4  numeric 5  ________________________   Group variables None    Variable type: character
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
       <h2><a href="/2020/09/13/new-york-times-data-on-covid/" >New York Times Data on COVID</a></h2>
       <div class="article-style">
         
@@ -763,19 +776,6 @@ library(haven) library(dplyr) Pew.Data &lt;- read_dta(url(&quot;https://github.c
           mathart A cool package for math generated art that I just discovered. Here is the install code for it
 install.packages(c(&quot;devtools&quot;, &quot;mapproj&quot;, &quot;tidyverse&quot;, &quot;ggforce&quot;, &quot;Rcpp&quot;)) devtools::install_github(&quot;marcusvolz/mathart&quot;) devtools::install_github(&quot;marcusvolz/ggart&quot;) devtools::install_github(&quot;gsimchoni/kandinsky&quot;) Load some libraries library(mathart) library(ggart) library(ggforce) library(Rcpp) library(tidyverse)  Generate some Art? This is quite fun to do.
 set.seed(12341) terminals &lt;- data.frame(x = runif(10, 0, 10000), y = runif(10, 0, 10000)) df &lt;- 1:10000 %&gt;% map_df(~weiszfeld(terminals, c(points$x[.], points$y[.])), .id = &quot;id&quot;) p &lt;- ggplot() + geom_point(aes(x, y), points, size = 1, alpha = 0.
-        
-      </div>
-    </div>
-  
-    
-    
-    
-    <div>
-      <h2><a href="/2019/10/09/the-economist-s-visualization-errors/" >The Economist&#39;s Visualization Errors</a></h2>
-      <div class="article-style">
-        
-          The Economist’s Errors and Credit Where Credit is Due The Economist is serious about their use of data visualization and they have occasionally owned up to errors in their visualizations. They can be deceptive, uninformative, confusing, excessively busy, and present a host of other barriers to clean communication. Their blog post on their errors is great.
-I have drawn the following example from a #tidyTuesday earlier this year that explores this.
         
       </div>
     </div>
