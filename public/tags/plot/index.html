@@ -239,7 +239,7 @@
   <meta property="og:description" content="Associate Professor of Quantitative Methods"><meta property="og:image" content="/img/portrait.jpg">
   <meta property="twitter:image" content="/img/portrait.jpg"><meta property="og:locale" content="en-us">
   
-    <meta property="og:updated_time" content="2020-09-10T00:00:00&#43;00:00">
+    <meta property="og:updated_time" content="2020-09-13T00:00:00&#43;00:00">
   
 
   
@@ -654,11 +654,50 @@
     
     
     <div>
-      <h2><a href="/2020/09/10/new-york-times-data-on-covid/" >New York Times Data on COVID</a></h2>
+      <h2><a href="/2020/09/13/new-york-times-data-on-covid/" >New York Times Data on COVID</a></h2>
       <div class="article-style">
         
-          New York Times data for the US The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-09-10 21:59:47.
+          New York Times data for the US The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-09-13 21:06:51.
  The Basic State of Things options(scipen=9) library(tidyverse); library(hrbrthemes); library(patchwork); library(plotly); library(ggdark); library(ggrepel) CTP &lt;- read.csv(&quot;https://covidtracking.com/api/v1/states/daily.csv&quot;) state.data &lt;- read_csv(url(&quot;https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv&quot;)) Rect.NYT &lt;- complete(state.data, state,date) Rect.NYT &lt;- Rect.NYT %&gt;% group_by(state) %&gt;% mutate(New.
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
+      <h2><a href="/r/visualize-one-quantity/" >Visualizing One Quantitative Variable</a></h2>
+      <div class="article-style">
+        
+          Bonds A dataset for illustrating the various available visualizations needs a certain degree of richness with manageable size. The dataset on Bonds contains three categorical and a few quantitative indicators sufficient to show what we might wish.
+Loading the Data Bonds &lt;- read.csv(url(&quot;https://raw.githubusercontent.com/robertwwalker/DADMStuff/master/BondFunds.csv&quot;))  A Summary library(skimr) Bonds %&gt;% skim()  Table 1: Data summary  Name Piped data  Number of rows 184  Number of columns 9  _______________________   Column type frequency:   character 4  numeric 5  ________________________   Group variables None    Variable type: character
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
+      <h2><a href="/r/visualize-two-qualities/" >Visualizing Two Qualitative Variables</a></h2>
+      <div class="article-style">
+        
+          Bonds A dataset for illustrating the various available visualizations needs a certain degree of richness with manageable size. The dataset on Bonds contains three categorical and a few quantitative indicators sufficient to show what we might wish.
+Loading the Data Bonds &lt;- read.csv(url(&quot;https://raw.githubusercontent.com/robertwwalker/DADMStuff/master/BondFunds.csv&quot;))  A Summary library(skimr) Bonds %&gt;% skim()  Table 1: Data summary  Name Piped data  Number of rows 184  Number of columns 9  _______________________   Column type frequency:   character 4  numeric 5  ________________________   Group variables None    Variable type: character
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
+      <h2><a href="/r/visualize-one-categorical/" >Visualizing One Qualitative Variable</a></h2>
+      <div class="article-style">
+        
+          Bonds A dataset for illustrating the various available visualizations needs a certain degree of richness with manageable size. The dataset on Bonds contains three categorical and a few quantitative indicators sufficient to show what we might wish.
+Loading the Data Bonds &lt;- read.csv(url(&quot;https://raw.githubusercontent.com/robertwwalker/DADMStuff/master/BondFunds.csv&quot;))  A Summary library(skimr) Bonds %&gt;% skim()  Table 1: Data summary  Name Piped data  Number of rows 184  Number of columns 9  _______________________   Column type frequency:   character 4  numeric 5  ________________________   Group variables None    Variable type: character
         
       </div>
     </div>
@@ -737,44 +776,6 @@ set.seed(12341) terminals &lt;- data.frame(x = runif(10, 0, 10000), y = runif(10
         
           The Economist’s Errors and Credit Where Credit is Due The Economist is serious about their use of data visualization and they have occasionally owned up to errors in their visualizations. They can be deceptive, uninformative, confusing, excessively busy, and present a host of other barriers to clean communication. Their blog post on their errors is great.
 I have drawn the following example from a #tidyTuesday earlier this year that explores this.
-        
-      </div>
-    </div>
-  
-    
-    
-    
-    <div>
-      <h2><a href="/2019/04/30/nflscrapr-is-amazing/" >nflscrapR is amazing</a></h2>
-      <div class="article-style">
-        
-          Scraping NFL data Note: An original version of this post had issues induced by overtime games. There is a better way to handle all of this that I learned from a brief analysis of a tie game between Cleveland and Pittsburgh in Week One.
-The nflscrapR package is designed to make data on NFL games more easily available. To install the package, we need to grab it from github.
-        
-      </div>
-    </div>
-  
-    
-    
-    
-    <div>
-      <h2><a href="/2019/03/17/stocks-and-gganimate/" >Stocks and gganimate</a></h2>
-      <div class="article-style">
-        
-          tidyquant Automates a lot of equity research and calculation using tidy concepts. Here, I will first use it to get the components of the S and P 500 and pick out those with weights over 1.25 percent. In the next step, I download the data and finally calculate daily returns and a cumulative wealth index.
-library(tidyquant) library(tidyverse) tq_index(&quot;SP500&quot;) %&gt;% filter(weight &gt; 0.0125) %&gt;% select(symbol,company) -&gt; Tickers Tickers &lt;- Tickers %&gt;% filter(symbol!
-        
-      </div>
-    </div>
-  
-    
-    
-    
-    <div>
-      <h2><a href="/2018/02/22/black-boxes-a-gender-gap-example/" >Black Boxes: A Gender Gap Example</a></h2>
-      <div class="article-style">
-        
-          Variance in the Outcome: The Black Box Regression models engage an exercise in variance accounting. How much of the outcome is explained by the inputs, individually (slope divided by standard error is t) and collectively (Average explained/Average unexplained with averaging over degrees of freedom is F). This, of course, assumes normal errors. This document provides a function for making use of the black box. Just as in common parlance, a black box is the unexplained.
         
       </div>
     </div>

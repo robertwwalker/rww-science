@@ -1,0 +1,214 @@
+---
+title: Importing Excel Data
+author: Robert W. Walker
+date: '2020-09-13'
+slug: importing-excel-data
+categories:
+  - R
+tags:
+  - Excel
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2020-09-13T12:51:38-07:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<div id="how-to-import-a-microsoft-excel-file" class="section level1">
+<h1>How To Import a Microsoft Excel File</h1>
+<p>The go to tool comes from the <code>readxl</code> library in R. We can install it with:</p>
+<pre><code>install.packages(&quot;readxl&quot;)</code></pre>
+<p>To use it, the Markdown must call it – make it active – just as we must at the command line to make it work. The Files pane will make this easier, we can right click to import and get code from the subsequent interaction.</p>
+<pre><code>library(readxl)</code></pre>
+<p>The command to read Excel files comes in three forms:<br />
+- <code>read_excel()</code><br />
+- <code>read_xls()</code><br />
+- <code>read_xlsx()</code></p>
+<p>where the first works for all file types while the second is written specifically for older .xls files and the third is written for newer .xlsx file types. If we type <code>?read_excel</code> we can obtain the help file that guides us through a host of situations including specifying a range of cells, whether or not to use the first row as column names, the data type in a column, what is missing [NA], whether rows should be skipped, and a host of others. The one thing that is required is the file that we wish to import [known to this command as the path]. We can acquire the file from <a href="https://github.com/robertwwalker/DADMStuff/raw/master/BondFunds.xlsx">the following link</a>. If my file is known to my computer as <code>/home/rob/Downloads/BondFunds.xlsx</code> then I also want to be careful about the sheet, in this case, it is <em>JustData</em>:</p>
+<pre class="r"><code>library(tidyverse)
+library(readxl)
+Bonds &lt;- read_excel(path=&quot;/home/rob/Downloads/BondFunds.xlsx&quot;, sheet=&quot;JustData&quot;)
+Bonds</code></pre>
+<pre><code>## # A tibble: 184 x 9
+##    `Fund Number` Type  Assets Fees  `Expense Ratio` `Return 2009`
+##    &lt;chr&gt;         &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;           &lt;dbl&gt;         &lt;dbl&gt;
+##  1 FN-1          Inte…  7268. No               0.45           6.9
+##  2 FN-2          Inte…   475. No               0.5            9.8
+##  3 FN-3          Inte…   193  No               0.71           6.3
+##  4 FN-4          Inte… 18604. No               0.13           5.4
+##  5 FN-5          Inte…   143. No               0.6            5.9
+##  6 FN-6          Inte…  1402. No               0.54           5.7
+##  7 FN-7          Inte…   986. No               0.49           3  
+##  8 FN-8          Inte…  2189. No               0.55           7.4
+##  9 FN-9          Inte…   391. No               0.67           5.3
+## 10 FN-10         Inte…   544. No               0.63           5.7
+## # … with 174 more rows, and 3 more variables: `3-Year Return` &lt;dbl&gt;, `5-Year
+## #   Return` &lt;dbl&gt;, Risk &lt;chr&gt;</code></pre>
+<p>That works just as planned. If I leave the specification of the sheet out, it will load the first sheet.</p>
+<pre class="r"><code>FirstSheet &lt;- read_excel(path=&quot;/home/rob/Downloads/BondFunds.xlsx&quot;)</code></pre>
+<pre><code>## New names:
+## * `` -&gt; ...1
+## * `` -&gt; ...2
+## * `` -&gt; ...3
+## * `` -&gt; ...4
+## * `` -&gt; ...5
+## * ...</code></pre>
+<pre class="r"><code>FirstSheet</code></pre>
+<pre><code>## # A tibble: 18 x 9
+##    ...1     ...2    ...3    ...4    ...5   ...6  ...7  ...8  `mosaic(xtabs(~Typ…
+##    &lt;chr&gt;    &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;  &lt;lgl&gt; &lt;lgl&gt; &lt;lgl&gt; &lt;lgl&gt;              
+##  1 &lt;NA&gt;     &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;   NA    NA    NA    NA                 
+##  2 Fees an… Fees    &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;   NA    NA    NA    NA                 
+##  3 Type     No      Yes     Grand … &lt;NA&gt;   NA    NA    NA    NA                 
+##  4 Interme… 0.2880… 0.1847… 0.4728… &lt;NA&gt;   NA    NA    NA    NA                 
+##  5 Short T… 0.4184… 0.1086… 0.5271… &lt;NA&gt;   NA    NA    NA    NA                 
+##  6 Grand T… 0.7065… 0.2934… 1       &lt;NA&gt;   NA    NA    NA    NA                 
+##  7 &lt;NA&gt;     &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;   NA    NA    NA    NA                 
+##  8 &lt;NA&gt;     &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;   NA    NA    NA    NA                 
+##  9 &lt;NA&gt;     &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;   NA    NA    NA    NA                 
+## 10 &lt;NA&gt;     &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;   NA    NA    NA    NA                 
+## 11 &lt;NA&gt;     &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;   NA    NA    NA    NA                 
+## 12 &lt;NA&gt;     &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;   NA    NA    NA    NA                 
+## 13 &lt;NA&gt;     &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;   NA    NA    NA    NA                 
+## 14 Risk an… Risk    &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;   NA    NA    NA    NA                 
+## 15 Type     Above … Average Below … Grand… NA    NA    NA    NA                 
+## 16 Interme… 29      32      26      87     NA    NA    NA    NA                 
+## 17 Short T… 30      37      30      97     NA    NA    NA    NA                 
+## 18 Grand T… 59      69      56      184    NA    NA    NA    NA</code></pre>
+<p>That is not well-formatted because the first sheet is a table of sorts. A little bit of Rvangelism.</p>
+</div>
+<div id="a-look-at-the-magic-of-r." class="section level1">
+<h1>A look at the magic of R.</h1>
+<p>I am going to use R’s ability to define variable(s) to make my life easier. I do not wish to know what the tabs are; let R figure it out.</p>
+<pre class="r"><code>AllSheets &lt;- function(path) { # Feed a path to an Excel file
+  WorkBook &lt;- excel_sheets(path=path) %&gt;% # Get a vector of sheet names
+    map(~ read_excel(path=path, sheet=.x)) # Load each sheet by name
+  names(WorkBook) &lt;- excel_sheets(path=path) # Rename the sheets by their names
+  return(WorkBook)
+}
+MyWB &lt;- AllSheets(path=&quot;/home/rob/Downloads/BondFunds.xlsx&quot;)</code></pre>
+<pre><code>## New names:
+## * `` -&gt; ...1
+## * `` -&gt; ...2
+## * `` -&gt; ...3
+## * `` -&gt; ...4
+## * `` -&gt; ...5
+## * ...</code></pre>
+<pre><code>## New names:
+## * `` -&gt; ...10</code></pre>
+<pre class="r"><code>MyWB</code></pre>
+<pre><code>## $ContingencyTable
+## # A tibble: 18 x 9
+##    ...1     ...2    ...3    ...4    ...5   ...6  ...7  ...8  `mosaic(xtabs(~Typ…
+##    &lt;chr&gt;    &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;   &lt;chr&gt;  &lt;lgl&gt; &lt;lgl&gt; &lt;lgl&gt; &lt;lgl&gt;              
+##  1 &lt;NA&gt;     &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;   NA    NA    NA    NA                 
+##  2 Fees an… Fees    &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;   NA    NA    NA    NA                 
+##  3 Type     No      Yes     Grand … &lt;NA&gt;   NA    NA    NA    NA                 
+##  4 Interme… 0.2880… 0.1847… 0.4728… &lt;NA&gt;   NA    NA    NA    NA                 
+##  5 Short T… 0.4184… 0.1086… 0.5271… &lt;NA&gt;   NA    NA    NA    NA                 
+##  6 Grand T… 0.7065… 0.2934… 1       &lt;NA&gt;   NA    NA    NA    NA                 
+##  7 &lt;NA&gt;     &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;   NA    NA    NA    NA                 
+##  8 &lt;NA&gt;     &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;   NA    NA    NA    NA                 
+##  9 &lt;NA&gt;     &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;   NA    NA    NA    NA                 
+## 10 &lt;NA&gt;     &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;   NA    NA    NA    NA                 
+## 11 &lt;NA&gt;     &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;   NA    NA    NA    NA                 
+## 12 &lt;NA&gt;     &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;   NA    NA    NA    NA                 
+## 13 &lt;NA&gt;     &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;   NA    NA    NA    NA                 
+## 14 Risk an… Risk    &lt;NA&gt;    &lt;NA&gt;    &lt;NA&gt;   NA    NA    NA    NA                 
+## 15 Type     Above … Average Below … Grand… NA    NA    NA    NA                 
+## 16 Interme… 29      32      26      87     NA    NA    NA    NA                 
+## 17 Short T… 30      37      30      97     NA    NA    NA    NA                 
+## 18 Grand T… 59      69      56      184    NA    NA    NA    NA                 
+## 
+## $DATA
+## # A tibble: 184 x 11
+##    `Fund Number` Type  Assets Fees  `Expense Ratio` `Return 2009`
+##    &lt;chr&gt;         &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;           &lt;dbl&gt;         &lt;dbl&gt;
+##  1 FN-1          Inte…  7268. No               0.45           6.9
+##  2 FN-2          Inte…   475. No               0.5            9.8
+##  3 FN-3          Inte…   193  No               0.71           6.3
+##  4 FN-4          Inte… 18604. No               0.13           5.4
+##  5 FN-5          Inte…   143. No               0.6            5.9
+##  6 FN-6          Inte…  1402. No               0.54           5.7
+##  7 FN-7          Inte…   986. No               0.49           3  
+##  8 FN-8          Inte…  2189. No               0.55           7.4
+##  9 FN-9          Inte…   391. No               0.67           5.3
+## 10 FN-10         Inte…   544. No               0.63           5.7
+## # … with 174 more rows, and 5 more variables: `3-Year Return` &lt;dbl&gt;, `5-Year
+## #   Return` &lt;dbl&gt;, Risk &lt;chr&gt;, ...10 &lt;lgl&gt;, `par(mfrow=c(2,2))` &lt;chr&gt;
+## 
+## $IGDATA
+## # A tibble: 87 x 11
+##    `Fund Number` Type  Assets Fees  `Expense Ratio` `Return 2009`
+##    &lt;chr&gt;         &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;           &lt;dbl&gt;         &lt;dbl&gt;
+##  1 FN-1          Inte…  7268. No               0.45           6.9
+##  2 FN-2          Inte…   475. No               0.5            9.8
+##  3 FN-3          Inte…   193  No               0.71           6.3
+##  4 FN-4          Inte… 18604. No               0.13           5.4
+##  5 FN-5          Inte…   143. No               0.6            5.9
+##  6 FN-6          Inte…  1402. No               0.54           5.7
+##  7 FN-7          Inte…   986. No               0.49           3  
+##  8 FN-8          Inte…  2189. No               0.55           7.4
+##  9 FN-9          Inte…   391. No               0.67           5.3
+## 10 FN-10         Inte…   544. No               0.63           5.7
+## # … with 77 more rows, and 5 more variables: `3-Year Return` &lt;dbl&gt;, `5-Year
+## #   Return` &lt;dbl&gt;, Risk &lt;chr&gt;, Bins &lt;dbl&gt;, Midpoints &lt;dbl&gt;
+## 
+## $STCDATA
+## # A tibble: 97 x 11
+##    `Fund Number` Type  Assets Fees  `Expense Ratio` `Return 2009`
+##    &lt;chr&gt;         &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;           &lt;dbl&gt;         &lt;dbl&gt;
+##  1 FN-88         Shor…  139.  No               0.51           5.5
+##  2 FN-89         Shor…  124.  No               0.32           5  
+##  3 FN-90         Shor… 1922   Yes              1.08          12.1
+##  4 FN-91         Shor…  203.  Yes              1              8.3
+##  5 FN-92         Shor…   66.1 No               0.71           6.8
+##  6 FN-93         Shor… 1346   No               0.65           8.6
+##  7 FN-94         Shor… 4773.  No               0.56           5  
+##  8 FN-95         Shor…   77.5 No               0.51           2.2
+##  9 FN-96         Shor…   76.2 No               0.68           2.5
+## 10 FN-97         Shor…  146.  No               0.55          12.2
+## # … with 87 more rows, and 5 more variables: `3-Year Return` &lt;dbl&gt;, `5-Year
+## #   Return` &lt;dbl&gt;, Risk &lt;chr&gt;, Bins &lt;dbl&gt;, Midpoints &lt;dbl&gt;
+## 
+## $RETURN2009
+## # A tibble: 97 x 2
+##    `Intermediate Government` `Short Term Corporate`
+##                        &lt;dbl&gt;                  &lt;dbl&gt;
+##  1                       6.9                    5.5
+##  2                       9.8                    5  
+##  3                       6.3                   12.1
+##  4                       5.4                    8.3
+##  5                       5.9                    6.8
+##  6                       5.7                    8.6
+##  7                       3                      5  
+##  8                       7.4                    2.2
+##  9                       5.3                    2.5
+## 10                       5.7                   12.2
+## # … with 87 more rows
+## 
+## $JustData
+## # A tibble: 184 x 9
+##    `Fund Number` Type  Assets Fees  `Expense Ratio` `Return 2009`
+##    &lt;chr&gt;         &lt;chr&gt;  &lt;dbl&gt; &lt;chr&gt;           &lt;dbl&gt;         &lt;dbl&gt;
+##  1 FN-1          Inte…  7268. No               0.45           6.9
+##  2 FN-2          Inte…   475. No               0.5            9.8
+##  3 FN-3          Inte…   193  No               0.71           6.3
+##  4 FN-4          Inte… 18604. No               0.13           5.4
+##  5 FN-5          Inte…   143. No               0.6            5.9
+##  6 FN-6          Inte…  1402. No               0.54           5.7
+##  7 FN-7          Inte…   986. No               0.49           3  
+##  8 FN-8          Inte…  2189. No               0.55           7.4
+##  9 FN-9          Inte…   391. No               0.67           5.3
+## 10 FN-10         Inte…   544. No               0.63           5.7
+## # … with 174 more rows, and 3 more variables: `3-Year Return` &lt;dbl&gt;, `5-Year
+## #   Return` &lt;dbl&gt;, Risk &lt;chr&gt;</code></pre>
+</div>

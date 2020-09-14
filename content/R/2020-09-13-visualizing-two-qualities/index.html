@@ -1,0 +1,273 @@
+---
+title: Visualizing Two Qualitative Variables
+author: Robert W. Walker
+date: '2020-09-13'
+slug: visualize-two-qualities
+categories:
+  - R
+tags:
+  - plot
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2020-09-13T20:04:06-07:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<div id="bonds" class="section level1">
+<h1>Bonds</h1>
+<p>A dataset for illustrating the various available visualizations needs a certain degree of richness with manageable size. The dataset on <em>Bonds</em> contains three categorical and a few quantitative indicators sufficient to show what we might wish.</p>
+<div id="loading-the-data" class="section level2">
+<h2>Loading the Data</h2>
+<pre class="r"><code>Bonds &lt;- read.csv(url(&quot;https://raw.githubusercontent.com/robertwwalker/DADMStuff/master/BondFunds.csv&quot;))</code></pre>
+</div>
+<div id="a-summary" class="section level2">
+<h2>A Summary</h2>
+<pre class="r"><code>library(skimr)
+Bonds %&gt;% skim()</code></pre>
+<table>
+<caption><span id="tab:unnamed-chunk-2">Table 1: </span>Data summary</caption>
+<tbody>
+<tr class="odd">
+<td align="left">Name</td>
+<td align="left">Piped data</td>
+</tr>
+<tr class="even">
+<td align="left">Number of rows</td>
+<td align="left">184</td>
+</tr>
+<tr class="odd">
+<td align="left">Number of columns</td>
+<td align="left">9</td>
+</tr>
+<tr class="even">
+<td align="left">_______________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Column type frequency:</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">character</td>
+<td align="left">4</td>
+</tr>
+<tr class="odd">
+<td align="left">numeric</td>
+<td align="left">5</td>
+</tr>
+<tr class="even">
+<td align="left">________________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Group variables</td>
+<td align="left">None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: character</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">min</th>
+<th align="right">max</th>
+<th align="right">empty</th>
+<th align="right">n_unique</th>
+<th align="right">whitespace</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Fund.Number</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">6</td>
+<td align="right">0</td>
+<td align="right">184</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">Type</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">20</td>
+<td align="right">23</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">Fees</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">Risk</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">7</td>
+<td align="right">13</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">p0</th>
+<th align="right">p25</th>
+<th align="right">p50</th>
+<th align="right">p75</th>
+<th align="right">p100</th>
+<th align="left">hist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Assets</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">910.65</td>
+<td align="right">2253.27</td>
+<td align="right">12.40</td>
+<td align="right">113.72</td>
+<td align="right">268.4</td>
+<td align="right">621.95</td>
+<td align="right">18603.50</td>
+<td align="left">▇▁▁▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">Expense.Ratio</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0.71</td>
+<td align="right">0.26</td>
+<td align="right">0.12</td>
+<td align="right">0.53</td>
+<td align="right">0.7</td>
+<td align="right">0.90</td>
+<td align="right">1.94</td>
+<td align="left">▂▇▅▁▁</td>
+</tr>
+<tr class="odd">
+<td align="left">Return.2009</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">7.16</td>
+<td align="right">6.09</td>
+<td align="right">-8.80</td>
+<td align="right">3.48</td>
+<td align="right">6.4</td>
+<td align="right">10.72</td>
+<td align="right">32.00</td>
+<td align="left">▁▇▅▁▁</td>
+</tr>
+<tr class="even">
+<td align="left">X3.Year.Return</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">4.66</td>
+<td align="right">2.52</td>
+<td align="right">-13.80</td>
+<td align="right">4.05</td>
+<td align="right">5.1</td>
+<td align="right">6.10</td>
+<td align="right">9.40</td>
+<td align="left">▁▁▁▅▇</td>
+</tr>
+<tr class="odd">
+<td align="left">X5.Year.Return</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">3.99</td>
+<td align="right">1.49</td>
+<td align="right">-7.30</td>
+<td align="right">3.60</td>
+<td align="right">4.3</td>
+<td align="right">4.90</td>
+<td align="right">6.80</td>
+<td align="left">▁▁▁▅▇</td>
+</tr>
+</tbody>
+</table>
+<p>Most data types are represented. There is no time variable so dates and the visualizations that go with time series are omitted.</p>
+</div>
+</div>
+<div id="data-visualization" class="section level1">
+<h1>Data Visualization</h1>
+<p>There are three primary visualizations that we might use for a combination of two qualities. We will have a look at <code>geom_tile()</code>, <code>geom_point()</code>, and <code>geom_bar(aes(fill=))</code> to visualize these. We can also make use of <code>facet</code>. Let me work with Risk and Fees. I will first display the relevant table.</p>
+<div id="building-a-table" class="section level2">
+<h2>Building a Table</h2>
+<pre class="r"><code>BTDF &lt;- Bonds %&gt;% group_by(Risk, Fees) %&gt;% summarise(Count = n()) %&gt;% data.frame()</code></pre>
+<pre><code>## `summarise()` regrouping output by &#39;Risk&#39; (override with `.groups` argument)</code></pre>
+<pre class="r"><code>BTDF %&gt;% pivot_wider(names_from = Fees, values_from = Count)</code></pre>
+<pre><code>## # A tibble: 3 x 3
+##   Risk             No   Yes
+##   &lt;chr&gt;         &lt;int&gt; &lt;int&gt;
+## 1 Above average    37    22
+## 2 Average          49    20
+## 3 Below average    44    12</code></pre>
+<p>The table as a data.frame.</p>
+<pre class="r"><code>BTDF</code></pre>
+<pre><code>##            Risk Fees Count
+## 1 Above average   No    37
+## 2 Above average  Yes    22
+## 3       Average   No    49
+## 4       Average  Yes    20
+## 5 Below average   No    44
+## 6 Below average  Yes    12</code></pre>
+</div>
+<div id="geom_tile" class="section level2">
+<h2><code>geom_tile</code></h2>
+<pre class="r"><code>BTDF %&gt;% ggplot(., aes(x = Risk, y = Fees, fill = Count)) + geom_tile() + scale_fill_viridis_c() + 
+    theme_minimal() + labs(fill = &quot;Number of Funds&quot;)</code></pre>
+<p><img src="/R/2020-09-13-visualizing-two-qualities/index_files/figure-html/unnamed-chunk-5-1.png" width="672" />
+# Raw Data Plots</p>
+</div>
+<div id="geom_count" class="section level2">
+<h2><code>geom_count()</code></h2>
+<pre class="r"><code>Bonds %&gt;% ggplot() + aes(x = Risk, y = Fees) + geom_count() + theme_minimal()</code></pre>
+<p><img src="/R/2020-09-13-visualizing-two-qualities/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+</div>
+</div>
+<div id="geom_barfill" class="section level1">
+<h1><code>geom_bar(fill=)</code></h1>
+<p>Now let us look at the bar plot. First, start with Risk.</p>
+<pre class="r"><code>Bonds %&gt;% ggplot() + aes(x = Risk) + geom_bar()</code></pre>
+<p><img src="/R/2020-09-13-visualizing-two-qualities/index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p>To add Fees to the plot, we can fill the bars.</p>
+<pre class="r"><code>Bonds %&gt;% ggplot() + aes(x = Risk, fill = Fees) + geom_bar()</code></pre>
+<p><img src="/R/2020-09-13-visualizing-two-qualities/index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<div id="conditional-probability-positionfill" class="section level2">
+<h2>Conditional Probability: <code>(position="fill")</code></h2>
+<p>We can also plot this normalized by the number in each category of x so that the plots represent conditional probability.</p>
+<pre class="r"><code>Bonds %&gt;% ggplot() + aes(x = Risk, fill = Fees) + geom_bar(position = &quot;fill&quot;)</code></pre>
+<p><img src="/R/2020-09-13-visualizing-two-qualities/index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+</div>
+</div>

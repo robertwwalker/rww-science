@@ -1,0 +1,113 @@
+---
+title: Visualizing Two Qualitative Variables
+author: Robert W. Walker
+date: '2020-09-13'
+slug: visualize-two-qualities
+categories:
+  - R
+tags:
+  - plot
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2020-09-13T20:04:06-07:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, tidy=TRUE)
+library(tidyverse)
+```
+
+# Bonds
+
+A dataset for illustrating the various available visualizations needs a certain degree of richness with manageable size.  The dataset on *Bonds* contains three categorical and a few quantitative indicators sufficient to show what we might wish.
+
+## Loading the Data
+
+```{r}
+Bonds <- read.csv(url("https://raw.githubusercontent.com/robertwwalker/DADMStuff/master/BondFunds.csv"))
+```
+
+## A Summary
+
+```{r}
+library(skimr)
+Bonds %>% 
+  skim()
+```
+
+Most data types are represented.  There is no time variable so dates and the visualizations that go with time series are omitted.
+
+# Data Visualization
+
+There are three primary visualizations that we might use for a combination of two qualities.  We will have a look at `geom_tile()`, `geom_point()`, and `geom_bar(aes(fill=))` to visualize these.  We can also make use of `facet`.  Let me work with Risk and Fees.  I will first display the relevant table.
+
+## Building a Table
+
+```{r}
+BTDF <- Bonds %>% group_by(Risk,Fees) %>% summarise(Count = n()) %>% data.frame()
+BTDF %>% pivot_wider(names_from=Fees, values_from=Count)
+```
+The table as a data.frame.
+
+```{r}
+BTDF
+```
+
+## `geom_tile`
+
+```{r}
+BTDF %>% 
+  ggplot(., aes(x=Risk, y=Fees, fill=Count)) + 
+  geom_tile() +
+  scale_fill_viridis_c() + 
+  theme_minimal() + labs(fill="Number of Funds")
+```
+# Raw Data Plots
+
+## `geom_count()`
+
+```{r}
+Bonds %>% ggplot() + aes(x=Risk, y=Fees) + geom_count() + theme_minimal()
+```
+
+
+# `geom_bar(fill=)`
+
+Now let us look at the bar plot.  First, start with Risk.
+
+```{r}
+Bonds %>% 
+  ggplot() + 
+  aes(x=Risk) + 
+  geom_bar()
+```
+
+To add Fees to the plot, we can fill the bars.
+
+```{r}
+Bonds %>% 
+  ggplot() + 
+  aes(x=Risk, fill=Fees) + 
+  geom_bar()
+```
+
+
+## Conditional Probability: `(position="fill")`
+
+We can also plot this normalized by the number in each category of x so that the plots represent conditional probability.
+
+```{r}
+Bonds %>% 
+  ggplot() + 
+  aes(x=Risk, fill=Fees) + 
+  geom_bar(position="fill")
+```
+

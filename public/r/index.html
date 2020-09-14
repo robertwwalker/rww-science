@@ -663,6 +663,58 @@
     
     
     <div>
+      <h2><a href="/r/importing-excel-data/" >Importing Excel Data</a></h2>
+      <div class="article-style">
+        
+          How To Import a Microsoft Excel File The go to tool comes from the readxl library in R. We can install it with:
+install.packages(&quot;readxl&quot;) To use it, the Markdown must call it – make it active – just as we must at the command line to make it work. The Files pane will make this easier, we can right click to import and get code from the subsequent interaction.
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
+      <h2><a href="/r/visualize-one-quantity/" >Visualizing One Quantitative Variable</a></h2>
+      <div class="article-style">
+        
+          Bonds A dataset for illustrating the various available visualizations needs a certain degree of richness with manageable size. The dataset on Bonds contains three categorical and a few quantitative indicators sufficient to show what we might wish.
+Loading the Data Bonds &lt;- read.csv(url(&quot;https://raw.githubusercontent.com/robertwwalker/DADMStuff/master/BondFunds.csv&quot;))  A Summary library(skimr) Bonds %&gt;% skim()  Table 1: Data summary  Name Piped data  Number of rows 184  Number of columns 9  _______________________   Column type frequency:   character 4  numeric 5  ________________________   Group variables None    Variable type: character
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
+      <h2><a href="/r/visualize-two-qualities/" >Visualizing Two Qualitative Variables</a></h2>
+      <div class="article-style">
+        
+          Bonds A dataset for illustrating the various available visualizations needs a certain degree of richness with manageable size. The dataset on Bonds contains three categorical and a few quantitative indicators sufficient to show what we might wish.
+Loading the Data Bonds &lt;- read.csv(url(&quot;https://raw.githubusercontent.com/robertwwalker/DADMStuff/master/BondFunds.csv&quot;))  A Summary library(skimr) Bonds %&gt;% skim()  Table 1: Data summary  Name Piped data  Number of rows 184  Number of columns 9  _______________________   Column type frequency:   character 4  numeric 5  ________________________   Group variables None    Variable type: character
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
+      <h2><a href="/r/visualize-one-categorical/" >Visualizing One Qualitative Variable</a></h2>
+      <div class="article-style">
+        
+          Bonds A dataset for illustrating the various available visualizations needs a certain degree of richness with manageable size. The dataset on Bonds contains three categorical and a few quantitative indicators sufficient to show what we might wish.
+Loading the Data Bonds &lt;- read.csv(url(&quot;https://raw.githubusercontent.com/robertwwalker/DADMStuff/master/BondFunds.csv&quot;))  A Summary library(skimr) Bonds %&gt;% skim()  Table 1: Data summary  Name Piped data  Number of rows 184  Number of columns 9  _______________________   Column type frequency:   character 4  numeric 5  ________________________   Group variables None    Variable type: character
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
       <h2><a href="/r/covid/" >COVID-19 in Oregon</a></h2>
       <div class="article-style">
         
@@ -734,58 +786,6 @@ lm() Syntax is Important I will refer to an example from a recent homework on re
           The Package: finreport The key tool to facilitate the financial analysis of companies that file regular SEC reports of certain forms is finreportr. To make use of it, we must first have R install it and dependencies. To install it, install.packages(&quot;finreportr&quot;, dependencies=TRUE).
  The Commands The first command is CompanyInfo().
 library(finreportr) CompanyInfo(&quot;JPM&quot;) ## company CIK SIC state state.inc FY.end street.address ## 1 JPMORGAN CHASE &amp; CO 0000019617 6021 NY DE 1231 383 MADISON AVENUE ## city.
-        
-      </div>
-    </div>
-  
-    
-    
-    
-    <div>
-      <h2><a href="/r/a-quick-and-dirty-introduction-to-r/" >A Quick and Dirty Introduction to R</a></h2>
-      <div class="article-style">
-        
-          Some Data I will start with some inline data.
-library(tidyverse); library(skimr); Support.Times &lt;- structure(list(Screened = c(26.9, 28.4, 23.9, 21.8, 22.4, 25.9, 26.5, 20, 23.7, 23.7, 22.6, 19.4, 27.3, 25.3, 27.7, 25.3, 28.4, 24.2, 20.4, 29.6, 27, 23.6, 18.3, 28.1, 20.5, 24.1, 27.2, 26.4, 24.5, 25.6, 17.9, 23.5, 25.3, 20.2, 26.3, 27.9), Not.Screened = c(24.7, 19.1, 21, 17.8, 22.8, 24.4, 17.9, 20.5, 20, 26.2, 14.5, 22.4, 21.1, 24.3, 22, 24.3, 23.
-        
-      </div>
-    </div>
-  
-    
-    
-    
-    <div>
-      <h2><a href="/r/worked-proportion/" >Working an Example on Proportions</a></h2>
-      <div class="article-style">
-        
-          A Proportions Example We started with an equation:
-\[ z = \frac{\hat{\pi} - \pi}{\sqrt{\frac{\pi(1-\pi)}{n}}} \]
-In language, the difference between the sample proportion (recall that with only two outcomes the sample proportion \(\hat{\pi}\) is between 0 [all No’s] and 1 [all Yes’s]) and the true probability \(\pi\) divided by the standard error of the proportion \(\sqrt{\frac{\pi(1-\pi)}{n}}\) has a \(z\) [Normal(0,1)] distribution under the condition that \(n\pi &gt; 10\) and \(n(1-\pi) &gt; 10\).
-        
-      </div>
-    </div>
-  
-    
-    
-    
-    <div>
-      <h2><a href="/r/hypothesis-tests-confidence-intervals/" >The Duality of Hypothesis Tests and Confidence Intervals</a></h2>
-      <div class="article-style">
-        
-          cars data I will work with R’s internal dataset on cars: cars. There are two variables in the dataset, this is what they look like.
-plot(cars) An Hypothesis Test I will work with the speed variable. The hypothesis to advance is that 17 or greater is the true average speed. The alternative must then be that the average speed is less than 17. Knowing only the sample size, I can figure out what \(t\) must be to reject 17 or greater and conclude that the true average must be less with 90% probability.
-        
-      </div>
-    </div>
-  
-    
-    
-    
-    <div>
-      <h2><a href="/r/alluvials/" >Alluvial Plots</a></h2>
-      <div class="article-style">
-        
-          Alluvial and Sankey Diagrams The aforementioned plots are methods for visualising the flow of data through a stream of markers. I was motivated to show this because enough of you deal in orders, tickets, and the like the flow visualisation of a system might prove of use. I will work with a familiar dataset. These are data on Admissions at the University of California Berkeley. The data exist as an internal R file in tabular form.
         
       </div>
     </div>

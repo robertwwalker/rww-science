@@ -5,7 +5,7 @@
     <link>/tags/plot/</link>
       <atom:link href="/tags/plot/index.xml" rel="self" type="application/rss+xml" />
     <description>plot</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© 2018</copyright><lastBuildDate>Thu, 10 Sep 2020 00:00:00 +0000</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© 2018</copyright><lastBuildDate>Sun, 13 Sep 2020 00:00:00 +0000</lastBuildDate>
     <image>
       <url>/img/portrait.jpg</url>
       <title>plot</title>
@@ -14,9 +14,9 @@
     
     <item>
       <title>New York Times Data on COVID</title>
-      <link>/2020/09/10/new-york-times-data-on-covid/</link>
-      <pubDate>Thu, 10 Sep 2020 00:00:00 +0000</pubDate>
-      <guid>/2020/09/10/new-york-times-data-on-covid/</guid>
+      <link>/2020/09/13/new-york-times-data-on-covid/</link>
+      <pubDate>Sun, 13 Sep 2020 00:00:00 +0000</pubDate>
+      <guid>/2020/09/13/new-york-times-data-on-covid/</guid>
       <description>
 &lt;script src=&#34;/rmarkdown-libs/header-attrs/header-attrs.js&#34;&gt;&lt;/script&gt;
 &lt;script src=&#34;/rmarkdown-libs/htmlwidgets/htmlwidgets.js&#34;&gt;&lt;/script&gt;
@@ -26,7 +26,7 @@
 
 &lt;div id=&#34;new-york-times-data-for-the-us&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;New York Times data for the US&lt;/h1&gt;
-&lt;p&gt;The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-09-10 21:59:47.&lt;/p&gt;
+&lt;p&gt;The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-09-13 21:06:51.&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;the-basic-state-of-things&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;The Basic State of Things&lt;/h1&gt;
@@ -213,6 +213,975 @@ CFR2 %&amp;gt;% filter(!(state %in% c(&amp;quot;puerto rico&amp;quot;,&amp;quot;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;#  geom_point(aes(color=CFR.D)) + 
 #  labs(title = &amp;quot;Case Fatality Rate of COVID-19 in the US&amp;quot;, subtitle=&amp;quot;Very uncertain estimate... Numerator and denominator uncertain \n Data: NY Times GitHub&amp;quot;, caption=&amp;quot;Data from nytimes/covid-19-data on guthub.&amp;quot;, color=&amp;quot;Greater \n than 0.02&amp;quot;) + 
 #  dark_theme_bw()&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Visualizing One Quantitative Variable</title>
+      <link>/r/visualize-one-quantity/</link>
+      <pubDate>Sun, 13 Sep 2020 00:00:00 +0000</pubDate>
+      <guid>/r/visualize-one-quantity/</guid>
+      <description>
+&lt;script src=&#34;/rmarkdown-libs/header-attrs/header-attrs.js&#34;&gt;&lt;/script&gt;
+
+
+&lt;div id=&#34;bonds&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Bonds&lt;/h1&gt;
+&lt;p&gt;A dataset for illustrating the various available visualizations needs a certain degree of richness with manageable size. The dataset on &lt;em&gt;Bonds&lt;/em&gt; contains three categorical and a few quantitative indicators sufficient to show what we might wish.&lt;/p&gt;
+&lt;div id=&#34;loading-the-data&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Loading the Data&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds &amp;lt;- read.csv(url(&amp;quot;https://raw.githubusercontent.com/robertwwalker/DADMStuff/master/BondFunds.csv&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;a-summary&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;A Summary&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(skimr)
+Bonds %&amp;gt;% skim()&lt;/code&gt;&lt;/pre&gt;
+&lt;table&gt;
+&lt;caption&gt;&lt;span id=&#34;tab:unnamed-chunk-2&#34;&gt;Table 1: &lt;/span&gt;Data summary&lt;/caption&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Name&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Piped data&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Number of rows&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;184&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Number of columns&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;9&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;_______________________&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Column type frequency:&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;character&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;4&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;numeric&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;5&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;________________________&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Group variables&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;None&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;Variable type: character&lt;/strong&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;left&#34;&gt;skim_variable&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;n_missing&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;complete_rate&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;min&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;max&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;empty&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;n_unique&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;whitespace&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Fund.Number&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;184&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Type&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;20&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;23&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Fees&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Risk&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;7&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;13&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;Variable type: numeric&lt;/strong&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;left&#34;&gt;skim_variable&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;n_missing&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;complete_rate&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;mean&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;sd&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p0&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p25&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p50&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p75&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p100&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;hist&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Assets&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;910.65&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2253.27&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;12.40&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;113.72&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;268.4&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;621.95&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;18603.50&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▁▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Expense.Ratio&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.71&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.26&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.12&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.53&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.7&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.90&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.94&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▂▇▅▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Return.2009&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;7.16&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6.09&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-8.80&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3.48&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6.4&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;10.72&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;32.00&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▁▇▅▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;X3.Year.Return&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4.66&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2.52&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-13.80&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4.05&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;5.1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6.10&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;9.40&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▁▁▁▅▇&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;X5.Year.Return&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3.99&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.49&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-7.30&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3.60&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4.3&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4.90&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6.80&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▁▁▁▅▇&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Most data types are represented. There is no time variable so dates and the visualizations that go with time series are omitted.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;data-visualization&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Data Visualization&lt;/h1&gt;
+&lt;p&gt;First, let us look at visualizations for one quantitative variable. Let me focus on assets..&lt;/p&gt;
+&lt;div id=&#34;geom_histogram&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;&lt;code&gt;geom_histogram()&lt;/code&gt;&lt;/h2&gt;
+&lt;p&gt;A histogram divides the data into categories and counts the observations per category. The width of the categories [on x] is determined by &lt;code&gt;binwidth=&lt;/code&gt; or the binwidth can be calculated as a function of the range and the number of bins &lt;code&gt;bin=&lt;/code&gt;. I will define it as &lt;em&gt;Gen.Hist&lt;/em&gt;.&lt;/p&gt;
+&lt;div id=&#34;a-base-histogram&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;A Base Histogram&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Gen.Hist &amp;lt;- Bonds %&amp;gt;% ggplot() + aes(x = Assets) + geom_histogram()
+Gen.Hist&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;histograms-bins&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Histograms [bins]&lt;/h3&gt;
+&lt;p&gt;We can choose more bins. 50? That is far more than the default of 30.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bin50.Hist &amp;lt;- Bonds %&amp;gt;% ggplot() + aes(x = Assets) + geom_histogram(bins = 50)
+Bin50.Hist&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;We can also choose fewer bins. I will choose 10.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bin10.Hist &amp;lt;- Bonds %&amp;gt;% ggplot() + aes(x = Assets) + geom_histogram(bins = 10)
+Bin10.Hist&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;histograms-binwidth&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Histograms [binwidth]&lt;/h3&gt;
+&lt;p&gt;We can also set the width of bins in the metric of &lt;code&gt;x&lt;/code&gt;; I will choose 500 (bigger).&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;BinW500.Hist &amp;lt;- Bonds %&amp;gt;% ggplot() + aes(x = Assets) + geom_histogram(binwidth = 500)
+BinW500.Hist&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;We can also set the width of bins in the metric of &lt;code&gt;x&lt;/code&gt;; I will choose 50 (smaller width makes more bins).&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;BinW50.Hist &amp;lt;- Bonds %&amp;gt;% ggplot() + aes(x = Assets) + geom_histogram(binwidth = 50)
+BinW50.Hist&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;geom_dotplot&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;&lt;code&gt;geom_dotplot()&lt;/code&gt;&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;geom_dotplot()&lt;/code&gt; places a dot for every observation in the relevant bin. We can control the size of the bins [in the original metric] with &lt;code&gt;binwidth=&lt;/code&gt;.&lt;/p&gt;
+&lt;div id=&#34;small-binwidth&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Small binwidth&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot() + aes(x = Assets) + geom_dotplot(binwidth = 10)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-8-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;large-binwidth&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Large binwidth&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot() + aes(x = Assets) + geom_dotplot(binwidth = 1000)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;an-optimal-binwidth&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;An ?optimal? binwidth&lt;/h3&gt;
+&lt;p&gt;Each dot represents a datum with bins of size 100.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot() + aes(x = Assets) + geom_dotplot(binwidth = 100) + labs(y = &amp;quot;&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-10-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;geom_freqpoly&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;&lt;code&gt;geom_freqpoly()&lt;/code&gt;&lt;/h2&gt;
+&lt;p&gt;&lt;code&gt;geom_freqpoly()&lt;/code&gt; is the line equivalent of a histogram. The arguments are similar, the output doesn’t include the bars as it does in the histogram.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot(., aes(x = Assets)) + geom_freqpoly()&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;div id=&#34;more-bins&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;More bins&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot(., aes(x = Assets)) + geom_freqpoly(bins = 50)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-12-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;fewer-bins&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Fewer bins&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot(., aes(x = Assets)) + geom_freqpoly(bins = 10)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-13-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;geom_area&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;&lt;code&gt;geom_area()&lt;/code&gt;&lt;/h2&gt;
+&lt;p&gt;Is a relative of the histogram with lines connecting the midpoints of the bins and an associated fill from zero.&lt;/p&gt;
+&lt;div id=&#34;defaults-to-30-bins&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Defaults to 30 bins&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot(., aes(x = Assets)) + geom_area(stat = &amp;quot;bin&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-14-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;small-binwidth-with-a-large-number-of-bins&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Small binwidth with a large number of bins&lt;/h3&gt;
+&lt;p&gt;I will color in the area with magenta and clean up the theme.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot(., aes(x = Assets)) + geom_area(stat = &amp;quot;bin&amp;quot;, bins = 100, fill = &amp;quot;magenta&amp;quot;) + 
+    theme_minimal()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-15-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;geom_density&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;&lt;code&gt;geom_density()&lt;/code&gt;&lt;/h2&gt;
+&lt;p&gt;A relative of the histogram and the area plots above, the density plot smooths out the blocks of a histogram with a moving window [known as the bandwidth].&lt;/p&gt;
+&lt;div id=&#34;geom_density-outlines&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;&lt;code&gt;geom_density()&lt;/code&gt; outlines&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot(., aes(x = Assets)) + geom_density(outline.type = &amp;quot;upper&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-16-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot(., aes(x = Assets)) + geom_density(outline.type = &amp;quot;lower&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-16-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot(., aes(x = Assets)) + geom_density(outline.type = &amp;quot;full&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-16-3.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;geom_density-adjust&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;&lt;code&gt;geom_density()&lt;/code&gt; adjust&lt;/h3&gt;
+&lt;p&gt;Adjust applies a numeric correction to the bandwidth. Numbers greater than 1 make the bandwidth bigger [and the graphic smoother] and numbers less than 1 [but greater than zero] make the bandwidth smaller and the graphic more jagged.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot(., aes(x = Assets)) + geom_density(adjust = 2)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-17-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot(., aes(x = Assets)) + geom_density(adjust = 1/2)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-17-2.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;geom_boxplot&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;&lt;code&gt;geom_boxplot&lt;/code&gt;&lt;/h2&gt;
+&lt;p&gt;A boxplot shows a box of the first and third quartiles and a notch at the median. The dots above or below denote points outside the hinges. The hinges [default to 1.5*IQR] show a range of expected data while the individual dots show possible outliers outside the hinges. To adjust the hinges, the argument &lt;code&gt;coef=1.5&lt;/code&gt; can be adjusted.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot(., aes(x = Assets)) + geom_boxplot()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-18-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;geom_qq&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;&lt;code&gt;geom_qq()&lt;/code&gt;&lt;/h2&gt;
+&lt;p&gt;To compare empirical and theoretical quantiles. Comparing a distribution to the normal or others is common and this provides the tool for doing so. The default is a normal.&lt;/p&gt;
+&lt;p&gt;The empirical cumulative distribution function arises when we sort a quantitative variable and show the percentiles below said value.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot(aes(sample = Assets)) + geom_qq()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-19-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;stat_ecdfgeom&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;&lt;code&gt;stat_ecdf(geom = )&lt;/code&gt;&lt;/h2&gt;
+&lt;p&gt;We could do this with most geometries. I will show a few.&lt;/p&gt;
+&lt;div id=&#34;stat_ecdfgeom-step&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;&lt;code&gt;stat_ecdf(geom = &#34;step&#34;)&lt;/code&gt;&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot(aes(x = Assets)) + stat_ecdf(geom = &amp;quot;point&amp;quot;) + stat_ecdf(geom = &amp;quot;step&amp;quot;, 
+    alpha = 0.1) + labs(y = &amp;quot;ECDF: Proportion less than Assets&amp;quot;) + theme_minimal()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-20-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;stat_ecdfgeom-point&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;&lt;code&gt;stat_ecdf(geom = &#34;point&#34;)&lt;/code&gt;&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot(aes(x = Assets)) + stat_ecdf(geom = &amp;quot;point&amp;quot;) + stat_ecdf(geom = &amp;quot;step&amp;quot;, 
+    alpha = 0.1) + labs(y = &amp;quot;ECDF: Proportion less than Assets&amp;quot;) + theme_minimal()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-21-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;combining-two&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Combining two&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot(aes(x = Assets)) + stat_ecdf(geom = &amp;quot;point&amp;quot;) + stat_ecdf(geom = &amp;quot;step&amp;quot;, 
+    alpha = 0.1) + labs(y = &amp;quot;ECDF: Proportion less than Assets&amp;quot;) + theme_minimal()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-22-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;stat_ecdfgeom-line&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;&lt;code&gt;stat_ecdf(geom = &#34;line&#34;)&lt;/code&gt;&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot(aes(x = Assets)) + stat_ecdf(geom = &amp;quot;line&amp;quot;) + labs(y = &amp;quot;ECDF: Proportion less than Assets&amp;quot;) + 
+    theme_minimal()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-23-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;stat_ecdfgeom-area&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;&lt;code&gt;stat_ecdf(geom = &#34;area&#34;)&lt;/code&gt;&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot(aes(x = Assets)) + stat_ecdf(geom = &amp;quot;area&amp;quot;, alpha = 0.2) + labs(y = &amp;quot;ECDF: Proportion less than Assets&amp;quot;) + 
+    theme_minimal()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-24-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Visualizing Two Qualitative Variables</title>
+      <link>/r/visualize-two-qualities/</link>
+      <pubDate>Sun, 13 Sep 2020 00:00:00 +0000</pubDate>
+      <guid>/r/visualize-two-qualities/</guid>
+      <description>
+&lt;script src=&#34;/rmarkdown-libs/header-attrs/header-attrs.js&#34;&gt;&lt;/script&gt;
+
+
+&lt;div id=&#34;bonds&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Bonds&lt;/h1&gt;
+&lt;p&gt;A dataset for illustrating the various available visualizations needs a certain degree of richness with manageable size. The dataset on &lt;em&gt;Bonds&lt;/em&gt; contains three categorical and a few quantitative indicators sufficient to show what we might wish.&lt;/p&gt;
+&lt;div id=&#34;loading-the-data&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Loading the Data&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds &amp;lt;- read.csv(url(&amp;quot;https://raw.githubusercontent.com/robertwwalker/DADMStuff/master/BondFunds.csv&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;a-summary&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;A Summary&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(skimr)
+Bonds %&amp;gt;% skim()&lt;/code&gt;&lt;/pre&gt;
+&lt;table&gt;
+&lt;caption&gt;&lt;span id=&#34;tab:unnamed-chunk-2&#34;&gt;Table 1: &lt;/span&gt;Data summary&lt;/caption&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Name&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Piped data&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Number of rows&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;184&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Number of columns&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;9&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;_______________________&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Column type frequency:&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;character&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;4&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;numeric&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;5&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;________________________&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Group variables&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;None&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;Variable type: character&lt;/strong&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;left&#34;&gt;skim_variable&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;n_missing&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;complete_rate&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;min&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;max&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;empty&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;n_unique&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;whitespace&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Fund.Number&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;184&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Type&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;20&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;23&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Fees&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Risk&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;7&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;13&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;Variable type: numeric&lt;/strong&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;left&#34;&gt;skim_variable&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;n_missing&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;complete_rate&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;mean&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;sd&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p0&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p25&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p50&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p75&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p100&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;hist&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Assets&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;910.65&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2253.27&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;12.40&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;113.72&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;268.4&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;621.95&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;18603.50&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▁▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Expense.Ratio&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.71&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.26&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.12&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.53&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.7&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.90&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.94&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▂▇▅▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Return.2009&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;7.16&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6.09&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-8.80&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3.48&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6.4&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;10.72&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;32.00&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▁▇▅▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;X3.Year.Return&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4.66&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2.52&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-13.80&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4.05&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;5.1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6.10&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;9.40&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▁▁▁▅▇&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;X5.Year.Return&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3.99&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.49&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-7.30&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3.60&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4.3&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4.90&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6.80&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▁▁▁▅▇&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Most data types are represented. There is no time variable so dates and the visualizations that go with time series are omitted.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;data-visualization&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Data Visualization&lt;/h1&gt;
+&lt;p&gt;There are three primary visualizations that we might use for a combination of two qualities. We will have a look at &lt;code&gt;geom_tile()&lt;/code&gt;, &lt;code&gt;geom_point()&lt;/code&gt;, and &lt;code&gt;geom_bar(aes(fill=))&lt;/code&gt; to visualize these. We can also make use of &lt;code&gt;facet&lt;/code&gt;. Let me work with Risk and Fees. I will first display the relevant table.&lt;/p&gt;
+&lt;div id=&#34;building-a-table&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Building a Table&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;BTDF &amp;lt;- Bonds %&amp;gt;% group_by(Risk, Fees) %&amp;gt;% summarise(Count = n()) %&amp;gt;% data.frame()&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## `summarise()` regrouping output by &amp;#39;Risk&amp;#39; (override with `.groups` argument)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;BTDF %&amp;gt;% pivot_wider(names_from = Fees, values_from = Count)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## # A tibble: 3 x 3
+##   Risk             No   Yes
+##   &amp;lt;chr&amp;gt;         &amp;lt;int&amp;gt; &amp;lt;int&amp;gt;
+## 1 Above average    37    22
+## 2 Average          49    20
+## 3 Below average    44    12&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;The table as a data.frame.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;BTDF&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##            Risk Fees Count
+## 1 Above average   No    37
+## 2 Above average  Yes    22
+## 3       Average   No    49
+## 4       Average  Yes    20
+## 5 Below average   No    44
+## 6 Below average  Yes    12&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;geom_tile&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;&lt;code&gt;geom_tile&lt;/code&gt;&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;BTDF %&amp;gt;% ggplot(., aes(x = Risk, y = Fees, fill = Count)) + geom_tile() + scale_fill_viridis_c() + 
+    theme_minimal() + labs(fill = &amp;quot;Number of Funds&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-13-visualizing-two-qualities/index_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;672&#34; /&gt;
+# Raw Data Plots&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;geom_count&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;&lt;code&gt;geom_count()&lt;/code&gt;&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot() + aes(x = Risk, y = Fees) + geom_count() + theme_minimal()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-13-visualizing-two-qualities/index_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;geom_barfill&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;&lt;code&gt;geom_bar(fill=)&lt;/code&gt;&lt;/h1&gt;
+&lt;p&gt;Now let us look at the bar plot. First, start with Risk.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot() + aes(x = Risk) + geom_bar()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-13-visualizing-two-qualities/index_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;To add Fees to the plot, we can fill the bars.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot() + aes(x = Risk, fill = Fees) + geom_bar()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-13-visualizing-two-qualities/index_files/figure-html/unnamed-chunk-8-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;div id=&#34;conditional-probability-positionfill&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Conditional Probability: &lt;code&gt;(position=&#34;fill&#34;)&lt;/code&gt;&lt;/h2&gt;
+&lt;p&gt;We can also plot this normalized by the number in each category of x so that the plots represent conditional probability.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot() + aes(x = Risk, fill = Fees) + geom_bar(position = &amp;quot;fill&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-13-visualizing-two-qualities/index_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
+      <title>Visualizing One Qualitative Variable</title>
+      <link>/r/visualize-one-categorical/</link>
+      <pubDate>Sat, 12 Sep 2020 00:00:00 +0000</pubDate>
+      <guid>/r/visualize-one-categorical/</guid>
+      <description>
+&lt;script src=&#34;/rmarkdown-libs/header-attrs/header-attrs.js&#34;&gt;&lt;/script&gt;
+
+
+&lt;div id=&#34;bonds&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Bonds&lt;/h1&gt;
+&lt;p&gt;A dataset for illustrating the various available visualizations needs a certain degree of richness with manageable size. The dataset on &lt;em&gt;Bonds&lt;/em&gt; contains three categorical and a few quantitative indicators sufficient to show what we might wish.&lt;/p&gt;
+&lt;div id=&#34;loading-the-data&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Loading the Data&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds &amp;lt;- read.csv(url(&amp;quot;https://raw.githubusercontent.com/robertwwalker/DADMStuff/master/BondFunds.csv&amp;quot;))&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;a-summary&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;A Summary&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(skimr)
+Bonds %&amp;gt;% skim()&lt;/code&gt;&lt;/pre&gt;
+&lt;table&gt;
+&lt;caption&gt;&lt;span id=&#34;tab:unnamed-chunk-2&#34;&gt;Table 1: &lt;/span&gt;Data summary&lt;/caption&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Name&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;Piped data&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Number of rows&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;184&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Number of columns&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;9&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;_______________________&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Column type frequency:&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;character&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;4&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;numeric&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;5&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;________________________&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Group variables&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;None&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;Variable type: character&lt;/strong&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;left&#34;&gt;skim_variable&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;n_missing&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;complete_rate&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;min&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;max&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;empty&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;n_unique&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;whitespace&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Fund.Number&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;184&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Type&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;20&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;23&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Fees&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Risk&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;7&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;13&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;Variable type: numeric&lt;/strong&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;left&#34;&gt;skim_variable&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;n_missing&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;complete_rate&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;mean&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;sd&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p0&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p25&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p50&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p75&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p100&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;hist&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Assets&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;910.65&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2253.27&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;12.40&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;113.72&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;268.4&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;621.95&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;18603.50&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▇▁▁▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Expense.Ratio&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.71&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.26&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.12&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.53&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.7&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0.90&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.94&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▂▇▅▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Return.2009&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;7.16&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6.09&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-8.80&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3.48&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6.4&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;10.72&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;32.00&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▁▇▅▁▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;X3.Year.Return&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4.66&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2.52&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-13.80&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4.05&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;5.1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6.10&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;9.40&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▁▁▁▅▇&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;X5.Year.Return&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3.99&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1.49&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;-7.30&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;3.60&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4.3&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4.90&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;6.80&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▁▁▁▅▇&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Most data types are represented. There is no time variable so dates and the visualizations that go with time series are omitted.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;data-visualization&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;Data Visualization&lt;/h1&gt;
+&lt;p&gt;First, let us look at visualizations for one variable.&lt;/p&gt;
+&lt;div id=&#34;bar-plots-and-column-plots&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Bar plots and column plots&lt;/h2&gt;
+&lt;p&gt;There are two ways to construct a barplot; we can let ggplot handle it on the raw data or calculate it ourselves. Let me focus on &lt;em&gt;Risk&lt;/em&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;geom_bar&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;&lt;code&gt;geom_bar()&lt;/code&gt;&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot() + aes(x = Risk) + geom_bar()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-12-visualizing-one-qualitative-variable/index_files/figure-html/unnamed-chunk-3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;div id=&#34;raw-data-bar-plot-color&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Raw Data Bar Plot [color]&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot() + aes(x = Risk, color = Risk) + geom_bar()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-12-visualizing-one-qualitative-variable/index_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;raw-data-bar-plot-color-and-fill&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Raw Data Bar Plot [color and fill]&lt;/h3&gt;
+&lt;p&gt;We could color it.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot() + aes(x = Risk, color = Risk) + geom_bar(fill = &amp;quot;white&amp;quot;) + guides(color = FALSE)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-12-visualizing-one-qualitative-variable/index_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;raw-data-bar-plot-fill&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Raw Data Bar Plot [Fill]&lt;/h3&gt;
+&lt;p&gt;We can fill the shapes.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;# guides(fill=FALSE) removes the legend
+Bonds %&amp;gt;% ggplot(., aes(x = Risk, fill = Risk)) + geom_bar() + guides(fill = FALSE)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-12-visualizing-one-qualitative-variable/index_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;geom_bar-meets-fill&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;&lt;code&gt;geom_bar()&lt;/code&gt; meets &lt;code&gt;fill&lt;/code&gt;&lt;/h2&gt;
+&lt;p&gt;We can also deploy &lt;code&gt;fill&lt;/code&gt; but x is no longer the axis; the axis is some constant value with frequencies filled by the fill. &lt;em&gt;This will require some prettying.&lt;/em&gt;&lt;/p&gt;
+&lt;div id=&#34;a-cumulative-bar-plot&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;A Cumulative Bar Plot&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Basic.Bar &amp;lt;- Bonds %&amp;gt;% ggplot(., aes(x = &amp;quot;&amp;quot;, fill = Risk)) + geom_bar()
+Basic.Bar&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-12-visualizing-one-qualitative-variable/index_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;The prettying will require that I eliminate the x axis [set it to empty], include a theme, and give it proper labels.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;enhanced-cumulative-bar-plot&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Enhanced Cumulative Bar Plot&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot(., aes(x = &amp;quot;&amp;quot;, fill = Risk)) + geom_bar() + labs(x = &amp;quot;&amp;quot;, y = &amp;quot;Number of Funds&amp;quot;) + 
+    theme_minimal() + theme(axis.text.x = element_blank())&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-12-visualizing-one-qualitative-variable/index_files/figure-html/unnamed-chunk-8-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;proportion-bar-plot&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Proportion Bar Plot&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot(., aes(x = &amp;quot;&amp;quot;, fill = Risk)) + geom_bar(position = &amp;quot;fill&amp;quot;) + labs(x = &amp;quot;&amp;quot;, 
+    y = &amp;quot;Proportion of Funds&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-12-visualizing-one-qualitative-variable/index_files/figure-html/unnamed-chunk-9-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;The prettying will require that I eliminate the x axis [set it to empty], include a theme, and give it proper labels.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;enhanced-proportion-bar-plot&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Enhanced Proportion Bar Plot&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Bonds %&amp;gt;% ggplot(., aes(x = &amp;quot;&amp;quot;, fill = Risk)) + geom_bar(position = &amp;quot;fill&amp;quot;) + labs(x = &amp;quot;&amp;quot;, 
+    y = &amp;quot;Propotion of Funds&amp;quot;) + theme_minimal()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-12-visualizing-one-qualitative-variable/index_files/figure-html/unnamed-chunk-10-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;geom_col&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;geom_col()&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Risk.Table &amp;lt;- table(Bonds$Risk) %&amp;gt;% data.frame()
+Risk.Table %&amp;gt;% ggplot(., aes(x = Var1, y = Freq)) + geom_col()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-12-visualizing-one-qualitative-variable/index_files/figure-html/unnamed-chunk-11-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;div id=&#34;beautifying-geom_col&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Beautifying &lt;code&gt;geom_col()&lt;/code&gt;&lt;/h3&gt;
+&lt;p&gt;Now it really needs some beautification.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Risk.Table %&amp;gt;% ggplot(., aes(x = Var1, y = Freq, fill = Var1)) + geom_col() + labs(x = &amp;quot;Risk Levels&amp;quot;, 
+    y = &amp;quot;Number of Funds&amp;quot;) + theme_minimal() + theme(axis.text.x = element_blank()) + 
+    scale_fill_viridis_d() + guides(fill = FALSE)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-12-visualizing-one-qualitative-variable/index_files/figure-html/unnamed-chunk-12-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;position-fill&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;&lt;code&gt;position = &#34;fill&#34;&lt;/code&gt;&lt;/h2&gt;
+&lt;p&gt;The two commands are symmetric in the sense that x as axis always splits it into multiple parts. &lt;code&gt;fill&lt;/code&gt; will prove very useful with a two dimensional table.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Risk.Table %&amp;gt;% ggplot(., aes(x = 1, y = Freq, fill = Var1)) + geom_col(position = &amp;quot;fill&amp;quot;) + 
+    labs(x = &amp;quot;Risk Levels&amp;quot;, y = &amp;quot;Number of Funds&amp;quot;) + theme_minimal() + theme(axis.text.x = element_blank()) + 
+    scale_fill_viridis_d() + guides(fill = FALSE)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-12-visualizing-one-qualitative-variable/index_files/figure-html/unnamed-chunk-13-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;a-lollipop-chart&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;A lollipop chart&lt;/h2&gt;
+&lt;p&gt;A lollipop chart is a combination of two geometries. It is a basic scatterplot combining one qualitative variable and the quantitative count of the number of observations. The head of the lollipop is a point while there is an accompanying line segment from (x,0) to (x,Freq) where Freq is the default name for a count from a table.&lt;/p&gt;
+&lt;div id=&#34;basic-lollipop-chart&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Basic Lollipop Chart&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Risk.Table %&amp;gt;% ggplot(., aes(x = Var1, y = Freq, color = Var1)) + geom_point(size = 6) + 
+    labs(x = &amp;quot;Risk Level&amp;quot;, y = &amp;quot;Number of Funds&amp;quot;, color = &amp;quot;Risk Level&amp;quot;) + geom_segment(aes(xend = Var1, 
+    y = 0, yend = Freq)) + theme_minimal()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-12-visualizing-one-qualitative-variable/index_files/figure-html/unnamed-chunk-14-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;slicked-lollipop-chart-by-adjusting-segment-size&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Slicked Lollipop Chart by Adjusting Segment Size&lt;/h3&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Risk.Table %&amp;gt;% ggplot(., aes(x = Var1, y = Freq, color = Var1)) + geom_point(size = 6) + 
+    labs(x = &amp;quot;Risk Levels&amp;quot;, y = &amp;quot;Number of Funds&amp;quot;) + geom_segment(aes(xend = Var1, 
+    y = 0, yend = Freq), size = 1.5) + theme_minimal() + guides(color = FALSE)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-12-visualizing-one-qualitative-variable/index_files/figure-html/unnamed-chunk-15-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Risk.Table %&amp;gt;% ggplot(., aes(x = Var1, y = Freq, color = Var1)) + geom_point(size = 6) + 
+    labs(x = &amp;quot;Risk Levels&amp;quot;, y = &amp;quot;Number of Funds&amp;quot;) + geom_segment(aes(xend = Var1, 
+    y = 0, yend = Freq)) + theme_minimal() + scale_color_viridis_d() + guides(color = FALSE) + 
+    coord_flip()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-12-visualizing-one-qualitative-variable/index_files/figure-html/unnamed-chunk-16-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;a-lollipop-table-geom_label&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;A Lollipop Table [geom_label()]&lt;/h3&gt;
+&lt;p&gt;Now I will switch up the points to be the actual values as text. For this, I use the &lt;code&gt;geom_text&lt;/code&gt; aesthetic that requires a &lt;code&gt;label&lt;/code&gt; to be assigned. I also want to put down the lines before the text to avoid overlap.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Risk.Table %&amp;gt;% ggplot(., aes(x = Var1, y = Freq, color = Var1, label = Freq)) + labs(x = &amp;quot;Risk Levels&amp;quot;, 
+    y = &amp;quot;Number of Funds&amp;quot;) + geom_segment(aes(xend = Var1, y = 0, yend = Freq)) + 
+    geom_label(size = 6) + theme_minimal() + scale_color_viridis_d() + guides(color = FALSE) + 
+    coord_flip()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-12-visualizing-one-qualitative-variable/index_files/figure-html/unnamed-chunk-17-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;a-lollipop-table-geom_text-inverse&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;A Lollipop Table [geom_text() inverse]&lt;/h3&gt;
+&lt;p&gt;The ggplot is built in layers so the segment before the label makes sure that the white shows up. The fill and a discrete color are combined to create this graphical table.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Risk.Table %&amp;gt;% ggplot(., aes(x = Var1, y = Freq, color = Var1, fill = Var1, label = Freq)) + 
+    geom_segment(aes(xend = Var1, y = 0, yend = Freq), size = 1.5) + geom_label(size = 6, 
+    color = &amp;quot;white&amp;quot;) + labs(x = &amp;quot;Risk Levels&amp;quot;, y = &amp;quot;Number of Funds&amp;quot;) + theme_minimal() + 
+    scale_color_viridis_d() + scale_fill_viridis_d() + guides(fill = FALSE, color = FALSE) + 
+    coord_flip()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-12-visualizing-one-qualitative-variable/index_files/figure-html/unnamed-chunk-18-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;i-hate-pie-charts&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;I HATE PIE CHARTS&lt;/h2&gt;
+&lt;p&gt;A pie chart is fairly easy to do. Let’s go back and show something that I find pretty amazing. A pie chart is a bar chart [the fill variety] with coordinates that fill a circle rather than a square. We take the most basic bar plot – Basic.Bar – and add three things: new coordinates that are polar, labels, and a blank theme to eliminate axis labels.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Basic.Bar + coord_polar(&amp;quot;y&amp;quot;, start = 0) + labs(x = &amp;quot;&amp;quot;, y = &amp;quot;&amp;quot;) + theme_void()&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/2020-09-12-visualizing-one-qualitative-variable/index_files/figure-html/unnamed-chunk-19-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
 &lt;/div&gt;
 </description>
     </item>

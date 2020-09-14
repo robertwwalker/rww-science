@@ -1,0 +1,78 @@
+---
+title: Importing Excel Data
+author: Robert W. Walker
+date: '2020-09-13'
+slug: importing-excel-data
+categories:
+  - R
+tags:
+  - Excel
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2020-09-13T12:51:38-07:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+
+```{r, message=FALSE, warning=FALSE, cache=FALSE, echo=FALSE, include=FALSE}
+knitr::opts_chunk$set(fig.retina=2)
+library(tidyverse)
+```
+
+# How To Import a Microsoft Excel File
+
+The go to tool comes from the `readxl` library in R.  We can install it with:
+
+```
+install.packages("readxl")
+```
+
+To use it, the Markdown must call it -- make it active -- just as we must at the command line to make it work.  The Files pane will make this easier, we can right click to import and get code from the subsequent interaction.
+
+```
+library(readxl)
+```
+
+The command to read Excel files comes in three forms:  
+- `read_excel()`  
+- `read_xls()`  
+- `read_xlsx()`  
+
+where the first works for all file types while the second is written specifically for older .xls files and the third is written for newer .xlsx file types.  If we type `?read_excel` we can obtain the help file that guides us through a host of situations including specifying a range of cells, whether or not to use the first row as column names, the data type in a column, what is missing [NA], whether rows should be skipped, and a host of others.  The one thing that is required is the file that we wish to import [known to this command as the path].  We can acquire the file from [the following link](https://github.com/robertwwalker/DADMStuff/raw/master/BondFunds.xlsx).  If my file is known to my computer as `/home/rob/Downloads/BondFunds.xlsx` then I also want to be careful about the sheet, in this case, it is *JustData*:
+
+```{r}
+library(tidyverse)
+library(readxl)
+Bonds <- read_excel(path="/home/rob/Downloads/BondFunds.xlsx", sheet="JustData")
+Bonds
+```
+
+That works just as planned.  If I leave the specification of the sheet out, it will load the first sheet.
+
+```{r}
+FirstSheet <- read_excel(path="/home/rob/Downloads/BondFunds.xlsx")
+FirstSheet
+```
+
+That is not well-formatted because the first sheet is a table of sorts.  A little bit of Rvangelism.
+
+# A look at the magic of R.
+
+I am going to use R's ability to define variable(s) to make my life easier.  I do not wish to know what the tabs are; let R figure it out.  
+
+```{r}
+AllSheets <- function(path) { # Feed a path to an Excel file
+  WorkBook <- excel_sheets(path=path) %>% # Get a vector of sheet names
+    map(~ read_excel(path=path, sheet=.x)) # Load each sheet by name
+  names(WorkBook) <- excel_sheets(path=path) # Rename the sheets by their names
+  return(WorkBook)
+}
+MyWB <- AllSheets(path="/home/rob/Downloads/BondFunds.xlsx")
+MyWB
+```

@@ -239,7 +239,7 @@
   <meta property="og:description" content="Associate Professor of Quantitative Methods"><meta property="og:image" content="/img/portrait.jpg">
   <meta property="twitter:image" content="/img/portrait.jpg"><meta property="og:locale" content="en-us">
   
-    <meta property="og:updated_time" content="2020-09-10T00:00:00&#43;00:00">
+    <meta property="og:updated_time" content="2020-09-13T00:00:00&#43;00:00">
   
 
   
@@ -654,6 +654,59 @@
     
     
     <div>
+      <h2><a href="/2020/03/19/tidytuesday-on-the-office/" >tidyTuesday on the Office</a></h2>
+      <div class="article-style">
+        
+          The Office library(tidyverse) office_ratings &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-03-17/office_ratings.csv&#39;)  A First Plot The number of episodes for the Office by season.
+library(janitor) TableS &lt;- office_ratings %&gt;% tabyl(season) p1 &lt;- TableS %&gt;% ggplot(., aes(x=as.factor(season), y=n, fill=as.factor(season))) + geom_col() + labs(x=&quot;Season&quot;, y=&quot;Episodes&quot;, title=&quot;The Office: Episodes&quot;) + guides(fill=FALSE) p1  Ratings How are the various seasons and episodes rated?
+p2 &lt;- office_ratings %&gt;% ggplot(., aes(x=as.factor(season), y=imdb_rating, fill=as.factor(season), color=as.factor(season))) + geom_violin(alpha=0.3) + guides(fill=FALSE, color=FALSE) + labs(x=&quot;Season&quot;, y=&quot;IMDB Rating&quot;) + geom_point() p2  Patchwork Using patchwork, we can combine multiple plots.
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
+      <h2><a href="/2020/03/19/tracking-covid-19/" >Tracking COVID-19 2020-03-24</a></h2>
+      <div class="article-style">
+        
+          R to Import COVID Data library(tidyverse) library(gganimate) COVID.states &lt;- read.csv(url(&quot;http://covidtracking.com/api/states/daily.csv&quot;)) COVID.states &lt;- COVID.states %&gt;% mutate(Date = as.Date(as.character(date), format = &quot;%Y%m%d&quot;))  The Raw Testing Incidence I want to use patchwork to show the testing rate by state in the United States. Then I want to show where things currently stand. In both cases, a base-10 log is used on the number of tests.
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
+      <h2><a href="/2020/02/27/a-look-at-vix/" >A Look at VIX :2020-05-01</a></h2>
+      <div class="article-style">
+        
+          Get Some VIX data NB: I originally wrote this on February 27, 2020 so there is commentary surrounding that date. It was done on the quick for curiosity. I will update it by recompiling it with new data and will update the commentary noting when it took place.
+Chicago Board Of Exchange (CBOE) makes data available regularly. To judge the currency of the data, I have tailed it below after converting the dates to a valid date format.
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
+      <h2><a href="/2020/02/19/trying-to-figure-out-the-new-xbrl/" >Trying to Figure Out the New XBRL</a></h2>
+      <div class="article-style">
+        
+          XBRL Changed XBRL has undergone and is undergoing some changes. Some filers have already needed to change their filings and others will have to soon. Here is the excerpt.
+XBRL Change
+ This has broken many of the existing parsers for new filings. It is time to find a way around this. I have seen links for scraping them from Yahoo! Finance but that is not really what I want.
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
       <h2><a href="/2020/02/18/r-for-driving-directions/" >R for Driving Directions?</a></h2>
       <div class="article-style">
         
@@ -725,58 +778,6 @@ library(tidyverse) library(leaflet) library(stringr) library(sf) library(here) l
           Philadelphia Map Use ggmap for the base layer.
 library(ggmap); library(osmdata); library(tidyverse) PHI &lt;- get_map(getbb(&quot;Philadelphia, PA&quot;), maptype = &quot;stamen&quot;, zoom=12)  Get the Tickets Data TidyTuesday covers 1.26 million parking tickets in Philadelphia.
 tickets &lt;- readr::read_csv(&quot;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-12-03/tickets.csv&quot;) ## Parsed with column specification: ## cols( ## violation_desc = col_character(), ## issue_datetime = col_datetime(format = &quot;&quot;), ## fine = col_double(), ## issuing_agency = col_character(), ## lat = col_double(), ## lon = col_double(), ## zip_code = col_double() ## )  Two Lines of Code Left library(lubridate); library(ggthemes) tickets &lt;- tickets %&gt;% mutate(Day = wday(issue_datetime, label=TRUE)) # use lubridate to extract the day of the month.
-        
-      </div>
-    </div>
-  
-    
-    
-    
-    <div>
-      <h2><a href="/2019/12/09/uscensus-mapping/" >US Census Mapping</a></h2>
-      <div class="article-style">
-        
-          Searching and Mapping the Census  Searching for the Asian Population via the Census To use tidycensus, there are limitations imposed by the available tables. There is ACS – a survey of about 3 million people – and the two main decennial census files [SF1] and [SF2]. I will search SF1 for the Asian population.
-library(tidycensus); library(kableExtra) library(tidyverse); library(stringr) v10 &lt;- load_variables(2010, &quot;sf1&quot;, cache = TRUE) v10 %&gt;% filter(str_detect(concept, &quot;ASIAN&quot;)) %&gt;% filter(str_detect(label, &quot;Female&quot;)) %&gt;% kable() %&gt;% scroll_box(width = &quot;100%&quot;)    name  label  concept      P012D026  Total!
-        
-      </div>
-    </div>
-  
-    
-    
-    
-    <div>
-      <h2><a href="/2019/11/16/the-generation-squeeze/" >The Generation Squeeze</a></h2>
-      <div class="article-style">
-        
-          Hashtag OKBoomer The generational banter that has followed the use of #OKBoomer reminded me of an interesting feature of US population data. I believe it to be true that Generation X has never and will never be the largest generation of Americans. There are tons of Millenials and Baby Boomers alike, though the rate of decline in the latter means that the former are about to surpass them. Or perhaps they have.
-        
-      </div>
-    </div>
-  
-    
-    
-    
-    <div>
-      <h2><a href="/r/finreportr-is-awesome/" >Financial Analysis of SEC Reports in R</a></h2>
-      <div class="article-style">
-        
-          The Package: finreport The key tool to facilitate the financial analysis of companies that file regular SEC reports of certain forms is finreportr. To make use of it, we must first have R install it and dependencies. To install it, install.packages(&quot;finreportr&quot;, dependencies=TRUE).
- The Commands The first command is CompanyInfo().
-library(finreportr) CompanyInfo(&quot;JPM&quot;) ## company CIK SIC state state.inc FY.end street.address ## 1 JPMORGAN CHASE &amp; CO 0000019617 6021 NY DE 1231 383 MADISON AVENUE ## city.
-        
-      </div>
-    </div>
-  
-    
-    
-    
-    <div>
-      <h2><a href="/r/a-quick-and-dirty-introduction-to-r/" >A Quick and Dirty Introduction to R</a></h2>
-      <div class="article-style">
-        
-          Some Data I will start with some inline data.
-library(tidyverse); library(skimr); Support.Times &lt;- structure(list(Screened = c(26.9, 28.4, 23.9, 21.8, 22.4, 25.9, 26.5, 20, 23.7, 23.7, 22.6, 19.4, 27.3, 25.3, 27.7, 25.3, 28.4, 24.2, 20.4, 29.6, 27, 23.6, 18.3, 28.1, 20.5, 24.1, 27.2, 26.4, 24.5, 25.6, 17.9, 23.5, 25.3, 20.2, 26.3, 27.9), Not.Screened = c(24.7, 19.1, 21, 17.8, 22.8, 24.4, 17.9, 20.5, 20, 26.2, 14.5, 22.4, 21.1, 24.3, 22, 24.3, 23.
         
       </div>
     </div>

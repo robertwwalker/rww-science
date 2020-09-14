@@ -1,0 +1,263 @@
+---
+title: Visualizing One Qualitative Variable
+author: Robert W. Walker
+date: '2020-09-12'
+slug: visualize-one-categorical
+categories:
+  - R
+tags:
+  - plot
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2020-09-12T20:04:06-07:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, tidy=TRUE)
+library(tidyverse)
+```
+
+# Bonds
+
+A dataset for illustrating the various available visualizations needs a certain degree of richness with manageable size.  The dataset on *Bonds* contains three categorical and a few quantitative indicators sufficient to show what we might wish.
+
+## Loading the Data
+
+```{r}
+Bonds <- read.csv(url("https://raw.githubusercontent.com/robertwwalker/DADMStuff/master/BondFunds.csv"))
+```
+
+## A Summary
+
+```{r}
+library(skimr)
+Bonds %>% 
+  skim()
+```
+
+Most data types are represented.  There is no time variable so dates and the visualizations that go with time series are omitted.
+
+# Data Visualization
+
+First, let us look at visualizations for one variable.
+
+## Bar plots and column plots
+
+There are two ways to construct a barplot; we can let ggplot handle it on the raw data or calculate it ourselves.  Let me focus on *Risk*.
+
+
+## `geom_bar()`
+
+```{r}
+Bonds %>% 
+  ggplot() + 
+  aes(x=Risk) + 
+  geom_bar()
+```
+
+### Raw Data Bar Plot [color]
+
+```{r}
+Bonds %>% 
+  ggplot() + 
+  aes(x=Risk, color=Risk) + 
+  geom_bar()
+```
+
+
+### Raw Data Bar Plot [color and fill]
+
+We could color it.
+
+```{r}
+Bonds %>% 
+  ggplot() + 
+  aes(x=Risk, color=Risk) + 
+  geom_bar(fill="white") + 
+  guides(color=FALSE)
+```
+
+### Raw Data Bar Plot [Fill]
+
+We can fill the shapes.
+
+```{r}
+# guides(fill=FALSE) removes the legend
+Bonds %>% 
+  ggplot(., aes(x=Risk, fill=Risk)) + 
+  geom_bar() + 
+  guides(fill=FALSE)
+```
+
+## `geom_bar()` meets `fill`
+
+We can also deploy `fill` but x is no longer the axis; the axis is some constant value with frequencies filled by the fill.  *This will require some prettying.*
+
+### A Cumulative Bar Plot
+
+```{r}
+Basic.Bar <- Bonds %>% 
+  ggplot(., aes(x="", fill=Risk)) +
+  geom_bar()
+Basic.Bar
+```
+
+The prettying will require that I eliminate the x axis [set it to empty], include a theme, and give it proper labels.
+
+### Enhanced Cumulative Bar Plot
+
+```{r}
+Bonds %>% ggplot(., aes(x="", fill=Risk)) +
+  geom_bar() + 
+  labs(x="", y="Number of Funds") +
+  theme_minimal() + 
+  theme(axis.text.x= element_blank())
+```
+
+### Proportion Bar Plot
+
+```{r}
+Bonds %>% 
+  ggplot(., aes(x="", fill=Risk)) +
+  geom_bar(position="fill") +
+  labs(x="", y="Proportion of Funds")
+```
+
+The prettying will require that I eliminate the x axis [set it to empty], include a theme, and give it proper labels.
+
+### Enhanced Proportion Bar Plot
+
+```{r}
+Bonds %>% ggplot(., aes(x="", fill=Risk)) +
+  geom_bar(position="fill") + 
+  labs(x="", y="Propotion of Funds") +
+  theme_minimal()
+```
+
+## geom_col()
+
+```{r}
+Risk.Table <- table(Bonds$Risk) %>% data.frame()
+Risk.Table %>% 
+  ggplot(., aes(x=Var1, y=Freq)) + 
+  geom_col()
+```
+
+### Beautifying `geom_col()`
+
+Now it really needs some beautification.
+
+```{r}
+Risk.Table %>% 
+  ggplot(., aes(x=Var1, y=Freq, fill=Var1)) + 
+  geom_col() + 
+  labs(x="Risk Levels", y="Number of Funds") + 
+  theme_minimal() + 
+  theme(axis.text.x= element_blank()) + 
+  scale_fill_viridis_d() + 
+  guides(fill=FALSE)
+```
+
+## `position = "fill"`
+
+The two commands are symmetric in the sense that x as axis always splits it into multiple parts.  `fill` will prove very useful with a two dimensional table.
+
+```{r}
+Risk.Table %>% 
+  ggplot(., aes(x=1, y=Freq, fill=Var1)) +
+  geom_col(position = "fill") + 
+  labs(x="Risk Levels", y="Number of Funds") +
+  theme_minimal() + 
+  theme(axis.text.x= element_blank()) +
+  scale_fill_viridis_d() + 
+  guides(fill=FALSE)
+```
+
+## A lollipop chart
+
+A lollipop chart is a combination of two geometries.  It is a basic scatterplot combining one qualitative variable and the quantitative count of the number of observations.  The head of the lollipop is a point while there is an accompanying line segment from (x,0) to (x,Freq) where Freq is the default name for a count from a table.
+
+### Basic Lollipop Chart
+
+```{r}
+Risk.Table %>% 
+  ggplot(., aes(x=Var1, y=Freq, color=Var1)) + 
+  geom_point(size=6) + 
+  labs(x="Risk Level", y="Number of Funds", color="Risk Level")+ 
+  geom_segment(aes(xend=Var1, y=0, yend=Freq)) +
+  theme_minimal()
+```
+
+### Slicked Lollipop Chart by Adjusting Segment Size
+
+```{r}
+Risk.Table %>% 
+  ggplot(., aes(x=Var1, y=Freq, color=Var1)) + 
+  geom_point(size=6) + 
+  labs(x="Risk Levels", y="Number of Funds")+ 
+  geom_segment(aes(xend=Var1, y=0, yend=Freq), size=1.5) +
+  theme_minimal()  + 
+  guides(color=FALSE)
+```
+
+
+
+```{r}
+Risk.Table %>% 
+  ggplot(., aes(x=Var1, y=Freq, color=Var1)) + 
+  geom_point(size=6) + 
+  labs(x="Risk Levels", y="Number of Funds")+ 
+  geom_segment(aes(xend=Var1, y=0, yend=Freq)) + 
+  theme_minimal()  + 
+  scale_color_viridis_d() + 
+  guides(color=FALSE) + 
+  coord_flip()
+```
+
+### A Lollipop Table [geom_label()]
+
+Now I will switch up the points to be the actual values as text.  For this, I use the `geom_text` aesthetic that requires a `label` to be assigned.  I also want to put down the lines before the text to avoid overlap.
+
+```{r}
+Risk.Table %>% 
+  ggplot(., aes(x=Var1, y=Freq, color=Var1, label=Freq)) +
+  labs(x="Risk Levels", y="Number of Funds")+ 
+  geom_segment(aes(xend=Var1, y=0, yend=Freq)) + 
+  geom_label(size=6) + 
+  theme_minimal()  + 
+  scale_color_viridis_d() + 
+  guides(color=FALSE) + 
+  coord_flip()
+```
+
+
+### A Lollipop Table [geom_text() inverse]
+
+The ggplot is built in layers so the segment before the label makes sure that the white shows up.  The fill and a discrete color are combined to create this graphical table.
+
+```{r}
+Risk.Table %>% 
+  ggplot(., aes(x=Var1, y=Freq, color=Var1, fill=Var1, label=Freq)) +
+  geom_segment(aes(xend=Var1, y=0, yend=Freq), size=1.5) +
+  geom_label(size=6, color="white") + 
+  labs(x="Risk Levels", y="Number of Funds")+ 
+  theme_minimal()  + 
+  scale_color_viridis_d() + 
+  scale_fill_viridis_d() + 
+  guides(fill=FALSE, color=FALSE) + 
+  coord_flip()
+```
+
+## I HATE PIE CHARTS
+
+A pie chart is fairly easy to do.  Let's go back and show something that I find pretty amazing.  A pie chart is a bar chart [the fill variety] with coordinates that fill a circle rather than a square.  We take the most basic bar plot -- Basic.Bar -- and add three things: new coordinates that are polar, labels, and a blank theme to eliminate axis labels.
+
+```{r}
+Basic.Bar + coord_polar("y", start=0) + labs(x="", y="") + theme_void()
+```

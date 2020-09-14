@@ -1,0 +1,308 @@
+---
+title: Visualizing One Quantitative Variable
+author: Robert W. Walker
+date: '2020-09-13'
+slug: visualize-one-quantity
+categories:
+  - R
+tags:
+  - plot
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2020-09-13T20:04:06-07:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, tidy=TRUE)
+library(tidyverse)
+```
+
+# Bonds
+
+A dataset for illustrating the various available visualizations needs a certain degree of richness with manageable size.  The dataset on *Bonds* contains three categorical and a few quantitative indicators sufficient to show what we might wish.
+
+## Loading the Data
+
+```{r}
+Bonds <- read.csv(url("https://raw.githubusercontent.com/robertwwalker/DADMStuff/master/BondFunds.csv"))
+```
+
+## A Summary
+
+```{r}
+library(skimr)
+Bonds %>% 
+  skim()
+```
+
+Most data types are represented.  There is no time variable so dates and the visualizations that go with time series are omitted.
+
+# Data Visualization
+
+First, let us look at visualizations for one quantitative variable.  Let me focus on assets..
+
+## `geom_histogram()`
+
+A histogram divides the data into categories and counts the observations per category.  The width of the categories [on x] is determined by `binwidth=` or the binwidth can be calculated as a function of the range and the number of bins `bin=`.  I will define it as *Gen.Hist*.
+
+### A Base Histogram
+
+```{r}
+Gen.Hist <- Bonds %>% 
+  ggplot() + 
+  aes(x=Assets) + 
+  geom_histogram()
+Gen.Hist
+```
+
+
+### Histograms [bins]
+
+We can choose more bins. 50?  That is far more than the default of 30.
+
+```{r}
+Bin50.Hist <- Bonds %>% 
+  ggplot() + 
+  aes(x=Assets) + 
+  geom_histogram(bins=50)
+Bin50.Hist
+```
+
+We can also choose fewer bins.  I will choose 10.
+
+```{r}
+Bin10.Hist <- Bonds %>% 
+  ggplot() + 
+  aes(x=Assets) + 
+  geom_histogram(bins=10)
+Bin10.Hist
+```
+
+
+### Histograms [binwidth]
+
+We can also set the width of bins in the metric of `x`; I will choose 500 (bigger).
+
+```{r}
+BinW500.Hist <- Bonds %>% 
+  ggplot() + 
+  aes(x=Assets) + 
+  geom_histogram(binwidth=500)
+BinW500.Hist
+```
+
+We can also set the width of bins in the metric of `x`; I will choose 50 (smaller width makes more bins).
+
+```{r}
+BinW50.Hist <- Bonds %>% 
+  ggplot() + 
+  aes(x=Assets) + 
+  geom_histogram(binwidth=50)
+BinW50.Hist
+```
+
+## `geom_dotplot()`
+
+`geom_dotplot()` places a dot for every observation in the relevant bin.  We can control the size of the bins [in the original metric] with `binwidth=`.
+
+### Small binwidth
+
+```{r}
+Bonds %>% 
+    ggplot() + 
+    aes(x=Assets) + 
+    geom_dotplot(binwidth=10)
+```
+
+
+### Large binwidth
+
+```{r}
+Bonds %>% 
+    ggplot() + 
+    aes(x=Assets) + 
+    geom_dotplot(binwidth=1000)
+```
+
+### An ?optimal? binwidth
+
+Each dot represents a datum with bins of size 100.
+
+```{r}
+Bonds %>% 
+    ggplot() + 
+    aes(x=Assets) + 
+    geom_dotplot(binwidth=100) + labs(y="")
+```
+
+## `geom_freqpoly()`
+
+`geom_freqpoly()` is the line equivalent of a histogram.  The arguments are similar, the output doesn't include the bars as it does in the histogram.
+
+```{r}
+Bonds %>% 
+  ggplot(., aes(x=Assets)) +
+  geom_freqpoly()
+```
+
+### More bins
+
+```{r}
+Bonds %>% 
+  ggplot(., aes(x=Assets)) +
+  geom_freqpoly(bins=50)
+```
+
+### Fewer bins
+
+```{r}
+Bonds %>% 
+  ggplot(., aes(x=Assets)) +
+  geom_freqpoly(bins=10)
+```
+
+
+## `geom_area()`
+
+Is a relative of the histogram with lines connecting the midpoints of the bins and an associated fill from zero.
+
+### Defaults to 30 bins
+
+```{r}
+Bonds %>% 
+  ggplot(., aes(x=Assets)) + 
+  geom_area(stat="bin")
+```
+
+### Small binwidth with a large number of bins
+
+I will color in the area with magenta and clean up the theme.
+
+```{r}
+Bonds %>% 
+   ggplot(., aes(x=Assets)) + 
+   geom_area(stat="bin", bins=100, fill="magenta") + theme_minimal()
+```
+
+
+## `geom_density()`
+
+A relative of the histogram and the area plots above, the density plot smooths out the blocks of a histogram with a moving window [known as the bandwidth].
+
+
+### `geom_density()` outlines
+
+
+```{r}
+Bonds %>% 
+   ggplot(., aes(x=Assets)) + 
+   geom_density(outline.type = "upper")
+Bonds %>% 
+   ggplot(., aes(x=Assets)) + 
+   geom_density(outline.type = "lower")
+Bonds %>% 
+   ggplot(., aes(x=Assets)) + 
+   geom_density(outline.type = "full")
+```
+
+
+### `geom_density()` adjust
+
+Adjust applies a numeric correction to the bandwidth.  Numbers greater than 1 make the bandwidth bigger [and the graphic smoother] and numbers less than 1 [but greater than zero] make the bandwidth smaller and the graphic more jagged.
+
+
+```{r}
+Bonds %>% 
+  ggplot(., aes(x=Assets)) +
+  geom_density(adjust=2)
+Bonds %>% 
+  ggplot(., aes(x=Assets)) +
+  geom_density(adjust=1/2)
+```
+
+
+## `geom_boxplot`
+
+A boxplot shows a box of the first and third quartiles and a notch at the median.  The dots above or below denote points outside the hinges.  The hinges [default to 1.5*IQR] show a range of expected data while the individual dots show possible outliers outside the hinges.  To adjust the hinges, the argument `coef=1.5` can be adjusted.
+
+```{r}
+Bonds %>% ggplot(., aes(x=Assets)) +
+  geom_boxplot()
+```
+
+## `geom_qq()`
+
+To compare empirical and theoretical quantiles.  Comparing a distribution to the normal or others is common and this provides the tool for doing so.  The default is a normal.
+
+The empirical cumulative distribution function arises when we sort a quantitative variable and show the percentiles below said value.
+
+```{r}
+Bonds %>% 
+  ggplot(aes(sample=Assets)) +
+  geom_qq()
+```
+
+## `stat_ecdf(geom = )`
+
+We could do this with most geometries.  I will show a few.
+
+### `stat_ecdf(geom = "step")`
+
+```{r}
+Bonds %>%  
+  ggplot(aes(x=Assets)) + 
+  stat_ecdf(geom = "point") + 
+  stat_ecdf(geom = "step", alpha=0.1) + 
+  labs(y="ECDF: Proportion less than Assets") + 
+  theme_minimal()
+```
+
+### `stat_ecdf(geom = "point")`
+
+```{r}
+Bonds %>%  
+  ggplot(aes(x=Assets)) + 
+  stat_ecdf(geom = "point") + 
+  stat_ecdf(geom = "step", alpha=0.1) + 
+  labs(y="ECDF: Proportion less than Assets") + 
+  theme_minimal()
+```
+
+### Combining two
+
+```{r}
+Bonds %>%  
+  ggplot(aes(x=Assets)) + 
+  stat_ecdf(geom = "point") + 
+  stat_ecdf(geom = "step", alpha=0.1) + 
+  labs(y="ECDF: Proportion less than Assets") + 
+  theme_minimal()
+```
+
+### `stat_ecdf(geom = "line")`
+
+```{r}
+Bonds %>%  
+  ggplot(aes(x=Assets)) + 
+  stat_ecdf(geom = "line") + 
+  labs(y="ECDF: Proportion less than Assets") + 
+  theme_minimal()
+```
+
+### `stat_ecdf(geom = "area")`
+
+```{r}
+Bonds %>%  
+  ggplot(aes(x=Assets)) + 
+  stat_ecdf(geom = "area", alpha=0.2) + 
+  labs(y="ECDF: Proportion less than Assets") + 
+  theme_minimal()
+```
