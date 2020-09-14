@@ -654,11 +654,11 @@
     
     
     <div>
-      <h2><a href="/r/visualize-mixed-data/" >Visualizing One Qualitative and One Quantitative Variable</a></h2>
+      <h2><a href="/2020/09/14/new-york-times-data-on-covid/" >New York Times Data on COVID</a></h2>
       <div class="article-style">
         
-          Bonds A dataset for illustrating the various available visualizations needs a certain degree of richness with manageable size. The dataset on Bonds contains three categorical and a few quantitative indicators sufficient to show what we might wish.
-Loading the Data Bonds &lt;- read.csv(url(&quot;https://raw.githubusercontent.com/robertwwalker/DADMStuff/master/BondFunds.csv&quot;))  A Summary library(skimr) Bonds %&gt;% skim()  Table 1: Data summary  Name Piped data  Number of rows 184  Number of columns 9  _______________________   Column type frequency:   character 4  numeric 5  ________________________   Group variables None    Variable type: character
+          New York Times data for the US The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-09-14 14:43:31.
+ The Basic State of Things options(scipen=9) library(tidyverse); library(hrbrthemes); library(patchwork); library(plotly); library(ggdark); library(ggrepel) CTP &lt;- read.csv(&quot;https://covidtracking.com/api/v1/states/daily.csv&quot;) state.data &lt;- read_csv(url(&quot;https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv&quot;)) Rect.NYT &lt;- complete(state.data, state,date) Rect.NYT &lt;- Rect.NYT %&gt;% group_by(state) %&gt;% mutate(New.
         
       </div>
     </div>
@@ -667,11 +667,11 @@ Loading the Data Bonds &lt;- read.csv(url(&quot;https://raw.githubusercontent.co
     
     
     <div>
-      <h2><a href="/2020/09/13/new-york-times-data-on-covid/" >New York Times Data on COVID</a></h2>
+      <h2><a href="/r/visualize-mixed-data/" >Visualizing One Qualitative and One Quantitative Variable</a></h2>
       <div class="article-style">
         
-          New York Times data for the US The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-09-13 21:06:51.
- The Basic State of Things options(scipen=9) library(tidyverse); library(hrbrthemes); library(patchwork); library(plotly); library(ggdark); library(ggrepel) CTP &lt;- read.csv(&quot;https://covidtracking.com/api/v1/states/daily.csv&quot;) state.data &lt;- read_csv(url(&quot;https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv&quot;)) Rect.NYT &lt;- complete(state.data, state,date) Rect.NYT &lt;- Rect.NYT %&gt;% group_by(state) %&gt;% mutate(New.
+          Bonds A dataset for illustrating the various available visualizations needs a certain degree of richness with manageable size. The dataset on Bonds contains three categorical and a few quantitative indicators sufficient to show what we might wish.
+Loading the Data Bonds &lt;- read.csv(url(&quot;https://raw.githubusercontent.com/robertwwalker/DADMStuff/master/BondFunds.csv&quot;))  A Summary library(skimr) Bonds %&gt;% skim()  Table 1: Data summary  Name Piped data  Number of rows 184  Number of columns 9  _______________________   Column type frequency:   character 4  numeric 5  ________________________   Group variables None    Variable type: character
         
       </div>
     </div>
