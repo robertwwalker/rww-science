@@ -1,0 +1,48 @@
+---
+title: Spending on Kids
+author: Robert W. Walker
+date: '2020-09-15'
+slug: spending-on-kids
+categories:
+  - R
+  - tidyTuesday
+tags:
+  - tidyTuesday
+  - tidyverse
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2020-09-15T17:22:16-07:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## tidyTuesday
+
+This week, I do not have much time.
+
+```{r cars}
+library(tidyverse)
+library(viridis)
+library(geofacet)
+kids <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-09-15/kids.csv')
+state_ranks %>% filter(variable=="education") %>% select(state,name) -> mergeMe
+p1 <- kids %>% 
+  left_join(., mergeMe, by = c('state' = 'name')) %>% 
+  filter(variable=="PK12ed")%>% 
+  ggplot(., aes(x=year, y=inf_adj_perchild, color=inf_adj_perchild)) + 
+  geom_line() + 
+  facet_geo(~state.y) + 
+  labs(x="year", y="Inflation Adjust Expenditures per child", title="Pre-K Through 12 Education Spending", color="Spend per child", caption="Data from #tidyTuesday: @PieRatio") + 
+  scale_color_viridis_c() + theme_void()
+p1
+```

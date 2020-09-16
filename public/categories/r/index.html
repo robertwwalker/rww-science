@@ -239,7 +239,7 @@
   <meta property="og:description" content="Associate Professor of Quantitative Methods"><meta property="og:image" content="/img/portrait.jpg">
   <meta property="twitter:image" content="/img/portrait.jpg"><meta property="og:locale" content="en-us">
   
-    <meta property="og:updated_time" content="2020-09-14T00:00:00&#43;00:00">
+    <meta property="og:updated_time" content="2020-09-15T00:00:00&#43;00:00">
   
 
   
@@ -654,7 +654,7 @@
     
     
     <div>
-      <h2><a href="/2020/09/14/analyzing-the-trump-campaign-s-solicitations/" >Analyzing the Trump Campaign&#39;s Solicitations</a></h2>
+      <h2><a href="/2020/09/15/analyzing-the-trump-campaign-s-solicitations/" >Analyzing the Trump Campaign&#39;s Solicitations</a></h2>
       <div class="article-style">
         
           tl;dr In September of 2018, I began to track email solicitations by the Trump Campaign. I have noticed a striking pattern of increasing fundraising activity that started just after the July 4 weekend but I wanted to verify this over the span of the data. In short, something is up.
@@ -667,11 +667,24 @@ The Data I will use the wonderful gmailr package to access my gmail. You need a 
     
     
     <div>
-      <h2><a href="/2020/09/14/new-york-times-data-on-covid/" >New York Times Data on COVID</a></h2>
+      <h2><a href="/2020/09/15/new-york-times-data-on-covid/" >New York Times Data on COVID</a></h2>
       <div class="article-style">
         
-          New York Times data for the US The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-09-14 14:43:31.
+          New York Times data for the US The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-09-15 16:20:36.
  The Basic State of Things options(scipen=9) library(tidyverse); library(hrbrthemes); library(patchwork); library(plotly); library(ggdark); library(ggrepel) CTP &lt;- read.csv(&quot;https://covidtracking.com/api/v1/states/daily.csv&quot;) state.data &lt;- read_csv(url(&quot;https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv&quot;)) Rect.NYT &lt;- complete(state.data, state,date) Rect.NYT &lt;- Rect.NYT %&gt;% group_by(state) %&gt;% mutate(New.
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
+      <h2><a href="/2020/09/15/spending-on-kids/" >Spending on Kids</a></h2>
+      <div class="article-style">
+        
+          tidyTuesday This week, I do not have much time.
+library(tidyverse) ## ── Attaching packages ─────────────────────────────────────────────────────────────── tidyverse 1.3.0 ── ## ✓ ggplot2 3.3.2 ✓ purrr 0.3.4 ## ✓ tibble 3.0.3 ✓ dplyr 1.0.2 ## ✓ tidyr 1.1.2 ✓ stringr 1.4.0 ## ✓ readr 1.3.1 ✓ forcats 0.5.0 ## ── Conflicts ────────────────────────────────────────────────────────────────── tidyverse_conflicts() ── ## x dplyr::filter() masks stats::filter() ## x dplyr::lag() masks stats::lag() library(viridis) ## Loading required package: viridisLite library(geofacet) ## Registered S3 method overwritten by &#39;geofacet&#39;: ## method from ## +.
         
       </div>
     </div>
@@ -763,21 +776,6 @@ library(RSocrata) Oregon.Nonprofits &lt;- read.socrata(&quot;https://data.oregon
         
           In previous work with Skip Krueger, we conceptualized bond ratings as a multiple rater problem and extracted measure of state level creditworthiness. I had always had it on my list to do something like this and recently ran across a package called geofacet that makes it simply to easy to do. So here goes. The code is below the post.
 library(haven) library(dplyr) Pew.Data &lt;- read_dta(url(&quot;https://github.com/robertwwalker/academic-mymod/raw/master/data/Pew/modeledforprediction.dta&quot;)) library(tidyverse) load(url(&quot;https://github.com/robertwwalker/academic-mymod/raw/master/data/Pew/Scaled-BR-Pew.RData&quot;)) state.ratings &lt;- data.
-        
-      </div>
-    </div>
-  
-    
-    
-    
-    <div>
-      <h2><a href="/2020/04/01/a-quick-tidytuesday-on-beer-breweries-and-ingredients/" >A Quick tidyTuesday on Beer, Breweries, and Ingredients</a></h2>
-      <div class="article-style">
-        
-          Beer Distribution The #tidyTuesday for March 31, 2020 is on beer. The essential elements and a method for pulling the data are shown:
-Imgur
- A Comment on Scraping .pdf The Tweet
- The details on how the data were obtained are a nice overview of scraping .pdf files. The code for doing it is at the bottom of the page. @thomasmock has done a great job commenting his way through it.
         
       </div>
     </div>

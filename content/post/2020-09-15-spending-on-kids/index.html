@@ -1,0 +1,66 @@
+---
+title: Spending on Kids
+author: Robert W. Walker
+date: '2020-09-15'
+slug: spending-on-kids
+categories:
+  - R
+  - tidyTuesday
+tags:
+  - tidyTuesday
+  - tidyverse
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2020-09-15T17:22:16-07:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<div id="tidytuesday" class="section level2">
+<h2>tidyTuesday</h2>
+<p>This week, I do not have much time.</p>
+<pre class="r"><code>library(tidyverse)</code></pre>
+<pre><code>## ── Attaching packages ─────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
+<pre><code>## ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
+## ✓ tibble  3.0.3     ✓ dplyr   1.0.2
+## ✓ tidyr   1.1.2     ✓ stringr 1.4.0
+## ✓ readr   1.3.1     ✓ forcats 0.5.0</code></pre>
+<pre><code>## ── Conflicts ────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre class="r"><code>library(viridis)</code></pre>
+<pre><code>## Loading required package: viridisLite</code></pre>
+<pre class="r"><code>library(geofacet)</code></pre>
+<pre><code>## Registered S3 method overwritten by &#39;geofacet&#39;:
+##   method from   
+##   +.gg   ggplot2</code></pre>
+<pre class="r"><code>kids &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-09-15/kids.csv&#39;)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   state = col_character(),
+##   variable = col_character(),
+##   year = col_double(),
+##   raw = col_double(),
+##   inf_adj = col_double(),
+##   inf_adj_perchild = col_double()
+## )</code></pre>
+<pre class="r"><code>state_ranks %&gt;% filter(variable==&quot;education&quot;) %&gt;% select(state,name) -&gt; mergeMe
+p1 &lt;- kids %&gt;% 
+  left_join(., mergeMe, by = c(&#39;state&#39; = &#39;name&#39;)) %&gt;% 
+  filter(variable==&quot;PK12ed&quot;)%&gt;% 
+  ggplot(., aes(x=year, y=inf_adj_perchild, color=inf_adj_perchild)) + 
+  geom_line() + 
+  facet_geo(~state.y) + 
+  labs(x=&quot;year&quot;, y=&quot;Inflation Adjust Expenditures per child&quot;, title=&quot;Pre-K Through 12 Education Spending&quot;, color=&quot;Spend per child&quot;, caption=&quot;Data from #tidyTuesday: @PieRatio&quot;) + 
+  scale_color_viridis_c() + theme_void()
+p1</code></pre>
+<p><img src="/post/2020-09-15-spending-on-kids/index_files/figure-html/cars-1.png" width="672" /></p>
+</div>

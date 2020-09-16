@@ -5,7 +5,7 @@
     <link>/categories/</link>
       <atom:link href="/categories/index.xml" rel="self" type="application/rss+xml" />
     <description>Categories</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© 2018</copyright><lastBuildDate>Mon, 14 Sep 2020 00:00:00 +0000</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© 2018</copyright><lastBuildDate>Tue, 15 Sep 2020 00:00:00 +0000</lastBuildDate>
     <image>
       <url>/img/portrait.jpg</url>
       <title>Categories</title>
@@ -15,7 +15,7 @@
     <item>
       <title>dataviz</title>
       <link>/categories/dataviz/</link>
-      <pubDate>Mon, 14 Sep 2020 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 15 Sep 2020 00:00:00 +0000</pubDate>
       <guid>/categories/dataviz/</guid>
       <description></description>
     </item>
@@ -23,8 +23,16 @@
     <item>
       <title>R</title>
       <link>/categories/r/</link>
-      <pubDate>Mon, 14 Sep 2020 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 15 Sep 2020 00:00:00 +0000</pubDate>
       <guid>/categories/r/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>tidyTuesday</title>
+      <link>/categories/tidytuesday/</link>
+      <pubDate>Tue, 15 Sep 2020 00:00:00 +0000</pubDate>
+      <guid>/categories/tidytuesday/</guid>
       <description></description>
     </item>
     
@@ -57,14 +65,6 @@
       <link>/categories/animation/</link>
       <pubDate>Wed, 01 Apr 2020 00:00:00 +0000</pubDate>
       <guid>/categories/animation/</guid>
-      <description></description>
-    </item>
-    
-    <item>
-      <title>tidyTuesday</title>
-      <link>/categories/tidytuesday/</link>
-      <pubDate>Wed, 01 Apr 2020 00:00:00 +0000</pubDate>
-      <guid>/categories/tidytuesday/</guid>
       <description></description>
     </item>
     

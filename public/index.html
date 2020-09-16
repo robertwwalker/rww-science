@@ -239,7 +239,7 @@
   <meta property="og:description" content="Associate Professor of Quantitative Methods"><meta property="og:image" content="/img/portrait.jpg">
   <meta property="twitter:image" content="/img/portrait.jpg"><meta property="og:locale" content="en-us">
   
-    <meta property="og:updated_time" content="2020-09-14T00:00:00&#43;00:00">
+    <meta property="og:updated_time" content="2020-09-15T00:00:00&#43;00:00">
   
 
   
@@ -1159,7 +1159,7 @@
           Last updated on
       
     
-    Sep 13, 2020
+    Sep 14, 2020
   </span>
   
 
@@ -1192,7 +1192,7 @@
   
 
   <h3 class="article-title mb-1 mt-3">
-    <a href="/2020/09/14/analyzing-the-trump-campaign-s-solicitations/">Analyzing the Trump Campaign&#39;s Solicitations</a>
+    <a href="/2020/09/15/analyzing-the-trump-campaign-s-solicitations/">Analyzing the Trump Campaign&#39;s Solicitations</a>
   </h3>
 
   
@@ -1241,7 +1241,7 @@ The Data I will use the wonderful gmailr package to access my gmail. You need a 
           Last updated on
       
     
-    Sep 13, 2020
+    Sep 14, 2020
   </span>
   
 
@@ -1274,13 +1274,95 @@ The Data I will use the wonderful gmailr package to access my gmail. You need a 
   
 
   <h3 class="article-title mb-1 mt-3">
-    <a href="/2020/09/14/new-york-times-data-on-covid/">New York Times Data on COVID</a>
+    <a href="/2020/09/15/new-york-times-data-on-covid/">New York Times Data on COVID</a>
   </h3>
 
   
   <div class="article-style">
-    <p>New York Times data for the US The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-09-14 14:43:31.
+    <p>New York Times data for the US The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-09-15 16:20:36.
  The Basic State of Things options(scipen=9) library(tidyverse); library(hrbrthemes); library(patchwork); library(plotly); library(ggdark); library(ggrepel) CTP &lt;- read.csv(&quot;https://covidtracking.com/api/v1/states/daily.csv&quot;) state.data &lt;- read_csv(url(&quot;https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv&quot;)) Rect.NYT &lt;- complete(state.data, state,date) Rect.NYT &lt;- Rect.NYT %&gt;% group_by(state) %&gt;% mutate(New.</p>
+  </div>
+  
+
+  
+
+</div>
+
+      
+    
+      
+        
+
+
+
+
+
+
+
+
+
+  
+
+
+<div class="card-simple">
+
+  
+    
+
+
+<div class="article-metadata">
+
+  
+  
+
+  
+  <span class="article-date">
+    
+    
+      
+          Last updated on
+      
+    
+    Sep 15, 2020
+  </span>
+  
+
+  
+
+  
+  <span class="middot-divider"></span>
+  <span class="article-reading-time">
+    1 min read
+  </span>
+  
+
+  
+  
+  
+
+  
+  
+  <span class="middot-divider"></span>
+  <span class="article-categories">
+    <i class="fas fa-folder mr-1"></i><a href="/categories/r/">R</a>, <a href="/categories/tidytuesday/">tidyTuesday</a></span>
+  
+
+</div>
+
+  
+
+  
+  
+  
+
+  <h3 class="article-title mb-1 mt-3">
+    <a href="/2020/09/15/spending-on-kids/">Spending on Kids</a>
+  </h3>
+
+  
+  <div class="article-style">
+    <p>tidyTuesday This week, I do not have much time.
+library(tidyverse) ## ── Attaching packages ─────────────────────────────────────────────────────────────── tidyverse 1.3.0 ── ## ✓ ggplot2 3.3.2 ✓ purrr 0.3.4 ## ✓ tibble 3.0.3 ✓ dplyr 1.0.2 ## ✓ tidyr 1.1.2 ✓ stringr 1.4.0 ## ✓ readr 1.3.1 ✓ forcats 0.5.0 ## ── Conflicts ────────────────────────────────────────────────────────────────── tidyverse_conflicts() ── ## x dplyr::filter() masks stats::filter() ## x dplyr::lag() masks stats::lag() library(viridis) ## Loading required package: viridisLite library(geofacet) ## Registered S3 method overwritten by &#39;geofacet&#39;: ## method from ## +.</p>
   </div>
   
 
@@ -1446,88 +1528,6 @@ library(RSocrata) Oregon.Nonprofits &lt;- read.socrata(&quot;https://data.oregon
     <p>R Markdown I love this intro photo from the tidyTuesday page.
 This week’s tidyTuesday data cover violations of the GDPR.
 gdpr_violations &lt;- readr::read_tsv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-04-21/gdpr_violations.tsv&#39;) ## Parsed with column specification: ## cols( ## id = col_double(), ## picture = col_character(), ## name = col_character(), ## price = col_double(), ## authority = col_character(), ## date = col_character(), ## controller = col_character(), ## article_violated = col_character(), ## type = col_character(), ## source = col_character(), ## summary = col_character() ## ) gdpr_text &lt;- readr::read_tsv(&#39;https://raw.</p>
-  </div>
-  
-
-  
-
-</div>
-
-      
-    
-      
-        
-
-
-
-
-
-
-
-
-
-  
-
-
-<div class="card-simple">
-
-  
-    
-
-
-<div class="article-metadata">
-
-  
-  
-
-  
-  <span class="article-date">
-    
-    
-      
-          Last updated on
-      
-    
-    Apr 4, 2020
-  </span>
-  
-
-  
-
-  
-  <span class="middot-divider"></span>
-  <span class="article-reading-time">
-    1 min read
-  </span>
-  
-
-  
-  
-  
-
-  
-  
-  <span class="middot-divider"></span>
-  <span class="article-categories">
-    <i class="fas fa-folder mr-1"></i><a href="/categories/tidyverse/">tidyverse</a>, <a href="/categories/r/">R</a>, <a href="/categories/public-finance/">Public Finance</a></span>
-  
-
-</div>
-
-  
-
-  
-  
-  
-
-  <h3 class="article-title mb-1 mt-3">
-    <a href="/2020/04/03/a-geofacet-of-credit-quality/">A GeoFacet of Credit Quality</a>
-  </h3>
-
-  
-  <div class="article-style">
-    <p>In previous work with Skip Krueger, we conceptualized bond ratings as a multiple rater problem and extracted measure of state level creditworthiness. I had always had it on my list to do something like this and recently ran across a package called geofacet that makes it simply to easy to do. So here goes. The code is below the post.
-library(haven) library(dplyr) Pew.Data &lt;- read_dta(url(&quot;https://github.com/robertwwalker/academic-mymod/raw/master/data/Pew/modeledforprediction.dta&quot;)) library(tidyverse) load(url(&quot;https://github.com/robertwwalker/academic-mymod/raw/master/data/Pew/Scaled-BR-Pew.RData&quot;)) state.ratings &lt;- data.</p>
   </div>
   
 
@@ -2990,12 +2990,12 @@ library(haven) library(dplyr) Pew.Data &lt;- read_dta(url(&quot;https://github.c
           
           
           
-          <a href="/tags/tidytuesday/" style="font-size:1.7359540848245718rem">tidyTuesday</a>
+          <a href="/tags/tidytuesday/" style="font-size:1.7568538495471302rem">tidyTuesday</a>
         
           
           
           
-          <a href="/tags/tidyverse/" style="font-size:1.79537853629687rem">tidyverse</a>
+          <a href="/tags/tidyverse/" style="font-size:1.8132184811695784rem">tidyverse</a>
         
       </div>
     

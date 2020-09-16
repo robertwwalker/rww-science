@@ -239,7 +239,7 @@
   <meta property="og:description" content="Associate Professor of Quantitative Methods"><meta property="og:image" content="/img/portrait.jpg">
   <meta property="twitter:image" content="/img/portrait.jpg"><meta property="og:locale" content="en-us">
   
-    <meta property="og:updated_time" content="2020-09-14T00:00:00&#43;00:00">
+    <meta property="og:updated_time" content="2020-09-15T00:00:00&#43;00:00">
   
 
   
@@ -654,6 +654,21 @@
     
     
     <div>
+      <h2><a href="/2020/04/01/a-quick-tidytuesday-on-beer-breweries-and-ingredients/" >A Quick tidyTuesday on Beer, Breweries, and Ingredients</a></h2>
+      <div class="article-style">
+        
+          Beer Distribution The #tidyTuesday for March 31, 2020 is on beer. The essential elements and a method for pulling the data are shown:
+Imgur
+ A Comment on Scraping .pdf The Tweet
+ The details on how the data were obtained are a nice overview of scraping .pdf files. The code for doing it is at the bottom of the page. @thomasmock has done a great job commenting his way through it.
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
       <h2><a href="/2020/03/21/covid-19-in-oregon/" >Mapping COVID-19 in Oregon</a></h2>
       <div class="article-style">
         
@@ -764,19 +779,6 @@ Get a map.
         
           tidyTuesday: December 10, 2019 Replicating plots from simplystatistics. One nice twist is the development of a tidytuesdayR package to grab the necessary data in an easy way. You can install the package via github. I will also use fiftystater and ggflags.
 devtools::install_github(&quot;thebioengineer/tidytuesdayR&quot;) devtools::install_github(&quot;ellisp/ggflags&quot;) devtools::install_github(&quot;wmurphyrd/fiftystater&quot;) tuesdata &lt;- tidytuesdayR::tt_load(2019, week = 50) ## --- Downloading #TidyTuesday Information for 2019-12-10 ---- ## --- Identified 4 files available for download ---- ## --- Downloading files --- ## Warning in identify_delim(temp_file): Not able to detect delimiter for the file.
-        
-      </div>
-    </div>
-  
-    
-    
-    
-    <div>
-      <h2><a href="/2019/12/16/trying-out-leaflet/" >Trying out Leaflet</a></h2>
-      <div class="article-style">
-        
-          International Murders Are among the data for analysis in the tidyTuesday for December 10, 2019. These are made for a map.
-library(tidyverse) library(leaflet) library(stringr) library(sf) library(here) library(widgetframe) library(htmlwidgets) library(htmltools) options(digits = 3) set.seed(1234) theme_set(theme_minimal()) library(tidytuesdayR) tuesdata &lt;- tt_load(2019, week = 50) murders &lt;- tuesdata$gun_murders There isn’t much data so it should make this a bit easier. Now for some data. As it happens, the best way I currently know how to do this is going to involve acquiring a spatial frame.
         
       </div>
     </div>
