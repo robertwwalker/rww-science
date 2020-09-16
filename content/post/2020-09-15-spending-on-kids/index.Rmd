@@ -24,17 +24,45 @@ projects: []
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
 ```
 
-## tidyTuesday
+## Spending on Kids
 
-This week, I do not have much time.
+First, let me import the data.
 
-```{r cars}
-library(tidyverse)
+```{r}
+kids <- read.csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-09-15/kids.csv')
+# kids <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-09-15/kids.csv')
+```
+
+Now let me summarise it and show a table of the variables.
+
+```{r}
+summary(kids)
+```
+
+A table of the variables.  [The definitions are best found here.](https://jrosen48.github.io/tidykids/articles/tidykids-codebook.html)
+
+```{r}
+table(kids$variable)
+```
+
+It is *very* tidy.  It is probably better shown after a pivot.  50 states, the District of Columbia, and 20 years gives us 1,020 observations.  Let me show it wide. 
+
+```{r}
+Big.Wide <- pivot_wider(kids, id_cols = c(state,year), names_from = "variable", values_from = c("raw","inf_adj","inf_adj_perchild"))
+Big.Wide
+```
+
+
+# My brief plan
+
+I recently came across a `geofacet` for R.  I want to use it to plot a little bit of this data.  If you want to get a head start, try `install.packages("geofacet", dependencies=TRUE)`.  You can google `geofacet` to get an idea of what a `geofacet` plot is.  I will build one on the fly using a couple of tidy tools: filter, mutate, and joins and then put it together.
+
+```{r}
 library(viridis)
 library(geofacet)
-kids <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-09-15/kids.csv')
 state_ranks %>% filter(variable=="education") %>% select(state,name) -> mergeMe
 p1 <- kids %>% 
   left_join(., mergeMe, by = c('state' = 'name')) %>% 
@@ -46,3 +74,20 @@ p1 <- kids %>%
   scale_color_viridis_c() + theme_void()
 p1
 ```
+
+
+## Neat-o an Oregon Grid
+
+This isn't very good though....
+
+```{r}
+load(url("https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID2020-09-15.RData"))
+OR.County.COVID %>% 
+  mutate(County = str_replace(County, " ", "")) %>% 
+  ggplot(., aes(x=date, y=Number.of.cases, color=Number.of.cases)) + 
+  geom_line(size=1.5) + 
+  facet_geo(~ County, grid = "us_or_counties_grid1", label = "name", scales = "free_y") +
+  scale_color_viridis_c(option = "plasma") +
+  theme_void()
+```
+

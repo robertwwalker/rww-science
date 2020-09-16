@@ -24,35 +24,91 @@ projects: []
 <script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 
 
-<div id="tidytuesday" class="section level2">
-<h2>tidyTuesday</h2>
-<p>This week, I do not have much time.</p>
-<pre class="r"><code>library(tidyverse)</code></pre>
-<pre><code>## ── Attaching packages ─────────────────────────────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
-<pre><code>## ✓ ggplot2 3.3.2     ✓ purrr   0.3.4
-## ✓ tibble  3.0.3     ✓ dplyr   1.0.2
-## ✓ tidyr   1.1.2     ✓ stringr 1.4.0
-## ✓ readr   1.3.1     ✓ forcats 0.5.0</code></pre>
-<pre><code>## ── Conflicts ────────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
-## x dplyr::filter() masks stats::filter()
-## x dplyr::lag()    masks stats::lag()</code></pre>
+<div id="spending-on-kids" class="section level2">
+<h2>Spending on Kids</h2>
+<p>First, let me import the data.</p>
+<pre class="r"><code>kids &lt;- read.csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-09-15/kids.csv&#39;)
+# kids &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-09-15/kids.csv&#39;)</code></pre>
+<p>Now let me summarise it and show a table of the variables.</p>
+<pre class="r"><code>summary(kids)</code></pre>
+<pre><code>##     state             variable              year           raw          
+##  Length:23460       Length:23460       Min.   :1997   Min.   :  -60139  
+##  Class :character   Class :character   1st Qu.:2002   1st Qu.:   71985  
+##  Mode  :character   Mode  :character   Median :2006   Median :  252002  
+##                                        Mean   :2006   Mean   : 1181359  
+##                                        3rd Qu.:2011   3rd Qu.:  836324  
+##                                        Max.   :2016   Max.   :83666088  
+##                                                       NA&#39;s   :102       
+##     inf_adj         inf_adj_perchild  
+##  Min.   :  -60799   Min.   :-0.01361  
+##  1st Qu.:   85876   1st Qu.: 0.12456  
+##  Median :  298778   Median : 0.32757  
+##  Mean   : 1359983   Mean   : 0.91448  
+##  3rd Qu.:  985049   3rd Qu.: 0.83362  
+##  Max.   :84584960   Max.   :20.27326  
+##  NA&#39;s   :102        NA&#39;s   :102</code></pre>
+<p>A table of the variables. <a href="https://jrosen48.github.io/tidykids/articles/tidykids-codebook.html">The definitions are best found here.</a></p>
+<pre class="r"><code>table(kids$variable)</code></pre>
+<pre><code>## 
+##         addCC           CTC       edservs        edsubs       fedEITC 
+##          1020          1020          1020          1020          1020 
+##        fedSSI           HCD HeadStartPriv      highered           lib 
+##          1020          1020          1020          1020          1020 
+## Medicaid_CHIP  other_health othercashserv       parkrec          pell 
+##          1020          1020          1020          1020          1020 
+##        PK12ed     pubhealth          SNAP        socsec     stateEITC 
+##          1020          1020          1020          1020          1020 
+##     TANFbasic         unemp         wcomp 
+##          1020          1020          1020</code></pre>
+<p>It is <em>very</em> tidy. It is probably better shown after a pivot. 50 states, the District of Columbia, and 20 years gives us 1,020 observations. Let me show it wide.</p>
+<pre class="r"><code>Big.Wide &lt;- pivot_wider(kids, id_cols = c(state,year), names_from = &quot;variable&quot;, values_from = c(&quot;raw&quot;,&quot;inf_adj&quot;,&quot;inf_adj_perchild&quot;))
+Big.Wide</code></pre>
+<pre><code>## # A tibble: 1,020 x 71
+##    state  year raw_PK12ed raw_highered raw_edsubs raw_edservs raw_pell
+##    &lt;chr&gt; &lt;int&gt;      &lt;dbl&gt;        &lt;dbl&gt;      &lt;dbl&gt;       &lt;dbl&gt;    &lt;dbl&gt;
+##  1 Alab…  1997    3271969       956505     107733      246057  120833.
+##  2 Alas…  1997    1042311       209433       5550       52355    7575.
+##  3 Ariz…  1997    3388165       847032     111735      170281  120450.
+##  4 Arka…  1997    1960613       457171      62447      189808   65904.
+##  5 Cali…  1997   28708364      6858657    1121672      943805  775292.
+##  6 Colo…  1997    3332994       861733      84129       77419   79004.
+##  7 Conn…  1997    4014870       502177      71053      138932   36453.
+##  8 Dela…  1997     776825       185114      31284       81880    9965.
+##  9 Dist…  1997     544051        56693          0           0   18972.
+## 10 Flor…  1997   11498394      2039186     391935      269777  318611.
+## # … with 1,010 more rows, and 64 more variables: raw_HeadStartPriv &lt;dbl&gt;,
+## #   raw_TANFbasic &lt;dbl&gt;, raw_othercashserv &lt;dbl&gt;, raw_SNAP &lt;dbl&gt;,
+## #   raw_socsec &lt;dbl&gt;, raw_fedSSI &lt;dbl&gt;, raw_fedEITC &lt;dbl&gt;, raw_CTC &lt;dbl&gt;,
+## #   raw_addCC &lt;dbl&gt;, raw_stateEITC &lt;dbl&gt;, raw_unemp &lt;dbl&gt;, raw_wcomp &lt;dbl&gt;,
+## #   raw_Medicaid_CHIP &lt;dbl&gt;, raw_pubhealth &lt;dbl&gt;, raw_other_health &lt;dbl&gt;,
+## #   raw_HCD &lt;dbl&gt;, raw_lib &lt;dbl&gt;, raw_parkrec &lt;dbl&gt;, inf_adj_PK12ed &lt;dbl&gt;,
+## #   inf_adj_highered &lt;dbl&gt;, inf_adj_edsubs &lt;dbl&gt;, inf_adj_edservs &lt;dbl&gt;,
+## #   inf_adj_pell &lt;dbl&gt;, inf_adj_HeadStartPriv &lt;dbl&gt;, inf_adj_TANFbasic &lt;dbl&gt;,
+## #   inf_adj_othercashserv &lt;dbl&gt;, inf_adj_SNAP &lt;dbl&gt;, inf_adj_socsec &lt;dbl&gt;,
+## #   inf_adj_fedSSI &lt;dbl&gt;, inf_adj_fedEITC &lt;dbl&gt;, inf_adj_CTC &lt;dbl&gt;,
+## #   inf_adj_addCC &lt;dbl&gt;, inf_adj_stateEITC &lt;dbl&gt;, inf_adj_unemp &lt;dbl&gt;,
+## #   inf_adj_wcomp &lt;dbl&gt;, inf_adj_Medicaid_CHIP &lt;dbl&gt;, inf_adj_pubhealth &lt;dbl&gt;,
+## #   inf_adj_other_health &lt;dbl&gt;, inf_adj_HCD &lt;dbl&gt;, inf_adj_lib &lt;dbl&gt;,
+## #   inf_adj_parkrec &lt;dbl&gt;, inf_adj_perchild_PK12ed &lt;dbl&gt;,
+## #   inf_adj_perchild_highered &lt;dbl&gt;, inf_adj_perchild_edsubs &lt;dbl&gt;,
+## #   inf_adj_perchild_edservs &lt;dbl&gt;, inf_adj_perchild_pell &lt;dbl&gt;,
+## #   inf_adj_perchild_HeadStartPriv &lt;dbl&gt;, inf_adj_perchild_TANFbasic &lt;dbl&gt;,
+## #   inf_adj_perchild_othercashserv &lt;dbl&gt;, inf_adj_perchild_SNAP &lt;dbl&gt;,
+## #   inf_adj_perchild_socsec &lt;dbl&gt;, inf_adj_perchild_fedSSI &lt;dbl&gt;,
+## #   inf_adj_perchild_fedEITC &lt;dbl&gt;, inf_adj_perchild_CTC &lt;dbl&gt;,
+## #   inf_adj_perchild_addCC &lt;dbl&gt;, inf_adj_perchild_stateEITC &lt;dbl&gt;,
+## #   inf_adj_perchild_unemp &lt;dbl&gt;, inf_adj_perchild_wcomp &lt;dbl&gt;,
+## #   inf_adj_perchild_Medicaid_CHIP &lt;dbl&gt;, inf_adj_perchild_pubhealth &lt;dbl&gt;,
+## #   inf_adj_perchild_other_health &lt;dbl&gt;, inf_adj_perchild_HCD &lt;dbl&gt;,
+## #   inf_adj_perchild_lib &lt;dbl&gt;, inf_adj_perchild_parkrec &lt;dbl&gt;</code></pre>
+</div>
+<div id="my-brief-plan" class="section level1">
+<h1>My brief plan</h1>
+<p>I recently came across a <code>geofacet</code> for R. I want to use it to plot a little bit of this data. If you want to get a head start, try <code>install.packages("geofacet", dependencies=TRUE)</code>. You can google <code>geofacet</code> to get an idea of what a <code>geofacet</code> plot is. I will build one on the fly using a couple of tidy tools: filter, mutate, and joins and then put it together.</p>
 <pre class="r"><code>library(viridis)</code></pre>
 <pre><code>## Loading required package: viridisLite</code></pre>
-<pre class="r"><code>library(geofacet)</code></pre>
-<pre><code>## Registered S3 method overwritten by &#39;geofacet&#39;:
-##   method from   
-##   +.gg   ggplot2</code></pre>
-<pre class="r"><code>kids &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-09-15/kids.csv&#39;)</code></pre>
-<pre><code>## Parsed with column specification:
-## cols(
-##   state = col_character(),
-##   variable = col_character(),
-##   year = col_double(),
-##   raw = col_double(),
-##   inf_adj = col_double(),
-##   inf_adj_perchild = col_double()
-## )</code></pre>
-<pre class="r"><code>state_ranks %&gt;% filter(variable==&quot;education&quot;) %&gt;% select(state,name) -&gt; mergeMe
+<pre class="r"><code>library(geofacet)
+state_ranks %&gt;% filter(variable==&quot;education&quot;) %&gt;% select(state,name) -&gt; mergeMe
 p1 &lt;- kids %&gt;% 
   left_join(., mergeMe, by = c(&#39;state&#39; = &#39;name&#39;)) %&gt;% 
   filter(variable==&quot;PK12ed&quot;)%&gt;% 
@@ -62,5 +118,19 @@ p1 &lt;- kids %&gt;%
   labs(x=&quot;year&quot;, y=&quot;Inflation Adjust Expenditures per child&quot;, title=&quot;Pre-K Through 12 Education Spending&quot;, color=&quot;Spend per child&quot;, caption=&quot;Data from #tidyTuesday: @PieRatio&quot;) + 
   scale_color_viridis_c() + theme_void()
 p1</code></pre>
-<p><img src="/post/2020-09-15-spending-on-kids/index_files/figure-html/cars-1.png" width="672" /></p>
+<p><img src="/post/2020-09-15-spending-on-kids/index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<div id="neat-o-an-oregon-grid" class="section level2">
+<h2>Neat-o an Oregon Grid</h2>
+<p>This isn’t very good though….</p>
+<pre class="r"><code>load(url(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID2020-09-15.RData&quot;))
+OR.County.COVID %&gt;% 
+  mutate(County = str_replace(County, &quot; &quot;, &quot;&quot;)) %&gt;% 
+  ggplot(., aes(x=date, y=Number.of.cases, color=Number.of.cases)) + 
+  geom_line(size=1.5) + 
+  facet_geo(~ County, grid = &quot;us_or_counties_grid1&quot;, label = &quot;name&quot;, scales = &quot;free_y&quot;) +
+  scale_color_viridis_c(option = &quot;plasma&quot;) +
+  theme_void()</code></pre>
+<pre><code>## Warning: Removed 3 row(s) containing missing values (geom_path).</code></pre>
+<p><img src="/post/2020-09-15-spending-on-kids/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+</div>
 </div>
