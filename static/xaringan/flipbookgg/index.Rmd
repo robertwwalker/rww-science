@@ -5,12 +5,12 @@ author: "Robert W. Walker"
 output:
   xaringan::moon_reader:
     lib_dir: libs
-    css: [default, hygge, ninjutsu]
+    css: [default, robot, robot-fonts]
     nature:
       ratio: 16:10
       highlightStyle: github
       highlightLines: true
-      countIncrementalSlides: true
+      countIncrementalSlides: false
 ---
 
 
@@ -76,7 +76,33 @@ Bonds %>% group_by(Risk) %>% skim() %>% kableExtra::kable(format = "html") %>%
 
 There are two ways to construct a barplot; we can let ggplot handle it on the raw data or calculate it ourselves.  Let me focus on *Risk*.
 
+---
 ### Raw Data Bar Plot
+
+---
+
+```{r}
+Bonds %>%  ggplot() + aes(x=Risk) + 
+  geom_bar()
+```
+
+---
+### Raw Data Bar Plot
+
+
+```{r Bas1, include=FALSE}
+Bonds %>% 
+  ggplot() + 
+  aes(x=Risk) + 
+  geom_bar()
+```
+
+---
+
+`r chunk_reveal("Bas1")`
+
+
+---
 
 ```{r QQ31, include=FALSE}
 Bonds %>% 

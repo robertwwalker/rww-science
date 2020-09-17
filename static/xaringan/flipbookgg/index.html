@@ -6,8 +6,8 @@
     <meta name="author" content="Robert W. Walker" />
     <script src="libs/header-attrs-2.3/header-attrs.js"></script>
     <link href="libs/remark-css-0.0.1/default.css" rel="stylesheet" />
-    <link href="libs/remark-css-0.0.1/hygge.css" rel="stylesheet" />
-    <link href="libs/remark-css-0.0.1/ninjutsu.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/robot.css" rel="stylesheet" />
+    <link href="libs/remark-css-0.0.1/robot-fonts.css" rel="stylesheet" />
     <script src="libs/kePrint-0.0.1/kePrint.js"></script>
   </head>
   <body>
@@ -617,7 +617,495 @@ Bonds %&gt;% group_by(Risk) %&gt;% skim()
 
 There are two ways to construct a barplot; we can let ggplot handle it on the raw data or calculate it ourselves.  Let me focus on *Risk*.
 
+---
 ### Raw Data Bar Plot
+
+---
+
+
+```r
+Bonds %&gt;%  ggplot() + aes(x=Risk) + 
+  geom_bar()
+```
+
+![](index_files/figure-html/unnamed-chunk-6-1.svg)&lt;!-- --&gt;
+
+---
+### Raw Data Bar Plot
+
+
+
+
+---
+
+count: false
+ 
+
+.panel1-Bas1-auto[
+
+```r
+*Bonds
+```
+]
+ 
+.panel2-Bas1-auto[
+
+```
+    Fund.Number                    Type  Assets Fees Expense.Ratio Return.2009
+1          FN-1 Intermediate Government  7268.1   No          0.45         6.9
+2          FN-2 Intermediate Government   475.1   No          0.50         9.8
+3          FN-3 Intermediate Government   193.0   No          0.71         6.3
+4          FN-4 Intermediate Government 18603.5   No          0.13         5.4
+5          FN-5 Intermediate Government   142.6   No          0.60         5.9
+6          FN-6 Intermediate Government  1401.6   No          0.54         5.7
+7          FN-7 Intermediate Government   985.6   No          0.49         3.0
+8          FN-8 Intermediate Government  2188.8   No          0.55         7.4
+9          FN-9 Intermediate Government   390.6   No          0.67         5.3
+10        FN-10 Intermediate Government   544.1   No          0.63         5.7
+11        FN-11 Intermediate Government  1407.4   No          0.45         0.9
+12        FN-12 Intermediate Government   155.5   No          0.91        12.4
+13        FN-13 Intermediate Government   397.5   No          0.60         6.0
+14        FN-14 Intermediate Government   906.1   No          0.51         8.1
+15        FN-15 Intermediate Government   379.1   No          0.57         5.7
+16        FN-16 Intermediate Government    62.7   No          0.74         4.5
+17        FN-17 Intermediate Government  1539.1   No          0.66         6.4
+18        FN-18 Intermediate Government   167.3   No          0.60         5.8
+19        FN-19 Intermediate Government   448.0   No          0.77        10.1
+20        FN-20 Intermediate Government   238.1   No          1.13         4.4
+21        FN-21 Intermediate Government   557.8   No          0.74         9.0
+22        FN-22 Intermediate Government   192.7   No          0.70         3.2
+23        FN-23 Intermediate Government   261.8  Yes          1.08         3.5
+24        FN-24 Intermediate Government   135.8   No          0.65        -1.1
+25        FN-25 Intermediate Government  1807.3  Yes          0.80         7.8
+26        FN-26 Intermediate Government  4615.4   No          0.45         1.3
+27        FN-27 Intermediate Government    86.2   No          0.61        -0.2
+28        FN-28 Intermediate Government   291.1  Yes          1.10         5.1
+29        FN-29 Intermediate Government  6332.5  Yes          0.73         4.8
+30        FN-30 Intermediate Government   110.7   No          1.08         1.9
+31        FN-31 Intermediate Government   619.7  Yes          0.96         5.0
+32        FN-32 Intermediate Government   628.7   No          0.55         2.1
+33        FN-33 Intermediate Government   274.3   No          0.80        12.7
+34        FN-34 Intermediate Government   891.8  Yes          0.88         4.2
+35        FN-35 Intermediate Government    94.7  Yes          0.83         3.5
+36        FN-36 Intermediate Government   676.3  Yes          0.93        22.3
+37        FN-37 Intermediate Government  1182.1  Yes          0.92        28.6
+38        FN-38 Intermediate Government   135.9   No          0.47        13.0
+39        FN-39 Intermediate Government   588.8  Yes          0.96         5.2
+40        FN-40 Intermediate Government    40.0   No          1.94        17.1
+41        FN-41 Intermediate Government  1080.4   No          0.95         3.5
+42        FN-42 Intermediate Government   309.1  Yes          0.98         0.0
+43        FN-43 Intermediate Government  4472.2  Yes          0.64         2.2
+44        FN-44 Intermediate Government   498.7  Yes          0.95         0.9
+45        FN-45 Intermediate Government   278.2   No          0.20        -3.8
+46        FN-46 Intermediate Government  1525.5   No          0.13        -0.7
+47        FN-47 Intermediate Government   556.6  Yes          0.94         7.9
+48        FN-48 Intermediate Government   588.6  Yes          0.96         6.2
+49        FN-49 Intermediate Government   332.5  Yes          1.00         3.7
+50        FN-50 Intermediate Government    84.9   No          0.71        11.2
+51        FN-51 Intermediate Government    17.3   No          1.58         2.1
+52        FN-52 Intermediate Government   104.1  Yes          0.95        -3.6
+53        FN-53 Intermediate Government   530.7  Yes          0.92         4.6
+54        FN-54 Intermediate Government   333.6   No          0.37        12.0
+55        FN-55 Intermediate Government  1133.3   No          0.46         3.4
+56        FN-56 Intermediate Government   322.5  Yes          1.13         4.7
+57        FN-57 Intermediate Government   123.8   No          0.75         6.4
+58        FN-58 Intermediate Government   425.6  Yes          0.97         9.1
+59        FN-59 Intermediate Government   184.7  Yes          1.03         1.7
+60        FN-60 Intermediate Government   122.7   No          0.26        -3.6
+61        FN-61 Intermediate Government   107.2   No          0.90         0.1
+62        FN-62 Intermediate Government   135.6  Yes          1.15         3.7
+63        FN-63 Intermediate Government    82.2   No          0.57        -3.3
+64        FN-64 Intermediate Government   305.7  Yes          0.99         3.0
+65        FN-65 Intermediate Government   551.3   No          0.52        -1.4
+66        FN-66 Intermediate Government    24.2   No          0.52         0.7
+67        FN-67 Intermediate Government   661.2  Yes          0.97         0.0
+68        FN-68 Intermediate Government   154.6  Yes          0.90         2.9
+69        FN-69 Intermediate Government   106.9  Yes          0.79        -4.8
+70        FN-70 Intermediate Government  1011.1  Yes          0.87         1.4
+71        FN-71 Intermediate Government   634.8  Yes          0.90         7.3
+72        FN-72 Intermediate Government   168.7  Yes          0.99        -2.9
+73        FN-73 Intermediate Government   792.1  Yes          1.00         1.2
+74        FN-74 Intermediate Government   583.5   No          0.50         6.0
+75        FN-75 Intermediate Government    56.1   No          0.65         0.7
+76        FN-76 Intermediate Government   285.5   No          0.36         7.1
+77        FN-77 Intermediate Government   640.3   No          0.27         0.2
+78        FN-78 Intermediate Government    84.7  Yes          1.00        -0.6
+79        FN-79 Intermediate Government    81.3  Yes          1.16         7.0
+80        FN-80 Intermediate Government   611.7   No          0.51         6.5
+81        FN-81 Intermediate Government   595.1   No          0.55         5.5
+82        FN-82 Intermediate Government   131.3   No          0.65        -3.8
+83        FN-83 Intermediate Government    88.0   No          0.82         2.0
+84        FN-84 Intermediate Government   686.6  Yes          0.94         7.2
+85        FN-85 Intermediate Government  3531.8   No          0.12        -1.6
+86        FN-86 Intermediate Government   358.0  Yes          1.06         0.5
+87        FN-87 Intermediate Government    33.0   No          1.00         0.2
+88        FN-88    Short Term Corporate   139.1   No          0.51         5.5
+89        FN-89    Short Term Corporate   123.9   No          0.32         5.0
+90        FN-90    Short Term Corporate  1922.0  Yes          1.08        12.1
+91        FN-91    Short Term Corporate   203.4  Yes          1.00         8.3
+92        FN-92    Short Term Corporate    66.1   No          0.71         6.8
+93        FN-93    Short Term Corporate  1346.0   No          0.65         8.6
+94        FN-94    Short Term Corporate  4772.9   No          0.56         5.0
+95        FN-95    Short Term Corporate    77.5   No          0.51         2.2
+96        FN-96    Short Term Corporate    76.2   No          0.68         2.5
+97        FN-97    Short Term Corporate   146.3   No          0.55        12.2
+98        FN-98    Short Term Corporate    49.2   No          0.60        10.0
+99        FN-99    Short Term Corporate    96.1   No          0.73         7.3
+100      FN-100    Short Term Corporate   226.8   No          0.45         2.9
+101      FN-101    Short Term Corporate   122.3   No          0.53         7.3
+102      FN-102    Short Term Corporate   725.9   No          0.68        15.5
+103      FN-103    Short Term Corporate  1248.4   No          0.72        14.0
+104      FN-104    Short Term Corporate    36.5   No          0.76         5.5
+105      FN-105    Short Term Corporate   127.4   No          0.45         3.6
+106      FN-106    Short Term Corporate   605.2   No          0.30         8.1
+107      FN-107    Short Term Corporate  1879.2   No          0.48         9.6
+108      FN-108    Short Term Corporate   964.7  Yes          0.85        12.9
+109      FN-109    Short Term Corporate   325.3   No          0.53        10.7
+110      FN-110    Short Term Corporate    69.8   No          0.90         6.0
+111      FN-111    Short Term Corporate   177.8  Yes          0.94         8.2
+112      FN-112    Short Term Corporate   156.6   No          0.63        12.0
+113      FN-113    Short Term Corporate   244.9   No          0.81        16.4
+114      FN-114    Short Term Corporate   475.5  Yes          0.91         6.0
+115      FN-115    Short Term Corporate    46.1   No          0.92         5.4
+116      FN-116    Short Term Corporate   181.3   No          0.36         4.9
+117      FN-117    Short Term Corporate    63.8  Yes          0.62         8.6
+118      FN-118    Short Term Corporate   135.4   No          0.70         6.8
+119      FN-119    Short Term Corporate   388.0   No          0.56         6.7
+120      FN-120    Short Term Corporate    18.6   No          0.89         4.1
+121      FN-121    Short Term Corporate   298.1   No          0.51        11.2
+122      FN-122    Short Term Corporate   461.3   No          0.46         8.4
+123      FN-123    Short Term Corporate   159.9  Yes          0.80         5.9
+124      FN-124    Short Term Corporate  3662.7   No          0.52         9.0
+125      FN-125    Short Term Corporate    42.6   No          0.74         5.4
+126      FN-126    Short Term Corporate   111.4   No          0.97         9.1
+127      FN-127    Short Term Corporate   114.5   No          0.65         9.5
+128      FN-128    Short Term Corporate  5282.9   No          0.22         4.3
+129      FN-129    Short Term Corporate    17.4   No          0.75         2.8
+130      FN-130    Short Term Corporate   518.0   No          0.72        10.8
+131      FN-131    Short Term Corporate   262.5   No          0.85         9.5
+132      FN-132    Short Term Corporate    93.9   No          0.74         9.4
+133      FN-133    Short Term Corporate  1130.0  Yes          0.86        13.2
+134      FN-134    Short Term Corporate  1101.9   No          0.64        13.0
+135      FN-135    Short Term Corporate    49.9   No          0.60         1.6
+136      FN-136    Short Term Corporate   640.3   No          0.54         7.0
+137      FN-137    Short Term Corporate   477.4   No          0.60        12.9
+138      FN-138    Short Term Corporate   569.4   No          0.52        12.0
+139      FN-139    Short Term Corporate    36.8   No          0.38         3.6
+140      FN-140    Short Term Corporate   145.4  Yes          0.90        10.1
+141      FN-141    Short Term Corporate   148.9   No          1.10         7.7
+142      FN-142    Short Term Corporate   195.8   No          0.52         7.2
+143      FN-143    Short Term Corporate  2361.1  Yes          0.80        17.4
+144      FN-144    Short Term Corporate    12.4   No          0.70         3.4
+145      FN-145    Short Term Corporate    26.3   No          0.49         4.0
+146      FN-146    Short Term Corporate   681.0  Yes          0.75        11.3
+147      FN-147    Short Term Corporate   486.1   No          0.50        10.3
+148      FN-148    Short Term Corporate 10744.6   No          0.46        13.4
+149      FN-149    Short Term Corporate   108.9   No          0.63        11.4
+150      FN-150    Short Term Corporate    69.0  Yes          0.98         5.2
+151      FN-151    Short Term Corporate   128.3   No          0.55         8.8
+152      FN-152    Short Term Corporate   374.4   No          0.73        13.2
+153      FN-153    Short Term Corporate   280.6  Yes          0.99        16.6
+154      FN-154    Short Term Corporate   456.2   No          0.37        13.6
+155      FN-155    Short Term Corporate 16297.1   No          0.14        14.2
+156      FN-156    Short Term Corporate   517.0   No          0.65        10.6
+157      FN-157    Short Term Corporate    80.5   No          0.70        13.4
+158      FN-158    Short Term Corporate   119.3   No          0.82         6.0
+159      FN-159    Short Term Corporate    88.3   No          0.92         4.5
+160      FN-160    Short Term Corporate  5701.6  Yes          0.69         6.7
+161      FN-161    Short Term Corporate   478.4   No          0.64         6.8
+162      FN-162    Short Term Corporate   369.3   No          0.86        13.5
+163      FN-163    Short Term Corporate   297.4  Yes          1.05        12.8
+164      FN-164    Short Term Corporate   230.6   No          0.95        13.9
+165      FN-165    Short Term Corporate   115.7  Yes          0.70        11.5
+166      FN-166    Short Term Corporate  6981.5   No          0.45         7.3
+167      FN-167    Short Term Corporate   190.1   No          0.50        11.6
+168      FN-168    Short Term Corporate   278.4  Yes          0.85        15.5
+169      FN-169    Short Term Corporate   246.1   No          0.75        11.9
+170      FN-170    Short Term Corporate   143.8   No          0.80        24.8
+171      FN-171    Short Term Corporate  1469.6  Yes          1.08        29.7
+172      FN-172    Short Term Corporate    80.0   No          0.70         9.9
+173      FN-173    Short Term Corporate    95.5   No          0.66        19.2
+174      FN-174    Short Term Corporate   170.5   No          0.46        15.6
+175      FN-175    Short Term Corporate    95.4  Yes          1.02         1.5
+176      FN-176    Short Term Corporate   237.1   No          0.50        14.5
+177      FN-177    Short Term Corporate   983.0   No          0.60        15.2
+178      FN-178    Short Term Corporate    51.9   No          0.70        13.4
+179      FN-179    Short Term Corporate   249.7   No          0.55         2.4
+180      FN-180    Short Term Corporate    33.8   No          0.53        16.4
+181      FN-181    Short Term Corporate   249.8  Yes          0.43         6.7
+182      FN-182    Short Term Corporate    52.9   No          0.87         5.2
+183      FN-183    Short Term Corporate    39.7   No          0.51        -8.8
+184      FN-184    Short Term Corporate   182.3   No          0.53        32.0
+    X3.Year.Return X5.Year.Return          Risk
+1              6.9            5.5 Below average
+2              7.5            6.1 Below average
+3              7.0            5.6       Average
+4              6.6            5.5       Average
+5              6.7            5.4       Average
+6              6.4            6.2       Average
+7              6.8            5.3       Average
+8              6.4            5.2 Below average
+9              6.1            5.0 Below average
+10             6.2            5.1 Below average
+11             6.2            4.7       Average
+12             6.4            5.1 Below average
+13             6.3            5.1 Below average
+14             6.1            5.1 Below average
+15             6.6            5.2 Below average
+16             7.8            5.6 Above average
+17             6.2            5.0 Below average
+18             6.2            5.1 Below average
+19             6.5            5.3 Below average
+20             5.5            4.3 Below average
+21             6.0            4.9 Below average
+22             6.0            4.9       Average
+23             5.1            4.0 Below average
+24             6.0            4.6       Average
+25             6.1            4.9       Average
+26             6.7            5.2 Above average
+27             5.6            4.4       Average
+28             5.8            4.6 Below average
+29             6.0            4.9 Below average
+30             5.4            4.2       Average
+31             5.9            4.9       Average
+32             6.3            5.1 Above average
+33             6.1            5.0       Average
+34             6.6            5.1       Average
+35             6.4            5.1       Average
+36             9.4            6.4 Above average
+37             9.4            6.8 Above average
+38             5.1            4.5 Below average
+39             6.7            5.3       Average
+40             6.6            5.1 Above average
+41             6.0            4.7       Average
+42             5.8            4.4 Above average
+43             5.5            4.4       Average
+44             4.9            4.1 Above average
+45             6.0            4.7 Above average
+46             7.1            5.3 Above average
+47             5.5            4.3 Above average
+48             5.1            4.4 Below average
+49             4.7            4.0       Average
+50             3.9            3.7 Below average
+51             4.9            3.7       Average
+52             4.7            3.7 Above average
+53             5.5            4.5       Average
+54             4.9            4.5 Above average
+55             2.3            2.5 Below average
+56             5.6            4.4 Above average
+57             3.3            3.2       Average
+58             4.7            4.1 Below average
+59             5.6            4.4 Above average
+60             6.1            4.7 Above average
+61             5.3            4.0       Average
+62             5.9            4.4       Average
+63             5.1            4.2 Above average
+64             6.2            4.9 Above average
+65             7.3            5.2 Above average
+66            -0.1            1.2 Above average
+67             3.2            3.0 Above average
+68             2.4            2.6       Average
+69             5.6            4.6 Above average
+70             1.6            2.3       Average
+71             3.7            3.4 Above average
+72             6.0            4.1 Above average
+73             2.3            2.6 Above average
+74             7.3            5.7       Average
+75             5.2            4.4       Average
+76             5.5            4.8 Below average
+77             6.5            5.2 Above average
+78             2.5            2.5       Average
+79             1.0            1.7 Above average
+80             6.8            5.5       Average
+81             6.3            5.2 Below average
+82             4.4            3.8 Above average
+83             5.8            4.5       Average
+84             3.7            3.5 Below average
+85             7.2            5.4 Above average
+86             4.9            4.0       Average
+87             6.1            4.8 Below average
+88             5.1            4.3 Below average
+89             4.4            4.1 Below average
+90             5.5            5.0       Average
+91             5.2            4.4 Below average
+92             4.9            4.0 Below average
+93             6.1            4.8 Below average
+94             4.9            4.2 Below average
+95             3.7            3.5 Below average
+96             5.2            4.2 Below average
+97             5.8            4.8       Average
+98             5.0            4.6       Average
+99             4.8            4.1 Below average
+100            3.6            3.6 Below average
+101            5.9            4.6       Average
+102            5.9            4.7       Average
+103            5.5            4.7       Average
+104            5.0            4.0 Below average
+105            3.3            3.3 Below average
+106            4.1            3.7       Average
+107            4.9            4.2       Average
+108            7.1            5.3       Average
+109            4.5            4.1       Average
+110            4.6            3.8       Average
+111            5.4            4.4 Below average
+112            6.3            4.9       Average
+113            5.5            4.6       Average
+114            6.4            4.7       Average
+115            4.2            3.6       Average
+116            4.5            3.8       Average
+117            5.5            4.3       Average
+118            4.2            3.7 Below average
+119            4.6            3.8 Below average
+120            3.4            3.1 Below average
+121            5.0            4.3       Average
+122            4.5            4.0       Average
+123            4.8            4.0 Below average
+124            5.2            4.3       Average
+125            4.6            4.0 Below average
+126            4.5            3.7 Below average
+127            4.9            4.1 Below average
+128            5.6            4.4       Average
+129            3.9            3.4 Below average
+130            6.4            4.9       Average
+131            4.4            3.9 Below average
+132            5.5            4.3 Above average
+133            6.5            4.9 Above average
+134            3.5            3.8 Above average
+135            1.3            2.3 Below average
+136            2.3            2.7 Below average
+137            4.6            3.9       Average
+138            4.9            4.0       Average
+139            1.7            2.5 Below average
+140            3.1            3.0 Below average
+141            4.3            3.4       Average
+142            4.2            3.6       Average
+143            7.1            5.1 Above average
+144            5.5            4.2 Above average
+145            6.0            4.6 Above average
+146            3.5            3.3       Average
+147            5.7            4.4 Above average
+148            6.5            4.9 Above average
+149            4.1            3.6       Average
+150            4.7            3.4 Below average
+151            5.9            4.5 Above average
+152            4.6            3.8 Above average
+153            8.0            4.6 Above average
+154            3.7            3.5       Average
+155            4.9            4.4 Above average
+156            4.7            3.8       Average
+157            5.1            4.2 Above average
+158            5.0            4.0       Average
+159            1.0            1.7       Average
+160            3.4            3.1       Average
+161            2.2            2.4 Below average
+162            2.7            2.6 Above average
+163            2.6            2.7 Above average
+164            3.5            3.2       Average
+165            1.8            2.4       Average
+166            1.7            2.4 Below average
+167            5.5            4.4 Above average
+168            4.4            3.8 Above average
+169            0.8            2.0       Average
+170            8.9            6.4 Above average
+171            4.8            4.3 Above average
+172            2.9            3.0 Above average
+173            0.0            1.3 Above average
+174            0.7            2.0 Above average
+175           -0.2            1.8 Below average
+176            0.7            1.7 Above average
+177            0.2            1.9 Above average
+178            0.1            1.2 Above average
+179            0.4            1.5       Average
+180            0.7            1.8 Above average
+181           -4.5           -1.5 Above average
+182           -3.0           -0.7 Above average
+183          -13.8           -7.3 Above average
+184           -2.7            0.2 Above average
+```
+]
+
+---
+count: false
+ 
+
+.panel1-Bas1-auto[
+
+```r
+Bonds %&gt;%
+* ggplot()
+```
+]
+ 
+.panel2-Bas1-auto[
+![](index_files/figure-html/Bas1_auto_02_output-1.svg)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-Bas1-auto[
+
+```r
+Bonds %&gt;%
+  ggplot() +
+* aes(x=Risk)
+```
+]
+ 
+.panel2-Bas1-auto[
+![](index_files/figure-html/Bas1_auto_03_output-1.svg)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+
+.panel1-Bas1-auto[
+
+```r
+Bonds %&gt;%
+  ggplot() +
+  aes(x=Risk) +
+* geom_bar()
+```
+]
+ 
+.panel2-Bas1-auto[
+![](index_files/figure-html/Bas1_auto_04_output-1.svg)&lt;!-- --&gt;
+]
+
+&lt;style&gt;
+.panel1-Bas1-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-Bas1-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-Bas1-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+---
 
 
 
@@ -3905,7 +4393,7 @@ Risk.Table %&gt;%
   coord_flip()
 ```
 
-![](index_files/figure-html/unnamed-chunk-6-1.svg)&lt;!-- --&gt;
+![](index_files/figure-html/unnamed-chunk-7-1.svg)&lt;!-- --&gt;
 
 ---
 
@@ -23962,7 +24450,7 @@ Bonds %&gt;%
 "ratio": "16:10",
 "highlightStyle": "github",
 "highlightLines": true,
-"countIncrementalSlides": true
+"countIncrementalSlides": false
 });
 if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
   window.dispatchEvent(new Event('resize'));
