@@ -758,6 +758,7 @@ The nflscrapR package is designed to make data on NFL games more easily availabl
 
     <div class="article-style">
       
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 <script src="/rmarkdown-libs/kePrint/kePrint.js"></script>
 
 
@@ -9171,6 +9172,7 @@ Dallas.Table %&gt;% head()</code></pre>
 WLTabs$Wins &lt;- WLTabs$home_win
 WLTabs[WLTabs$HA==&quot;away_team&quot;,&quot;Wins&quot;] &lt;- WLTabs[WLTabs$HA==&quot;away_team&quot;,&quot;away_win&quot;]
 WinsTab &lt;- WLTabs %&gt;% group_by(abbr) %&gt;% summarise(Wins = sum(Wins==TRUE))</code></pre>
+<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
 <p>Now I want to put together a plot of a season. The way to make it modular is to choose a team and program the rest as a function with that as input. The hack that I undertook is recalibrating the time remaining to take account of the mess of overtime games.</p>
 <pre class="r"><code>season_animator &lt;- function(teamName, data1=full_season_2018, data2=all_2018_games, nflteams = nflscrapR::nflteams) {
   # This creates the team color vector
@@ -9231,11 +9233,11 @@ WinsTab &lt;- WLTabs %&gt;% group_by(abbr) %&gt;% summarise(Wins = sum(Wins==TRU
     geom_hline(yintercept = 0.5, color = &quot;gray&quot;, linetype = &quot;dashed&quot;) +
     #  scale_color_viridis_d(guide=FALSE) +
     scale_x_reverse(breaks = seq(-600, 3600, 300)) + 
-    geom_vline(xintercept = 900, linetype = &quot;dotted&quot;, black) + 
-    geom_vline(xintercept = 1800, linetype = &quot;dashed&quot;, black) + 
-    geom_vline(xintercept = 2700, linetype = &quot;dotted&quot;, black) + 
-    geom_vline(xintercept = 0, linetype = &quot;dashed&quot;, black) + 
-    geom_vline(xintercept = -600, linetype = &quot;solid&quot;, black) + 
+    geom_vline(xintercept = 900, linetype = &quot;dotted&quot;, colour = &quot;black&quot;) + 
+    geom_vline(xintercept = 1800, linetype = &quot;dashed&quot;, colour = &quot;black&quot;) + 
+    geom_vline(xintercept = 2700, linetype = &quot;dotted&quot;, colour = &quot;black&quot;) + 
+    geom_vline(xintercept = 0, linetype = &quot;dashed&quot;, colour = &quot;black&quot;) + 
+    geom_vline(xintercept = -600, linetype = &quot;solid&quot;, colour = &quot;black&quot;) + 
     labs(
       x = &quot;Time Remaining (seconds)&quot;,
       y = &quot;Win Probability&quot;,

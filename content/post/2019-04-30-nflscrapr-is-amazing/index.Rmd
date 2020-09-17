@@ -188,11 +188,11 @@ season_animator <- function(teamName, data1=full_season_2018, data2=all_2018_gam
     geom_hline(yintercept = 0.5, color = "gray", linetype = "dashed") +
     #  scale_color_viridis_d(guide=FALSE) +
     scale_x_reverse(breaks = seq(-600, 3600, 300)) + 
-    geom_vline(xintercept = 900, linetype = "dotted", black) + 
-    geom_vline(xintercept = 1800, linetype = "dashed", black) + 
-    geom_vline(xintercept = 2700, linetype = "dotted", black) + 
-    geom_vline(xintercept = 0, linetype = "dashed", black) + 
-    geom_vline(xintercept = -600, linetype = "solid", black) + 
+    geom_vline(xintercept = 900, linetype = "dotted", colour = "black") + 
+    geom_vline(xintercept = 1800, linetype = "dashed", colour = "black") + 
+    geom_vline(xintercept = 2700, linetype = "dotted", colour = "black") + 
+    geom_vline(xintercept = 0, linetype = "dashed", colour = "black") + 
+    geom_vline(xintercept = -600, linetype = "solid", colour = "black") + 
     labs(
       x = "Time Remaining (seconds)",
       y = "Win Probability",

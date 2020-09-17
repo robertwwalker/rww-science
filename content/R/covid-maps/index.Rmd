@@ -34,7 +34,7 @@ library(ggthemes)
 library(gganimate)
 library(patchwork)
 library(hrbrthemes); library(here)
-load(paste0(here(),"/content/R/COVID/data/OregonCOVID",Sys.Date(),".RData"))
+load(paste0(here(),"/content/R/COVID/data/OregonCOVID",Sys.Date()-1,".RData"))
 load(paste0(here(),"/content/R/COVID/data/CountyMap.RData"))
 ```
 
@@ -1186,9 +1186,14 @@ Plot.COVID("2020-09-13", Map.Me)
 Plot.COVID("2020-09-14", Map.Me)
 ```
 
+## The Result for 09/15/2020
+
+```{r}
+Plot.COVID("2020-09-15", Map.Me)
+```
 
 
-## The Result for 09/14/2020
+## The Result for 09/16/2020
 
 ```{r, warning=FALSE, message=FALSE}
 library(widgetframe); library(ggthemes); library(RColorBrewer)

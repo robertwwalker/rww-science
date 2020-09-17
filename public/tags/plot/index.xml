@@ -5,7 +5,7 @@
     <link>/tags/plot/</link>
       <atom:link href="/tags/plot/index.xml" rel="self" type="application/rss+xml" />
     <description>plot</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© 2018</copyright><lastBuildDate>Tue, 15 Sep 2020 00:00:00 +0000</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© 2018</copyright><lastBuildDate>Wed, 16 Sep 2020 00:00:00 +0000</lastBuildDate>
     <image>
       <url>/img/portrait.jpg</url>
       <title>plot</title>
@@ -14,9 +14,9 @@
     
     <item>
       <title>New York Times Data on COVID</title>
-      <link>/2020/09/15/new-york-times-data-on-covid/</link>
-      <pubDate>Tue, 15 Sep 2020 00:00:00 +0000</pubDate>
-      <guid>/2020/09/15/new-york-times-data-on-covid/</guid>
+      <link>/2020/09/16/new-york-times-data-on-covid/</link>
+      <pubDate>Wed, 16 Sep 2020 00:00:00 +0000</pubDate>
+      <guid>/2020/09/16/new-york-times-data-on-covid/</guid>
       <description>
 &lt;script src=&#34;/rmarkdown-libs/header-attrs/header-attrs.js&#34;&gt;&lt;/script&gt;
 &lt;script src=&#34;/rmarkdown-libs/htmlwidgets/htmlwidgets.js&#34;&gt;&lt;/script&gt;
@@ -26,7 +26,7 @@
 
 &lt;div id=&#34;new-york-times-data-for-the-us&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;New York Times data for the US&lt;/h1&gt;
-&lt;p&gt;The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-09-15 16:20:36.&lt;/p&gt;
+&lt;p&gt;The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-09-17 07:59:42.&lt;/p&gt;
 &lt;/div&gt;
 &lt;div id=&#34;the-basic-state-of-things&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;The Basic State of Things&lt;/h1&gt;
@@ -2787,6 +2787,7 @@ girafe(code = print(p1))&lt;/code&gt;&lt;/pre&gt;
       <pubDate>Tue, 30 Apr 2019 00:00:00 +0000</pubDate>
       <guid>/2019/04/30/nflscrapr-is-amazing/</guid>
       <description>
+&lt;script src=&#34;/rmarkdown-libs/header-attrs/header-attrs.js&#34;&gt;&lt;/script&gt;
 &lt;script src=&#34;/rmarkdown-libs/kePrint/kePrint.js&#34;&gt;&lt;/script&gt;
 
 
@@ -11200,6 +11201,7 @@ Dallas.Table %&amp;gt;% head()&lt;/code&gt;&lt;/pre&gt;
 WLTabs$Wins &amp;lt;- WLTabs$home_win
 WLTabs[WLTabs$HA==&amp;quot;away_team&amp;quot;,&amp;quot;Wins&amp;quot;] &amp;lt;- WLTabs[WLTabs$HA==&amp;quot;away_team&amp;quot;,&amp;quot;away_win&amp;quot;]
 WinsTab &amp;lt;- WLTabs %&amp;gt;% group_by(abbr) %&amp;gt;% summarise(Wins = sum(Wins==TRUE))&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## `summarise()` ungrouping output (override with `.groups` argument)&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;Now I want to put together a plot of a season. The way to make it modular is to choose a team and program the rest as a function with that as input. The hack that I undertook is recalibrating the time remaining to take account of the mess of overtime games.&lt;/p&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;season_animator &amp;lt;- function(teamName, data1=full_season_2018, data2=all_2018_games, nflteams = nflscrapR::nflteams) {
   # This creates the team color vector
@@ -11260,11 +11262,11 @@ WinsTab &amp;lt;- WLTabs %&amp;gt;% group_by(abbr) %&amp;gt;% summarise(Wins = s
     geom_hline(yintercept = 0.5, color = &amp;quot;gray&amp;quot;, linetype = &amp;quot;dashed&amp;quot;) +
     #  scale_color_viridis_d(guide=FALSE) +
     scale_x_reverse(breaks = seq(-600, 3600, 300)) + 
-    geom_vline(xintercept = 900, linetype = &amp;quot;dotted&amp;quot;, black) + 
-    geom_vline(xintercept = 1800, linetype = &amp;quot;dashed&amp;quot;, black) + 
-    geom_vline(xintercept = 2700, linetype = &amp;quot;dotted&amp;quot;, black) + 
-    geom_vline(xintercept = 0, linetype = &amp;quot;dashed&amp;quot;, black) + 
-    geom_vline(xintercept = -600, linetype = &amp;quot;solid&amp;quot;, black) + 
+    geom_vline(xintercept = 900, linetype = &amp;quot;dotted&amp;quot;, colour = &amp;quot;black&amp;quot;) + 
+    geom_vline(xintercept = 1800, linetype = &amp;quot;dashed&amp;quot;, colour = &amp;quot;black&amp;quot;) + 
+    geom_vline(xintercept = 2700, linetype = &amp;quot;dotted&amp;quot;, colour = &amp;quot;black&amp;quot;) + 
+    geom_vline(xintercept = 0, linetype = &amp;quot;dashed&amp;quot;, colour = &amp;quot;black&amp;quot;) + 
+    geom_vline(xintercept = -600, linetype = &amp;quot;solid&amp;quot;, colour = &amp;quot;black&amp;quot;) + 
     labs(
       x = &amp;quot;Time Remaining (seconds)&amp;quot;,
       y = &amp;quot;Win Probability&amp;quot;,
