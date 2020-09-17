@@ -33,6 +33,8 @@ A dataset for illustrating the various available visualizations needs a certain 
 ## Loading the Data
 
 ```{r}
+library(tidyverse)
+library(skimr)
 Bonds <- read.csv(url("https://raw.githubusercontent.com/robertwwalker/DADMStuff/master/BondFunds.csv"))
 ```
 
@@ -41,12 +43,30 @@ Bonds <- read.csv(url("https://raw.githubusercontent.com/robertwwalker/DADMStuff
 ## A Summary
 
 ```{r}
-library(skimr)
-Bonds %>% 
-  skim() %>% kableExtra::kable()
+Bonds %>% skim()
 ```
 
-Most data types are represented.  There is no time variable so dates and the visualizations that go with time series are omitted.
+Most data types are represented.  There is no time variable so dates and the visualizations that go with time series are omitted.  `kableExtra` is necessary to render my tables.
+
+---
+
+## A Quick Pivot Table
+
+```{r, eval=FALSE}
+library(kableExtra)
+Bonds %>% group_by(Risk) %>% skim()
+```
+
+---
+
+```{r, results='asis', echo=FALSE}
+library(kableExtra)
+Bonds %>% group_by(Risk) %>% skim() %>% kableExtra::kable(format = "html") %>%
+    kable_styling() %>%
+    scroll_box(width = "800px", height = "550px")
+```
+
+---
 
 # One Qualitative Variable
 

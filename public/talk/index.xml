@@ -35,6 +35,17 @@
     </item>
     
     <item>
+      <title>flipbookr meets a ggplot</title>
+      <link>/talk/flipbookgg/</link>
+      <pubDate>Mon, 20 Apr 2020 15:00:00 -0700</pubDate>
+      <guid>/talk/flipbookgg/</guid>
+      <description>&lt;p&gt;Slides in 
+&lt;a href=&#34;https://rww.science/xaringan/ggsc/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;xaringan&lt;/a&gt;
+ 😄&lt;/p&gt;
+</description>
+    </item>
+    
+    <item>
       <title>Inference</title>
       <link>/talk/osinfer/</link>
       <pubDate>Fri, 20 Mar 2020 00:00:00 -0700</pubDate>
