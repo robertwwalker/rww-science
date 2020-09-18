@@ -668,6 +668,18 @@ summary(kids) ## state variable year raw ## Length:23460 Length:23460 Min. :1997
     
     
     <div>
+      <h2><a href="/2020/05/28/spending-on-kids/" >Cocktails</a></h2>
+      <div class="article-style">
+        
+          The Data cocktails &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-26/cocktails.csv&#39;) ## Parsed with column specification: ## cols( ## row_id = col_double(), ## drink = col_character(), ## date_modified = col_datetime(format = &quot;&quot;), ## id_drink = col_double(), ## alcoholic = col_character(), ## category = col_character(), ## drink_thumb = col_character(), ## glass = col_character(), ## iba = col_character(), ## video = col_logical(), ## ingredient_number = col_double(), ## ingredient = col_character(), ## measure = col_character() ## ) boston_cocktails &lt;- readr::read_csv(&#39;https://raw.
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
       <h2><a href="/2020/04/25/gdpr-violations/" >GDPR Violations</a></h2>
       <div class="article-style">
         
@@ -767,19 +779,6 @@ New.Dat &lt;- left_join(My.Map, dog_moves, by= c(&quot;full&quot; = &quot;locati
         
           tidyTuesday: December 10, 2019 Replicating plots from simplystatistics. One nice twist is the development of a tidytuesdayR package to grab the necessary data in an easy way. You can install the package via github. I will also use fiftystater and ggflags.
 devtools::install_github(&quot;thebioengineer/tidytuesdayR&quot;) devtools::install_github(&quot;ellisp/ggflags&quot;) devtools::install_github(&quot;wmurphyrd/fiftystater&quot;) tuesdata &lt;- tidytuesdayR::tt_load(2019, week = 50) ## --- Downloading #TidyTuesday Information for 2019-12-10 ---- ## --- Identified 4 files available for download ---- ## --- Downloading files --- ## Warning in identify_delim(temp_file): Not able to detect delimiter for the file.
-        
-      </div>
-    </div>
-  
-    
-    
-    
-    <div>
-      <h2><a href="/2019/12/16/trying-out-leaflet/" >Trying out Leaflet</a></h2>
-      <div class="article-style">
-        
-          International Murders Are among the data for analysis in the tidyTuesday for December 10, 2019. These are made for a map.
-library(tidyverse) library(leaflet) library(stringr) library(sf) library(here) library(widgetframe) library(htmlwidgets) library(htmltools) options(digits = 3) set.seed(1234) theme_set(theme_minimal()) library(tidytuesdayR) tuesdata &lt;- tt_load(2019, week = 50) murders &lt;- tuesdata$gun_murders There isn’t much data so it should make this a bit easier. Now for some data. As it happens, the best way I currently know how to do this is going to involve acquiring a spatial frame.
         
       </div>
     </div>

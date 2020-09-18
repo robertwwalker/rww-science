@@ -1,0 +1,79 @@
+---
+title: "Cocktails"
+author: "Robert W. Walker"
+date: '2020-05-28'
+slug: spending-on-kids
+categories:
+  - R
+  - tidyTuesday
+tags:
+  - tidyTuesday
+  - tidyverse
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2020-05-15T27:22:16-07:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<div id="the-data" class="section level2">
+<h2>The Data</h2>
+<pre class="r"><code>cocktails &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-26/cocktails.csv&#39;)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   row_id = col_double(),
+##   drink = col_character(),
+##   date_modified = col_datetime(format = &quot;&quot;),
+##   id_drink = col_double(),
+##   alcoholic = col_character(),
+##   category = col_character(),
+##   drink_thumb = col_character(),
+##   glass = col_character(),
+##   iba = col_character(),
+##   video = col_logical(),
+##   ingredient_number = col_double(),
+##   ingredient = col_character(),
+##   measure = col_character()
+## )</code></pre>
+<pre class="r"><code>boston_cocktails &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-26/boston_cocktails.csv&#39;)</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   name = col_character(),
+##   category = col_character(),
+##   row_id = col_double(),
+##   ingredient_number = col_double(),
+##   ingredient = col_character(),
+##   measure = col_character()
+## )</code></pre>
+<pre class="r"><code>boston_cocktails %&gt;% 
+  group_by(name) %&gt;% 
+  summarise(Ingredients = n()) %&gt;% 
+  ggplot(., aes(x=Ingredients)) + 
+  geom_histogram(bins = 24, fill=&quot;blue&quot;) + 
+  theme_economist_white() + 
+  labs(title=&quot;How Many Ingredients in a Mr. Boston Drink Recipe?&quot;, 
+       caption=&quot;#tidyTuesday by @PieRatio&quot;)</code></pre>
+<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
+<p><img src="/post/2020-05-26-tidytuesday-cocktails/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<pre class="r"><code>boston_cocktails %&gt;% 
+  group_by(ingredient) %&gt;% 
+  summarise(Drinks = n()) %&gt;% 
+  top_n(30) %&gt;% 
+  ggplot(., aes(x=forcats::fct_reorder(ingredient, Drinks), y=Drinks, fill=ingredient)) + geom_col() + 
+  coord_flip() + 
+  labs(title=&quot;How Many Drinks by Ingredient for Mr. Boston?&quot;, 
+       caption=&quot;#tidyTuesday by @PieRatio&quot;, x=&quot;&quot;) + 
+  scale_fill_viridis_d() + 
+  guides(fill=FALSE)</code></pre>
+<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
+<pre><code>## Selecting by Drinks</code></pre>
+<p><img src="/post/2020-05-26-tidytuesday-cocktails/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>

@@ -1,0 +1,69 @@
+---
+title: "Cocktails"
+author: "Robert W. Walker"
+date: '2020-05-28'
+slug: spending-on-kids
+categories:
+  - R
+  - tidyTuesday
+tags:
+  - tidyTuesday
+  - tidyverse
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2020-05-15T27:22:16-07:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+
+```{r, include=FALSE}
+library(tidyverse)
+library(ggthemes)
+```
+
+
+## The Data
+
+
+```{r}
+cocktails <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-26/cocktails.csv')
+boston_cocktails <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-26/boston_cocktails.csv')
+```
+
+```{r}
+boston_cocktails %>% 
+  group_by(name) %>% 
+  summarise(Ingredients = n()) %>% 
+  ggplot(., aes(x=Ingredients)) + 
+  geom_histogram(bins = 24, fill="blue") + 
+  theme_economist_white() + 
+  labs(title="How Many Ingredients in a Mr. Boston Drink Recipe?", 
+       caption="#tidyTuesday by @PieRatio")
+```
+
+
+```{r}
+boston_cocktails %>% 
+  group_by(ingredient) %>% 
+  summarise(Drinks = n()) %>% 
+  top_n(30) %>% 
+  ggplot(., aes(x=forcats::fct_reorder(ingredient, Drinks), y=Drinks, fill=ingredient)) + geom_col() + 
+  coord_flip() + 
+  labs(title="How Many Drinks by Ingredient for Mr. Boston?", 
+       caption="#tidyTuesday by @PieRatio", x="") + 
+  scale_fill_viridis_d() + 
+  guides(fill=FALSE)
+```
+

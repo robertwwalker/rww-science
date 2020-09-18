@@ -654,6 +654,19 @@
     
     
     <div>
+      <h2><a href="/2020/04/03/a-geofacet-of-credit-quality/" >A GeoFacet of Credit Quality</a></h2>
+      <div class="article-style">
+        
+          In previous work with Skip Krueger, we conceptualized bond ratings as a multiple rater problem and extracted measure of state level creditworthiness. I had always had it on my list to do something like this and recently ran across a package called geofacet that makes it simply to easy to do. So here goes. The code is below the post.
+library(haven) library(dplyr) Pew.Data &lt;- read_dta(url(&quot;https://github.com/robertwwalker/academic-mymod/raw/master/data/Pew/modeledforprediction.dta&quot;)) library(tidyverse) load(url(&quot;https://github.com/robertwwalker/academic-mymod/raw/master/data/Pew/Scaled-BR-Pew.RData&quot;)) state.ratings &lt;- data.
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
       <h2><a href="/2020/04/01/a-quick-tidytuesday-on-beer-breweries-and-ingredients/" >A Quick tidyTuesday on Beer, Breweries, and Ingredients</a></h2>
       <div class="article-style">
         
@@ -766,19 +779,6 @@ XBRL Change
 Get a map.
  Geocode the addresses into latitude and longitude.
  Combine the the two with a first map layer and a second layer on top that contains the points.  From there, it is pretty easy to get fancy using ggplotly to put relevant text hovers into place.
-        
-      </div>
-    </div>
-  
-    
-    
-    
-    <div>
-      <h2><a href="/2019/12/16/tidytuesday-measles/" >tidyTuesday Measles</a></h2>
-      <div class="article-style">
-        
-          tidyTuesday: December 10, 2019 Replicating plots from simplystatistics. One nice twist is the development of a tidytuesdayR package to grab the necessary data in an easy way. You can install the package via github. I will also use fiftystater and ggflags.
-devtools::install_github(&quot;thebioengineer/tidytuesdayR&quot;) devtools::install_github(&quot;ellisp/ggflags&quot;) devtools::install_github(&quot;wmurphyrd/fiftystater&quot;) tuesdata &lt;- tidytuesdayR::tt_load(2019, week = 50) ## --- Downloading #TidyTuesday Information for 2019-12-10 ---- ## --- Identified 4 files available for download ---- ## --- Downloading files --- ## Warning in identify_delim(temp_file): Not able to detect delimiter for the file.
         
       </div>
     </div>

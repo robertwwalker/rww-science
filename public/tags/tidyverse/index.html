@@ -668,6 +668,18 @@ summary(kids) ## state variable year raw ## Length:23460 Length:23460 Min. :1997
     
     
     <div>
+      <h2><a href="/2020/05/28/spending-on-kids/" >Cocktails</a></h2>
+      <div class="article-style">
+        
+          The Data cocktails &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-26/cocktails.csv&#39;) ## Parsed with column specification: ## cols( ## row_id = col_double(), ## drink = col_character(), ## date_modified = col_datetime(format = &quot;&quot;), ## id_drink = col_double(), ## alcoholic = col_character(), ## category = col_character(), ## drink_thumb = col_character(), ## glass = col_character(), ## iba = col_character(), ## video = col_logical(), ## ingredient_number = col_double(), ## ingredient = col_character(), ## measure = col_character() ## ) boston_cocktails &lt;- readr::read_csv(&#39;https://raw.
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
       <h2><a href="/2020/04/01/a-quick-tidytuesday-on-beer-breweries-and-ingredients/" >A Quick tidyTuesday on Beer, Breweries, and Ingredients</a></h2>
       <div class="article-style">
         
@@ -767,18 +779,6 @@ Get a map.
         
           Adoptable Dogs # devtools::install_github(&quot;thebioengineer/tidytuesdayR&quot;, force=TRUE) tuesdata51 &lt;- tidytuesdayR::tt_load(2019, week = 51) dog_moves &lt;- tuesdata51$dog_moves dog_des &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2019/2019-12-17/dog_descriptions.csv&#39;) library(tidyverse); library(scatterpie) library(rgeos) library(maptools) library(rgdal); library(usmap); library(ggthemes)  The Base Map My.Map &lt;- us_map(regions = &quot;states&quot;) Base.Plot &lt;- ggplot() + geom_polygon(data=My.Map, aes(x=x, y=y, group=group), fill=&quot;white&quot;, color=&quot;black&quot;) + theme_map() Base.Plot A fifty state map to plot this information on.
 New.Dat &lt;- left_join(My.Map, dog_moves, by= c(&quot;full&quot; = &quot;location&quot;)) ggplot() + geom_polygon(data=New.
-        
-      </div>
-    </div>
-  
-    
-    
-    
-    <div>
-      <h2><a href="/2019/11/16/the-generation-squeeze/" >The Generation Squeeze</a></h2>
-      <div class="article-style">
-        
-          Hashtag OKBoomer The generational banter that has followed the use of #OKBoomer reminded me of an interesting feature of US population data. I believe it to be true that Generation X has never and will never be the largest generation of Americans. There are tons of Millenials and Baby Boomers alike, though the rate of decline in the latter means that the former are about to surpass them. Or perhaps they have.
         
       </div>
     </div>

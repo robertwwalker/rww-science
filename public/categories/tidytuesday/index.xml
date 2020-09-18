@@ -135,6 +135,71 @@ OR.County.COVID %&amp;gt;%
     </item>
     
     <item>
+      <title>Cocktails</title>
+      <link>/2020/05/28/spending-on-kids/</link>
+      <pubDate>Thu, 28 May 2020 00:00:00 +0000</pubDate>
+      <guid>/2020/05/28/spending-on-kids/</guid>
+      <description>
+&lt;script src=&#34;/rmarkdown-libs/header-attrs/header-attrs.js&#34;&gt;&lt;/script&gt;
+
+
+&lt;div id=&#34;the-data&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;The Data&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;cocktails &amp;lt;- readr::read_csv(&amp;#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-26/cocktails.csv&amp;#39;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Parsed with column specification:
+## cols(
+##   row_id = col_double(),
+##   drink = col_character(),
+##   date_modified = col_datetime(format = &amp;quot;&amp;quot;),
+##   id_drink = col_double(),
+##   alcoholic = col_character(),
+##   category = col_character(),
+##   drink_thumb = col_character(),
+##   glass = col_character(),
+##   iba = col_character(),
+##   video = col_logical(),
+##   ingredient_number = col_double(),
+##   ingredient = col_character(),
+##   measure = col_character()
+## )&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;boston_cocktails &amp;lt;- readr::read_csv(&amp;#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-26/boston_cocktails.csv&amp;#39;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Parsed with column specification:
+## cols(
+##   name = col_character(),
+##   category = col_character(),
+##   row_id = col_double(),
+##   ingredient_number = col_double(),
+##   ingredient = col_character(),
+##   measure = col_character()
+## )&lt;/code&gt;&lt;/pre&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;boston_cocktails %&amp;gt;% 
+  group_by(name) %&amp;gt;% 
+  summarise(Ingredients = n()) %&amp;gt;% 
+  ggplot(., aes(x=Ingredients)) + 
+  geom_histogram(bins = 24, fill=&amp;quot;blue&amp;quot;) + 
+  theme_economist_white() + 
+  labs(title=&amp;quot;How Many Ingredients in a Mr. Boston Drink Recipe?&amp;quot;, 
+       caption=&amp;quot;#tidyTuesday by @PieRatio&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## `summarise()` ungrouping output (override with `.groups` argument)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-05-26-tidytuesday-cocktails/index_files/figure-html/unnamed-chunk-3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;boston_cocktails %&amp;gt;% 
+  group_by(ingredient) %&amp;gt;% 
+  summarise(Drinks = n()) %&amp;gt;% 
+  top_n(30) %&amp;gt;% 
+  ggplot(., aes(x=forcats::fct_reorder(ingredient, Drinks), y=Drinks, fill=ingredient)) + geom_col() + 
+  coord_flip() + 
+  labs(title=&amp;quot;How Many Drinks by Ingredient for Mr. Boston?&amp;quot;, 
+       caption=&amp;quot;#tidyTuesday by @PieRatio&amp;quot;, x=&amp;quot;&amp;quot;) + 
+  scale_fill_viridis_d() + 
+  guides(fill=FALSE)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## `summarise()` ungrouping output (override with `.groups` argument)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## Selecting by Drinks&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-05-26-tidytuesday-cocktails/index_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
       <title>A Quick tidyTuesday on Beer, Breweries, and Ingredients</title>
       <link>/2020/04/01/a-quick-tidytuesday-on-beer-breweries-and-ingredients/</link>
       <pubDate>Wed, 01 Apr 2020 00:00:00 +0000</pubDate>
