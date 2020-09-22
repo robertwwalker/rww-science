@@ -116,6 +116,17 @@ p1 &amp;lt;- kids %&amp;gt;%
   scale_color_viridis_c() + theme_void()
 p1&lt;/code&gt;&lt;/pre&gt;
 &lt;p&gt;&lt;img src=&#34;/post/2020-09-15-spending-on-kids/index_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;an-animation&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;An Animation&lt;/h1&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(gganimate)
+p2 &amp;lt;- p1 + transition_reveal(year)
+p3 &amp;lt;- animate(p2, renderer = gifski_renderer())
+save_animation(p3, file = &amp;quot;./GeoAnimFacet.gif&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;div class=&#34;figure&#34;&gt;
+&lt;img src=&#34;GeoAnimFacet.gif&#34; alt=&#34;&#34; /&gt;
+&lt;p class=&#34;caption&#34;&gt;Animation&lt;/p&gt;
+&lt;/div&gt;
 &lt;div id=&#34;neat-o-an-oregon-grid&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Neat-o an Oregon Grid&lt;/h2&gt;
 &lt;p&gt;This isn’t very good though….&lt;/p&gt;
@@ -128,7 +139,7 @@ OR.County.COVID %&amp;gt;%
   scale_color_viridis_c(option = &amp;quot;plasma&amp;quot;) +
   theme_void()&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## Warning: Removed 3 row(s) containing missing values (geom_path).&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/post/2020-09-15-spending-on-kids/index_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;&lt;img src=&#34;/post/2020-09-15-spending-on-kids/index_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 </description>

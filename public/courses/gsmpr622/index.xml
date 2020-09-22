@@ -1171,6 +1171,7 @@ summary(result, sum_check = c(&amp;quot;vif&amp;quot;, &amp;quot;confint&amp;quo
       <pubDate>Wed, 12 Feb 2020 00:00:00 +0000</pubDate>
       <guid>/courses/gsmpr622/distributions/distributions/</guid>
       <description>
+&lt;script src=&#34;/rmarkdown-libs/header-attrs/header-attrs.js&#34;&gt;&lt;/script&gt;
 
 
 &lt;div id=&#34;probability-the-logic-of-science&#34; class=&#34;section level2&#34;&gt;
@@ -1207,7 +1208,7 @@ summary(result, sum_check = c(&amp;quot;vif&amp;quot;, &amp;quot;confint&amp;quo
 &lt;p&gt;Distributions are nouns. Sentences are incomplete without verbs – parameters. We need both; it is for this reason that the former slide is true. We do not always have a grounding for either the name or the parameter.&lt;/p&gt;
 &lt;hr /&gt;
 &lt;/div&gt;
-&lt;div id=&#34;continuous-vs.discrete-distributions&#34; class=&#34;section level2&#34;&gt;
+&lt;div id=&#34;continuous-vs.-discrete-distributions&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;Continuous vs. Discrete Distributions&lt;/h2&gt;
 &lt;p&gt;The differences are sums versus integrals. Why?&lt;/p&gt;
 &lt;ul&gt;
@@ -1249,16 +1250,16 @@ Income &amp;lt;- data.frame(Hypo.Income,z.Income)
 # Show the data.frame
 head(Income)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;##   Hypo.Income   z.Income
-## 1    52901.44 -0.1780434
-## 2    44384.24 -1.0221609
-## 3    62630.10  0.7861387
-## 4    45605.06 -0.9011689
-## 5    61297.75  0.6540931
-## 6    49865.06 -0.4789708&lt;/code&gt;&lt;/pre&gt;
+## 1    48801.01 -0.6255279
+## 2    34062.18 -2.1141629
+## 3    33470.04 -2.1739702
+## 4    44528.33 -1.0570726
+## 5    61209.77  0.6277688
+## 6    61974.95  0.7050531&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;table(sign(z.Income))&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## 
 ##  -1   1 
-## 516 484&lt;/code&gt;&lt;/pre&gt;
+## 506 494&lt;/code&gt;&lt;/pre&gt;
 &lt;/div&gt;
 &lt;div id=&#34;probability-distributions&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;Probability Distributions&lt;/h1&gt;
@@ -1288,18 +1289,18 @@ hist(Jars)&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;table(Jars &amp;lt; 15.95 | Jars &amp;gt; 16.05) # | captures or&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## 
 ## FALSE  TRUE 
-##   518   482&lt;/code&gt;&lt;/pre&gt;
+##   476   524&lt;/code&gt;&lt;/pre&gt;
 &lt;ul&gt;
 &lt;li&gt;Scale (z) the jars and summarise them.&lt;/li&gt;
 &lt;/ul&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;summary(scale(Jars))&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;##        V1           
-##  Min.   :-1.800914  
-##  1st Qu.:-0.841868  
-##  Median : 0.002659  
-##  Mean   : 0.000000  
-##  3rd Qu.: 0.838466  
-##  Max.   : 1.707781&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;##        V1          
+##  Min.   :-1.64877  
+##  1st Qu.:-0.90285  
+##  Median :-0.02279  
+##  Mean   : 0.00000  
+##  3rd Qu.: 0.86755  
+##  Max.   : 1.77453&lt;/code&gt;&lt;/pre&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;sd(scale(Jars))&lt;/code&gt;&lt;/pre&gt;
 &lt;pre&gt;&lt;code&gt;## [1] 1&lt;/code&gt;&lt;/pre&gt;
 &lt;hr /&gt;

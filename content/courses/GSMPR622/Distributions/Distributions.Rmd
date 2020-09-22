@@ -3,7 +3,7 @@ title: "Probability Distributions"
 author: "Robert W. Walker"
 date: "2020-02-12"
 output: 
-  html_document:
+  ioslides:
     code_download: true  
 ---
 

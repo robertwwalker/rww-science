@@ -148,7 +148,7 @@ frameWidget(GGP)</code></pre>
 <p>What is the cumulative status of testing? These data, updated daily, render a count of all tests performed since January of 2020. I am cutting it off to the start of June to make the labels easier to read.</p>
 <pre class="r"><code>library(ggrepel); library(magrittr)
 Oregon.Tests %&lt;&gt;% filter(Category!=&quot;Pending&quot;)
-OR.Testing &lt;- Oregon.Tests %&gt;% group_by(date) %&gt;% summarise(Total = sum(Outcome, na.rm=TRUE))
+OR.Testing &lt;- Oregon.Tests %&gt;% group_by(date) %&gt;% summarise(Total = sum(Outcome, na.rm=TRUE)) %&gt;% ungroup() %&gt;% filter(date &gt; &quot;2020-08-01&quot;)
 Test1 &lt;- Oregon.Tests %&gt;% filter(date &gt; &quot;2020-08-01&quot;) %&gt;%
   ggplot(.) + 
   aes(x=date, y=Outcome, fill=Category, label=Outcome) + 

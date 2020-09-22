@@ -119,6 +119,17 @@ p1 &lt;- kids %&gt;%
   scale_color_viridis_c() + theme_void()
 p1</code></pre>
 <p><img src="/post/2020-09-15-spending-on-kids/index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+</div>
+<div id="an-animation" class="section level1">
+<h1>An Animation</h1>
+<pre class="r"><code>library(gganimate)
+p2 &lt;- p1 + transition_reveal(year)
+p3 &lt;- animate(p2, renderer = gifski_renderer())
+save_animation(p3, file = &quot;./GeoAnimFacet.gif&quot;)</code></pre>
+<div class="figure">
+<img src="GeoAnimFacet.gif" alt="" />
+<p class="caption">Animation</p>
+</div>
 <div id="neat-o-an-oregon-grid" class="section level2">
 <h2>Neat-o an Oregon Grid</h2>
 <p>This isn’t very good though….</p>
@@ -131,6 +142,6 @@ OR.County.COVID %&gt;%
   scale_color_viridis_c(option = &quot;plasma&quot;) +
   theme_void()</code></pre>
 <pre><code>## Warning: Removed 3 row(s) containing missing values (geom_path).</code></pre>
-<p><img src="/post/2020-09-15-spending-on-kids/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="/post/2020-09-15-spending-on-kids/index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 </div>
 </div>

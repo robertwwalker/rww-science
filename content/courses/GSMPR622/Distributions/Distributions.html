@@ -3,10 +3,11 @@ title: "Probability Distributions"
 author: "Robert W. Walker"
 date: "2020-02-12"
 output: 
-  html_document:
+  ioslides:
     code_download: true  
 ---
 
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
 
 
 <div id="probability-the-logic-of-science" class="section level2">
@@ -43,7 +44,7 @@ output:
 <p>Distributions are nouns. Sentences are incomplete without verbs – parameters. We need both; it is for this reason that the former slide is true. We do not always have a grounding for either the name or the parameter.</p>
 <hr />
 </div>
-<div id="continuous-vs.discrete-distributions" class="section level2">
+<div id="continuous-vs.-discrete-distributions" class="section level2">
 <h2>Continuous vs. Discrete Distributions</h2>
 <p>The differences are sums versus integrals. Why?</p>
 <ul>
@@ -85,16 +86,16 @@ Income &lt;- data.frame(Hypo.Income,z.Income)
 # Show the data.frame
 head(Income)</code></pre>
 <pre><code>##   Hypo.Income   z.Income
-## 1    52901.44 -0.1780434
-## 2    44384.24 -1.0221609
-## 3    62630.10  0.7861387
-## 4    45605.06 -0.9011689
-## 5    61297.75  0.6540931
-## 6    49865.06 -0.4789708</code></pre>
+## 1    48801.01 -0.6255279
+## 2    34062.18 -2.1141629
+## 3    33470.04 -2.1739702
+## 4    44528.33 -1.0570726
+## 5    61209.77  0.6277688
+## 6    61974.95  0.7050531</code></pre>
 <pre class="r"><code>table(sign(z.Income))</code></pre>
 <pre><code>## 
 ##  -1   1 
-## 516 484</code></pre>
+## 506 494</code></pre>
 </div>
 <div id="probability-distributions" class="section level1">
 <h1>Probability Distributions</h1>
@@ -124,18 +125,18 @@ hist(Jars)</code></pre>
 <pre class="r"><code>table(Jars &lt; 15.95 | Jars &gt; 16.05) # | captures or</code></pre>
 <pre><code>## 
 ## FALSE  TRUE 
-##   518   482</code></pre>
+##   476   524</code></pre>
 <ul>
 <li>Scale (z) the jars and summarise them.</li>
 </ul>
 <pre class="r"><code>summary(scale(Jars))</code></pre>
-<pre><code>##        V1           
-##  Min.   :-1.800914  
-##  1st Qu.:-0.841868  
-##  Median : 0.002659  
-##  Mean   : 0.000000  
-##  3rd Qu.: 0.838466  
-##  Max.   : 1.707781</code></pre>
+<pre><code>##        V1          
+##  Min.   :-1.64877  
+##  1st Qu.:-0.90285  
+##  Median :-0.02279  
+##  Mean   : 0.00000  
+##  3rd Qu.: 0.86755  
+##  Max.   : 1.77453</code></pre>
 <pre class="r"><code>sd(scale(Jars))</code></pre>
 <pre><code>## [1] 1</code></pre>
 <hr />

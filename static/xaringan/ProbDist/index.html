@@ -1,0 +1,805 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Probability Distributions</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Robert W. Walker" />
+    <meta name="date" content="2020-09-22" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Probability Distributions
+## Linking Probability and Data
+### Robert W. Walker
+### 2020-09-22
+
+---
+
+
+
+
+
+
+
+## An Admin Note
+
+There is a very nice graphical user interface for parts of R called radiant that is especially useful for probability distributions.  To acquire it, try:
+
+```
+install.packages("radiant")
+```
+
+It can be started via Add-ins.
+
+---
+## Probability: The Logic of Science
+
+Jaynes presents a few core ideas and requirements for his rational system.  Probability emerges as the representation of circumstances in which any given realization of a process is either TRUE or FALSE but both are possible and expressable by probabilities
+
+- that sum to one for all events
+- are greater than or equal to zero for any given event
+
+---
+
+## General Representation of Probability
+
+Is of necessity two-dimensional,
+
+- We have `\(x\)` and 
+- we have `\(Pr(X=x)\)` in one of two forms (Pr or f).
+
+
+---
+
+&lt;img src="index_files/figure-html/P1-1.jpeg" width="504" /&gt;
+
+---
+
+## Probability Distributions of Two Forms
+
+Our core concept is a probability distribution just as above.  These come in two forms for two types [discrete (qualitative)] and continuous (quantitative)]:
+
+
+- Assumed
+- Derived
+
+---
+
+## [The Poster](https://github.com/robertwwalker/DADMStuff/raw/master/Distribution-Poster.pdf) and Examples
+
+Distributions are nouns.  Sentences are incomplete without verbs -- parameters.  We need both; it is for this reason that the former slide is true.  We do not always have a grounding for either the name or the parameter.
+
+---
+
+## Continuous vs. Discrete Distributions
+
+The differences are sums versus integrals.  Why?  
+
+- Histograms or  
+- Density Plots  
+
+The probability of exactly any given value is zero on a true continuum.
+
+---
+
+Expectation
+
+`$$E(X) = \sum_{x \in X} x \cdot Pr(X=x)$$`
+`$$E(X) = \int_{x \in X} x \cdot f(x)dx$$`
+
+Variance
+
+`$$E[(X-\mu)^2] = \sum_{x \in X} (x-\mu)^2 \cdot Pr(X=x)$$`
+`$$E((X-\mu)^2) = \int_{x \in X} (x-\mu)^2 \cdot f(x)dx$$`
+
+---
+
+# Functions
+
+Probability distributions are mathematical formulae expressing likelihood for some set of qualities or quantities.  They have names: nouns.  They also have verbs: parameters.  Like a proper English sentence, both are required.
+
+---
+
+## Our Applications
+
+- The normal will be defined by a mean `\(\mu\)` (mu) and standard deviation `\(\sigma\)` - sigma [or variance, `\(\sigma^2\)`]
+- The uniform will be defined by a minimum and maximum.
+- The Poisson will be defined an arrival rate `\(\lambda\)` -- lambda.
+- The binomial will be defined by a number of trials `\(n\)` and a probability `\(\pi\)`.
+
+
+---
+
+# The Uniform Distribution
+
+- Is flat, each value is eqully likely.
+- Defined on 0 to 1 gives a random cumulative probability `\(X \leq x\)`.
+- Is also known as the rectangular distribution
+
+
+---
+# Uniform(0,1)
+
+
+```r
+Unif &lt;- data.frame(x=seq(0, 1, by = 0.005)) %&gt;% mutate(p.x = punif(x), d.x = dunif(x))
+ggplot(Unif) + aes(x=x, y=p.x) + geom_step()
+```
+
+&lt;img src="index_files/figure-html/unnamed-chunk-1-1.jpeg" width="504" /&gt;
+
+```r
+ggplot(Unif) + aes(x=x, y=d.x) + geom_step()
+```
+
+&lt;img src="index_files/figure-html/unnamed-chunk-1-2.jpeg" width="504" /&gt;
+
+
+
+---
+
+# The Normal [Gaussian]
+
+`$$f(x|\mu,\sigma^2 ) = \frac{1}{\sqrt{2\pi\sigma^{2}}} \exp \left[ -\frac{1}{2} \left(\frac{x - \mu}{\sigma}\right)^{2}\right]$$`
+
+Is the workhorse of statistics.  Key features:
+
+- Is self-replicating: sums of normals are normal.  
+- If `\(X\)` is normal, then $$ Z = \frac{(X - \mu)}{\sigma} $$ is normal.  
+- Aside, `$$z_{x} = \frac{(x - \overline{x})}{s_{x}}$$` has mean 0 and variance/std. dev. 1.  
+
+
+---
+
+# The z-transform
+
+The generic z-transformation applied to a variable `\(x\)` centers [mean$\approx$ 0] and scales [std. dev. `\(\approx\)` variance `\(\approx\)` 1] to `\(z_{x}\)` for population parameters.  `\(\approx\)` is approximately equal to.
+
+`$$z = \frac{x - \mu}{\sigma}$$`
+
+---
+
+
+```r
+data.frame(Norm = rnorm(10000)) %&gt;% ggplot() + aes(x=Norm) + geom_density() + labs(x="Z - Normal(0,1)")
+```
+
+&lt;img src="index_files/figure-html/unnamed-chunk-2-1.jpeg" width="504" /&gt;
+
+
+
+---
+
+In samples, the 0 and 1 are exact; these are features of the mean and *degrees of freedom* from last time.
+
+$$ z = \frac{x - \overline{x}}{s_{x}} $$.
+
+where `\(\overline{x}\)` is the sample mean of `\(x\)` and `\(s_{x}\)` is the sample standard deviation of `\(x\)`.  Take the example of earnings.  
+
+---
+
+Suppose earnings in a community have mean 55,000 and standard deviation 10,000.  This is in dollars.  Suppose I earn 75,000 dollars.  First, if we take the top part of the fraction in the `\(z\)` equation, we see that I earn 20,000 dollars more than the average (75000 - 55000).  Finishing the calculation of z, I would divide that 20,000 dollars by 10,000 dollars per standard deviation.  Let's show that.
+
+$$ z = \frac{75000 dollars - 55000 dollars}{\frac{10000 dollars}{SD}} = +2 SD $$.
+
+I am 2 standard deviations above the average (the +) earnings.  All `\(z\)` does is re-scale the original data to standard deviations with zero as the mean.  
+
+---
+
+Suppose I earn 35,000.  That makes me 20,000 below the average and gives me a z score of -2.  I am 2 standard deviations below average (the -) earnings.
+
+`\(z\)` is an easy way to assess symmetry.  The mean of z is always zero but the distribution of z to the left and right of zero is informative.  If they are roughly even, then symmetry is likely.  If the signs are uneven, then symmetry is unlikely.  In R, `\(z\)` is automated with the *scale()* command.  The last line uses a table and the *sign* command to show me the positive and negative z.
+
+---
+
+
+```r
+# Generate random normal income
+DataF &lt;- data.frame(Hypo.Income = rnorm(1000, 55000, 10000)) %&gt;%
+# z-transform income [mean 55000ish, std. dev. 10000ish]
+mutate(z.Income = scale(Hypo.Income))
+# Show the data.frame
+head(DataF)
+```
+
+```
+##   Hypo.Income    z.Income
+## 1    52728.00 -0.23160600
+## 2    69024.81  1.40511390
+## 3    55817.33  0.07866055
+## 4    71266.79  1.63027965
+## 5    61974.55  0.69704242
+## 6    57595.28  0.25722430
+```
+
+```r
+table(sign(DataF$z.Income))
+```
+
+```
+## 
+##  -1   1 
+## 496 504
+```
+
+---
+
+# Probability Distributions
+
+Distributions in R are defined by four core parts: 
+
+- r, for random variables
+- p, for cumulative probability (given x) [counting from left] `\(Pr(X\leq x)\)`
+- d, for density/probability that `\(Pr(X=x)\)` or `\(f(x)\)`
+- q, for quantile (given p): x such that `\(Pr(X\leq q)=p\)`
+
+---
+
+## A Grape Escape?
+
+A filling process is supposed to fill jars with 16 ounces of grape jelly, according to the label, and regulations require that each jar contain between 15.95 and 16.05 ounces.
+
+1.	*Suppose that the uniform random process of filling in known to fill between 15.9 and 16.1 ounces uniformly.*
+
+---
+
++ Plot the histogram of 1000 simulated values.  NB: *unif* is the noun with boundaries a (default 0) and b(default 1). 
+
+
+```r
+Jars &lt;- runif(1000, 15.9, 16.1)
+Jars %&gt;% data.frame() %&gt;% ggplot() + aes(x=Jars) + geom_histogram(binwidth=0.005)
+```
+
+&lt;img src="index_files/figure-html/unnamed-chunk-3-1.jpeg" width="504" /&gt;
+
+---
+
++ What is the probability that a random jar is outside of requirements?
+
+**Exactly?  50 percent because 25 percent are between 15.9 and 15.95 and 25 percent are between 16.05 and 16.1.**
+
+
+```r
+table(Jars &lt; 15.95 | Jars &gt; 16.05) # | captures or
+```
+
+```
+## 
+## FALSE  TRUE 
+##   516   484
+```
+
+---
+
++ Scale (z) the jars and summarise them.
+
+
+```r
+summary(scale(Jars))
+```
+
+```
+##        V1          
+##  Min.   :-1.74046  
+##  1st Qu.:-0.82015  
+##  Median : 0.02808  
+##  Mean   : 0.00000  
+##  3rd Qu.: 0.84854  
+##  Max.   : 1.70295
+```
+
+```r
+sd(scale(Jars))
+```
+
+```
+## [1] 1
+```
+
+---
+
+2.	*The mean of the normal random process of filling is known to be 16.004 ounces with standard deviation 0.028 ounces.*
+
+---
+
++ What is the probability that a random jar is outside of requirements?  NB: *norm* is the noun with mean (default 0) and sd (default 1).
+
+
+```r
+pnorm(15.95, 16.004, 0.028) + pnorm(16.05, 16.004, 0.028, lower.tail=FALSE)
+```
+
+```
+## [1] 0.07709829
+```
+
+---
+
++ What is the probability that a random jar contains more than 16.1 ounces?
+
+
+```r
+1-pnorm(16.1, 16.004, 0.028)
+```
+
+```
+## [1] 0.0003033834
+```
+
+---
+
++ What is the probability that a random jar contains less than 16.04 ounces?
+
+
+```r
+pnorm(16.04, 16.004, 0.028)
+```
+
+```
+## [1] 0.9007286
+```
+
+---
+
++ 95% of jars, given a normal, will contain between XXX and XXX ounces of jelly.
+
+
+```r
+qnorm(c(0.025,0.975), 16.004, 0.028)
+```
+
+```
+## [1] 15.94912 16.05888
+```
+
+---
+
++ The bottom 5% of jars contain, at most, XXX ounces of jelly.
+
+
+```r
+qnorm(0.05, 16.004, 0.028)
+```
+
+```
+## [1] 15.95794
+```
+
+---
+
++ The top 25% of jars contain at least XXX ounces of jelly.
+
+
+```r
+qnorm(0.75, 16.004, 0.028)
+```
+
+```
+## [1] 16.02289
+```
+
+
+---
+# Why Normals?
+
+- The Central Limit Theorem
+- They Dominate Ops [$6\sigma$]
+- Normal Approximations Abound
+
+
+---
+
+# Bernoulli Trials and the Binomial
+
+Suppose the variable of interest is discrete and takes only two values: yes and no.  For example, is a customer satisfied with the outcomes of a given service visit?  
+
+For each individual, because the probability of yes `\(\pi\)` and no 1-$\pi$ must sum to one, we can write:
+
+`$$f(x|\pi) = \pi^{x}(1-\pi)^{1-x}$$`
+
+---
+
+For multiple identical trials, we have the Binomial:
+
+`$$f(x|n,\pi) = {n \choose k} \pi^{x}(1-\pi)^{n-x}$$`
+where `$${n \choose k} = \frac{n!}{(n-k)!}$$`
+
+---
+
+# The Binomial
+
+![BinomialR](https://github.com/robertwwalker/DADMStuff/raw/master/BinomialR.PNG)
+
+
+---
+
+## Scottish Pounds
+
+*Informal surveys suggest that 15% of Essex shopkeepers will not accept Scottish pounds.  There are approximately 200 shops in the general High Street square.*
+
+---
+
+1. Draw a plot of the distribution and the cumulative distribution of shopkeepers that do not accept Scottish pounds.
+
+
+```r
+Scots &lt;- data.frame(Potential.Refusers = 0:200) %&gt;% mutate(Prob = round(pbinom(Potential.Refusers, size=200, 0.15), digits=4))
+Scots %&gt;% ggplot() + aes(x=Potential.Refusers, y=Prob) + geom_point() + labs(x="Refusers", y="Prob. of x or Less Refusers") -&gt; Plot1
+Plot1
+```
+
+&lt;img src="index_files/figure-html/unnamed-chunk-12-1.jpeg" width="504" /&gt;
+
+
+---
+
+# A Nicer Plot
+
+
+```r
+library(plotly)
+ggplotly(Plot1)
+```
+
+---
+
+2. What is the probability that 24 or fewer will not accept Scottish pounds?
+
+
+```r
+pbinom(24, 200, 0.15)
+```
+
+```
+## [1] 0.1368173
+```
+
+---
+
+3. What is the probability that 25 or more shopkeepers will not accept Scottish pounds?
+
+
+```r
+1-pbinom(24, 200, 0.15)
+```
+
+```
+## [1] 0.8631827
+```
+
+---
+
+4. With probability 0.9 [90 percent], XXX or fewer shopkeepers will not accept Scottish pounds.
+
+
+```r
+qbinom(0.9, 200, 0.15)
+```
+
+```
+## [1] 37
+```
+
+---
+
+# Geometric Distributions
+
+How many failures before the first success?  Now defined exclusively by `\(p\)`.  In each case, (1-p) happens `\(k\)` times.  Then, on the `\(k+1^{th}\)` try, p.  Note 0 failures can happen...
+
+`$$Pr(y=k) = (1-p)^{k}p$$`
+
+---
+
+Example: Entrepreneurs
+
+Suppose any startup has a `\(p=0.1\)` chance of success.  How many failures?
+
+---
+
+&lt;img src="index_files/figure-html/GP1-1.jpeg" width="504" /&gt;
+
+---
+
+# Example: Entrepreneurs
+
+Suppose any startup has a `\(p=0.1\)` chance of success.  How many failures for the average/median person?
+
+
+```r
+qgeom(0.5,0.1)
+```
+
+```
+## [1] 6
+```
+
+---
+
+5. [Geometric] Plot 1000 random draws of "How many vendors until one refuses my Scottish pounds?"
+
+
+```r
+Geoms.My &lt;- data.frame(Vendors=rgeom(1000, 0.15))
+Geoms.My %&gt;% ggplot() + aes(x=Vendors) + geom_histogram(binwidth=1)
+```
+
+&lt;img src="index_files/figure-html/unnamed-chunk-18-1.jpeg" width="504" /&gt;
+
+We could also do something like.
+
+
+```r
+plot(seq(0,60), pgeom(seq(0,60), 0.15))
+```
+
+&lt;img src="index_files/figure-html/unnamed-chunk-19-1.jpeg" width="504" /&gt;
+
+---
+
+## The Median is a Binomial with p=0.5
+
+Interestingly, any given observation has a 50-50 chance of being *over* or *under* the median.  Suppose that I have five datum.  
+1. What is the probability that all are under?
+
+
+```r
+pbinom(0,size=5, p=0.5)
+```
+
+```
+## [1] 0.03125
+```
+
+---
+
+2. What is the probability that all are over?
+
+
+```r
+dbinom(5,size=5, p=0.5)
+```
+
+```
+## [1] 0.03125
+```
+
+---
+
+3. What is the probability that the median is somewhere in between our smallest and largest sampled values?
+
+**Everything else**.
+
+This *Rule of Five* often credited to Hubbard is handy.
+
+---
+
+# Events: The Poisson
+
+![Poisson](https://github.com/robertwwalker/DADMStuff/raw/master/Poisson.jpg)
+
+---
+
+Take a binomial with `\(p\)` very small and let `\(n \rightarrow \infty\)`.  We get the Poisson distribution ($y$) given an arrival rate `\(\lambda\)` specified in events per period.
+
+`$$f(y|\lambda) = \frac{\lambda^{y}e^{-\lambda}}{y!}$$`
+
+---
+
+# Examples: The Poisson
+- Walk in customers
+- *Emergency Room Arrivals*
+- Births, deaths, marriages
+- *Prussian Cavalry Deaths by Horse Kick*
+- Fish?
+
+
+---
+
+### Air Traffic Controllers
+
+FAA Decision: Expend or do not expend scarce resources investigating claimed staffing shortages at the Cleveland Air Route Traffic Control Center.
+
+Essential facts: The Cleveland ARTCC is the US's busiest in routing cross-country air traffic.  In mid-August of 1998, it was reported that the first week of August experienced 3 errors in a one week period; an error occurs when flights come within five miles of one another by horizontal distance or 2000 feet by vertical distance.  The Controller's union claims a staffing shortage though other factors could be responsible.  21 errors per year (21/52 errors per week) has been the norm in Cleveland for over a decade.  
+
+---
+
+1. Plot a histogram of 1000 random weeks.  NB: *pois* is the noun with no default for `\(\lambda\)` -- the arrival rate.
+
+
+```r
+DF &lt;- data.frame(Close.Calls = rpois(1000, 21/52))
+ggplot(DF) + aes(x=Close.Calls) + geom_histogram()
+```
+
+&lt;img src="index_files/figure-html/unnamed-chunk-22-1.jpeg" width="504" /&gt;
+
+---
+
+
+```r
+ggplot(DF) + aes(x=Close.Calls) + stat_ecdf(geom="step")
+```
+
+&lt;img src="index_files/figure-html/unnamed-chunk-23-1.jpeg" width="504" /&gt;
+
+---
+
++ Plot a sequence on the x axis from 0 to 5 and the probability of that or fewer incidents along the y.  *seq(0,5)*
+
+
+```r
+DF &lt;- data.frame(x=0:5, y=ppois(0:5, 21/52))
+ggplot(DF) + aes(x=x, y=y) + geom_col()
+```
+
+&lt;img src="index_files/figure-html/unnamed-chunk-24-1.jpeg" width="504" /&gt;
+
+---
+
+2. What would you do and why?  *Not impossible*
+
+---
+
+3. After analyzing the initial data, you discover that the first two weeks of August have experienced 6 errors.  What would you now decide?  *Well, once is 0.0081342.*  Twice, at random, is that squared.  We have a problem.
+
+---
+
+### Deaths by Horse Kick in the Prussian cavalry?
+
+
+```r
+library(vcd)
+data(VonBort)
+head(VonBort)
+```
+
+```
+##   deaths year corps fisher
+## 1      0 1875     G     no
+## 2      0 1875     I     no
+## 3      0 1875    II    yes
+## 4      0 1875   III    yes
+## 5      0 1875    IV    yes
+## 6      0 1875     V    yes
+```
+
+```r
+mean(VonBort$deaths)
+```
+
+```
+## [1] 0.7
+```
+
+---
+
+&lt;img src="index_files/figure-html/VBG1-1.jpeg" width="504" /&gt;
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

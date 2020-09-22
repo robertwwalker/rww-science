@@ -75,6 +75,15 @@ p1 <- kids %>%
 p1
 ```
 
+# An Animation
+
+```{r}
+library(gganimate)
+p2 <- p1 + transition_reveal(year)
+p3 <- animate(p2, renderer = gifski_renderer())
+save_animation(p3, file = "./GeoAnimFacet.gif")
+```
+![Animation](./GeoAnimFacet.gif)
 
 ## Neat-o an Oregon Grid
 
