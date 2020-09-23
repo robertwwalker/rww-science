@@ -358,7 +358,7 @@ Plot1
 
 # A Nicer Plot
 
-```{r, eval=FALSE}
+```{r}
 library(plotly)
 ggplotly(Plot1)
 ```
