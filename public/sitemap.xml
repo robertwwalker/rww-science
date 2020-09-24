@@ -3,12 +3,17 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>/2020/09/21/analyzing-the-trump-campaign-s-solicitations/</loc>
+    <loc>/2020/09/22/analyzing-the-trump-campaign-s-solicitations/</loc>
     <lastmod>2020-09-22T16:35:52-07:00</lastmod>
   </url>
   
   <url>
     <loc>/categories/</loc>
+    <lastmod>2020-09-22T16:35:52-07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/r/covid/</loc>
     <lastmod>2020-09-22T16:35:52-07:00</lastmod>
   </url>
   
@@ -28,7 +33,7 @@
   </url>
   
   <url>
-    <loc>/2020/09/21/new-york-times-data-on-covid/</loc>
+    <loc>/2020/09/22/new-york-times-data-on-covid/</loc>
     <lastmod>2020-09-22T16:35:52-07:00</lastmod>
   </url>
   
@@ -53,11 +58,6 @@
   </url>
   
   <url>
-    <loc>/r/covid/</loc>
-    <lastmod>2020-09-22T16:35:52-07:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/r/covid-maps/</loc>
     <lastmod>2020-09-22T16:35:52-07:00</lastmod>
   </url>
@@ -68,12 +68,12 @@
   </url>
   
   <url>
-    <loc>/categories/tidytuesday/</loc>
+    <loc>/tags/tidytuesday/</loc>
     <lastmod>2020-09-22T16:35:52-07:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/tidytuesday/</loc>
+    <loc>/categories/tidytuesday/</loc>
     <lastmod>2020-09-22T16:35:52-07:00</lastmod>
   </url>
   
@@ -508,13 +508,13 @@
   </url>
   
   <url>
-    <loc>/tags/tidytext/</loc>
-    <lastmod>2020-02-05T13:19:17-08:00</lastmod>
+    <loc>/categories/tidytext/</loc>
+    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
   </url>
   
   <url>
-    <loc>/categories/tidytext/</loc>
-    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
+    <loc>/tags/tidytext/</loc>
+    <lastmod>2020-02-05T13:19:17-08:00</lastmod>
   </url>
   
   <url>
