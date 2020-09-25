@@ -1,0 +1,152 @@
+---
+title: "R Notes on Linear Models"
+author: "Robert W. Walker"
+date: "11/18/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE, warning=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse); library(kableExtra)
+```
+
+## Fake Data
+
+I will fake some data to work with according to the following equation.
+
+$$ y = 2 + 2*x_{1} + 1*x_{2} -1*x_{3} + \epsilon $$
+where each x and $\epsilon$ are random draws from a standard normal distribution with mean zero and standard deviation 1.
+
+```{r FD, eval=FALSE}
+x1 <- rnorm(100); x2 <- rnorm(100); x3 <- rnorm(100); e <- rnorm(100)
+y <- 2 + 2*x1 + x2 - x3 + e
+My.data <- data.frame(y, x1, x2, x3)
+head(My.data)
+save(My.data, file="MyData.RData")
+```
+
+```{r}
+load(url("https://github.com/robertwwalker/DADMStuff/raw/master/MyData.RData"))
+```
+
+
+It all starts with `lm()`.
+
+## lm
+
+Let's estimate a regression with y taken as a function of an intercept, a slope for each of x1, x2, and x3, and residual given the aforementioned.  I will estimate
+
+$$ y = \alpha + \beta_1 x_1 + \beta_2 x_2 + beta_3 x_3 + \epsilon  $$
+
+```{r}
+( My.Regression <- lm(y ~ x1+x2+x3, data=My.data) )
+```
+
+## summary(lm)
+
+The core details of a fitted regression can be gleaned from a summary().  
+
+```{r}
+summary(My.Regression)
+```
+
+The top line gives a summary() of the residuals.  Then we get the `parameters` -- the slope(s) and intercept -- and their standard errors along with a t and a two-sided probability that the particular slope or intercept is zero.  In this instance, the parameters are close[ish] to their true values.  The residual standard error on 100 - 1 - 3 slopes = 96 degrees of freedom is 0.94 -- almost 1, the true value.  These three factors account for 85.36% of the variation.  Each has a slope with a t-statistic that is clearly different from zero [at least 9 standard errors away from zero].  At the bottom, the F statistic examines the claim that the set of included predictors [all 3 of them] explain no more than random variation against the alternative that at least of the predictors has a non-zero slope (is related to y).  The p-value is the probability that each of the included predictors explain no more than random variation.  If it is very low, then the predictors account for `significant` variation in `y`.
+
+# Confidence intervals: confint()
+
+To obtain the confidence intervals for the slopes and the intercept, we embed our linear model in confint().
+
+```{r}
+confint(My.Regression)
+```
+
+With 95% confidence, the intercept is between 1.86 and 2.24; the slope linking x1 and y ranges from 1.86 to 2.27.  The slope linking x2 and y ranges from 0.69 to 1.07 and the slope linking x3 to y ranges from -1.05 to -0.68.  All include the true values in the interval.
+
+# anova() for accounting
+
+`anova()` applied to a single regression gives a sequential accounting of the sums of squares.
+
+```{r}
+anova(My.Regression)
+```
+
+x1 accounts for 4 times the variation of x2 and x3.  On 1 and 96 degrees of freedom, 99% of F values would be below `r qf(0.99, 1, 96)`.  These are all clearly higher.
+
+If we wish to compare two regressions using anova, it will show the sums of squares for the two models.  Let me eliminate x3 and see what happens.  We know from the above table that x3 accounts for 78.04 squares, that should be the difference between these two models.  They should not be equivalent because x3 is important.
+
+```{r}
+( My.Regression.2 <- lm(y ~ x1+x2, data=My.data) )
+anova(My.Regression.2, My.Regression)
+```
+
+
+It shows.  We reject the claim that the two models are equivalent -- explain the same variance.  Here, the first does considerably worser than the second.  The one degree of freedom for x3 is responsible for 88 times the average residual and 6.91 is the threshhold with 99% probability.
+
+## residuals and fitted.values
+
+To obtain the residuals from a regression model, we can use the `residuals(lm)` function.
+
+```{r}
+My.data$residuals <- residuals(My.Regression)
+```
+
+To obtain the algebraic prediction, we can ask for the fitted values.
+
+```{r}
+My.data$fitted.values <- fitted.values(My.Regression)
+```
+
+Let me show the data, now.
+
+```{r}
+My.data %>% head() %>% kable()
+```
+
+
+## predict
+
+The predict function can arrive at two intervals.
+
+First, we could predict the mean's confidence interval given some value of the inputs, x1, x2, and x3.  Let's set each to 1.
+
+```{r}
+Pred.Data <- data.frame(x1=1, x2=1, x3=1)
+predict(My.Regression, newdata = Pred.Data, interval = "confidence")
+```
+
+If we plug in the values for x1, x2, and x3 we would obtain a predicted value of 4.130146; the 95% interval for the average ranges from 3.743 to 4.517 given x1=1, x2=1, x3=1.  Now let us predict the range of the data.
+
+```{r}
+predict(My.Regression, newdata=Pred.Data, interval = "prediction")
+```
+
+GIven x1=1, x2=1, x3=1, the range of y, with 95% confidence, is 2.22 to 6.04. 
+
+## Residual Diagnostics
+
+The plot of the linear model gives a few fit assessment graphics.
+
+```{r}
+plot(My.Regression)
+```
+
+The quantile-quantile plot can be applied to the residuals, as well.
+
+```{r}
+shapiro.test(My.data$residuals)
+car::qqPlot(My.data$residuals)
+```
+
+The fitted.values and the original data in a plot can also be used to assess this.
+
+```{r}
+ggplot(My.data, aes(x=fitted.values, y=y)) + geom_point() + geom_abline(slope=1, intercept = 0) + labs(x="Predicted Values", y="Actual Values")
+```
+
+The effects plot are useful for assessing the functional form -- line or nonline.  This is the one part of this that relies on an outside library.
+
+```{r}
+library(effects)
+plot(allEffects(My.Regression, partial.residuals=TRUE))
+```
+

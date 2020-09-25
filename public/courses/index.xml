@@ -12,34 +12,5 @@
       <link>/courses/</link>
     </image>
     
-    <item>
-      <title>Data Analysis, Modelling, and Decision-Making</title>
-      <link>/courses/gsm5103/</link>
-      <pubDate>Tue, 02 Oct 2018 00:00:00 +0000</pubDate>
-      <guid>/courses/gsm5103/</guid>
-      <description>&lt;p&gt;Resource to support my MBA data analysis course.&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;
-&lt;a href=&#34;https://www.openintro.org/stat/textbook.php?stat_book=os&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;OpenIntro Stats&lt;/a&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;a href=&#34;https://radiant-rstats.github.io/docs/index.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Radiant&lt;/a&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;a href=&#34;https://www.rstudio.com&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;RStudio&lt;/a&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;a href=&#34;https://cran.r-project.org&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;R&lt;/a&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;a href=&#34;https://rpubs.com/rwalkerWU/&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;RPubs&lt;/a&gt;
-&lt;/li&gt;
-&lt;li&gt;
-&lt;a href=&#34;https://rww.science/courses/DADM/PracticeMidterm.html&#34; target=&#34;_blank&#34; rel=&#34;noopener&#34;&gt;Practice Midterm Solution: Natural Gas&lt;/a&gt;
-&lt;/li&gt;
-&lt;/ul&gt;
-</description>
-    </item>
-    
   </channel>
 </rss>

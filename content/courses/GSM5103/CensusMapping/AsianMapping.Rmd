@@ -1,0 +1,117 @@
+---
+title: "Asian Identification in the United States"
+author: "Robert W. Walker"
+date: "12/8/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Searching for the Asian Population via the Census
+
+To use `tidycensus`, there are limitations imposed by the available tables.  There is ACS -- a survey of about 3 million people -- and the two main decennial census files [SF1] and [SF2].  I will search SF1 for the Asian population.
+
+
+```{r cars, message=FALSE, warning=FALSE}
+library(tidycensus); library(kableExtra)
+library(tidyverse); library(stringr)
+v10 <- load_variables(2010, "sf1", cache = TRUE)
+v10 %>% filter(str_detect(concept, "ASIAN")) %>% filter(str_detect(label, "Female")) %>% kable() %>% scroll_box(width = "100%")
+```
+
+There are still 268 to comb through but what seems useful are the bottom rows of the first set of results.
+
+```{r}
+library(viridis)
+library(sf); library(ggthemes)
+# I need supply the names of the variables to fetch from Census: column `name` above
+vars10 <- c("P012D031", "P012D032", "P012D033", "P012D034", "P012D035", "P012D036")
+# Get the census data with the relevant map by county; 2010 is the most recent
+# I used the example from the help file to adapt by dropping the state to get them all and shifting Hawaii and Alaska for visibility.  They are not properly scaled.
+MapDat <- get_decennial(geography = "county", variables = vars10, year = 2010,
+                    geometry = TRUE, shift_geo = TRUE)
+# Map the data with ggplot using geom_sf()
+ggplot(MapDat, aes(fill = value, color = value)) + 
+  geom_sf() + 
+  theme_map() + 
+  scale_fill_viridis_c(guide=FALSE)+ 
+  scale_color_viridis_c(guide=FALSE) + 
+  facet_wrap(~variable)
+```
+
+## Totals of the Target Population
+
+```{r pressure, echo=FALSE}
+SingleM <- MapDat %>% filter(variable=="P012D031") %>% select(GEOID,NAME,geometry)
+MapDatSum <- MapDat %>% group_by(GEOID) %>% summarise(Total = sum(value)) %>% as.data.frame()
+MapDatSum <- merge(SingleM,MapDatSum)
+PlotlyMe <- ggplot(MapDatSum, aes(fill = Total, text=NAME)) +
+     geom_sf(size=0.02, color="white") + theme_map() + scale_fill_viridis_c() +         labs("Asian Females Ages 18 to 34", caption = "Census Table SF1")  
+PlotlyMe
+```
+
+A plotly
+
+```{r}
+library(plotly)
+ggplotly(PlotlyMe)
+```
+
+To get rid of some of the messiness because LA is a huge outlier, perhaps it should be binned.
+
+```{r}
+MapDatSum <- MapDatSum %>% mutate(Binned.Total = cut_number(Total, 5, ordered_result=TRUE))
+PlotlyMe <- ggplot(MapDatSum, aes(fill = Binned.Total, text=NAME)) +
+     geom_sf(size=0.02, color="white") + theme_map() + scale_fill_viridis_d() +         labs("Asian Females Ages 18 to 34", caption = "Census Table SF1")  
+PlotlyMe
+```
+
+# More than 1000 in the Relevant Age Group
+
+```{r}
+MapDatSum <- MapDatSum %>% mutate(Total.1000 = as.factor(Total > 1000))
+PlotlyMe <- ggplot(MapDatSum, aes(fill = Total.1000, text=NAME)) +
+     geom_sf(size=0.02, color="white") + theme_map() + scale_fill_viridis_d() +         labs("Asian Females Ages 18 to 34", caption = "Census Table SF1", fill="More than 1000")  
+PlotlyMe
+```
+
+# More than 5000 in the Relevant Age Group
+
+```{r}
+MapDatSum <- MapDatSum %>% mutate(Total.5000 = as.factor(Total > 5000))
+PlotlyMe <- ggplot(MapDatSum, aes(fill = Total.5000)) +
+     geom_sf(size=0.02, color="white") + theme_map() + scale_fill_viridis_d() +         labs("Asian Females Ages 18 to 34", caption = "Census Table SF1", fill="More than 5000")  
+PlotlyMe
+```
+
+# More than 10000 in the Relevant Age Group
+
+```{r}
+MapDatSum <- MapDatSum %>% mutate(Total.10K = as.factor(Total > 10000))
+PlotlyMe <- ggplot(MapDatSum, aes(fill = Total.10K)) +
+     geom_sf(size=0.02, color="white") + theme_map() + scale_fill_viridis_d() +         labs("Asian Females Ages 18 to 34", caption = "Census Table SF1", fill="More than 10000")  
+PlotlyMe
+```
+
+
+```{r, eval=FALSE}
+# This takes a really long time to run.  It is not evaluated.
+library(cartogram)
+Carto <- cartogram_cont(
+MapDatSum,
+"Total",
+itermax = 15,
+maxSizeError = 1.0001,
+prepare = "adjust",
+threshold = 0.05
+)
+```
+
+Load the cartogram already cooked.
+
+```{r}
+load(url("https://github.com/robertwwalker/DADMStuff/raw/master/Cartogram.RData"))
+ggplot(Carto, aes(fill=Total)) + geom_sf(size=0.01) + theme_map() + labs(caption="A Cartogram")
+```

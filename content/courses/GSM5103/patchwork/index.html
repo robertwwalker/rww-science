@@ -1,0 +1,43 @@
+---
+title: "Patchwork"
+author: "Robert W. Walker"
+date: "9/10/2020"
+output: html_document
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<div id="patchwork" class="section level1">
+<h1>Patchwork</h1>
+<p><code>Patchwork</code> is a really neat R package that allows us to combine graphics in a fairly intuitive and <code>ggplot</code>-friendly fashion. Adding rows happens with <code>+</code> and dividing columns of plots works with <code>/</code>. It also respects orders of operations with parentheses. Let me use the Berkeley data to demonstrate a bit of this. I will make use of three packages that you may or may not have.</p>
+<pre><code>install.packages(c(&quot;patchwork&quot;,&quot;janitor&quot;,&quot;DescTools&quot;), dependencies=TRUE)</code></pre>
+<p>As a note, you can make use of a library::function approach as well as loading libraries to directly reference commands. So <code>janitor::tabyl</code> references the tabyl function in the janitor package.</p>
+<pre class="r"><code>library(patchwork)
+# A first plot of the count by department.
+UCBAdmissions %&gt;% DescTools::Untable() %&gt;% janitor::tabyl(Dept) %&gt;% ggplot() + aes(x=Dept, y=n) + geom_col() + theme_minimal() -&gt; Plot1
+# A second plot of the proportion by department.  Though it is called a percent, it is not.
+UCBAdmissions %&gt;% DescTools::Untable() %&gt;% janitor::tabyl(Dept) %&gt;% ggplot() + aes(x=Dept, y=percent*100) + geom_col() + theme_minimal() + labs(y=&quot;Percent&quot;) -&gt; Plot2
+# A first patchwork
+Plot1 + Plot2</code></pre>
+<p><img src="/courses/GSM5103/patchwork/index_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<p>Using the <code>/</code> to put them on top of one another.</p>
+<pre class="r"><code>Plot1 / Plot2</code></pre>
+<p><img src="/courses/GSM5103/patchwork/index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p>Now to put the gender data together.</p>
+<div id="gender" class="section level2">
+<h2>Gender</h2>
+<pre class="r"><code># A first plot of the count by gender.
+UCBAdmissions %&gt;% DescTools::Untable() %&gt;% janitor::tabyl(Gender) %&gt;% ggplot() + aes(x=Gender, y=n) + geom_col() + theme_minimal() -&gt; Plot1A
+# A second plot of the proportion by gender.
+UCBAdmissions %&gt;% DescTools::Untable() %&gt;% janitor::tabyl(Gender) %&gt;% ggplot() + aes(x=Gender, y=percent*100) + geom_col() + theme_minimal() + labs(y=&quot;Percent&quot;) -&gt; Plot2A
+Plot1 + Plot2 / Plot2 + Plot2A</code></pre>
+<p><img src="/courses/GSM5103/patchwork/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>That’s not really what I wanted. The parentheses separate it into parts.</p>
+<pre class="r"><code>Plot1 + Plot2 / (Plot1A + Plot2A)</code></pre>
+<p><img src="/courses/GSM5103/patchwork/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>It wants a complete statement that fully respects the order of operations. So put the top together in parentheses and the bottom, as well.</p>
+<pre class="r"><code>(Plot1 + Plot2) / (Plot1A + Plot2A)</code></pre>
+<p><img src="/courses/GSM5103/patchwork/index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+</div>
+</div>

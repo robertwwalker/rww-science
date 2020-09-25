@@ -1,0 +1,145 @@
+---
+title: "AlumniGiving"
+author: "Robert W. Walker"
+date: "12/8/2019"
+output:
+  html_document: default
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<div id="alumni-giving-prediction-example" class="section level1">
+<h1>Alumni Giving Prediction Example</h1>
+<div id="a-linear-model" class="section level2">
+<h2>A Linear Model</h2>
+<pre class="r"><code>Mod.AG &lt;- lm(Giving~SFR+Small.Classes+Big.Classes+Graduation.Rate+Freshman.Retention+Special, data=AlumniGiving)
+summary(Mod.AG)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = Giving ~ SFR + Small.Classes + Big.Classes + Graduation.Rate + 
+##     Freshman.Retention + Special, data = AlumniGiving)
+## 
+## Residuals:
+##       Min        1Q    Median        3Q       Max 
+## -0.124888 -0.030048 -0.005409  0.027063  0.145876 
+## 
+## Coefficients:
+##                     Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)        -0.188483   0.096503  -1.953  0.05317 .  
+## SFR                -0.001085   0.001519  -0.715  0.47620    
+## Small.Classes       0.166839   0.054459   3.064  0.00271 ** 
+## Big.Classes        -0.023674   0.101584  -0.233  0.81613    
+## Graduation.Rate     0.108767   0.081848   1.329  0.18645    
+## Freshman.Retention  0.250587   0.148554   1.687  0.09428 .  
+## SpecialYes          0.184869   0.028313   6.529 1.74e-09 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.04809 on 118 degrees of freedom
+## Multiple R-squared:  0.6626, Adjusted R-squared:  0.6454 
+## F-statistic: 38.61 on 6 and 118 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>A predicted value for each row is:</p>
+<p><span class="math display">\[ Fitted value = Intercept + slope_{SFR}*SFR + slope_{Small.Classes}*Small.Classes + slope_{Big.Classes}*Big.Classes 
++ slope_{Freshman.Retention}*Freshman.Retention + + slope_{Special}*Special=Yes \]</span></p>
+<p>Let’s see the first row of the data.</p>
+<pre class="r"><code>library(tidyverse)
+Arkansas &lt;- AlumniGiving %&gt;% filter(School == &quot;University of Arkansas&quot;)
+Arkansas</code></pre>
+<pre><code>##                   School SFR Small.Classes Big.Classes Graduation.Rate
+## 1 University of Arkansas  18          0.28        0.18            0.58
+##   Freshman.Retention Giving Special
+## 1               0.83   0.23      No</code></pre>
+<p>So the predicted value for Arkansas is:</p>
+<p>-0.1884827 + -0.0010855 x 18 + 0.1668386 x *0.28 + -0.0236738 x 0.18 + 0.1087666 x 0.58 + 0.2505868 x 0.83 + 0.1848693 x 0</p>
+<p>which computes to:</p>
+<pre class="r"><code># Intercept then Slopes on left and values on right with 1 first for the intercept
+coefficients(Mod.AG)*c(1,18,0.28,0.18,0.58,0.83,0)</code></pre>
+<pre><code>##        (Intercept)                SFR      Small.Classes        Big.Classes 
+##       -0.188482706       -0.019538524        0.046714802       -0.004261286 
+##    Graduation.Rate Freshman.Retention         SpecialYes 
+##        0.063084620        0.207987053        0.000000000</code></pre>
+<pre class="r"><code># That gives us each piece of it, now add them
+sum(coefficients(Mod.AG)*c(1,18,0.28,0.18,0.58,0.83,0))</code></pre>
+<pre><code>## [1] 0.105504</code></pre>
+<pre class="r"><code>predict(Mod.AG, newdata=Arkansas)</code></pre>
+<pre><code>##        1 
+## 0.105504</code></pre>
+<p>or a 0.1055 giving rate. Their actual giving rate is 0.23, so the residual is 0.1245 or +12.45% residual giving. Or giving that is 0.1245 more than expected given Arkansas’s data. The R code for it is <code>fitted.values</code> so I tend to use that term also.</p>
+<pre class="r"><code>AlumniGiving$resids &lt;- residuals(Mod.AG)
+AlumniGiving$FV &lt;- fitted.values(Mod.AG)
+Arkansas &lt;- AlumniGiving %&gt;% filter(School == &quot;University of Arkansas&quot;)
+Arkansas</code></pre>
+<pre><code>##                   School SFR Small.Classes Big.Classes Graduation.Rate
+## 1 University of Arkansas  18          0.28        0.18            0.58
+##   Freshman.Retention Giving Special   resids       FV
+## 1               0.83   0.23      No 0.124496 0.105504</code></pre>
+<p>Predicting averages and outcome distributions. The confidence interval is obtained with:</p>
+<pre class="r"><code>predict(Mod.AG, newdata=Arkansas, interval = &quot;confidence&quot;)</code></pre>
+<pre><code>##        fit        lwr       upr
+## 1 0.105504 0.09058656 0.1204214</code></pre>
+<p>The prediction interval covering the hypothetical y given the values of the predictors that we choose/specify will have variation that closely follows a plus or minus two standard errors of the residual because that’s the variation in the data [averages vary much less because of, well, averaging].</p>
+<pre class="r"><code>predict(Mod.AG, newdata=Arkansas, interval = &quot;confidence&quot;)</code></pre>
+<pre><code>##        fit        lwr       upr
+## 1 0.105504 0.09058656 0.1204214</code></pre>
+<p>For Radiant users, this whole thing is a black box. And it does not give us the option of generating the <code>prediction</code> interval in selection boxes. It only gives us that option with a change in the code that it generates.</p>
+<pre class="r"><code>library(radiant)
+result &lt;- regress(
+  AlumniGiving, 
+  rvar = &quot;Giving&quot;, 
+  evar = c(
+    &quot;SFR&quot;, &quot;Small.Classes&quot;, &quot;Big.Classes&quot;, &quot;Graduation.Rate&quot;, 
+    &quot;Freshman.Retention&quot;, &quot;Special&quot;
+  )
+)
+summary(result)</code></pre>
+<pre><code>## Linear regression (OLS)
+## Data     : AlumniGiving 
+## Response variable    : Giving 
+## Explanatory variables: SFR, Small.Classes, Big.Classes, Graduation.Rate, Freshman.Retention, Special 
+## Null hyp.: the effect of x on Giving is zero
+## Alt. hyp.: the effect of x on Giving is not zero
+## 
+##                     coefficient std.error t.value p.value    
+##  (Intercept)             -0.188     0.097  -1.953   0.053 .  
+##  SFR                     -0.001     0.002  -0.715   0.476    
+##  Small.Classes            0.167     0.054   3.064   0.003 ** 
+##  Big.Classes             -0.024     0.102  -0.233   0.816    
+##  Graduation.Rate          0.109     0.082   1.329   0.186    
+##  Freshman.Retention       0.251     0.149   1.687   0.094 .  
+##  Special|Yes              0.185     0.028   6.529  &lt; .001 ***
+## 
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## R-squared: 0.663,  Adjusted R-squared: 0.645 
+## F-statistic: 38.614 df(5,118), p.value &lt; .001
+## Nr obs: 124</code></pre>
+<pre class="r"><code>pred &lt;- predict(result, pred_data = Arkansas, interval = &quot;confidence&quot;)
+print(pred, n = 10)</code></pre>
+<pre><code>## Linear regression (OLS)
+## Data                 : AlumniGiving 
+## Response variable    : Giving 
+## Explanatory variables: SFR, Small.Classes, Big.Classes, Graduation.Rate, Freshman.Retention, Special 
+## Interval             : confidence 
+## Prediction dataset   : Arkansas 
+## 
+##     SFR Small.Classes Big.Classes Graduation.Rate Freshman.Retention Special
+##  18.000         0.280       0.180           0.580              0.830      No
+##  Prediction  2.5% 97.5%   +/-
+##       0.106 0.091 0.120 0.015</code></pre>
+<pre class="r"><code>Arkansas &lt;- store(Arkansas, pred, name = &quot;pred_reg&quot;)
+pred &lt;- predict(result, pred_data = Arkansas, interval = &quot;prediction&quot;)
+print(pred, n = 10)</code></pre>
+<pre><code>## Linear regression (OLS)
+## Data                 : AlumniGiving 
+## Response variable    : Giving 
+## Explanatory variables: SFR, Small.Classes, Big.Classes, Graduation.Rate, Freshman.Retention, Special 
+## Interval             : prediction 
+## Prediction dataset   : Arkansas 
+## 
+##     SFR Small.Classes Big.Classes Graduation.Rate Freshman.Retention Special
+##  18.000         0.280       0.180           0.580              0.830      No
+##  Prediction  2.5% 97.5%   +/-
+##       0.106 0.009 0.202 0.096</code></pre>
+</div>
+</div>

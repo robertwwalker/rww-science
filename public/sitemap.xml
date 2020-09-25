@@ -3,63 +3,63 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>/2020/09/22/analyzing-the-trump-campaign-s-solicitations/</loc>
-    <lastmod>2020-09-22T16:35:52-07:00</lastmod>
+    <loc>/2020/09/23/analyzing-the-trump-campaign-s-solicitations/</loc>
+    <lastmod>2020-09-23T17:43:12-07:00</lastmod>
   </url>
   
   <url>
     <loc>/categories/</loc>
-    <lastmod>2020-09-22T16:35:52-07:00</lastmod>
+    <lastmod>2020-09-23T17:43:12-07:00</lastmod>
   </url>
   
   <url>
     <loc>/r/covid/</loc>
-    <lastmod>2020-09-22T16:35:52-07:00</lastmod>
+    <lastmod>2020-09-23T17:43:12-07:00</lastmod>
   </url>
   
   <url>
     <loc>/categories/dataviz/</loc>
-    <lastmod>2020-09-22T16:35:52-07:00</lastmod>
+    <lastmod>2020-09-23T17:43:12-07:00</lastmod>
   </url>
   
   <url>
     <loc>/tags/gganimate/</loc>
-    <lastmod>2020-09-22T16:35:52-07:00</lastmod>
+    <lastmod>2020-09-23T17:43:12-07:00</lastmod>
   </url>
   
   <url>
     <loc>/tags/gmailr/</loc>
-    <lastmod>2020-09-22T16:35:52-07:00</lastmod>
+    <lastmod>2020-09-23T17:43:12-07:00</lastmod>
   </url>
   
   <url>
-    <loc>/2020/09/22/new-york-times-data-on-covid/</loc>
-    <lastmod>2020-09-22T16:35:52-07:00</lastmod>
+    <loc>/2020/09/23/new-york-times-data-on-covid/</loc>
+    <lastmod>2020-09-23T17:43:12-07:00</lastmod>
   </url>
   
   <url>
     <loc>/tags/plot/</loc>
-    <lastmod>2020-09-22T16:35:52-07:00</lastmod>
+    <lastmod>2020-09-23T17:43:12-07:00</lastmod>
   </url>
   
   <url>
     <loc>/categories/r/</loc>
-    <lastmod>2020-09-22T16:35:52-07:00</lastmod>
+    <lastmod>2020-09-23T17:43:12-07:00</lastmod>
   </url>
   
   <url>
     <loc>/</loc>
-    <lastmod>2020-09-22T16:35:52-07:00</lastmod>
+    <lastmod>2020-09-23T17:43:12-07:00</lastmod>
   </url>
   
   <url>
     <loc>/tags/</loc>
-    <lastmod>2020-09-22T16:35:52-07:00</lastmod>
+    <lastmod>2020-09-23T17:43:12-07:00</lastmod>
   </url>
   
   <url>
     <loc>/r/covid-maps/</loc>
-    <lastmod>2020-09-22T16:35:52-07:00</lastmod>
+    <lastmod>2020-09-23T17:43:12-07:00</lastmod>
   </url>
   
   <url>
@@ -268,12 +268,12 @@
   </url>
   
   <url>
-    <loc>/categories/reticulate/</loc>
+    <loc>/tags/reticulate/</loc>
     <lastmod>2020-02-24T00:09:44-08:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/reticulate/</loc>
+    <loc>/categories/reticulate/</loc>
     <lastmod>2020-02-24T00:09:44-08:00</lastmod>
   </url>
   
@@ -488,6 +488,11 @@
   </url>
   
   <url>
+    <loc>/courses/gsm5103/</loc>
+    <lastmod>2019-10-01T00:00:00-07:00</lastmod>
+  </url>
+  
+  <url>
     <loc>/courses/gsmpr622/</loc>
     <lastmod>2020-01-31T21:58:39-08:00</lastmod>
   </url>
@@ -599,11 +604,6 @@
   
   <url>
     <loc>/2018/10/17/tidytuesday-meets-the-economics-of-majors/</loc>
-    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/courses/gsm5103/</loc>
     <lastmod>2020-01-31T00:02:25-08:00</lastmod>
   </url>
   
@@ -788,6 +788,14 @@
   </url>
   
   <url>
+    <loc>/courses/gsm5103/arkansas/arkansasexample/</loc>
+  </url>
+  
+  <url>
+    <loc>/courses/gsm5103/censusmapping/asianmapping/</loc>
+  </url>
+  
+  <url>
     <loc>/authors/</loc>
   </url>
   
@@ -807,6 +815,26 @@
   </url>
   
   <url>
+    <loc>/courses/gsm5103/sle-mapper/localmapper/</loc>
+  </url>
+  
+  <url>
+    <loc>/courses/gsm5103/sle-mapper/slelocalandormapper/</loc>
+  </url>
+  
+  <url>
+    <loc>/courses/gsm5103/sle-mapper/slelocalmapper/</loc>
+  </url>
+  
+  <url>
+    <loc>/courses/gsm5103/basicpdxmap/</loc>
+  </url>
+  
+  <url>
+    <loc>/courses/gsm5103/patchwork/</loc>
+  </url>
+  
+  <url>
     <loc>/post/</loc>
     <lastmod>2020-01-31T03:32:11-08:00</lastmod>
   </url>
@@ -819,6 +847,14 @@
   <url>
     <loc>/publication/</loc>
     <lastmod>2020-02-02T18:23:09-08:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/courses/gsm5103/regression-notes/regressionnotes/</loc>
+  </url>
+  
+  <url>
+    <loc>/courses/gsm5103/tidyquant/tidyquant-regression/</loc>
   </url>
   
 </urlset>

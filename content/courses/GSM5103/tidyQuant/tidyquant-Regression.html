@@ -1,0 +1,47 @@
+---
+title: "tidyQuant"
+author: "Robert W. Walker"
+date: "3/11/2020"
+output: 
+   html_document:
+     self_contained: true
+     code_folding: show
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<div id="tidyquant" class="section level2">
+<h2>tidyquant</h2>
+<p>Automates a lot of equity research and calculation using <em>tidy</em> concepts.</p>
+<pre class="r"><code>library(tidyquant)
+ticker &lt;- &quot;GS&quot;
+GS &lt;- ticker %&gt;% tq_get(from=&quot;2017/02/01&quot;, to=&quot;2020/03/01&quot;)
+GS.Returns &lt;- GS %&gt;% tq_transmute(close, periodReturn, period=&quot;monthly&quot;)
+GSPC &lt;- &quot;^GSPC&quot; %&gt;% tq_get(from=&quot;2017/02/01&quot;, to=&quot;2020/03/01&quot;)
+GSPC.Returns &lt;- GSPC %&gt;% tq_transmute(close, periodReturn, period=&quot;monthly&quot;)
+My.data &lt;- left_join(GSPC.Returns,GS.Returns,by=&quot;date&quot;)
+summary(lm(monthly.returns.y~monthly.returns.x, data=My.data))</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = monthly.returns.y ~ monthly.returns.x, data = My.data)
+## 
+## Residuals:
+##       Min        1Q    Median        3Q       Max 
+## -0.166658 -0.028234  0.003572  0.036443  0.112258 
+## 
+## Coefficients:
+##                   Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)       -0.01178    0.00867  -1.359    0.183    
+## monthly.returns.x  1.37512    0.22759   6.042  6.8e-07 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.05164 on 35 degrees of freedom
+## Multiple R-squared:  0.5105, Adjusted R-squared:  0.4965 
+## F-statistic: 36.51 on 1 and 35 DF,  p-value: 6.798e-07</code></pre>
+</div>
+<div id="a-plot" class="section level2">
+<h2>A Plot</h2>
+<p><img src="/courses/GSM5103/tidyQuant/tidyquant-Regression_files/figure-html/pressure-1.png" width="672" /></p>
+</div>

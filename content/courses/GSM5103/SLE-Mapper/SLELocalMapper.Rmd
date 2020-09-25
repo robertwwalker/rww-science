@@ -1,0 +1,60 @@
+---
+title: "Local Salem Area Maps"
+author: "Robert W. Walker"
+date: "11/23/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# A Citation
+
+I found a starting point on [local maps in Seattle](https://www.littlemissdata.com/blog/maps).
+
+```{r cars}
+library(ggmap)
+library(osmdata)
+library(tidyverse)
+SLE <- get_map(getbb("Salem, OR"), source="osm")
+SLE %>% ggmap()
+```
+
+## An Oregon Map of Liquor Stores
+
+The setup for a Google Cloud account is kind of a pain and it requires a billing option.  That was annoying but eventually fixed.
+
+```{r MapMe, eval=TRUE}
+OR <- get_map(getbb("Oregon"), source="osm")
+OR %>% ggmap()
+# Get the Data on Liquor Stores from https://ryano.net/oregonliquorstores/  I copied and pasted it.  It comes from a .pdf available from OLCC.
+library(readr)
+GeoCodeLiquorStores <- read_delim(url("https://github.com/robertwwalker/DADMStuff/raw/master/GeoCodeLiquorStores.csv"), "\t", escape_double = FALSE, trim_ws = TRUE)
+GeoCodeLiquorStores$GCAdd <- str_split_fixed(GeoCodeLiquorStores$Address, fixed("("), 2)[,1]
+GeoCodeLiquorStores$GCPhN <- str_split_fixed(GeoCodeLiquorStores$Address, fixed("("), 2)[,2]
+```
+
+Now I need a new package to try and geocode this.
+
+```
+install.packages("RDSTK")
+```
+
+```{r}
+# GeoCode the addresses from above.
+# Google will charge for this, not much but it is a pain to set up
+# LatLon.LS <- geocode(GeoCodeLiquorStores$GCAdd, source = "google")
+# Embedded Output in lat lon
+LatLon.LS <-read.csv(url("https://github.com/robertwwalker/DADMStuff/raw/master/GeoCodedLiquor.csv"))
+# Merge coordinates with the dataset of liquor stores
+GCLS <- GeoCodeLiquorStores %>% mutate(lat = LatLon.LS$lat, lon=LatLon.LS$lon)
+# Rename the first variable
+names(GCLS)[1] <- "Store"
+# Create the hover
+GCLS <- GCLS %>% mutate(labelM = paste0(Store,"<br>",GCAdd,"<br>",GCPhN))
+gp <- ggmap(OR) + geom_point(data=GCLS, aes(x=lon, y=lat, text=labelM), alpha=0.2, size=2, color="magenta") + ggnetwork::theme_blank() + labs("A Map of Oregon Liquor Stores") 
+library(plotly)
+ggplotly(gp, tooltip = "text")
+```
+

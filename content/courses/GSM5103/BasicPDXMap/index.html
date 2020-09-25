@@ -1,0 +1,48 @@
+---
+title: "Making a Point Map in R"
+author: "Robert W. Walker"
+date: "12/19/2019"
+output: html_document
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<div id="mapping-points-in-r" class="section level1">
+<h1>Mapping Points in R</h1>
+<p>My goal is a streamlined and self-contained freeware map maker with points denoting addresses. It is a three step process that involves:</p>
+<ol style="list-style-type: decimal">
+<li>Get a map.<br />
+</li>
+<li>Geocode the addresses into latitude and longitude.<br />
+</li>
+<li>Combine the the two with a first map layer and a second layer on top that contains the points.</li>
+</ol>
+<p>From there, it is pretty easy to get fancy using ggplotly to put relevant text hovers into place.</p>
+<div id="get-a-map." class="section level2">
+<h2>Get a map.</h2>
+<p>There are a few map sources that R can access. Google has now made most features pay to access with generous free allocations. It is worth it to sign up if one plans to use it frequently. I have never actually paid for use but I do not use it much. There are nice instructions in a post by <a href="https://www.littlemissdata.com/blog/maps">littlemissdata</a>. The other issue is the type of map. The coordinates are crucial and I will need a map that is bounded on latitude and longitude. For that purpose, I think I will use <code>ggmap</code>. The <code>register_google</code> line invokes my Google API key.</p>
+<pre class="r"><code>library(tidyverse)
+library(ggmap)
+library(osmdata)
+register_google()
+pdx_map &lt;- get_map(getbb(&quot;portland oregon&quot;), maptype = &quot;roadmap&quot;)
+ggmap(pdx_map)</code></pre>
+<p><img src="/courses/GSM5103/BasicPDXMap/index_files/figure-html/cars-1.png" width="672" /></p>
+</div>
+<div id="load-some-data-and-geocode-it-with-google" class="section level2">
+<h2>Load Some Data and Geocode it with Google</h2>
+<p>First, to get the data. I will create some data using the Portland Center but it could easily be replaced with imported data.</p>
+<pre class="r"><code>Portland.Center &lt;- data.frame(address = c(&quot;905 NW 12th Ave, Portland, OR 97209&quot;), stringsAsFactors = FALSE)
+Portland.Center &lt;- Portland.Center %&gt;% mutate_geocode(., address)
+Portland.Center</code></pre>
+<pre><code>##                               address       lon     lat
+## 1 905 NW 12th Ave, Portland, OR 97209 -122.6836 45.5295</code></pre>
+</div>
+<div id="put-them-together" class="section level2">
+<h2>Put them together</h2>
+<p>Because they are same source geocodings, this works directly.</p>
+<pre class="r"><code>ggmap(pdx_map) + geom_point(data=Portland.Center, aes(x=lon, y=lat), size=3, color=&quot;magenta&quot;)</code></pre>
+<p><img src="/courses/GSM5103/BasicPDXMap/index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+</div>
+</div>

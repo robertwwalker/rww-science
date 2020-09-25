@@ -1,0 +1,31 @@
+---
+title: "Local Portland Area Maps"
+author: "Robert W. Walker"
+date: "11/23/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# A Citation
+
+I found a starting point on [local maps in Seattle](https://www.littlemissdata.com/blog/maps).
+
+```{r cars}
+library(ggmap)
+library(osmdata)
+library(tidyverse)
+```
+
+## A Portland Map
+
+The setup for a Google Cloud account is kind of a pain and it requires a billing option.  That was annoying but eventually fixed.
+
+```{r pressure, echo=FALSE}
+PDX <- get_map(getbb("Portland, OR"))
+PDX %>% ggmap()
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
