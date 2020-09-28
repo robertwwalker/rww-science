@@ -18,6 +18,7 @@ output:
 options(htmltools.dir.version = FALSE, knitr.table.format = "html")
 knitr::opts_chunk$set(warning=FALSE, message=FALSE, fig.showtext = TRUE, fig.height=6, fig.retina=3, dev="CairoJPEG")
 library(tidyverse)
+library(xaringanExtra)
 ```
 
 
@@ -42,6 +43,8 @@ install.packages("radiant")
 ```
 
 It can be started via Add-ins.
+
+
 
 ---
 ## Probability: The Logic of Science
