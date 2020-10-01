@@ -58,7 +58,7 @@ style_mono_dark(
   padding: 8px 32px 8px 32px;
 }
 code.r{
-  font-size: 24px;
+  font-size: 18px;
 }
 pre {
   font-size: 24px
@@ -134,7 +134,17 @@ Of two forms:
 
 --
 
-We will first focus on the former.
+We will first focus first on the former.
+
+
+---
+## Let's think about an election....
+
+We are in the election season.  The key to modeling the winner of a presidential election is the electoral college in the United States.  In almost all cases, this involves a series of binomial variables.
+
+In particular, almost all states award electors for the statewide winner of the election and DC has electoral votes.  We have polls that give us likely vote percentages at the state level.  Call it `p.win` for the probability of winning.  We can then deploy `rbinom(1000, size=1, p.win)` to derive a hypothetical election.  Rinse and repeat to calculate a hypothetical electoral college winner.  But how do we calculate `p-win`?
+
+** We infer it from polling data **
 
 ---
 ## Qualitative: The Binomial
@@ -787,3 +797,14 @@ The method is similar to the approach for comparing proportions.  We will:
 1. Take a random sample of the same size as the original for each group *with replacement*.  
 2. Calculate the average for each group and the difference in the averages.  
 3. Repeat steps 1 and 2 $k$ times for $k$ samples.
+
+---
+## The Resampling Distribution of the Difference
+
+```{r}
+WNHExp <- Discrimination %>% filter(Ethnicity %in% c("White not Hispanic"))
+HExp <- Discrimination %>% filter(Ethnicity %in% c("Hispanic"))
+Expenditure.Difference <- data.frame(Diff=ResampleProps::ResampleDiffMeans(WNHExp$Expenditures,HExp$Expenditures))
+Expenditure.Difference %>% ggplot(., aes(x=Diff)) + geom_density() + theme_minimal() + labs(x="Average Difference in Average White and Hispanic Expenditures")
+```
+

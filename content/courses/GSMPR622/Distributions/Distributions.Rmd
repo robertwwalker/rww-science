@@ -62,6 +62,15 @@ The differences are sums versus integrals.  Why?
 
 The probability of exactly any given value is zero on a true continuum.
 
+
+---
+
+# Functions
+
+Probability distributions are mathematical formulae expressing likelihood for some set of qualities or quantities.  They have names: nouns.  They also have verbs: parameters.  Like a proper English sentence, both are required.
+
+
+
 ***
 
 Expectation
