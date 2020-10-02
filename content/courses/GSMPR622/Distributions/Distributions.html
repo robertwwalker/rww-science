@@ -54,6 +54,11 @@ output:
 </ul>
 <p>The probability of exactly any given value is zero on a true continuum.</p>
 <hr />
+</div>
+<div id="functions" class="section level1">
+<h1>Functions</h1>
+<p>Probability distributions are mathematical formulae expressing likelihood for some set of qualities or quantities. They have names: nouns. They also have verbs: parameters. Like a proper English sentence, both are required.</p>
+<hr />
 <p>Expectation</p>
 <p><span class="math display">\[E(X) = \sum_{x \in X} x \cdot Pr(X=x)\]</span>
 <span class="math display">\[E(X) = \int_{x \in X} x \cdot f(x)dx\]</span></p>
@@ -85,17 +90,17 @@ z.Income &lt;- scale(Hypo.Income)
 Income &lt;- data.frame(Hypo.Income,z.Income)
 # Show the data.frame
 head(Income)</code></pre>
-<pre><code>##   Hypo.Income   z.Income
-## 1    48801.01 -0.6255279
-## 2    34062.18 -2.1141629
-## 3    33470.04 -2.1739702
-## 4    44528.33 -1.0570726
-## 5    61209.77  0.6277688
-## 6    61974.95  0.7050531</code></pre>
+<pre><code>##   Hypo.Income    z.Income
+## 1    74085.80  1.86161521
+## 2    58826.16  0.36545663
+## 3    61074.39  0.58588771
+## 4    54930.01 -0.01654923
+## 5    47791.23 -0.71648342
+## 6    51546.87 -0.34825537</code></pre>
 <pre class="r"><code>table(sign(z.Income))</code></pre>
 <pre><code>## 
 ##  -1   1 
-## 506 494</code></pre>
+## 507 493</code></pre>
 </div>
 <div id="probability-distributions" class="section level1">
 <h1>Probability Distributions</h1>
@@ -125,18 +130,18 @@ hist(Jars)</code></pre>
 <pre class="r"><code>table(Jars &lt; 15.95 | Jars &gt; 16.05) # | captures or</code></pre>
 <pre><code>## 
 ## FALSE  TRUE 
-##   476   524</code></pre>
+##   494   506</code></pre>
 <ul>
 <li>Scale (z) the jars and summarise them.</li>
 </ul>
 <pre class="r"><code>summary(scale(Jars))</code></pre>
 <pre><code>##        V1          
-##  Min.   :-1.64877  
-##  1st Qu.:-0.90285  
-##  Median :-0.02279  
+##  Min.   :-1.68891  
+##  1st Qu.:-0.88975  
+##  Median :-0.02968  
 ##  Mean   : 0.00000  
-##  3rd Qu.: 0.86755  
-##  Max.   : 1.77453</code></pre>
+##  3rd Qu.: 0.86581  
+##  Max.   : 1.76630</code></pre>
 <pre class="r"><code>sd(scale(Jars))</code></pre>
 <pre><code>## [1] 1</code></pre>
 <hr />
