@@ -1311,8 +1311,15 @@ Plot.COVID("2020-10-03", Map.Me)
 Plot.COVID("2020-10-04", Map.Me)
 ```
 
-
 ## The Result for 10/05/2020
+
+```{r}
+Plot.COVID("2020-10-05", Map.Me)
+```
+
+
+
+## The Result for 10/06/2020
 
 ```{r, warning=FALSE, message=FALSE}
 library(widgetframe); library(ggthemes); library(RColorBrewer)
