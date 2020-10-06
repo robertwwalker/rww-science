@@ -5,7 +5,7 @@
     <link>/tags/</link>
       <atom:link href="/tags/index.xml" rel="self" type="application/rss+xml" />
     <description>Tags</description>
-    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© 2018</copyright><lastBuildDate>Wed, 30 Sep 2020 00:00:00 +0000</lastBuildDate>
+    <generator>Source Themes Academic (https://sourcethemes.com/academic/)</generator><language>en-us</language><copyright>© 2018</copyright><lastBuildDate>Mon, 05 Oct 2020 00:00:00 +0000</lastBuildDate>
     <image>
       <url>/img/portrait.jpg</url>
       <title>Tags</title>
@@ -15,7 +15,7 @@
     <item>
       <title>gganimate</title>
       <link>/tags/gganimate/</link>
-      <pubDate>Wed, 30 Sep 2020 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 05 Oct 2020 00:00:00 +0000</pubDate>
       <guid>/tags/gganimate/</guid>
       <description></description>
     </item>
@@ -23,7 +23,7 @@
     <item>
       <title>gmailr</title>
       <link>/tags/gmailr/</link>
-      <pubDate>Wed, 30 Sep 2020 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 05 Oct 2020 00:00:00 +0000</pubDate>
       <guid>/tags/gmailr/</guid>
       <description></description>
     </item>
@@ -31,7 +31,7 @@
     <item>
       <title>plot</title>
       <link>/tags/plot/</link>
-      <pubDate>Wed, 30 Sep 2020 00:00:00 +0000</pubDate>
+      <pubDate>Mon, 05 Oct 2020 00:00:00 +0000</pubDate>
       <guid>/tags/plot/</guid>
       <description></description>
     </item>
