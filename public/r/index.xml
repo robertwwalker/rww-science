@@ -15,7 +15,7 @@
     <item>
       <title>COVID-19 in Oregon</title>
       <link>/r/covid/</link>
-      <pubDate>Tue, 06 Oct 2020 00:00:00 +0000</pubDate>
+      <pubDate>Wed, 07 Oct 2020 00:00:00 +0000</pubDate>
       <guid>/r/covid/</guid>
       <description>
 &lt;script src=&#34;/rmarkdown-libs/header-attrs/header-attrs.js&#34;&gt;&lt;/script&gt;
@@ -43,7 +43,7 @@ library(patchwork)
 library(hrbrthemes)
 library(widgetframe)
 load(url(paste0(&amp;quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&amp;quot;,Sys.Date(),&amp;quot;.RData&amp;quot;)))&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Verifying, these data are current as of 2020-10-06 according to the loaded dataset.&lt;/p&gt;
+&lt;p&gt;Verifying, these data are current as of 2020-10-07 according to the loaded dataset.&lt;/p&gt;
 &lt;div id=&#34;a-running-commentary-on-the-data&#34; class=&#34;section level3&#34;&gt;
 &lt;h3&gt;A running commentary on the data&lt;/h3&gt;
 &lt;p&gt;The central takeaway is that the underlying data reports are constantly changing over time. They are reporting new and different quantities and this destroys the comparability of data. Some of it can be reconstructed but much of it is only useful going forward and keeping the schema constant. I hope that will happen at some point.&lt;/p&gt;
@@ -388,6 +388,194 @@ Vents %&amp;gt;%
     </item>
     
     <item>
+      <title>The Duality of Hypothesis Tests and Confidence Intervals</title>
+      <link>/r/hypothesis-tests-confidence-intervals/</link>
+      <pubDate>Tue, 06 Oct 2020 00:00:00 +0000</pubDate>
+      <guid>/r/hypothesis-tests-confidence-intervals/</guid>
+      <description>
+&lt;script src=&#34;/rmarkdown-libs/header-attrs/header-attrs.js&#34;&gt;&lt;/script&gt;
+
+
+&lt;div id=&#34;cars-data&#34; class=&#34;section level1&#34;&gt;
+&lt;h1&gt;cars data&lt;/h1&gt;
+&lt;p&gt;I will work with R’s internal dataset on cars: &lt;code&gt;cars&lt;/code&gt;. There are two variables in the dataset, this is what they look like.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(cars)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/Hypothesis-Tests-Confidence-Intervals/index_files/figure-html/cars-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;div id=&#34;an-hypothesis-test&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;An Hypothesis Test&lt;/h2&gt;
+&lt;p&gt;I will work with the speed variable. The hypothesis to advance is that 17 or greater is the true average speed. The alternative must then be that the average speed is less than 17. Knowing only the sample size, I can figure out what &lt;span class=&#34;math inline&#34;&gt;\(t\)&lt;/span&gt; must be to reject 17 or greater and conclude that the true average must be less with 90% probability. The sample mean would have to be at least &lt;code&gt;qt(0.1, 49)&lt;/code&gt; standard errors below 17 to rule out a mean of 17 or greater. Now let’s see what we have. Let me skim the data for the relevant information.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(skimr)
+skim(cars)&lt;/code&gt;&lt;/pre&gt;
+&lt;table&gt;
+&lt;caption&gt;&lt;span id=&#34;tab:unnamed-chunk-1&#34;&gt;Table 1: &lt;/span&gt;Data summary&lt;/caption&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Name&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;cars&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Number of rows&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;50&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Number of columns&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;_______________________&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Column type frequency:&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;numeric&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;2&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;________________________&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;Group variables&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;None&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;&lt;strong&gt;Variable type: numeric&lt;/strong&gt;&lt;/p&gt;
+&lt;table&gt;
+&lt;thead&gt;
+&lt;tr class=&#34;header&#34;&gt;
+&lt;th align=&#34;left&#34;&gt;skim_variable&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;n_missing&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;complete_rate&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;mean&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;sd&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p0&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p25&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p50&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p75&lt;/th&gt;
+&lt;th align=&#34;right&#34;&gt;p100&lt;/th&gt;
+&lt;th align=&#34;left&#34;&gt;hist&lt;/th&gt;
+&lt;/tr&gt;
+&lt;/thead&gt;
+&lt;tbody&gt;
+&lt;tr class=&#34;odd&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;speed&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;15.40&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;5.29&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;4&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;12&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;15&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;19&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;25&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▂▅▇▇▃&lt;/td&gt;
+&lt;/tr&gt;
+&lt;tr class=&#34;even&#34;&gt;
+&lt;td align=&#34;left&#34;&gt;dist&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;42.98&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;25.77&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;26&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;36&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;56&lt;/td&gt;
+&lt;td align=&#34;right&#34;&gt;120&lt;/td&gt;
+&lt;td align=&#34;left&#34;&gt;▅▇▅▂▁&lt;/td&gt;
+&lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+&lt;p&gt;Doing the math by hand, I get:&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ t = \frac{\overline{x} - \mu}{\frac{s}{\sqrt{n}}} = \frac{15.4 - 17}{\frac{5.29}{\sqrt{50}}} = -2.14 \]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;Interpreting the result, the sample mean is 2.14 standard errors below the hypothetical mean of 17. The probability of a sample mean of 15.4 [or smaller] given a true average of 17, this standard deviation and sample size is &lt;code&gt;pt(-2.14, 49)&lt;/code&gt; = 0.0186798. Notice that probability is less than 0.1; thus with at least 90% confidence, the true mean is not 17 or greater and thus must be smaller. Assuming the hypothetical mean [17 or greater] is true, the likelihood of generating a sample mean of 15.4 is only 0.0187 and this is far less than the 10% permissible outside of 90% confidence. Indeed, any sample mean more than 1.299 standard errors below 17 would be too small to sustain the belief that the true mean is 17 or greater because &lt;code&gt;qt(0.1, 49)&lt;/code&gt; is -1.299. Put in the original metric, any sample mean below 16.0285747 would require a rejection of the claim that the true mean is 17 or greater with 90% confidence.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-confidence-interval&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;The Confidence Interval&lt;/h2&gt;
+&lt;p&gt;The confidence interval is always centered on the sample mean. Rearranging the equation above and solving for &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; given the &lt;span class=&#34;math inline&#34;&gt;\(t\)&lt;/span&gt; above, we get&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ \mu = \overline{x} - t(\frac{s}{\sqrt{n}}) = 15.4 - (-1.299*\frac{5.29}{\sqrt{50}}) = 16.37143 \]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;With 90% confidence, given this sample mean, the true value should be less than 16.37143.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-native-t.test&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;The native &lt;code&gt;t.test&lt;/code&gt;&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;t.test(cars$speed, conf.level = 0.9, alternative = &amp;quot;less&amp;quot;, mu=17)&lt;/code&gt;&lt;/pre&gt;
+&lt;pre&gt;&lt;code&gt;## 
+##  One Sample t-test
+## 
+## data:  cars$speed
+## t = -2.1397, df = 49, p-value = 0.01869
+## alternative hypothesis: true mean is less than 17
+## 90 percent confidence interval:
+##      -Inf 16.37143
+## sample estimates:
+## mean of x 
+##      15.4&lt;/code&gt;&lt;/pre&gt;
+&lt;/div&gt;
+&lt;div id=&#34;simplifying&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;Simplifying?&lt;/h2&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ t(\frac{s}{\sqrt{n}}) = \overline{x} - \mu \]&lt;/span&gt; can lead to either:&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[  \overline{x} - t(\frac{s}{\sqrt{n}}) = \mu \]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;or&lt;/p&gt;
+&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ \overline{x} = \mu + t(\frac{s}{\sqrt{n}}) \]&lt;/span&gt;&lt;/p&gt;
+&lt;p&gt;So a minus &lt;span class=&#34;math inline&#34;&gt;\(t\)&lt;/span&gt; will be below &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; but above &lt;span class=&#34;math inline&#34;&gt;\(\overline{x}\)&lt;/span&gt; and a positive &lt;span class=&#34;math inline&#34;&gt;\(t\)&lt;/span&gt; will be above &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; but below &lt;span class=&#34;math inline&#34;&gt;\(\overline{x}\)&lt;/span&gt;.&lt;br /&gt;
+1. An hypothesis test given &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; with an alternative that is less must then render an upper bound given &lt;span class=&#34;math inline&#34;&gt;\(\overline{x}\)&lt;/span&gt;.&lt;br /&gt;
+2. An hypothesis test given &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; with an alternative that is greater must then render a lower bound given &lt;span class=&#34;math inline&#34;&gt;\(\overline{x}\)&lt;/span&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;a-graphical-representation&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;A graphical representation&lt;/h2&gt;
+&lt;p&gt;Given a sample size &lt;span class=&#34;math inline&#34;&gt;\(n\)&lt;/span&gt;, some unknown constant &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; and satisfaction of Lindeberg’s condition, the sampling distribution of the sample mean follows a &lt;span class=&#34;math inline&#34;&gt;\(t\)&lt;/span&gt; distribution with degrees of freedom &lt;span class=&#34;math inline&#34;&gt;\(n-1\)&lt;/span&gt;. To render a graphical representation, let’s arbitrarily set n to 50, as in the above example. Here is a plot.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(seq(-5,5, by=0.01), dt(seq(-5,5, by=0.01), df=49), xlab=expression(paste(&amp;quot;x-bar -&amp;quot;,mu,&amp;quot; (measured in std. errors of the mean)&amp;quot;, sep=&amp;quot;&amp;quot;)), ylab=&amp;quot;Density&amp;quot;, type=&amp;quot;l&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/Hypothesis-Tests-Confidence-Intervals/index_files/figure-html/unnamed-chunk-3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;div id=&#34;inverting-the-scale-transformation&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;Inverting the &lt;code&gt;scale&lt;/code&gt; transformation&lt;/h3&gt;
+&lt;p&gt;We can now reverse the scale by the standard error of the mean. In the above example, it is 0.7478. Measured in miles per hour, we obtain:&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(seq(-5,5, by=0.01)*0.7478, dt(seq(-5,5, by=0.01), df=49), xlab=expression(paste(&amp;quot;x-bar -&amp;quot;,mu,&amp;quot; (measured in mph)&amp;quot;, sep=&amp;quot;&amp;quot;)), ylab=&amp;quot;Density&amp;quot;, type=&amp;quot;l&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/Hypothesis-Tests-Confidence-Intervals/index_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;Now we will take the concrete example above.&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-hypothesis-test&#34; class=&#34;section level3&#34;&gt;
+&lt;h3&gt;The Hypothesis Test&lt;/h3&gt;
+&lt;p&gt;We claim that the true mean is 17 or greater. Now we need center the distribution above as though the claim is true.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(x=17+seq(-5,5, by=0.01)*0.7478, dt(seq(-5,5, by=0.01), df=49), xlab=expression(paste(mu,&amp;quot; (measured in mph)&amp;quot;, sep=&amp;quot;&amp;quot;)), ylab=&amp;quot;Density&amp;quot;, type=&amp;quot;l&amp;quot;)
+abline(v=17, col=&amp;quot;red&amp;quot;)
+polygon(x = c(17+seq(0,5, by=0.01)*0.7478, 21), y = c(0, dt(seq(0,5, by=0.01), df=49)), col = &amp;quot;red&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/Hypothesis-Tests-Confidence-Intervals/index_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;The sample mean is estimated to be 15.4. How likely is that?&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(x=17+seq(-5,5, by=0.01)*0.7478, dt(seq(-5,5, by=0.01), df=49), xlab=expression(paste(&amp;quot;x-bar -&amp;quot;,mu,&amp;quot; (measured in mph)&amp;quot;, sep=&amp;quot;&amp;quot;)), ylab=&amp;quot;Density&amp;quot;, type=&amp;quot;l&amp;quot;)
+abline(v=17, col=&amp;quot;red&amp;quot;)
+abline(v=15.4, col=&amp;quot;blue&amp;quot;)
+polygon(x = c(17+seq(0,5, by=0.01)*0.7478, 21), y = c(0, dt(seq(0,5, by=0.01), df=49)), col = &amp;quot;red&amp;quot;)
+polygon(x = c(12, 17+seq(-5,-2.14, by=0.01)*0.7478), y = c(dt(seq(-5,-2.14, by=0.01), df=49), 0), col = &amp;quot;blue&amp;quot;)
+abline(h=0, col=&amp;quot;black&amp;quot;)
+abline(v=17 + qt(0.1, df=49)*0.7874, col=&amp;quot;black&amp;quot;, lty=3)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/Hypothesis-Tests-Confidence-Intervals/index_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;The probability of seeing such a small sample mean if the true average is 17 is only 0.01869. The probability above the dotted black line is 0.9 with 0.1 below. WIth 90% confidence, anything below this would be sufficient evidence to reject the claim that the true average is 17 or above.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-confidence-interval-1&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;The Confidence Interval&lt;/h2&gt;
+&lt;p&gt;Let’s take the sample mean as the center and work out a confidence interval at 90%. It’s exactly the 16.37143 gives above.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(x=15.4+seq(-5,5, by=0.01)*0.7478, dt(seq(-5,5, by=0.01), df=49), xlab=expression(paste(mu,&amp;quot; | x-bar (measured in mph)&amp;quot;, sep=&amp;quot;&amp;quot;)), ylab=&amp;quot;Density&amp;quot;, type=&amp;quot;l&amp;quot;)
+abline(v=15.4, col=&amp;quot;blue&amp;quot;)
+abline(v=15.4 - qt(0.1, df=49)*0.7478, col=&amp;quot;black&amp;quot;, lty=3)
+polygon(x = c(11, 15.4+seq(-5,1.3, by=0.01)*0.7478), y = c(dt(seq(-5,1.3, by=0.01), df=49), 0), col = &amp;quot;blue&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/Hypothesis-Tests-Confidence-Intervals/index_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;p&gt;As an aside, 17 has exactly 0.01869 probability above it shown in orange.&lt;/p&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(x=15.4+seq(-5,5, by=0.01)*0.7478, dt(seq(-5,5, by=0.01), df=49), xlab=expression(paste(mu,&amp;quot; | x-bar (measured in mph)&amp;quot;, sep=&amp;quot;&amp;quot;)), ylab=&amp;quot;Density&amp;quot;, type=&amp;quot;l&amp;quot;)
+abline(v=15.4, col=&amp;quot;blue&amp;quot;)
+abline(v=15.4 - qt(0.1, df=49)*0.7478, col=&amp;quot;black&amp;quot;, lty=3)
+polygon(x = c(11, 15.4+seq(-5,1.3, by=0.01)*0.7478), y = c(dt(seq(-5,1.3, by=0.01), df=49), 0), col = &amp;quot;blue&amp;quot;)
+polygon(x = c(15.4+seq(2.14,5, by=0.01)*0.7478, 17), y = c(dt(seq(2.14,5, by=0.01), df=49), 0), col = &amp;quot;orange&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/Hypothesis-Tests-Confidence-Intervals/index_files/figure-html/unnamed-chunk-8-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;/div&gt;
+</description>
+    </item>
+    
+    <item>
       <title>COVID-19 Maps for Oregon</title>
       <link>/r/covid-maps/</link>
       <pubDate>Wed, 30 Sep 2020 00:00:00 +0000</pubDate>
@@ -410,7 +598,7 @@ library(gganimate)
 library(patchwork)
 library(hrbrthemes)
 load(url(paste0(&amp;quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&amp;quot;,Sys.Date(),&amp;quot;.RData&amp;quot;)))&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;Verifying, these data are current as of 2020-10-05 according to the loaded dataset.&lt;/p&gt;
+&lt;p&gt;Verifying, these data are current as of 2020-10-06 according to the loaded dataset.&lt;/p&gt;
 &lt;div id=&#34;a-base-map&#34; class=&#34;section level1&#34;&gt;
 &lt;h1&gt;A base map&lt;/h1&gt;
 &lt;p&gt;To build a map to work from, I need a map library. Load the &lt;code&gt;tigris&lt;/code&gt; library then grab the map as an &lt;code&gt;sf&lt;/code&gt; object; there is a &lt;code&gt;geom_sf&lt;/code&gt; that makes them easy to work with. Finally, I join the map to the data.&lt;/p&gt;
@@ -1442,6 +1630,11 @@ data %&amp;gt;% filter(date==date1) %&amp;gt;%
 &lt;/div&gt;
 &lt;div id=&#34;the-result-for-10062020&#34; class=&#34;section level2&#34;&gt;
 &lt;h2&gt;The Result for 10/06/2020&lt;/h2&gt;
+&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;Plot.COVID(&amp;quot;2020-10-06&amp;quot;, Map.Me)&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;&lt;img src=&#34;/R/covid-maps/index_files/figure-html/unnamed-chunk-206-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
+&lt;/div&gt;
+&lt;div id=&#34;the-result-for-10072020&#34; class=&#34;section level2&#34;&gt;
+&lt;h2&gt;The Result for 10/07/2020&lt;/h2&gt;
 &lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(widgetframe); library(ggthemes); library(RColorBrewer)
 Map.Me &amp;lt;- Map.Me %&amp;gt;% 
   mutate(TTip = paste0(&amp;quot;Deaths: &amp;quot;,Deaths,&amp;quot;&amp;lt;br&amp;gt; Negative Tests:&amp;quot;,Negative.test.results))
@@ -1459,7 +1652,7 @@ Res1 &amp;lt;- ggplot(Res.1, aes(geometry=geometry, fill=Number.of.cases, label=
 ggp &amp;lt;- ggplotly(Res1)
 frameWidget(ggp)&lt;/code&gt;&lt;/pre&gt;
 &lt;div id=&#34;htmlwidget-1&#34; style=&#34;width:100%;height:480px;&#34; class=&#34;widgetframe html-widget&#34;&gt;&lt;/div&gt;
-&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-1&#34;&gt;{&#34;x&#34;:{&#34;url&#34;:&#34;/R/covid-maps/index_files/figure-html//widgets/widget_unnamed-chunk-207.html&#34;,&#34;options&#34;:{&#34;xdomain&#34;:&#34;*&#34;,&#34;allowfullscreen&#34;:false,&#34;lazyload&#34;:false}},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
+&lt;script type=&#34;application/json&#34; data-for=&#34;htmlwidget-1&#34;&gt;{&#34;x&#34;:{&#34;url&#34;:&#34;/R/covid-maps/index_files/figure-html//widgets/widget_unnamed-chunk-208.html&#34;,&#34;options&#34;:{&#34;xdomain&#34;:&#34;*&#34;,&#34;allowfullscreen&#34;:false,&#34;lazyload&#34;:false}},&#34;evals&#34;:[],&#34;jsHooks&#34;:[]}&lt;/script&gt;
 &lt;/div&gt;
 &lt;/div&gt;
 </description>
@@ -3852,193 +4045,6 @@ abline(h=pnorm(0.2), col=&amp;quot;magenta&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
 ## sample estimates:
 ##    p 
 ## 0.51&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-</description>
-    </item>
-    
-    <item>
-      <title>The Duality of Hypothesis Tests and Confidence Intervals</title>
-      <link>/r/hypothesis-tests-confidence-intervals/</link>
-      <pubDate>Wed, 16 Oct 2019 00:00:00 +0000</pubDate>
-      <guid>/r/hypothesis-tests-confidence-intervals/</guid>
-      <description>
-
-
-&lt;div id=&#34;cars-data&#34; class=&#34;section level1&#34;&gt;
-&lt;h1&gt;cars data&lt;/h1&gt;
-&lt;p&gt;I will work with R’s internal dataset on cars: &lt;code&gt;cars&lt;/code&gt;. There are two variables in the dataset, this is what they look like.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(cars)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/R/Hypothesis-Tests-Confidence-Intervals/index_files/figure-html/cars-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;div id=&#34;an-hypothesis-test&#34; class=&#34;section level2&#34;&gt;
-&lt;h2&gt;An Hypothesis Test&lt;/h2&gt;
-&lt;p&gt;I will work with the speed variable. The hypothesis to advance is that 17 or greater is the true average speed. The alternative must then be that the average speed is less than 17. Knowing only the sample size, I can figure out what &lt;span class=&#34;math inline&#34;&gt;\(t\)&lt;/span&gt; must be to reject 17 or greater and conclude that the true average must be less with 90% probability. The sample mean would have to be at least &lt;code&gt;qt(0.1, 49)&lt;/code&gt; standard errors below 17 to rule out a mean of 17 or greater. Now let’s see what we have. Let me skim the data for the relevant information.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;library(skimr)
-skim(cars)&lt;/code&gt;&lt;/pre&gt;
-&lt;table&gt;
-&lt;caption&gt;&lt;span id=&#34;tab:unnamed-chunk-1&#34;&gt;Table 1: &lt;/span&gt;Data summary&lt;/caption&gt;
-&lt;tbody&gt;
-&lt;tr class=&#34;odd&#34;&gt;
-&lt;td align=&#34;left&#34;&gt;Name&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;cars&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr class=&#34;even&#34;&gt;
-&lt;td align=&#34;left&#34;&gt;Number of rows&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;50&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr class=&#34;odd&#34;&gt;
-&lt;td align=&#34;left&#34;&gt;Number of columns&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;2&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr class=&#34;even&#34;&gt;
-&lt;td align=&#34;left&#34;&gt;_______________________&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr class=&#34;odd&#34;&gt;
-&lt;td align=&#34;left&#34;&gt;Column type frequency:&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr class=&#34;even&#34;&gt;
-&lt;td align=&#34;left&#34;&gt;numeric&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;2&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr class=&#34;odd&#34;&gt;
-&lt;td align=&#34;left&#34;&gt;________________________&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr class=&#34;even&#34;&gt;
-&lt;td align=&#34;left&#34;&gt;Group variables&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;None&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;p&gt;&lt;strong&gt;Variable type: numeric&lt;/strong&gt;&lt;/p&gt;
-&lt;table&gt;
-&lt;thead&gt;
-&lt;tr class=&#34;header&#34;&gt;
-&lt;th align=&#34;left&#34;&gt;skim_variable&lt;/th&gt;
-&lt;th align=&#34;right&#34;&gt;n_missing&lt;/th&gt;
-&lt;th align=&#34;right&#34;&gt;complete_rate&lt;/th&gt;
-&lt;th align=&#34;right&#34;&gt;mean&lt;/th&gt;
-&lt;th align=&#34;right&#34;&gt;sd&lt;/th&gt;
-&lt;th align=&#34;right&#34;&gt;p0&lt;/th&gt;
-&lt;th align=&#34;right&#34;&gt;p25&lt;/th&gt;
-&lt;th align=&#34;right&#34;&gt;p50&lt;/th&gt;
-&lt;th align=&#34;right&#34;&gt;p75&lt;/th&gt;
-&lt;th align=&#34;right&#34;&gt;p100&lt;/th&gt;
-&lt;th align=&#34;left&#34;&gt;hist&lt;/th&gt;
-&lt;/tr&gt;
-&lt;/thead&gt;
-&lt;tbody&gt;
-&lt;tr class=&#34;odd&#34;&gt;
-&lt;td align=&#34;left&#34;&gt;speed&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;15.40&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;5.29&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;4&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;12&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;15&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;19&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;25&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;▂▅▇▇▃&lt;/td&gt;
-&lt;/tr&gt;
-&lt;tr class=&#34;even&#34;&gt;
-&lt;td align=&#34;left&#34;&gt;dist&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;0&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;1&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;42.98&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;25.77&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;2&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;26&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;36&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;56&lt;/td&gt;
-&lt;td align=&#34;right&#34;&gt;120&lt;/td&gt;
-&lt;td align=&#34;left&#34;&gt;▅▇▅▂▁&lt;/td&gt;
-&lt;/tr&gt;
-&lt;/tbody&gt;
-&lt;/table&gt;
-&lt;p&gt;Doing the math by hand, I get:&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ t = \frac{\overline{x} - \mu}{\frac{s}{\sqrt{n}}} = \frac{15.4 - 17}{\frac{5.29}{\sqrt{50}}} = -2.14 \]&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;Interpreting the result, the sample mean is 2.14 standard errors below the hypothetical mean of 17. The probability of a sample mean of 15.4 [or smaller] given a true average of 17, this standard deviation and sample size is &lt;code&gt;pt(-2.14, 49)&lt;/code&gt; = 0.0186798. Notice that probability is less than 0.1; thus with at least 90% confidence, the true mean is not 17 or greater and thus must be smaller. Assuming the hypothetical mean [17 or greater] is true, the likelihood of generating a sample mean of 15.4 is only 0.0187 and this is far less than the 10% permissible outside of 90% confidence. Indeed, any sample mean more than 1.299 standard errors below 17 would be too small to sustain the belief that the true mean is 17 or greater because &lt;code&gt;qt(0.1, 49)&lt;/code&gt; is -1.299. Put in the original metric, any sample mean below 16.0285747 would require a rejection of the claim that the true mean is 17 or greater with 90% confidence.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div id=&#34;the-confidence-interval&#34; class=&#34;section level2&#34;&gt;
-&lt;h2&gt;The Confidence Interval&lt;/h2&gt;
-&lt;p&gt;The confidence interval is always centered on the sample mean. Rearranging the equation above and solving for &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; given the &lt;span class=&#34;math inline&#34;&gt;\(t\)&lt;/span&gt; above, we get&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ \mu = \overline{x} - t(\frac{s}{\sqrt{n}}) = 15.4 - (-1.299*\frac{5.29}{\sqrt{50}}) = 16.37143 \]&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;With 90% confidence, given this sample mean, the true value should be less than 16.37143.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div id=&#34;the-native-t.test&#34; class=&#34;section level2&#34;&gt;
-&lt;h2&gt;The native &lt;code&gt;t.test&lt;/code&gt;&lt;/h2&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;t.test(cars$speed, conf.level = 0.9, alternative = &amp;quot;less&amp;quot;, mu=17)&lt;/code&gt;&lt;/pre&gt;
-&lt;pre&gt;&lt;code&gt;## 
-##  One Sample t-test
-## 
-## data:  cars$speed
-## t = -2.1397, df = 49, p-value = 0.01869
-## alternative hypothesis: true mean is less than 17
-## 90 percent confidence interval:
-##      -Inf 16.37143
-## sample estimates:
-## mean of x 
-##      15.4&lt;/code&gt;&lt;/pre&gt;
-&lt;/div&gt;
-&lt;div id=&#34;simplifying&#34; class=&#34;section level2&#34;&gt;
-&lt;h2&gt;Simplifying?&lt;/h2&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ t(\frac{s}{\sqrt{n}}) = \overline{x} - \mu \]&lt;/span&gt; can lead to either:&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[  \overline{x} - t(\frac{s}{\sqrt{n}}) = \mu \]&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;or&lt;/p&gt;
-&lt;p&gt;&lt;span class=&#34;math display&#34;&gt;\[ \overline{x} = \mu + t(\frac{s}{\sqrt{n}}) \]&lt;/span&gt;&lt;/p&gt;
-&lt;p&gt;So a minus &lt;span class=&#34;math inline&#34;&gt;\(t\)&lt;/span&gt; will be below &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; but above &lt;span class=&#34;math inline&#34;&gt;\(\overline{x}\)&lt;/span&gt; and a positive &lt;span class=&#34;math inline&#34;&gt;\(t\)&lt;/span&gt; will be above &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; but below &lt;span class=&#34;math inline&#34;&gt;\(\overline{x}\)&lt;/span&gt;.&lt;br /&gt;
-1. An hypothesis test given &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; with an alternative that is less must then render an upper bound given &lt;span class=&#34;math inline&#34;&gt;\(\overline{x}\)&lt;/span&gt;.&lt;br /&gt;
-2. An hypothesis test given &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; with an alternative that is greater must then render a lower bound given &lt;span class=&#34;math inline&#34;&gt;\(\overline{x}\)&lt;/span&gt;.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div id=&#34;a-graphical-representation&#34; class=&#34;section level2&#34;&gt;
-&lt;h2&gt;A graphical representation&lt;/h2&gt;
-&lt;p&gt;Given a sample size &lt;span class=&#34;math inline&#34;&gt;\(n\)&lt;/span&gt;, some unknown constant &lt;span class=&#34;math inline&#34;&gt;\(\mu\)&lt;/span&gt; and satisfaction of Lindeberg’s condition, the sampling distribution of the sample mean follows a &lt;span class=&#34;math inline&#34;&gt;\(t\)&lt;/span&gt; distribution with degrees of freedom &lt;span class=&#34;math inline&#34;&gt;\(n-1\)&lt;/span&gt;. To render a graphical representation, let’s arbitrarily set n to 50, as in the above example. Here is a plot.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(seq(-5,5, by=0.01), dt(seq(-5,5, by=0.01), df=49), xlab=expression(paste(&amp;quot;x-bar -&amp;quot;,mu,&amp;quot; (measured in std. errors of the mean)&amp;quot;, sep=&amp;quot;&amp;quot;)), ylab=&amp;quot;Density&amp;quot;, type=&amp;quot;l&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/R/Hypothesis-Tests-Confidence-Intervals/index_files/figure-html/unnamed-chunk-3-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;div id=&#34;inverting-the-scale-transformation&#34; class=&#34;section level3&#34;&gt;
-&lt;h3&gt;Inverting the &lt;code&gt;scale&lt;/code&gt; transformation&lt;/h3&gt;
-&lt;p&gt;We can now reverse the scale by the standard error of the mean. In the above example, it is 0.7478. Measured in miles per hour, we obtain:&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(seq(-5,5, by=0.01)*0.7478, dt(seq(-5,5, by=0.01), df=49), xlab=expression(paste(&amp;quot;x-bar -&amp;quot;,mu,&amp;quot; (measured in mph)&amp;quot;, sep=&amp;quot;&amp;quot;)), ylab=&amp;quot;Density&amp;quot;, type=&amp;quot;l&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/R/Hypothesis-Tests-Confidence-Intervals/index_files/figure-html/unnamed-chunk-4-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;p&gt;Now we will take the concrete example above.&lt;/p&gt;
-&lt;/div&gt;
-&lt;div id=&#34;the-hypothesis-test&#34; class=&#34;section level3&#34;&gt;
-&lt;h3&gt;The Hypothesis Test&lt;/h3&gt;
-&lt;p&gt;We claim that the true mean is 17 or greater. Now we need center the distribution above as though the claim is true.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(x=17+seq(-5,5, by=0.01)*0.7478, dt(seq(-5,5, by=0.01), df=49), xlab=expression(paste(mu,&amp;quot; (measured in mph)&amp;quot;, sep=&amp;quot;&amp;quot;)), ylab=&amp;quot;Density&amp;quot;, type=&amp;quot;l&amp;quot;)
-abline(v=17, col=&amp;quot;red&amp;quot;)
-polygon(x = c(17+seq(0,5, by=0.01)*0.7478, 21), y = c(0, dt(seq(0,5, by=0.01), df=49)), col = &amp;quot;red&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/R/Hypothesis-Tests-Confidence-Intervals/index_files/figure-html/unnamed-chunk-5-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;p&gt;The sample mean is estimated to be 15.4. How likely is that?&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(x=17+seq(-5,5, by=0.01)*0.7478, dt(seq(-5,5, by=0.01), df=49), xlab=expression(paste(&amp;quot;x-bar -&amp;quot;,mu,&amp;quot; (measured in mph)&amp;quot;, sep=&amp;quot;&amp;quot;)), ylab=&amp;quot;Density&amp;quot;, type=&amp;quot;l&amp;quot;)
-abline(v=17, col=&amp;quot;red&amp;quot;)
-abline(v=15.4, col=&amp;quot;blue&amp;quot;)
-polygon(x = c(17+seq(0,5, by=0.01)*0.7478, 21), y = c(0, dt(seq(0,5, by=0.01), df=49)), col = &amp;quot;red&amp;quot;)
-polygon(x = c(12, 17+seq(-5,-2.14, by=0.01)*0.7478), y = c(dt(seq(-5,-2.14, by=0.01), df=49), 0), col = &amp;quot;blue&amp;quot;)
-abline(h=0, col=&amp;quot;black&amp;quot;)
-abline(v=17 + qt(0.1, df=49)*0.7874, col=&amp;quot;black&amp;quot;, lty=3)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/R/Hypothesis-Tests-Confidence-Intervals/index_files/figure-html/unnamed-chunk-6-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;p&gt;The probability of seeing such a small sample mean if the true average is 17 is only 0.01869. The probability above the dotted black line is 0.9 with 0.1 below. WIth 90% confidence, anything below this would be sufficient evidence to reject the claim that the true average is 17 or above.&lt;/p&gt;
-&lt;/div&gt;
-&lt;/div&gt;
-&lt;div id=&#34;the-confidence-interval-1&#34; class=&#34;section level2&#34;&gt;
-&lt;h2&gt;The Confidence Interval&lt;/h2&gt;
-&lt;p&gt;Let’s take the sample mean as the center and work out a confidence interval at 90%. It’s exactly the 16.37143 gives above.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(x=15.4+seq(-5,5, by=0.01)*0.7478, dt(seq(-5,5, by=0.01), df=49), xlab=expression(paste(mu,&amp;quot; | x-bar (measured in mph)&amp;quot;, sep=&amp;quot;&amp;quot;)), ylab=&amp;quot;Density&amp;quot;, type=&amp;quot;l&amp;quot;)
-abline(v=15.4, col=&amp;quot;blue&amp;quot;)
-abline(v=15.4 - qt(0.1, df=49)*0.7478, col=&amp;quot;black&amp;quot;, lty=3)
-polygon(x = c(11, 15.4+seq(-5,1.3, by=0.01)*0.7478), y = c(dt(seq(-5,1.3, by=0.01), df=49), 0), col = &amp;quot;blue&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/R/Hypothesis-Tests-Confidence-Intervals/index_files/figure-html/unnamed-chunk-7-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;p&gt;As an aside, 17 has exactly 0.01869 probability above it shown in orange.&lt;/p&gt;
-&lt;pre class=&#34;r&#34;&gt;&lt;code&gt;plot(x=15.4+seq(-5,5, by=0.01)*0.7478, dt(seq(-5,5, by=0.01), df=49), xlab=expression(paste(mu,&amp;quot; | x-bar (measured in mph)&amp;quot;, sep=&amp;quot;&amp;quot;)), ylab=&amp;quot;Density&amp;quot;, type=&amp;quot;l&amp;quot;)
-abline(v=15.4, col=&amp;quot;blue&amp;quot;)
-abline(v=15.4 - qt(0.1, df=49)*0.7478, col=&amp;quot;black&amp;quot;, lty=3)
-polygon(x = c(11, 15.4+seq(-5,1.3, by=0.01)*0.7478), y = c(dt(seq(-5,1.3, by=0.01), df=49), 0), col = &amp;quot;blue&amp;quot;)
-polygon(x = c(15.4+seq(2.14,5, by=0.01)*0.7478, 17), y = c(dt(seq(2.14,5, by=0.01), df=49), 0), col = &amp;quot;orange&amp;quot;)&lt;/code&gt;&lt;/pre&gt;
-&lt;p&gt;&lt;img src=&#34;/R/Hypothesis-Tests-Confidence-Intervals/index_files/figure-html/unnamed-chunk-8-1.png&#34; width=&#34;672&#34; /&gt;&lt;/p&gt;
-&lt;/div&gt;
 &lt;/div&gt;
 </description>
     </item>

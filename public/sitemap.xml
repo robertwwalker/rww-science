@@ -3,63 +3,68 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   
   <url>
-    <loc>/2020/10/06/analyzing-the-trump-campaign-s-solicitations/</loc>
-    <lastmod>2020-10-06T10:59:50-07:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/categories/</loc>
-    <lastmod>2020-10-06T10:59:50-07:00</lastmod>
+    <lastmod>2020-10-06T13:22:30-07:00</lastmod>
   </url>
   
   <url>
     <loc>/r/covid/</loc>
-    <lastmod>2020-10-06T10:59:50-07:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/categories/dataviz/</loc>
-    <lastmod>2020-10-06T10:59:50-07:00</lastmod>
+    <lastmod>2020-10-06T13:22:30-07:00</lastmod>
   </url>
   
   <url>
     <loc>/tags/gganimate/</loc>
-    <lastmod>2020-10-06T10:59:50-07:00</lastmod>
+    <lastmod>2020-10-06T13:22:30-07:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/gmailr/</loc>
-    <lastmod>2020-10-06T10:59:50-07:00</lastmod>
-  </url>
-  
-  <url>
-    <loc>/2020/10/06/new-york-times-data-on-covid/</loc>
-    <lastmod>2020-10-06T10:59:50-07:00</lastmod>
+    <loc>/2020/10/07/new-york-times-data-on-covid/</loc>
+    <lastmod>2020-10-06T13:22:30-07:00</lastmod>
   </url>
   
   <url>
     <loc>/tags/plot/</loc>
-    <lastmod>2020-10-06T10:59:50-07:00</lastmod>
+    <lastmod>2020-10-06T13:22:30-07:00</lastmod>
   </url>
   
   <url>
     <loc>/categories/r/</loc>
-    <lastmod>2020-10-06T10:59:50-07:00</lastmod>
+    <lastmod>2020-10-06T13:22:30-07:00</lastmod>
   </url>
   
   <url>
     <loc>/</loc>
-    <lastmod>2020-10-06T10:59:50-07:00</lastmod>
+    <lastmod>2020-10-06T13:22:30-07:00</lastmod>
   </url>
   
   <url>
     <loc>/tags/</loc>
-    <lastmod>2020-10-06T10:59:50-07:00</lastmod>
+    <lastmod>2020-10-06T13:22:30-07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/2020/10/06/analyzing-the-trump-campaign-s-solicitations/</loc>
+    <lastmod>2020-10-06T13:22:30-07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/categories/dataviz/</loc>
+    <lastmod>2020-10-06T13:22:30-07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/tags/gmailr/</loc>
+    <lastmod>2020-10-06T13:22:30-07:00</lastmod>
+  </url>
+  
+  <url>
+    <loc>/r/hypothesis-tests-confidence-intervals/</loc>
+    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
   </url>
   
   <url>
     <loc>/r/covid-maps/</loc>
-    <lastmod>2020-10-06T10:59:50-07:00</lastmod>
+    <lastmod>2020-10-06T13:22:30-07:00</lastmod>
   </url>
   
   <url>
@@ -423,11 +428,6 @@
   </url>
   
   <url>
-    <loc>/r/hypothesis-tests-confidence-intervals/</loc>
-    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
-  </url>
-  
-  <url>
     <loc>/tags/art/</loc>
     <lastmod>2020-01-31T00:02:25-08:00</lastmod>
   </url>
@@ -513,13 +513,13 @@
   </url>
   
   <url>
-    <loc>/categories/tidytext/</loc>
-    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
+    <loc>/tags/tidytext/</loc>
+    <lastmod>2020-02-05T13:19:17-08:00</lastmod>
   </url>
   
   <url>
-    <loc>/tags/tidytext/</loc>
-    <lastmod>2020-02-05T13:19:17-08:00</lastmod>
+    <loc>/categories/tidytext/</loc>
+    <lastmod>2020-01-31T00:02:25-08:00</lastmod>
   </url>
   
   <url>

@@ -676,10 +676,23 @@
     
     
     <div>
+      <h2><a href="/r/hypothesis-tests-confidence-intervals/" >The Duality of Hypothesis Tests and Confidence Intervals</a></h2>
+      <div class="article-style">
+        
+          cars data I will work with R’s internal dataset on cars: cars. There are two variables in the dataset, this is what they look like.
+plot(cars) An Hypothesis Test I will work with the speed variable. The hypothesis to advance is that 17 or greater is the true average speed. The alternative must then be that the average speed is less than 17. Knowing only the sample size, I can figure out what \(t\) must be to reject 17 or greater and conclude that the true average must be less with 90% probability.
+        
+      </div>
+    </div>
+  
+    
+    
+    
+    <div>
       <h2><a href="/r/covid-maps/" >COVID-19 Maps for Oregon</a></h2>
       <div class="article-style">
         
-          library(tigris) library(rgdal) library(htmltools) library(viridis) library(sf) library(ggrepel) library(ggthemes) library(gganimate) library(patchwork) library(hrbrthemes) load(url(paste0(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&quot;,Sys.Date(),&quot;.RData&quot;))) Verifying, these data are current as of 2020-10-05 according to the loaded dataset.
+          library(tigris) library(rgdal) library(htmltools) library(viridis) library(sf) library(ggrepel) library(ggthemes) library(gganimate) library(patchwork) library(hrbrthemes) load(url(paste0(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&quot;,Sys.Date(),&quot;.RData&quot;))) Verifying, these data are current as of 2020-10-06 according to the loaded dataset.
 A base map To build a map to work from, I need a map library. Load the tigris library then grab the map as an sf object; there is a geom_sf that makes them easy to work with. Finally, I join the map to the data.
         
       </div>
@@ -772,19 +785,6 @@ Loading the Data Bonds &lt;- read.csv(url(&quot;https://raw.githubusercontent.co
           NB: This was last updated on March 25, 2020.
 Building Oregon COVID data I have a few days of data now. To rebuild it, I will have to use the waybackmachine. The files that I need to locate and follow updates to this page from Oregon’s OHA.
  A Scraper Let me explain the logic for the scraper. NB: I had to rewrite it; the original versions of the website had three tables without data on hospitalizations.
-        
-      </div>
-    </div>
-  
-    
-    
-    
-    <div>
-      <h2><a href="/r/predicting-regressions/" >Breaking Predict for lm() with dollar.sign</a></h2>
-      <div class="article-style">
-        
-          As is often the case with \(R\), there are many ways to do things that are equivalent or nearly equivalent. It is the nearly equivalent part that is frustrating; one of the first encounters with this can come with attempts to predict a regression. The ultimate source of troubles is scoping and environments; the use of the $ syntax sometimes has unintended side effects.
-lm() Syntax is Important I will refer to an example from a recent homework on regression.
         
       </div>
     </div>
