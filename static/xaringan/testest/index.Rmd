@@ -134,8 +134,15 @@ Of two forms:
 
 --
 
-We will first focus first on the former.
+We will first focus first on the former.  But before we do, one new concept.  
 
+---
+## The **standard error**  
+
+It is the *degree of variability of a statistic* just as the standard deviation is the *variability in data*.  
+
+- The standard error of a proportion is $\sqrt{\frac{\pi(1-\pi)}{n}}$ while the standard deviation of a binomial sample would be $\sqrt{n*\pi(1-\pi)}$.  
+- The standard deviation of a sample is $s$ while the standard error of the mean is $\frac{s}{\sqrt{n}}$.  The average has less variability than the data and it shrinks as n increases.
 
 ---
 ## Let's think about an election....
@@ -611,6 +618,11 @@ If we assume [or recognize it is generally unknownable] that the male and female
 $$SE(\hat{p}_{M} - \hat{p}_{F}) =  \sqrt{ \underbrace{\frac{\hat{p}_{M}(1-\hat{p}_{M})}{n_{M}}}_{Males} + \underbrace{\frac{\hat{p}_{F}(1-\hat{p}_{F})}{n_{F}}}_{Females}}$$  
 
 ---
+# The chi-square and the test of independence
+
+The sum of $k$ squared standard normal (z or Normal(0,1)) variates has a $\chi^2$ distribution with $k$ degrees of freedom.  Two sample tests of proportions can be reported using the chi-square metric as well.  $R$'s `prop.test` does this by default.
+
+---
 # Inference for Data
 
 Of two forms:
@@ -627,7 +639,12 @@ We will now turn to the latter.
 
 **What is the average level of expenditure by Ethnicity?**
 
-Why do we focus on the average?  Under general conditions, the average has a known probability distribution even if the distribution of the underlying data is unknown.  This is a result of the central limit theorem and a generic property of averaging.
+Why do we focus on the average?  Under general conditions, the average has a known probability distribution even if the distribution of the underlying data is unknown.  This is a result of the central limit theorem and a generic property of averaging.  We can derive this distribution, it is known as $t$ and has one parameter: degrees of freedom.
+
+---
+## The `t` distribution
+
+Results from the combination of a normal random variable in the numerator and a $\chi^2$ random variable in the denominator.
 
 ---
 ## Expenditures
@@ -808,3 +825,24 @@ Expenditure.Difference <- data.frame(Diff=ResampleProps::ResampleDiffMeans(WNHEx
 Expenditure.Difference %>% ggplot(., aes(x=Diff)) + geom_density() + theme_minimal() + labs(x="Average Difference in Average White and Hispanic Expenditures")
 ```
 
+## The `t-test`
+
+For independent samples, the *Behrens-Fisher* problem dictates that comparisons of means have implications for the variance that must be reconciled.  In short, we must assume that the variance and standard deviation of the samples are either the same [t] or different [Welch -- the default].
+
+---
+
+```{r}
+Discrimination %>% filter(Ethnicity %in% c("White not Hispanic","Hispanic")) %>% t.test(Expenditures~Ethnicity, data=., conf.lev=0.9)
+```
+
+---
+
+```{r}
+Discrimination %>% filter(Ethnicity %in% c("White not Hispanic","Hispanic")) %>% t.test(Expenditures~Ethnicity, data=., conf.lev=0.9, var.equal=TRUE)
+```
+
+## Paired t-test
+
+Twinsberg.
+
+The paired t-test is a single sample average applied to the measured difference.  The key is knowing who is matched with whom.
