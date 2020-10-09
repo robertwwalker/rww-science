@@ -85,7 +85,8 @@ OHA.Corona <- function(website, date) {
     mutate(date=as.Date(date), 
            Scraped.date = as.Date(Scraped.date,"%m.%d.%y"),
            Available = comma.rm.to.numeric(na_if(Available, "pending")),
-           Total = comma.rm.to.numeric(na_if(Total.staffed, "pending"))) %>% 
+           Total = comma.rm.to.numeric(Total.staffed),
+           Total.staffed = Total) %>% 
            pivot_longer(c(Available, Total), names_to = "Type", values_to = "Number") %>% 
     mutate(Hospital.Capacity = Hospital.capacity.and.usage5) %>% select(-Hospital.capacity.and.usage5) # 5
   # Extract the COVID data
