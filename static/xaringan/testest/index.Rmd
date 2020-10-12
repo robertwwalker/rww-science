@@ -170,6 +170,11 @@ Two key features:
 
 Now let's grab some data and frame a question.
 
+```{r}
+load(url("https://github.com/robertwwalker/DADMStuff/raw/master/Big-Week-6-RSpace.RData"))
+```
+
+
 .footnote[<sup>1</sup> **If this does not hold, we will seek the homogenous groups in which it does.**]
 
 ---
@@ -841,8 +846,45 @@ Discrimination %>% filter(Ethnicity %in% c("White not Hispanic","Hispanic")) %>%
 Discrimination %>% filter(Ethnicity %in% c("White not Hispanic","Hispanic")) %>% t.test(Expenditures~Ethnicity, data=., conf.lev=0.9, var.equal=TRUE)
 ```
 
+---
 ## Paired t-test
 
 Twinsberg.
 
-The paired t-test is a single sample average applied to the measured difference.  The key is knowing who is matched with whom.
+The paired t-test is a single sample average applied to the measured difference.  The key is knowing who is matched with whom and believing that there is at least some variation in both outcomes that depends on the unit in question.  Take the example of *Concrete*.
+
+---
+
+Twelve distinct batches of concrete are subjected to an additive.  Does the additive strengthen concrete?
+
+```{r}
+Concrete
+```
+
+
+---
+## The Average Difference
+
+For each batch, we can calculate the difference between those with an without an additive.  To do so, we need *mutate*.  Let's plot it.
+
+```{r}
+Concrete <- Concrete %>% mutate(Difference = Additive - No.Add)
+hist(Concrete$Difference)
+```
+
+---
+## Resampling
+
+```{r}
+Concrete.Diff <- data.frame(Sampled.Mean.Difference = ResampleMean(Concrete$Difference))
+quantile(Concrete.Diff$Sampled.Mean.Difference, probs=c(0.025, 0.975))
+Concrete.Diff %>% ggplot() + aes(x=Sampled.Mean.Difference) + geom_density()
+```
+
+---
+## t-test
+
+```{r}
+t.test(Concrete$Difference)
+```
+With 95% confidence, the additive increases the average break-weight of the concrete by 37.3 to 279.4 pounds.
