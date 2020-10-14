@@ -865,7 +865,7 @@ Concrete
 ---
 ## The Average Difference
 
-For each batch, we can calculate the difference between those with an without an additive.  To do so, we need *mutate*.  Let's plot it.
+For each batch, we can calculate the difference between those with and without an additive.  To do so, we need *mutate*.  Let's plot it.
 
 ```{r}
 Concrete <- Concrete %>% mutate(Difference = Additive - No.Add)
@@ -878,6 +878,12 @@ hist(Concrete$Difference)
 ```{r}
 Concrete.Diff <- data.frame(Sampled.Mean.Difference = ResampleMean(Concrete$Difference))
 quantile(Concrete.Diff$Sampled.Mean.Difference, probs=c(0.025, 0.975))
+```
+
+---
+## Graphic
+
+```{r}
 Concrete.Diff %>% ggplot() + aes(x=Sampled.Mean.Difference) + geom_density()
 ```
 
@@ -888,3 +894,5 @@ Concrete.Diff %>% ggplot() + aes(x=Sampled.Mean.Difference) + geom_density()
 t.test(Concrete$Difference)
 ```
 With 95% confidence, the additive increases the average break-weight of the concrete by 37.3 to 279.4 pounds.
+
+---

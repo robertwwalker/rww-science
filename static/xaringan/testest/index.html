@@ -4,7 +4,7 @@
     <title>Inference: One and Two-Samples</title>
     <meta charset="utf-8" />
     <meta name="author" content="Robert W. Walker" />
-    <meta name="date" content="2020-10-12" />
+    <meta name="date" content="2020-10-13" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <script src="libs/htmlwidgets/htmlwidgets.js"></script>
     <script src="libs/jquery/jquery.min.js"></script>
@@ -24,7 +24,7 @@ class: center, middle, inverse, title-slide
 # Inference: One and Two-Samples
 ## Discrimination and Concrete
 ### Robert W. Walker
-### 2020-10-12
+### 2020-10-13
 
 ---
 
@@ -1147,7 +1147,7 @@ Concrete
 ---
 ## The Average Difference
 
-For each batch, we can calculate the difference between those with an without an additive.  To do so, we need *mutate*.  Let's plot it.
+For each batch, we can calculate the difference between those with and without an additive.  To do so, we need *mutate*.  Let's plot it.
 
 
 ```r
@@ -1171,11 +1171,15 @@ quantile(Concrete.Diff$Sampled.Mean.Difference, probs=c(0.025, 0.975))
 ##  58.33333 254.16667
 ```
 
+---
+## Graphic
+
+
 ```r
 Concrete.Diff %&gt;% ggplot() + aes(x=Sampled.Mean.Difference) + geom_density()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-38-1.jpeg" width="504" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-39-1.jpeg" width="504" /&gt;
 
 ---
 ## t-test
@@ -1199,6 +1203,8 @@ t.test(Concrete$Difference)
 ##  158.3333
 ```
 With 95% confidence, the additive increases the average break-weight of the concrete by 37.3 to 279.4 pounds.
+
+---
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
