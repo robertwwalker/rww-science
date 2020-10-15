@@ -188,7 +188,7 @@ Res1 <- Res.1 %>%
    theme_map() + 
    labs(title="Positive COVID-19 Tests in Oregon", subtitle=paste0(Sys.Date(),": \nonly counties with 10+ tests shown."), x="", y="", caption="Made with R, ggplot2, and ggrepel by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19", fill="Percent Positive")
 GGP <- ggplotly(Res1)
-frameWidget(GGP)
+GGP
 ```
 
 # Testing in Oregon
