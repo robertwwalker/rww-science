@@ -51,7 +51,7 @@ library(patchwork)
 library(hrbrthemes)
 library(widgetframe); library(here)
 library(magrittr)
-load(paste0(here(),"/content/R/COVID/data/OregonCOVID",Sys.Date(),".RData"))
+load(paste0(here(),"/content/R/COVID/data/OregonCOVID",Sys.Date()-1,".RData"))
 load(paste0(here(),"/content/R/COVID/data/CountyMap.RData"))
 ```
 
