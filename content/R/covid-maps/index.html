@@ -4,10 +4,10 @@ author: Robert W. Walker
 date: '2020-09-30'
 ---
 
-<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
-<script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
-<script src="/rmarkdown-libs/pymjs/pym.v1.js"></script>
-<script src="/rmarkdown-libs/widgetframe-binding/widgetframe.js"></script>
+<script src="index_files/header-attrs/header-attrs.js"></script>
+<script src="index_files/htmlwidgets/htmlwidgets.js"></script>
+<script src="index_files/pymjs/pym.v1.js"></script>
+<script src="index_files/widgetframe-binding/widgetframe.js"></script>
 
 
 <pre class="r"><code>library(tigris)
@@ -21,7 +21,7 @@ library(gganimate)
 library(patchwork)
 library(hrbrthemes)
 load(url(paste0(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&quot;,Sys.Date(),&quot;.RData&quot;)))</code></pre>
-<p>Verifying, these data are current as of 2020-10-12 according to the loaded dataset.</p>
+<p>Verifying, these data are current as of 2020-10-13 according to the loaded dataset.</p>
 <div id="a-base-map" class="section level1">
 <h1>A base map</h1>
 <p>To build a map to work from, I need a map library. Load the <code>tigris</code> library then grab the map as an <code>sf</code> object; there is a <code>geom_sf</code> that makes them easy to work with. Finally, I join the map to the data.</p>
@@ -49,1045 +49,1050 @@ data %&gt;% filter(date==date1) %&gt;%
 <h2>The Result for 03/18/2020</h2>
 <p>This is the first date for which I can find data. The <code>waybackmachine</code> was crucial.</p>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-18&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03192020" class="section level2">
 <h2>The Result for 03/19/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-19&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03202020" class="section level2">
 <h2>The Result for 03/20/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-20&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03212020" class="section level2">
 <h2>The Result for 03/21/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-21&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03222020" class="section level2">
 <h2>The Result for 03/22/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-22&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03232020" class="section level2">
 <h2>The Result for 03/23/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-23&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03242020" class="section level2">
 <h2>The Result for 03/24/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-24&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03252020" class="section level2">
 <h2>The Result for 03/25/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-25&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03262020" class="section level2">
 <h2>The Result for 03/26/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-26&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03272020" class="section level2">
 <h2>The Result for 03/27/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-27&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03282020" class="section level2">
 <h2>The Result for 03/28/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-28&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03292020" class="section level2">
 <h2>The Result for 03/29/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-29&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03302020" class="section level2">
 <h2>The Result for 03/30/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-30&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-03312020" class="section level2">
 <h2>The Result for 03/31/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-03-31&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-04012020" class="section level2">
 <h2>The Result for 04/01/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-04-01&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-04022020" class="section level2">
 <h2>The Result for 04/02/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-04-02&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-04032020" class="section level2">
 <h2>The Result for 04/03/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-04-03&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-04042020" class="section level2">
 <h2>The Result for 04/04/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-04-04&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-04052020" class="section level2">
 <h2>The Result for 04/05/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-04-05&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-04062020" class="section level2">
 <h2>The Result for 04/06/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-04-06&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-04072020" class="section level2">
 <h2>The Result for 04/07/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-04-07&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-25-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-04082020" class="section level2">
 <h2>The Result for 04/08/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-04-08&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-04092020" class="section level2">
 <h2>The Result for 04/09/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-04-09&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-04102020" class="section level2">
 <h2>The Result for 04/10/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-04-10&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-28-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-04112020" class="section level2">
 <h2>The Result for 04/11/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-04-11&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-29-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-29-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-04122020" class="section level2">
 <h2>The Result for 04/12/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-04-12&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-30-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-30-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-04132020" class="section level2">
 <h2>The Result for 04/13/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-04-13&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-31-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-31-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-04142020" class="section level2">
 <h2>The Result for 04/14/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-04-14&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-32-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-32-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-04152020" class="section level2">
 <h2>The Result for 04/15/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-04-15&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-33-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-33-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-04162020" class="section level2">
 <h2>The Result for 04/16/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-04-16&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-34-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-34-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-04172020" class="section level2">
 <h2>The Result for 04/17/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-04-17&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-35-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-35-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-04182020" class="section level2">
 <h2>The Result for 04/18/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-04-18&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-36-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-36-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-04192020" class="section level2">
 <h2>The Result for 04/19/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-04-19&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-37-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-37-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-04202020" class="section level2">
 <h2>The Result for 04/20/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-04-20&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-38-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-38-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-04212020" class="section level2">
 <h2>The Result for 04/21/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-04-21&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-39-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-39-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-04222020" class="section level2">
 <h2>The Result for 04/22/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-04-22&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-40-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-40-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-04232020" class="section level2">
 <h2>The Result for 04/23/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-04-23&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-41-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-41-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-04242020" class="section level2">
 <h2>The Result for 04/24/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-04-24&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-42-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-42-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-04252020" class="section level2">
 <h2>The Result for 04/25/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-04-25&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-43-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-43-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-04262020" class="section level2">
 <h2>The Result for 04/26/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-04-26&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-44-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-44-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-04272020" class="section level2">
 <h2>The Result for 04/27/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-04-27&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-45-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-45-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-04282020" class="section level2">
 <h2>The Result for 04/28/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-04-28&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-46-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-46-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-04292020" class="section level2">
 <h2>The Result for 04/29/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-04-29&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-47-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-47-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-04302020" class="section level2">
 <h2>The Result for 04/30/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-04-30&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-48-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-48-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-05012020" class="section level2">
 <h2>The Result for 05/01/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-05-01&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-49-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-49-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-05022020" class="section level2">
 <h2>The Result for 05/02/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-05-02&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-50-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-50-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-05032020" class="section level2">
 <h2>The Result for 05/03/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-05-03&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-51-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-51-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-05042020" class="section level2">
 <h2>The Result for 05/04/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-05-04&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-52-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-52-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-05052020" class="section level2">
 <h2>The Result for 05/05/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-05-05&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-53-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-53-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-05062020" class="section level2">
 <h2>The Result for 05/06/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-05-06&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-54-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-54-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-05072020" class="section level2">
 <h2>The Result for 05/07/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-05-07&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-55-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-55-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-05082020" class="section level2">
 <h2>The Result for 05/08/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-05-08&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-56-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-56-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-05092020" class="section level2">
 <h2>The Result for 05/09/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-05-09&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-57-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-57-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-05102020" class="section level2">
 <h2>The Result for 05/10/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-05-10&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-58-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-58-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-05112020" class="section level2">
 <h2>The Result for 05/11/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-05-11&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-59-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-59-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-05122020" class="section level2">
 <h2>The Result for 05/12/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-05-12&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-60-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-60-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-05132020" class="section level2">
 <h2>The Result for 05/13/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-05-13&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-61-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-61-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-05142020" class="section level2">
 <h2>The Result for 05/14/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-05-14&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-62-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-62-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-05152020" class="section level2">
 <h2>The Result for 05/15/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-05-15&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-63-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-63-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-05162020" class="section level2">
 <h2>The Result for 05/16/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-05-16&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-64-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-64-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-05172020" class="section level2">
 <h2>The Result for 05/17/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-05-17&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-65-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-65-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-05182020" class="section level2">
 <h2>The Result for 05/18/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-05-18&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-66-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-66-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-05192020" class="section level2">
 <h2>The Result for 05/19/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-05-19&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-67-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-67-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-05202020" class="section level2">
 <h2>The Result for 05/20/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-05-20&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-68-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-68-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-05212020" class="section level2">
 <h2>The Result for 05/21/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-05-21&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-69-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-69-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-05222020" class="section level2">
 <h2>The Result for 05/22/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-05-22&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-70-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-70-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-05232020" class="section level2">
 <h2>The Result for 05/23/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-05-23&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-71-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-71-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-05242020" class="section level2">
 <h2>The Result for 05/24/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-05-24&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-72-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-72-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-05252020" class="section level2">
 <h2>The Result for 05/25/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-05-25&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-73-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-73-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-05262020" class="section level2">
 <h2>The Result for 05/26/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-05-26&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-74-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-74-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-05272020" class="section level2">
 <h2>The Result for 05/27/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-05-27&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-75-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-75-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-05282020" class="section level2">
 <h2>The Result for 05/28/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-05-28&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-76-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-76-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-05292020" class="section level2">
 <h2>The Result for 05/29/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-05-29&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-77-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-77-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-05302020" class="section level2">
 <h2>The Result for 05/30/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-05-30&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-78-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-78-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-05312020" class="section level2">
 <h2>The Result for 05/31/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-05-31&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-79-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-79-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-06012020" class="section level2">
 <h2>The Result for 06/01/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-06-01&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-80-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-80-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-06022020" class="section level2">
 <h2>The Result for 06/02/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-06-02&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-81-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-81-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-06032020" class="section level2">
 <h2>The Result for 06/03/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-06-03&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-82-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-82-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-06042020" class="section level2">
 <h2>The Result for 06/04/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-06-04&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-83-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-83-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-06052020" class="section level2">
 <h2>The Result for 06/05/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-06-05&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-84-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-84-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-06062020" class="section level2">
 <h2>The Result for 06/06/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-06-06&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-85-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-85-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-06072020" class="section level2">
 <h2>The Result for 06/07/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-06-07&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-86-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-86-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-06082020" class="section level2">
 <h2>The Result for 06/08/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-06-08&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-87-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-87-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-06092020" class="section level2">
 <h2>The Result for 06/09/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-06-09&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-88-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-88-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-06102020" class="section level2">
 <h2>The Result for 06/10/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-06-10&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-89-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-89-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-06112020" class="section level2">
 <h2>The Result for 06/11/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-06-11&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-90-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-90-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-06122020" class="section level2">
 <h2>The Result for 06/12/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-06-12&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-91-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-91-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-06132020" class="section level2">
 <h2>The Result for 06/13/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-06-13&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-92-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-92-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-06142020" class="section level2">
 <h2>The Result for 06/14/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-06-14&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-93-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-93-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-06152020" class="section level2">
 <h2>The Result for 06/15/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-06-15&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-94-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-94-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-06162020" class="section level2">
 <h2>The Result for 06/16/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-06-16&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-95-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-95-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-06182020" class="section level2">
 <h2>The Result for 06/18/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-06-18&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-96-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-96-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-06192020" class="section level2">
 <h2>The Result for 06/19/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-06-19&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-97-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-97-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-06202020" class="section level2">
 <h2>The Result for 06/20/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-06-20&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-98-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-98-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-06212020" class="section level2">
 <h2>The Result for 06/21/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-06-21&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-99-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-99-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-06222020" class="section level2">
 <h2>The Result for 06/22/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-06-22&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-100-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-100-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-06232020" class="section level2">
 <h2>The Result for 06/23/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-06-23&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-101-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-101-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-06242020" class="section level2">
 <h2>The Result for 06/24/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-06-24&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-102-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-102-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-06252020" class="section level2">
 <h2>The Result for 06/25/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-06-25&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-103-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-103-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-06262020" class="section level2">
 <h2>The Result for 06/26/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-06-26&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-104-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-104-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-06272020" class="section level2">
 <h2>The Result for 06/27/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-06-27&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-105-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-105-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-06282020" class="section level2">
 <h2>The Result for 06/28/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-06-28&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-106-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-106-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-06292020" class="section level2">
 <h2>The Result for 06/29/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-06-29&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-107-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-107-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-06302020" class="section level2">
 <h2>The Result for 06/30/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-06-30&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-108-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-108-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-07012020" class="section level2">
 <h2>The Result for 07/01/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-07-01&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-109-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-109-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-07022020" class="section level2">
 <h2>The Result for 07/02/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-07-02&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-110-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-110-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-07032020" class="section level2">
 <h2>The Result for 07/03/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-07-03&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-111-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-111-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-07042020" class="section level2">
 <h2>The Result for 07/04/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-07-04&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-112-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-112-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-07052020" class="section level2">
 <h2>The Result for 07/05/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-07-05&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-113-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-113-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-07062020" class="section level2">
 <h2>The Result for 07/06/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-07-06&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-114-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-114-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-07072020" class="section level2">
 <h2>The Result for 07/07/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-07-07&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-115-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-115-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-07082020" class="section level2">
 <h2>The Result for 07/08/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-07-08&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-116-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-116-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-07092020" class="section level2">
 <h2>The Result for 07/09/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-07-09&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-117-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-117-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-07102020" class="section level2">
 <h2>The Result for 07/10/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-07-10&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-118-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-118-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-07112020" class="section level2">
 <h2>The Result for 07/11/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-07-11&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-119-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-119-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-07122020" class="section level2">
 <h2>The Result for 07/12/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-07-12&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-120-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-120-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-07132020" class="section level2">
 <h2>The Result for 07/13/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-07-13&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-121-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-121-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-07142020" class="section level2">
 <h2>The Result for 07/14/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-07-14&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-122-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-122-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-07152020" class="section level2">
 <h2>The Result for 07/15/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-07-15&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-123-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-123-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-07162020" class="section level2">
 <h2>The Result for 07/16/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-07-16&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-124-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-124-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-07172020" class="section level2">
 <h2>The Result for 07/17/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-07-17&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-125-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-125-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-07182020" class="section level2">
 <h2>The Result for 07/18/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-07-18&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-126-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-126-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-07192020" class="section level2">
 <h2>The Result for 07/19/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-07-19&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-127-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-127-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-07202020" class="section level2">
 <h2>The Result for 07/20/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-07-20&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-128-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-128-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-07212020" class="section level2">
 <h2>The Result for 07/21/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-07-21&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-129-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-129-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-07222020" class="section level2">
 <h2>The Result for 07/22/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-07-22&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-130-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-130-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-07232020" class="section level2">
 <h2>The Result for 07/23/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-07-23&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-131-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-131-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-07242020" class="section level2">
 <h2>The Result for 07/24/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-07-24&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-132-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-132-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-07252020" class="section level2">
 <h2>The Result for 07/25/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-07-25&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-133-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-133-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-07262020" class="section level2">
 <h2>The Result for 07/26/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-07-26&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-134-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-134-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-07272020" class="section level2">
 <h2>The Result for 07/27/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-07-27&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-135-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-135-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-07282020" class="section level2">
 <h2>The Result for 07/28/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-07-28&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-136-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-136-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-07292020" class="section level2">
 <h2>The Result for 07/29/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-07-29&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-137-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-137-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-07302020" class="section level2">
 <h2>The Result for 07/30/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-07-30&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-138-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-138-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-07312020" class="section level2">
 <h2>The Result for 07/31/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-07-31&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-139-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-139-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-08012020" class="section level2">
 <h2>The Result for 08/01/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-08-01&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-140-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-140-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-08022020" class="section level2">
 <h2>The Result for 08/02/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-08-02&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-141-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-141-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-08032020" class="section level2">
 <h2>The Result for 08/03/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-08-03&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-142-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-142-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-08042020" class="section level2">
 <h2>The Result for 08/04/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-08-04&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-143-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-143-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-08052020" class="section level2">
 <h2>The Result for 08/05/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-08-05&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-144-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-144-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-08062020" class="section level2">
 <h2>The Result for 08/06/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-08-06&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-145-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-145-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-08072020" class="section level2">
 <h2>The Result for 08/07/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-08-07&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-146-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-146-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-08082020" class="section level2">
 <h2>The Result for 08/08/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-08-08&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-147-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-147-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-08092020" class="section level2">
 <h2>The Result for 08/09/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-08-09&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-148-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-148-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-08102020" class="section level2">
 <h2>The Result for 08/10/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-08-10&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-149-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-149-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-08112020" class="section level2">
 <h2>The Result for 08/11/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-08-11&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-150-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-150-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-08122020" class="section level2">
 <h2>The Result for 08/12/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-08-12&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-151-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-151-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-08132020" class="section level2">
 <h2>The Result for 08/13/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-08-13&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-152-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-152-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-08142020" class="section level2">
 <h2>The Result for 08/14/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-08-14&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-153-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-153-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-08152020" class="section level2">
 <h2>The Result for 08/15/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-08-15&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-154-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-154-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-08162020" class="section level2">
 <h2>The Result for 08/16/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-08-16&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-155-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-155-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-08172020" class="section level2">
 <h2>The Result for 08/17/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-08-17&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-156-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-156-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-08182020" class="section level2">
 <h2>The Result for 08/18/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-08-18&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-157-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-157-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-08192020" class="section level2">
 <h2>The Result for 08/19/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-08-19&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-158-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-158-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-08202020" class="section level2">
 <h2>The Result for 08/20/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-08-20&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-159-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-159-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-08212020" class="section level2">
 <h2>The Result for 08/21/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-08-21&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-160-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-160-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-08222020" class="section level2">
 <h2>The Result for 08/22/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-08-22&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-161-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-161-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-08232020" class="section level2">
 <h2>The Result for 08/23/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-08-23&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-162-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-162-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-08242020" class="section level2">
 <h2>The Result for 08/24/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-08-24&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-163-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-163-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-08252020" class="section level2">
 <h2>The Result for 08/25/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-08-25&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-164-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-164-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-08262020" class="section level2">
 <h2>The Result for 08/26/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-08-26&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-165-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-165-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-08272020" class="section level2">
 <h2>The Result for 08/27/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-08-27&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-166-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-166-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-08282020" class="section level2">
 <h2>The Result for 08/28/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-08-28&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-167-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-167-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-08292020" class="section level2">
 <h2>The Result for 08/29/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-08-29&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-168-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-168-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-08302020" class="section level2">
 <h2>The Result for 08/30/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-08-30&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-169-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-169-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-08312020" class="section level2">
 <h2>The Result for 08/31/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-08-31&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-170-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-170-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-09012020" class="section level2">
 <h2>The Result for 09/01/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-09-01&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-171-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-171-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-09022020" class="section level2">
 <h2>The Result for 09/02/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-09-02&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-172-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-172-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-09032020" class="section level2">
 <h2>The Result for 09/03/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-09-03&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-173-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-173-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-09042020" class="section level2">
 <h2>The Result for 09/04/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-09-04&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-174-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-174-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-09052020" class="section level2">
 <h2>The Result for 09/05/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-09-05&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-175-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-175-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-09062020" class="section level2">
 <h2>The Result for 09/06/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-09-06&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-176-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-176-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-09072020" class="section level2">
 <h2>The Result for 09/07/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-09-07&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-177-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-177-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-09082020" class="section level2">
 <h2>The Result for 09/08/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-09-08&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-178-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-178-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-09092020" class="section level2">
 <h2>The Result for 09/09/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-09-09&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-179-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-179-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-09102020" class="section level2">
 <h2>The Result for 09/10/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-09-10&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-180-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-180-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-09112020" class="section level2">
 <h2>The Result for 09/11/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-09-11&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-181-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-181-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-09122020" class="section level2">
 <h2>The Result for 09/12/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-09-12&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-182-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-182-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-09132020" class="section level2">
 <h2>The Result for 09/13/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-09-13&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-183-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-183-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-09142020" class="section level2">
 <h2>The Result for 09/14/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-09-14&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-184-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-184-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-09152020" class="section level2">
 <h2>The Result for 09/15/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-09-15&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-185-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-185-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-09162020" class="section level2">
 <h2>The Result for 09/16/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-09-16&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-186-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-186-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-09172020" class="section level2">
 <h2>The Result for 09/17/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-09-17&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-187-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-187-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-09182020" class="section level2">
 <h2>The Result for 09/18/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-09-18&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-188-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-188-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-09192020" class="section level2">
 <h2>The Result for 09/19/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-09-19&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-189-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-189-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-09202020" class="section level2">
 <h2>The Result for 09/20/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-09-20&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-190-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-190-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-09212020" class="section level2">
 <h2>The Result for 09/21/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-09-21&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-191-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-191-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-09222020" class="section level2">
 <h2>The Result for 09/22/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-09-22&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-192-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-192-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-09232020" class="section level2">
 <h2>The Result for 09/23/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-09-23&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-193-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-193-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-09242020" class="section level2">
 <h2>The Result for 09/24/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-09-24&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-194-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-194-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-09252020" class="section level2">
 <h2>The Result for 09/25/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-09-25&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-195-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-195-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-09262020" class="section level2">
 <h2>The Result for 09/26/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-09-26&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-196-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-196-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-09272020" class="section level2">
 <h2>The Result for 09/27/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-09-27&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-197-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-197-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-09282020" class="section level2">
 <h2>The Result for 09/28/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-09-28&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-198-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-198-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-09292020" class="section level2">
 <h2>The Result for 09/29/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-09-29&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-199-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-199-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-09302020" class="section level2">
 <h2>The Result for 09/30/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-09-30&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-200-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-200-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-10012020" class="section level2">
 <h2>The Result for 10/01/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-10-01&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-201-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-201-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-10022020" class="section level2">
 <h2>The Result for 10/02/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-10-02&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-202-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-202-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-10032020" class="section level2">
 <h2>The Result for 10/03/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-10-03&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-203-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-203-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-10042020" class="section level2">
 <h2>The Result for 10/04/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-10-04&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-204-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-204-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-10052020" class="section level2">
 <h2>The Result for 10/05/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-10-05&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-205-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-205-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-10062020" class="section level2">
 <h2>The Result for 10/06/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-10-06&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-206-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-206-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-10072020" class="section level2">
 <h2>The Result for 10/07/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-10-07&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-207-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-207-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-10082020" class="section level2">
 <h2>The Result for 10/08/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-10-08&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-208-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-208-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-10092020" class="section level2">
 <h2>The Result for 10/09/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-10-09&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-209-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-209-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-10102020" class="section level2">
 <h2>The Result for 10/10/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-10-10&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-210-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-210-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-10112020" class="section level2">
 <h2>The Result for 10/11/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-10-11&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-211-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-211-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-10122020" class="section level2">
 <h2>The Result for 10/12/2020</h2>
 <pre class="r"><code>Plot.COVID(&quot;2020-10-12&quot;, Map.Me)</code></pre>
-<p><img src="/R/covid-maps/index_files/figure-html/unnamed-chunk-212-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-212-1.png" width="672" /></p>
 </div>
 <div id="the-result-for-10132020" class="section level2">
 <h2>The Result for 10/13/2020</h2>
+<pre class="r"><code>Plot.COVID(&quot;2020-10-13&quot;, Map.Me)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-213-1.png" width="672" /></p>
+</div>
+<div id="the-result-for-10142020" class="section level2">
+<h2>The Result for 10/14/2020</h2>
 <pre class="r"><code>library(widgetframe); library(ggthemes); library(RColorBrewer)
 Map.Me &lt;- Map.Me %&gt;% 
   mutate(TTip = paste0(&quot;Deaths: &quot;,Deaths,&quot;&lt;br&gt; Negative Tests:&quot;,Negative.test.results))
@@ -1105,6 +1110,6 @@ Res1 &lt;- ggplot(Res.1, aes(geometry=geometry, fill=Number.of.cases, label=NAME
 ggp &lt;- ggplotly(Res1)
 frameWidget(ggp)</code></pre>
 <div id="htmlwidget-1" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/R/covid-maps/index_files/figure-html//widgets/widget_unnamed-chunk-214.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"index_files/figure-html//widgets/widget_unnamed-chunk-215.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>

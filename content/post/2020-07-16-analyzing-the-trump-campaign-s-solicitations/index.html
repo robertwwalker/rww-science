@@ -1,7 +1,7 @@
 ---
 title: Analyzing the Trump Campaign's Solicitations
 author: Robert W. Walker
-date: '2020-10-13'
+date: '2020-10-14'
 slug: analyzing-the-trump-campaign-s-solicitations
 categories:
   - R
@@ -20,7 +20,7 @@ image:
 projects: []
 ---
 
-<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+<script src="index_files/header-attrs/header-attrs.js"></script>
 
 
 <div id="tldr" class="section level1">
@@ -97,7 +97,7 @@ Trump.dates &lt;- make_email_dates_dt(my.Trump.mails)
 # Trump.dates
 Trump.dates %&gt;% group_by(email_date) %&gt;% summarise(Count = n()) -&gt; Trump.dates.Counted
 Trump.dates.Counted %&gt;% ggplot(., aes(x=email_date, y=Count)) + geom_line(color=&quot;red&quot;) + labs(title=&quot;Trump Fundraising Emails&quot;, x=&quot;Date of Email&quot;, y=&quot;Solicitations&quot;) + theme_ipsum_rc()</code></pre>
-<p><img src="/post/2020-07-16-analyzing-the-trump-campaign-s-solicitations/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 </div>
 </div>
 <div id="sent-by-whom" class="section level2">
@@ -125,6 +125,6 @@ Trump.from %&gt;% mutate(email_From = str_remove(email_from, &quot;&lt;contact@v
   filter(Count &gt; 5) %&gt;%
   ggplot(., aes(x=fct_reorder(email_From, Count), y=Count, fill=email_From)) + geom_col() + coord_flip() + guides(fill=FALSE) + labs(x=&quot;From Whom?&quot;) + theme_ipsum_rc(base_size = 10)</code></pre>
 <pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<p><img src="/post/2020-07-16-analyzing-the-trump-campaign-s-solicitations/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 </div>
 </div>

@@ -1,14 +1,14 @@
 ---
 title: COVID-19 in Oregon
 author: Robert W. Walker
-date: '2020-10-13'
+date: '2020-10-14'
 output: html_document
 ---
 
-<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
-<script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
-<script src="/rmarkdown-libs/pymjs/pym.v1.js"></script>
-<script src="/rmarkdown-libs/widgetframe-binding/widgetframe.js"></script>
+<script src="index_files/header-attrs/header-attrs.js"></script>
+<script src="index_files/htmlwidgets/htmlwidgets.js"></script>
+<script src="index_files/pymjs/pym.v1.js"></script>
+<script src="index_files/widgetframe-binding/widgetframe.js"></script>
 
 
 <div id="oregon-covid-data" class="section level1">
@@ -30,7 +30,7 @@ library(patchwork)
 library(hrbrthemes)
 library(widgetframe)
 load(url(paste0(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&quot;,Sys.Date(),&quot;.RData&quot;)))</code></pre>
-<p>Verifying, these data are current as of 2020-10-13 according to the loaded dataset.</p>
+<p>Verifying, these data are current as of 2020-10-14 according to the loaded dataset.</p>
 <div id="a-running-commentary-on-the-data" class="section level3">
 <h3>A running commentary on the data</h3>
 <p>The central takeaway is that the underlying data reports are constantly changing over time. They are reporting new and different quantities and this destroys the comparability of data. Some of it can be reconstructed but much of it is only useful going forward and keeping the schema constant. I hope that will happen at some point.</p>
@@ -141,7 +141,7 @@ Res1 &lt;- Res.1 %&gt;%
 GGP &lt;- ggplotly(Res1)
 frameWidget(GGP)</code></pre>
 <div id="htmlwidget-1" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/R/COVID/index_files/figure-html//widgets/widget_unnamed-chunk-5.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"index_files/figure-html//widgets/widget_unnamed-chunk-5.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="testing-in-oregon" class="section level1">
 <h1>Testing in Oregon</h1>
@@ -160,7 +160,7 @@ Test1 &lt;- Oregon.Tests %&gt;% filter(date &gt; &quot;2020-08-01&quot;) %&gt;%
   guides(fill=FALSE) +
   geom_label(data=OR.Testing, aes(x=date, y=Total, label=Total), fill=&quot;white&quot;, color=&quot;black&quot;, inherit.aes = FALSE, vjust = 0, size=1.5)
 Test1</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <div id="a-second-look-at-testing" class="section level2">
 <h2>A Second Look at Testing</h2>
 <p>We should worry about the degree to which tests are applied at all randomly; they are surely not. As a result, what it means to calculate or break down probability based on having been tested is subject to so many important caveats that vary over time. It is important to note that this is also cumulative test percentages/proportions.</p>
@@ -170,7 +170,7 @@ Test1</code></pre>
   scale_fill_viridis_d() + 
   labs(title=&quot;Cumulative Outcomes of COVID-19 Testing in Oregon&quot;, y=&quot;Proportion of Tests&quot;, x=&quot;Date&quot;, caption = &quot;data: https://govstatus.egov.com/OR-OHA-COVID-19 \n 04-22 Negative Tests Interpolated&quot;)
 Test2</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 </div>
 <div id="a-better-look-at-this" class="section level2">
 <h2>A Better Look at This</h2>
@@ -195,7 +195,7 @@ BaseP &lt;- MyDat2 %&gt;%
 RGP1 &lt;- ggplotly(BaseP)
 frameWidget(RGP1)</code></pre>
 <div id="htmlwidget-2" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
-<script type="application/json" data-for="htmlwidget-2">{"x":{"url":"/R/COVID/index_files/figure-html//widgets/widget_unnamed-chunk-8.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-2">{"x":{"url":"index_files/figure-html//widgets/widget_unnamed-chunk-8.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="per-capita-testing-by-county" class="section level2">
 <h2>Per-capita Testing by County</h2>
@@ -211,7 +211,7 @@ R2GPM &lt;- Res.2 %&gt;% ggplot(., aes(geometry=geometry, fill=PerCap.Tests, lab
 R2GPM3 &lt;- ggplotly(R2GPM)
 frameWidget(R2GPM3)</code></pre>
 <div id="htmlwidget-3" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
-<script type="application/json" data-for="htmlwidget-3">{"x":{"url":"/R/COVID/index_files/figure-html//widgets/widget_unnamed-chunk-9.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-3">{"x":{"url":"index_files/figure-html//widgets/widget_unnamed-chunk-9.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="new-cases-moving-average" class="section level2">
 <h2>New Cases: Moving Average</h2>
@@ -219,7 +219,7 @@ frameWidget(R2GPM3)</code></pre>
 OR.County.COVID.L &lt;- OR.County.COVID %&gt;% select(County, date, Cases.MA7, Deaths.MA7) %&gt;% pivot_longer(cols=c(Cases.MA7,Deaths.MA7), names_to = &quot;WhichVar&quot;, values_to = &quot;Outcome&quot;) %&gt;% mutate(WhichVar = str_remove(WhichVar, &quot;.MA7&quot;), date2 = as.Date(&quot;2020-05-20&quot;))
 GGP1 &lt;- ggplot(OR.County.COVID.L, aes(x=date, y=Outcome, color=County, label=County, group=County)) + geom_line() + geom_text_repel(direction = &quot;y&quot;, min.segment.length = 8) + scale_color_viridis_d() + guides(color=FALSE) + xlim(c(as.Date(&quot;2020-03-15&quot;),as.Date(&quot;2020-06-15&quot;))) +  hrbrthemes::theme_ipsum() + facet_wrap(vars(WhichVar), scales = &quot;free_y&quot;) + transition_reveal(date)
 animate(GGP1, end_pause = 50, nframes=150)</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-10-1.gif" /><!-- --></p>
+<p><img src="index_files/figure-html/unnamed-chunk-10-1.gif" /><!-- --></p>
 </div>
 </div>
 <div id="hospitalization-data-for-oregon" class="section level1">
@@ -240,7 +240,7 @@ Hos2 &lt;- OR.Hosp %&gt;%
   labs(x=&quot;Date&quot;, y=&quot;Number of COVID Positives&quot;, fill=&quot;Hospitalized?&quot;) + 
   coord_flip()
 Hos1 + Hos2</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 </div>
 <div id="age-data" class="section level1">
 <h1>Age Data</h1>
@@ -260,7 +260,7 @@ Age2 &lt;- OR.Ages1 %&gt;% ggplot(.) +
  scale_fill_ipsum() + labs(x=&quot;Date&quot;, y=&quot;Proportion of COVID-19 Positives&quot;) +
  theme_minimal()
 Age1 + Age2</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 <div id="the-revision" class="section level2">
 <h2>The Revision</h2>
 <pre class="r"><code>OR.Ages1 &lt;- OR.Ages %&gt;% filter(date &gt; &quot;2020-03-24&quot;)
@@ -277,7 +277,7 @@ Age2 &lt;- OR.Ages1 %&gt;% ggplot(.) +
  theme_economist() + 
  theme(axis.text.x = element_text(size=8, angle=45))
 Age1 + Age2</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 </div>
 </div>
 <div id="males-and-females" class="section level1">
@@ -297,7 +297,7 @@ OR.Sex.Reshape %&gt;%
   scale_fill_ipsum() + 
   labs(x=&quot;Date&quot;, y=&quot;Cases&quot;, title=&quot;Cumulative Deaths and COVID-19 Cases in Oregon by Sex&quot;) +
   facet_wrap(vars(Sex))</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 <p>I do not know to what extent that mirrors the general trend that men are more likely to suffer serious cases. The death rate data seem to highlight that.</p>
 <pre class="r"><code>OR.Gender %&gt;% 
   filter(Sex%in%c(&quot;Male&quot;,&quot;Female&quot;)) %&gt;% 
@@ -307,14 +307,14 @@ OR.Sex.Reshape %&gt;%
   geom_line() + 
   theme_ipsum_rc() +
   labs(x=&quot;Date&quot;, y=&quot;Case Fatality Ratio&quot;, title=&quot;Oregon&#39;s Cumulative Case Fatality Ratio by Sex&quot;)</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 </div>
 <div id="analysis-over-time" class="section level1">
 <h1>Analysis over Time</h1>
 <div id="admissions" class="section level2">
 <h2>Admissions</h2>
 <pre class="r"><code>OR.COVID.Strain %&gt;% filter(COVID.19.Details==&quot;COVID-19 admissions&quot;) %&gt;% ggplot(., aes(x=date, y=COVID19.Patients)) + geom_point() + geom_line() + labs(title=&quot;COVID-19 Admissions&quot;, x=&quot;Date&quot;, y=&quot;Count&quot;, caption = &quot;data: https://govstatus.egov.com/OR-OHA-COVID-19 \n By: @PieRatio&quot;) + theme_ipsum() + theme(axis.text.x = element_text(angle = 90))</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
 </div>
 <div id="hospital-capacity" class="section level2">
 <h2>Hospital Capacity</h2>
@@ -328,7 +328,7 @@ OR.Sex.Reshape %&gt;%
     hrbrthemes::scale_color_ipsum() +
     theme_ipsum() +
     facet_wrap(vars(Hospital.Capacity), scales = &quot;free_y&quot;)</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
 <pre class="r"><code>OR.Hospital.Caps %&gt;% filter(date &gt; &quot;2020-03-28&quot;) %&gt;% pivot_wider(., names_from = Type, values_from = Number, id_cols = c(date, Scraped.date, Hospital.Capacity)) %&gt;%
     filter(Hospital.Capacity != &quot;Ventilators&quot;) %&gt;% 
     mutate(Hospital.Capacity = as.character(Hospital.Capacity)) %&gt;%
@@ -339,7 +339,7 @@ OR.Sex.Reshape %&gt;%
     hrbrthemes::scale_color_ipsum() +
     theme_ipsum() +
     facet_wrap(vars(Hospital.Capacity), scales = &quot;free_y&quot;) + labs(title=&quot;Oregon&#39;s Critical Resource Use&quot;)</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
 </div>
 <div id="icu-beds" class="section level2">
 <h2>ICU Beds</h2>
@@ -353,7 +353,7 @@ ICUB %&gt;%
   geom_line() + 
   labs(title=&quot;COVID-19 ICU Beds Consumed in Oregon&quot;, x=&quot;Date&quot;, y=&quot;Count&quot;, caption = &quot;data: https://govstatus.egov.com/OR-OHA-COVID-19 \n By: @PieRatio&quot;) + 
   theme_ipsum() + theme(axis.text.x = element_text(angle = 90))</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
 </div>
 <div id="ventilators" class="section level2">
 <h2>Ventilators</h2>
@@ -368,6 +368,6 @@ Vents %&gt;%
   labs(title=&quot;Ventilators in Oregon&quot;, x=&quot;Date&quot;, y=&quot;Count&quot;, caption = &quot;data: https://govstatus.egov.com/OR-OHA-COVID-19 \n By: @PieRatio&quot;) + 
   theme_ipsum() + theme(axis.text.x = element_text(angle = 90)) + 
   facet_wrap(vars(Capacity), scales = &quot;free_y&quot;)</code></pre>
-<p><img src="/R/COVID/index_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
 </div>
 </div>

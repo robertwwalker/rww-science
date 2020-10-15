@@ -1,7 +1,7 @@
 ---
 title: New York Times Data on COVID
 author: Robert W. Walker
-date: '2020-10-13'
+date: '2020-10-14'
 slug: new-york-times-data-on-covid
 categories:
   - R
@@ -20,15 +20,15 @@ image:
 projects: []
 ---
 
-<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
-<script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
-<script src="/rmarkdown-libs/pymjs/pym.v1.js"></script>
-<script src="/rmarkdown-libs/widgetframe-binding/widgetframe.js"></script>
+<script src="index_files/header-attrs/header-attrs.js"></script>
+<script src="index_files/htmlwidgets/htmlwidgets.js"></script>
+<script src="index_files/pymjs/pym.v1.js"></script>
+<script src="index_files/widgetframe-binding/widgetframe.js"></script>
 
 
 <div id="new-york-times-data-for-the-us" class="section level1">
 <h1>New York Times data for the US</h1>
-<p>The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-10-13 16:27:15.</p>
+<p>The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-10-14 21:01:31.</p>
 </div>
 <div id="the-basic-state-of-things" class="section level1">
 <h1>The Basic State of Things</h1>
@@ -45,12 +45,12 @@ plot2 &lt;- NYT.Totals %&gt;% ggplot(., aes(x=date, y=New.Deaths)) + geom_line()
 plot3 &lt;- NYT.Totals %&gt;% ggplot(., aes(x=date, y=Cases)) + geom_line() + labs(title=&quot;Cases&quot;) + dark_mode()
 plot4 &lt;- NYT.Totals %&gt;% ggplot(., aes(x=date, y=New.Cases)) + geom_line() + labs(title=&quot;New Cases&quot;) + geom_smooth(fill=&quot;white&quot;) + dark_mode()
 (plot1 + plot2) / (plot3 + plot4)</code></pre>
-<p><img src="/post/2020-04-03-new-york-times-data-on-covid/index_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
 <div id="wheres-the-current-problem" class="section level2">
 <h2>Where’s the Current Problem?</h2>
 <pre class="r"><code>NYTD1 &lt;- Rect.NYT %&gt;% group_by(state) %&gt;% mutate(Cases.7DD = (cases - lag(cases, 7, order_by = date))/ lag(cases, 7, order_by = date), Deaths.7DD = (deaths - lag(deaths, 7, order_by = date))/ lag(deaths, 7, order_by = date))
 NYTD1 %&gt;% filter(date &gt; Sys.Date()-8) %&gt;% mutate(Avg.7DD = mean(Cases.7DD, na.rm=TRUE)) %&gt;% top_n(25, Avg.7DD) %&gt;% ggplot(., aes(x=forcats::fct_reorder(state, Avg.7DD), y=Avg.7DD, fill=state)) + geom_col() + coord_flip() + guides(fill=FALSE) + labs(x=&quot;&quot;, y=&quot;Avg. 7 Day Change over the last week&quot;, title=&quot;Average 7 Day Percent Change in New COVID-19 Cases \nAveraged over the last week&quot;)</code></pre>
-<p><img src="/post/2020-04-03-new-york-times-data-on-covid/index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
 </div>
 <div id="the-initial-vs.-the-subsequent" class="section level2">
 <h2>The Initial vs. The Subsequent</h2>
@@ -61,7 +61,7 @@ plot2a &lt;- NYT.Totals2  %&gt;% ggplot(., aes(x=date, y=New.Deaths)) + geom_lin
 plot3a &lt;- NYT.Totals2  %&gt;%  ggplot(., aes(x=date, y=Cases)) + geom_line() + labs(title=&quot;Cases&quot;, subtitle=&quot;Excluding CA, NY, NJ, IL, MA&quot;) + dark_mode()
 plot4a &lt;- NYT.Totals2  %&gt;% ggplot(., aes(x=date, y=New.Cases)) + geom_line() + labs(title=&quot;New Cases&quot;, subtitle=&quot;Excluding CA, NY, NJ, IL, MA&quot;) + geom_smooth(fill=&quot;white&quot;) + dark_mode()
 (plot1a + plot2a) / (plot3a + plot4a)</code></pre>
-<p><img src="/post/2020-04-03-new-york-times-data-on-covid/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 <pre class="r"><code>plot1 &lt;- NYT.Totals %&gt;% ggplot(., aes(x=date, y=Deaths)) + geom_line() + labs(title=&quot;Deaths&quot;) + scale_y_log10() + dark_mode()
 plot2 &lt;- NYT.Totals %&gt;% ggplot(., aes(x=date, y=New.Deaths)) + geom_line() + labs(title=&quot;New Deaths&quot;) + geom_smooth(fill=&quot;white&quot;) + dark_mode()
 plot3 &lt;- NYT.Totals %&gt;% ggplot(., aes(x=date, y=Cases)) + geom_line() + labs(title=&quot;Cases&quot;) + scale_y_log10() + dark_mode()
@@ -70,7 +70,7 @@ plot4 &lt;- NYT.Totals %&gt;% ggplot(., aes(x=date, y=New.Cases)) + geom_line() 
 <pre><code>## Warning: Transformation introduced infinite values in continuous y-axis</code></pre>
 <pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;
 ## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
-<p><img src="/post/2020-04-03-new-york-times-data-on-covid/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 </div>
 </div>
 <div id="the-jburnmurdoch-graphics-for-us-states" class="section level1">
@@ -94,7 +94,7 @@ PlotA &lt;- R2.NYT %&gt;%
   labs(x=&quot;Days since 10th Death&quot;, y=&quot;log(Cumulative Deaths)&quot;, title=&quot;Log-Deaths [Cumulative] given Days Since 10th Death&quot;, caption = &quot;data from nytimes/covid-19 on github \n design mimics @jburnmurdoch&quot;) + 
   dark_theme_linedraw()
 PlotA</code></pre>
-<p><img src="/post/2020-04-03-new-york-times-data-on-covid/index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 </div>
 <div id="cases" class="section level2">
 <h2>Cases</h2>
@@ -112,7 +112,7 @@ Plot1 &lt;- R2.NYT %&gt;% ggplot(., aes(x=Counter, y=cases, color=state)) +
   labs(x=&quot;Days since 10th Death&quot;, y=&quot;log(Cumulative Cases)&quot;, title=&quot;Log-Cases [Cumulative] given Days Since 10th Death&quot;, caption = &quot;data from nytimes/covid-19 on github \n design mimics @jburnmurdoch&quot;) + 
   dark_theme_linedraw()
 Plot1</code></pre>
-<p><img src="/post/2020-04-03-new-york-times-data-on-covid/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 </div>
 </div>
 <div id="a-different-definition-days-since-100th-case" class="section level1">
@@ -144,7 +144,7 @@ Plot2 &lt;- R2.NYT %&gt;%
   dark_theme_linedraw() +
   labs(x=&quot;Days since 100th Case&quot;, y=&quot;Cumulative Cases&quot;)
 Plot1 + Plot2</code></pre>
-<p><img src="/post/2020-04-03-new-york-times-data-on-covid/index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <div id="new-cases-by-state-over-time" class="section level2">
 <h2>New Cases by State over Time</h2>
 <p>Let me first track the incidence of new cases by state. There is no particularly good way to visualize this because New York is wildly different.</p>
@@ -156,13 +156,13 @@ Rect.NYT %&gt;% ggplot(., aes(x=date, y=New.Cases, color=state)) +
   scale_y_log10() + 
   labs(title=&quot;New Cases by State&quot;, y=&quot;log(New Cases)&quot;, subtitle=&quot;Note the logarithmic scale.&quot;, caption=&quot;Data from nytimes/covid-19-data on guthub.&quot;) + 
   dark_theme_linedraw()</code></pre>
-<p><img src="/post/2020-04-03-new-york-times-data-on-covid/index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 </div>
 <div id="aggregate-data-over-the-united-states" class="section level2">
 <h2>Aggregate Data over the United States</h2>
 <pre class="r"><code>library(patchwork)
 ggplot(NYT.Totals, aes(x=date, y=New.Cases)) + geom_line() + labs(x=&quot;Date&quot;, y=&quot;New COVID-19 Cases&quot;, title=&quot;Daily: New COVID-19 Cases&quot;) + dark_theme_linedraw() + theme(axis.text.x = element_text(size=8, angle=45))+ ggplot(NYT.Totals, aes(x=date, y=New.Deaths)) + geom_line() + labs(x=&quot;Date&quot;, y=&quot;New COVID-19 Deaths&quot;, title=&quot;Daily: New COVID-19 Deaths&quot;, subtitle=&quot;Note the logarithmic scale.&quot;, caption=&quot;Data from nytimes/covid-19-data on guthub.&quot;) + dark_theme_linedraw() + theme(axis.text.x = element_text(size=8, angle=45))</code></pre>
-<p><img src="/post/2020-04-03-new-york-times-data-on-covid/index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 </div>
 <div id="totals" class="section level2">
 <h2>Totals</h2>
@@ -170,7 +170,7 @@ ggplot(NYT.Totals, aes(x=date, y=New.Cases)) + geom_line() + labs(x=&quot;Date&q
 ggplot(NYT.Totals, aes(x=date, y=Cases)) + geom_line() + labs(x=&quot;Date&quot;, y=&quot;Total COVID-19 Cases&quot;, title=&quot;US COVID-19 Cases&quot;, subtitle=&quot;Note the logarithmic scale.&quot;) + theme_modern_rc() + theme(axis.text.x = element_text(size=8, angle=45)) + scale_y_log10() +
 ggplot(NYT.Totals, aes(x=date, y=Deaths)) + geom_line() + labs(x=&quot;Date&quot;, y=&quot;Total COVID-19 Deaths&quot;, title=&quot;US COVID-19 Deaths&quot;, subtitle=&quot;Note the logarithmic scale.&quot;, caption=&quot;Data from nytimes/covid-19-data on guthub.&quot;) + theme_modern_rc() + theme(axis.text.x = element_text(size=8, angle=45)) + scale_y_log10()</code></pre>
 <pre><code>## Warning: Transformation introduced infinite values in continuous y-axis</code></pre>
-<p><img src="/post/2020-04-03-new-york-times-data-on-covid/index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 </div>
 <div id="us-death-rate" class="section level2">
 <h2>US Death Rate</h2>
@@ -186,7 +186,7 @@ GPCFR &lt;- ggplotly(CFR)
 library(widgetframe)
 frameWidget(GPCFR)</code></pre>
 <div id="htmlwidget-1" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/post/2020-04-03-new-york-times-data-on-covid/index_files/figure-html//widgets/widget_unnamed-chunk-11.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"index_files/figure-html//widgets/widget_unnamed-chunk-11.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="this-may-prove-useful" class="section level2">
 <h2>This may prove useful</h2>
@@ -200,7 +200,7 @@ GPNCFR &lt;- ggplotly(P1)
 library(widgetframe)
 frameWidget(GPNCFR)</code></pre>
 <div id="htmlwidget-2" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
-<script type="application/json" data-for="htmlwidget-2">{"x":{"url":"/post/2020-04-03-new-york-times-data-on-covid/index_files/figure-html//widgets/widget_unnamed-chunk-12.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-2">{"x":{"url":"index_files/figure-html//widgets/widget_unnamed-chunk-12.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <div id="states" class="section level1">
@@ -211,7 +211,7 @@ CFR2 %&gt;% filter(!(state %in% c(&quot;puerto rico&quot;,&quot;northern mariana
   geom_map(map = fifty_states) + 
     expand_limits(x = fifty_states$long, y = fifty_states$lat) +
     coord_map() + scale_fill_continuous_tableau(palette=&quot;Classic Red&quot;, guide=&quot;colourbar&quot;) + theme_map() + labs(title=&quot;US Case Fatality Rate by State: May 22&quot;)</code></pre>
-<p><img src="/post/2020-04-03-new-york-times-data-on-covid/index_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 <pre class="r"><code>#  geom_point(aes(color=CFR.D)) + 
 #  labs(title = &quot;Case Fatality Rate of COVID-19 in the US&quot;, subtitle=&quot;Very uncertain estimate... Numerator and denominator uncertain \n Data: NY Times GitHub&quot;, caption=&quot;Data from nytimes/covid-19-data on guthub.&quot;, color=&quot;Greater \n than 0.02&quot;) + 
 #  dark_theme_bw()</code></pre>
