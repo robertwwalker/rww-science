@@ -1,7 +1,7 @@
 ---
 title: COVID-19 in Oregon
 author: Robert W. Walker
-date: '2020-10-16'
+date: '2020-10-17'
 output: html_document
 ---
 
@@ -18,9 +18,7 @@ I wanted to create a self-updating visualization of [the data on COVID-19 in the
 
 There is a [separate page of daily maps](https://rww.science/r/covid-maps/).  Oregon reports a set of daily snapshots while progression requires ingesting new data each day so  I began tracking it March 20; the process of scraping it is detailed in [a separate file](https://rww.science/r/covid-scraping/).  This updates, expands, and consolidates two previous posts [here](https://rww.science/2020/03/21/covid-19-in-oregon/) and [here](https://rww.science/2020/03/24/covid-19-county-maps-for-oregon/).  A few cautionary notes.  First, these are cumulative case counts that are almost certainly incomplete.  Second, there is reason to believe that the death numbers may also be incomplete because it is dangerous to police and first responders are spread thinly.
 
-This post is current as of August 24, 2020; this first bit of R code loads the current data from my github.
-
-
+This post is current as of October 15, 2020; this first bit of R code loads the current data from my github.
 
 ```{r, eval=FALSE}
 library(tigris)
@@ -59,7 +57,7 @@ Verifying, these data are current as of `r max(Oregon.COVID$Scraped.date)` accor
 
 ### A running commentary on the data
 
-The central takeaway is that the underlying data reports are constantly changing over time.  They are reporting new and different quantities and this destroys the comparability of data.  Some of it can be reconstructed but much of it is only useful going forward and keeping the schema constant.  I hope that will happen at some point.
+The central takeaway is that the underlying data reports are constantly changing over time.  The weekend data has been discontinued and it is quite spotty.  They are reporting new and different quantities and this destroys the comparability of data.  Some of it can be reconstructed but much of it is only useful going forward and keeping the schema constant.  I hope that will happen at some point.  
 
 *2020-03-23 and before* It started with only three tables.  Then four, then five, adding footnotes and rearranging the data structures became common.  Until the data structures solidify, maintaining comparability, and feeding appropriate data to the visualization tool continue to pose challenges and require a fair amount of tweaking.
 
@@ -87,11 +85,9 @@ The central takeaway is that the underlying data reports are constantly changing
 
 *2020-07-03 through 2020-07-05* Apparently OHA took a long July 4 weekend.  The daily update data on tests and cases was produced, with all PENDING on one day that became missing.
 
-
 # Summarising the County Data: Two Animations
 
 ## The March to Open
-
 
 ```{r, message=FALSE, warning=FALSE}
 TabA <- rownames(table(Oregon.COVID$County))
@@ -117,7 +113,7 @@ OR.County.COVID <- left_join(Base.OR.County, Oregon.COVID) %>%
 
 ```{r HorseRace, eval=TRUE, message=FALSE, warning=FALSE, results='hide'}
 # The Race to Open
-OR.County.COVID %>% filter(RankC > 26) %>%
+OR.County.COVID %>% filter(Scraped.date > as.Date("2020-07-01"), RankC > 26) %>%
     ggplot(aes(x = RankC, y = Number.of.cases, fill=County, color=County, label=County)) +
     geom_col() +
     geom_text(hjust = "left") +
@@ -168,7 +164,7 @@ Anim1 <- Map.Me %>%
     segment.colour = "white",
     size = 3,
     box.padding = unit(0.05, "lines"))  + scale_fill_viridis_c() + theme_minimal() + labs(title="COVID-19 in Oregon", subtitle="{frame_time}", x="", y="", caption="Made with R, ggplot2, and gganimate by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19") + transition_time(date)
-GGAnim <- animate(Anim1, end_pause=50, nframes=300, width = 1200, height = 900)
+GGAnim <- animate(Anim1, end_pause=30, nframes=300, width = 1200, height = 900)
 save_animation(GGAnim, file="./MapAnim.gif")
 ```
 ![County animation](./MapAnim.gif)
