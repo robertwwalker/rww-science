@@ -1,5 +1,5 @@
 rm(list=ls())
-library(rvest); library(htmltools); library(tidyverse); library(rlang); library(here); library(stringr)
+library(curllibrary(rvest); library(htmltools); library(tidyverse); library(rlang); library(here); library(stringr)
 load(paste0(here(),"/content/R/COVID/data/OregonCOVID",Sys.Date()-1,".RData")) # 1
 # A function to remove commas from numbers.
 comma.rm.to.numeric <- function(variable) {
