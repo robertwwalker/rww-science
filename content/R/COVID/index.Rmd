@@ -49,7 +49,7 @@ library(patchwork)
 library(hrbrthemes)
 library(widgetframe); library(here)
 library(magrittr)
-load(paste0(here(),"/content/R/COVID/data/OregonCOVID",Sys.Date()-1,".RData"))
+load(paste0(here(),"/content/R/COVID/data/OregonCOVID",Sys.Date()-2,".RData"))
 load(paste0(here(),"/content/R/COVID/data/CountyMap.RData"))
 ```
 
@@ -184,9 +184,8 @@ Res1 <- Res.1 %>%
    theme_map() + 
    labs(title="Positive COVID-19 Tests in Oregon", subtitle=paste0(Sys.Date(),": \nonly counties with 10+ tests shown."), x="", y="", caption="Made with R, ggplot2, and ggrepel by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19", fill="Percent Positive")
 GGP <- ggplotly(Res1)
-htmlwidgets::saveWidget(GGP, file='./PosTest.html')
+frameWidget(GGP)
 ```
-<iframe src="https://rww.science/R/COVID/PosTest.html" width=600 height=400"></iframe>
 
 # Testing in Oregon
 
@@ -245,10 +244,8 @@ BaseP <- MyDat2 %>%
   guides(fill=FALSE, color=FALSE) +
   labs(title="Daily Distribution of Test Outcomes", subtitle="Percent of Positive Tests Shown") + theme_ft_rc()
 RGP1 <- ggplotly(BaseP)
-htmlwidgets::saveWidget(RGP1, file='./RGP1.html')
+frameWidget(RGP1)
 ```
-
-<iframe src="https://rww.science/R/COVID/data/RGP1.html" width=600 height=600"></iframe>
 
 
 ## Per-capita Testing by County
@@ -264,10 +261,9 @@ R2GPM <- Res.2 %>% ggplot(., aes(geometry=geometry, fill=PerCap.Tests, label=NAM
    theme_map() + 
    labs(title="per capita COVID Testing in Oregon", subtitle=Sys.Date(), fill="per capita testing")
 R2GPM3 <- ggplotly(R2GPM)
-htmlwidgets::saveWidget(R2GPM3, file='./r2gmp3.html')
+frameWidget(R2GPM3)
 ```
 
-<iframe src="https://rww.science/R/COVID/r2gmp3.html" width=600 height=400"></iframe>
 
 ## New Cases: Moving Average
 

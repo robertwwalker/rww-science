@@ -6,6 +6,9 @@ output: html_document
 ---
 
 <script src="index_files/header-attrs/header-attrs.js"></script>
+<script src="index_files/htmlwidgets/htmlwidgets.js"></script>
+<script src="index_files/pymjs/pym.v1.js"></script>
+<script src="index_files/widgetframe-binding/widgetframe.js"></script>
 
 
 <div id="oregon-covid-data" class="section level1">
@@ -136,9 +139,9 @@ Res1 &lt;- Res.1 %&gt;%
    theme_map() + 
    labs(title=&quot;Positive COVID-19 Tests in Oregon&quot;, subtitle=paste0(Sys.Date(),&quot;: \nonly counties with 10+ tests shown.&quot;), x=&quot;&quot;, y=&quot;&quot;, caption=&quot;Made with R, ggplot2, and ggrepel by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19&quot;, fill=&quot;Percent Positive&quot;)
 GGP &lt;- ggplotly(Res1)
-htmlwidgets::saveWidget(GGP, file=&#39;./PosTest.html&#39;)</code></pre>
-<iframe src="https://rww.science/R/COVID/PosTest.html" width="600" height="400&quot;">
-</iframe>
+frameWidget(GGP)</code></pre>
+<div id="htmlwidget-1" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"index_files/figure-html//widgets/widget_unnamed-chunk-5.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="testing-in-oregon" class="section level1">
 <h1>Testing in Oregon</h1>
@@ -190,9 +193,9 @@ BaseP &lt;- MyDat2 %&gt;%
   guides(fill=FALSE, color=FALSE) +
   labs(title=&quot;Daily Distribution of Test Outcomes&quot;, subtitle=&quot;Percent of Positive Tests Shown&quot;) + theme_ft_rc()
 RGP1 &lt;- ggplotly(BaseP)
-htmlwidgets::saveWidget(RGP1, file=&#39;./RGP1.html&#39;)</code></pre>
-<iframe src="https://rww.science/R/COVID/data/RGP1.html" width="600" height="600&quot;">
-</iframe>
+frameWidget(RGP1)</code></pre>
+<div id="htmlwidget-2" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
+<script type="application/json" data-for="htmlwidget-2">{"x":{"url":"index_files/figure-html//widgets/widget_unnamed-chunk-8.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="per-capita-testing-by-county" class="section level2">
 <h2>Per-capita Testing by County</h2>
@@ -206,9 +209,9 @@ R2GPM &lt;- Res.2 %&gt;% ggplot(., aes(geometry=geometry, fill=PerCap.Tests, lab
    theme_map() + 
    labs(title=&quot;per capita COVID Testing in Oregon&quot;, subtitle=Sys.Date(), fill=&quot;per capita testing&quot;)
 R2GPM3 &lt;- ggplotly(R2GPM)
-htmlwidgets::saveWidget(R2GPM3, file=&#39;./r2gmp3.html&#39;)</code></pre>
-<iframe src="https://rww.science/R/COVID/r2gmp3.html" width="600" height="400&quot;">
-</iframe>
+frameWidget(R2GPM3)</code></pre>
+<div id="htmlwidget-3" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
+<script type="application/json" data-for="htmlwidget-3">{"x":{"url":"index_files/figure-html//widgets/widget_unnamed-chunk-9.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 <div id="new-cases-moving-average" class="section level2">
 <h2>New Cases: Moving Average</h2>
