@@ -5,9 +5,6 @@ date: '2020-10-16'
 ---
 
 <script src="index_files/header-attrs/header-attrs.js"></script>
-<script src="index_files/htmlwidgets/htmlwidgets.js"></script>
-<script src="index_files/pymjs/pym.v1.js"></script>
-<script src="index_files/widgetframe-binding/widgetframe.js"></script>
 
 
 <pre class="r"><code>library(tigris)
@@ -1118,8 +1115,9 @@ Res1 &lt;- ggplot(Res.1, aes(geometry=geometry, fill=Number.of.cases, label=NAME
 <h2>A Plotly</h2>
 <pre class="r"><code>library(plotly)
 ggp &lt;- ggplotly(Res1)
-frameWidget(ggp)</code></pre>
-<div id="htmlwidget-1" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"index_files/figure-html//widgets/widget_unnamed-chunk-217.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+library(htmlwidgets)
+htmlwidgets::saveWidget(ggp, file=paste0(here(&#39;/content/R/COVID/data/today.html&#39;)))</code></pre>
+<iframe src="https://rww.science/R/COVID/data/today.html" width="1000" height="800&quot;">
+</iframe>
 </div>
 </div>

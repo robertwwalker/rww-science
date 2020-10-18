@@ -1379,7 +1379,6 @@ Plot.COVID("2020-10-14", Map.Me)
 Plot.COVID("2020-10-15", Map.Me)
 ```
 
-
 ## The Result for 10/16/2020
 
 ```{r, warning=FALSE, message=FALSE}
@@ -1401,6 +1400,7 @@ Res1 <- ggplot(Res.1, aes(geometry=geometry, fill=Number.of.cases, label=NAME, t
 ```{r, warning=FALSE, message=FALSE}
 library(plotly)
 ggp <- ggplotly(Res1)
-frameWidget(ggp)
+library(htmlwidgets)
+htmlwidgets::saveWidget(ggp, file=paste0(here('/content/R/COVID/data/today.html')))
 ```
-
+<iframe src="https://rww.science/R/COVID/data/today.html" width=1000 height=800"></iframe>

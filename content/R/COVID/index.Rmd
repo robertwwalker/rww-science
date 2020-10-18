@@ -111,7 +111,7 @@ OR.County.COVID <- left_join(Base.OR.County, Oregon.COVID) %>%
 
 ##  A Horse Race
 
-```{r HorseRace, eval=TRUE, message=FALSE, warning=FALSE, results='hide'}
+```{r HorseRace, eval=FALSE, message=FALSE, warning=FALSE, results='hide'}
 # The Race to Open
 OR.County.COVID %>% filter(Scraped.date > as.Date("2020-07-01"), RankC > 26) %>%
     ggplot(aes(x = RankC, y = Number.of.cases, fill=County, color=County, label=County)) +
@@ -154,7 +154,7 @@ Res.1 <- Map.Me %>%
 
 I will use a ggplot to build Oregon's map and fill it with case numbers. `geom_sf()` plots the geometry.  Labels for the counties, scheme the colors, and animate it by time to complete the graphic.  There is a  [separate page of daily maps](https://rww.science/r/covid/maps/). 
 
-```{r, message=FALSE, warning=FALSE, eval=TRUE}
+```{r, message=FALSE, warning=FALSE, eval=FALSE}
 Anim1 <- Map.Me %>% 
   ggplot(., aes(geometry=geometry, fill=Number.of.cases, label=NAME, group=NAME)) + 
   geom_sf() +
@@ -184,8 +184,9 @@ Res1 <- Res.1 %>%
    theme_map() + 
    labs(title="Positive COVID-19 Tests in Oregon", subtitle=paste0(Sys.Date(),": \nonly counties with 10+ tests shown."), x="", y="", caption="Made with R, ggplot2, and ggrepel by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19", fill="Percent Positive")
 GGP <- ggplotly(Res1)
-GGP
+htmlwidgets::saveWidget(GGP, file='./PosTest.html')
 ```
+<iframe src="https://rww.science/R/COVID/PosTest.html" width=600 height=400"></iframe>
 
 # Testing in Oregon
 
@@ -244,8 +245,11 @@ BaseP <- MyDat2 %>%
   guides(fill=FALSE, color=FALSE) +
   labs(title="Daily Distribution of Test Outcomes", subtitle="Percent of Positive Tests Shown") + theme_ft_rc()
 RGP1 <- ggplotly(BaseP)
-frameWidget(RGP1)
+htmlwidgets::saveWidget(RGP1, file='./RGP1.html')
 ```
+
+<iframe src="https://rww.science/R/COVID/data/RGP1.html" width=600 height=600"></iframe>
+
 
 ## Per-capita Testing by County
 
@@ -260,8 +264,10 @@ R2GPM <- Res.2 %>% ggplot(., aes(geometry=geometry, fill=PerCap.Tests, label=NAM
    theme_map() + 
    labs(title="per capita COVID Testing in Oregon", subtitle=Sys.Date(), fill="per capita testing")
 R2GPM3 <- ggplotly(R2GPM)
-frameWidget(R2GPM3)
+htmlwidgets::saveWidget(R2GPM3, file='./r2gmp3.html')
 ```
+
+<iframe src="https://rww.science/R/COVID/r2gmp3.html" width=600 height=400"></iframe>
 
 ## New Cases: Moving Average
 
