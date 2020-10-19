@@ -1,0 +1,107 @@
+---
+title: Beyonce-Words
+author: Robert W. Walker
+date: '2020-10-19'
+slug: beyonce-words
+categories:
+  - tidyTuesday
+  - dataviz
+tags:
+  - tidyTuesday
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2020-10-19T02:11:17-07:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<div id="tidytuesday-beyonce_lyrics" class="section level2">
+<h2>tidyTuesday <code>beyonce_lyrics</code></h2>
+<p>Load the data.</p>
+<pre class="r"><code>beyonce_lyrics &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-09-29/beyonce_lyrics.csv&#39;)</code></pre>
+<pre><code>## 
+## ── Column specification ────────────────────────────────────────────────────────
+## cols(
+##   line = col_character(),
+##   song_id = col_double(),
+##   song_name = col_character(),
+##   artist_id = col_double(),
+##   artist_name = col_character(),
+##   song_line = col_double()
+## )</code></pre>
+<pre class="r"><code>str(beyonce_lyrics)</code></pre>
+<pre><code>## tibble [22,616 × 6] (S3: spec_tbl_df/tbl_df/tbl/data.frame)
+##  $ line       : chr [1:22616] &quot;If I ain&#39;t got nothing, I got you&quot; &quot;If I ain&#39;t got something, I don&#39;t give a damn&quot; &quot;&#39;Cause I got it with you&quot; &quot;I don&#39;t know much about algebra, but I know 1+1 equals 2&quot; ...
+##  $ song_id    : num [1:22616] 50396 50396 50396 50396 50396 ...
+##  $ song_name  : chr [1:22616] &quot;1+1&quot; &quot;1+1&quot; &quot;1+1&quot; &quot;1+1&quot; ...
+##  $ artist_id  : num [1:22616] 498 498 498 498 498 498 498 498 498 498 ...
+##  $ artist_name: chr [1:22616] &quot;Beyoncé&quot; &quot;Beyoncé&quot; &quot;Beyoncé&quot; &quot;Beyoncé&quot; ...
+##  $ song_line  : num [1:22616] 1 2 3 4 5 6 7 8 9 10 ...
+##  - attr(*, &quot;spec&quot;)=
+##   .. cols(
+##   ..   line = col_character(),
+##   ..   song_id = col_double(),
+##   ..   song_name = col_character(),
+##   ..   artist_id = col_double(),
+##   ..   artist_name = col_character(),
+##   ..   song_line = col_double()
+##   .. )</code></pre>
+</div>
+<div id="beyonces-favorite-lyric-words" class="section level2">
+<h2>Beyonce’s Favorite Lyric Words</h2>
+<pre class="r"><code>beyonce_lyrics %&gt;% 
+  unnest_tokens(word, line) %&gt;%   # Parse the lyric lines to tidy: one word per row.
+  anti_join(., stop_words) %&gt;%    # Remove the stop words
+  group_by(word) %&gt;%              # Group them by word
+  summarise(Count = n()) %&gt;%      # How common is the word?
+  top_n(25) %&gt;%                   # Keep the top 25
+  ggplot() + 
+  aes(x=fct_reorder(word, Count), y=Count) + 
+  geom_col() + 
+  coord_flip() + 
+  labs(x=&quot;Word&quot;, title=&quot;Beyonce&#39;s Top Words in Lyrics&quot;)</code></pre>
+<pre><code>## Joining, by = &quot;word&quot;</code></pre>
+<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
+<pre><code>## Selecting by Count</code></pre>
+<p><img src="/post/2020-10-19-beyonce-words/index.en_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+</div>
+<div id="beyonces-cloud" class="section level2">
+<h2>Beyonce’s Cloud</h2>
+<pre class="r"><code>library(wordcloud2)
+beyonce_lyrics %&gt;% 
+  unnest_tokens(word, line) %&gt;%   # Parse the lyric lines to tidy: one word per row.
+  anti_join(., stop_words) %&gt;%    # Remove the stop words
+  group_by(word) %&gt;%              # Group them by word
+  summarise(Count = n()) %&gt;%      # How common is the word?
+  wordcloud2::wordcloud2(size = 0.7, shuffle = TRUE) -&gt; WC111</code></pre>
+<pre><code>## Joining, by = &quot;word&quot;</code></pre>
+<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
+<pre class="r"><code>htmlwidgets::saveWidget(widgetframe::frameWidget(WC111), file=here:::here(&#39;/static/img/widgets/wcbey.html&#39;))
+# MyWC
+# widgetframe::frameWidget(MyWC)</code></pre>
+<iframe width="600" height="600" src="https://rww.science/img/widgets/wcbey.html" frameborder="0" allowfullscreen>
+</iframe>
+<pre class="r"><code>library(wordcloud2)
+MyDat &lt;- beyonce_lyrics %&gt;% 
+  unnest_tokens(word, line) %&gt;%   # Parse the lyric lines to tidy: one word per row.
+  anti_join(., stop_words) %&gt;%    # Remove the stop words
+  group_by(word) %&gt;%              # Group them by word
+  summarise(freq = n()) %&gt;%      # How common is the word?
+  arrange(desc(freq))</code></pre>
+<pre><code>## Joining, by = &quot;word&quot;</code></pre>
+<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
+<pre class="r"><code>MyWC &lt;- wordcloud2::letterCloud(MyDat, word=&quot;Most Popular \n Words in \n Beyonce \n Lyrics&quot;, wordSize = 1.75, backgroundColor=&quot;lightblue&quot;, color=&#39;random-dark&#39;, size=0.8)
+htmlwidgets::saveWidget(widgetframe::frameWidget(MyWC), file=here::here(&#39;/static/img/widgets/beyonce.html&#39;))
+# MyWC
+# widgetframe::frameWidget(MyWC)</code></pre>
+<iframe width="600" height="405" src="https://rww.science/img/widgets/beyonce.html" frameborder="0" allowfullscreen>
+</iframe>
+</div>
