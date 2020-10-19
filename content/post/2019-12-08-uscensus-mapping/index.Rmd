@@ -70,8 +70,11 @@ A plotly
 library(plotly)
 PLM <- ggplotly(PlotlyMe)
 library(widgetframe)
-frameWidget(PLM)
+htmlwidgets::saveWidget(
+  widgetframe::frameableWidget(PLM), here:::here('static/img/widgets/plm11map.html'))
 ```
+
+<iframe width="800" height="600" src="https://rww.science/img/widgets/plm11map.html" frameborder="0" allowfullscreen></iframe>
 
 To get rid of some of the messiness because LA is a huge outlier, perhaps it should be binned.
 

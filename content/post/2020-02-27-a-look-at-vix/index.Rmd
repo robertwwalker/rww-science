@@ -44,8 +44,11 @@ fig <- VIX  %>% plot_ly(x = ~Dates, type="candlestick",
 fig <- fig %>% layout(title = "A Historical Look at VIX")
 library(widgetframe)
 # Need a frameWidget to render the underlying plotly object
-frameWidget(fig, width = 1000)
+htmlwidgets::saveWidget(
+  widgetframe::frameableWidget(fig), here:::here('static/img/widgets/vixfig.html'))
 ```
+
+<iframe width="600" height="405" src="https://rww.science/img/widgets/vixfig.html" frameborder="0" allowfullscreen></iframe>
 
 *As an overall it has been worse, but keep in mind, that big blip happened TODAY!*  What does it look like in perspective [keeping in mind that the futures are currently just under 40] since 2012?
 
@@ -54,8 +57,12 @@ fig2 <- VIX %>% filter(Dates > as.Date("01/01/2012", format = "%m/%d/%Y")) %>% p
           open = ~VIX.Open, close = ~VIX.Close,
           high = ~VIX.High, low = ~VIX.Low) 
 fig2 <- fig2 %>% layout(title = "VIX Since 2012")
-frameWidget(fig2, width = 1000)
+htmlwidgets::saveWidget(
+  widgetframe::frameableWidget(fig2), here:::here('static/img/widgets/vixfig2.html'))
 ```
+
+<iframe width="600" height="405" src="https://rww.science/img/widgets/vixfig2.html" frameborder="0" allowfullscreen></iframe>
+
 
 ## Day to Day Changes?
 
@@ -76,8 +83,11 @@ p <- ggplot(VIX, aes(x=Dates, y=Percent.Change, size=Percent.Change/10, color=Pe
   scale_color_viridis_c(guide=FALSE) +
   scale_fill_viridis_c(guide=FALSE) +
     theme_ipsum()
-fig <- ggplotly(p)
-frameWidget(fig, width = 1000)
+fig3 <- ggplotly(p)
+htmlwidgets::saveWidget(
+  widgetframe::frameableWidget(fig3), here:::here('static/img/widgets/vixfig3.html'))
 ```
+
+<iframe width="800" height="600" src="https://rww.science/img/widgets/vixfig3.html" frameborder="0" allowfullscreen></iframe>
 
 *NB: This commentary was in mid-March.*  This doesn't look good.  The smooth on a small span is uncomfortably headed upward and today will shock it like no previous day in a very long while.

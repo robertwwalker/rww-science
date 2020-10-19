@@ -55,6 +55,10 @@ names(GCLS)[1] <- "Store"
 GCLS <- GCLS %>% mutate(labelM = paste0(Store,"<br>",GCAdd,"<br>",GCPhN))
 gp <- ggmap(OR) + geom_point(data=GCLS, aes(x=lon, y=lat, text=labelM), alpha=0.2, size=2, color="magenta") + ggnetwork::theme_blank() + labs("A Map of Oregon Liquor Stores") 
 library(plotly)
-ggplotly(gp, tooltip = "text")
+GGP <- ggplotly(gp, tooltip = "text")
+htmlwidgets::saveWidget(
+  widgetframe::frameableWidget(GGP), here:::here('static/img/widgets/sleggpmap.html'))
 ```
+
+<iframe width="600" height="600" src="https://rww.science/img/widgets/sleggpmap.html" frameborder="0" allowfullscreen></iframe>
 

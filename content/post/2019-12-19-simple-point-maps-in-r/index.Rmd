@@ -78,8 +78,12 @@ library(tmaptools)
 Geocoded.PDX <- geocode_OSM(Portland.Center$address, as.data.frame = TRUE) %>% select(query, lat, lon)
 p1 <- ggmap(pdx.map) + geom_point(data=Geocoded.PDX, aes(x=lon, y=lat, text=query), size=3, color="magenta")
 library(plotly)
-ggplotly(p1)
+p1a <- ggplotly(p1)
+htmlwidgets::saveWidget(
+  widgetframe::frameableWidget(p1a), here:::here('static/img/widgets/smp1map.html'))
 ```
+
+<iframe width="800" height="600" src="https://rww.science/img/widgets/smp1map.html" frameborder="0" allowfullscreen></iframe>
 
 # Leaflet
 
@@ -89,6 +93,9 @@ A very cool toy is leaflet.  The markers work the way as geom_point but hovers c
 library(leaflet)
 Geocoded.PDX
 m <- leaflet() %>% addTiles() %>% addMarkers(., data=Geocoded.PDX, lng=~lon, lat=~lat, popup = ~query)
-m
+htmlwidgets::saveWidget(
+  widgetframe::frameableWidget(m), here:::here('static/img/widgets/mmmap.html'))
 ```
+
+<iframe width="600" height="600" src="https://rww.science/img/widgets/mmmap.html" frameborder="0" allowfullscreen></iframe>
 

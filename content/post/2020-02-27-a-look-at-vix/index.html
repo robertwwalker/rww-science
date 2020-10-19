@@ -1,5 +1,5 @@
 ---
-title: "A Look at VIX :2020-05-01"
+title: "A Look at VIX :2020-10-19"
 author: Robert W. Walker
 date: '2020-02-27'
 slug: a-look-at-vix
@@ -10,7 +10,7 @@ tags: []
 subtitle: ''
 summary: ''
 authors: []
-lastmod: "2020-05-01 17:27:12"
+lastmod: "2020-10-19 14:00:35"
 featured: no
 image:
   caption: ''
@@ -19,10 +19,7 @@ image:
 projects: []
 ---
 
-<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
-<script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
-<script src="/rmarkdown-libs/pymjs/pym.v1.js"></script>
-<script src="/rmarkdown-libs/widgetframe-binding/widgetframe.js"></script>
+<script src="index_files/header-attrs/header-attrs.js"></script>
 
 
 <div id="get-some-vix-data" class="section level1">
@@ -35,12 +32,12 @@ VIX$Dates &lt;- as.Date(VIX$Date,
   format = &quot;%m/%d/%Y&quot;)
 tail(VIX)</code></pre>
 <pre><code>##            Date VIX.Open VIX.High VIX.Low VIX.Close      Dates
-## 4106 04/24/2020    41.91    42.08   35.60     35.93 2020-04-24
-## 4107 04/27/2020    36.29    36.44   32.51     33.29 2020-04-27
-## 4108 04/28/2020    33.21    35.39   30.54     33.57 2020-04-28
-## 4109 04/29/2020    32.48    33.19   30.71     31.23 2020-04-29
-## 4110 04/30/2020    30.99    35.94   30.93     34.15 2020-04-30
-## 4111 05/01/2020    38.17    39.57   36.59     37.19 2020-05-01</code></pre>
+## 4223 10/09/2020    26.20    26.22   24.03     25.00 2020-10-09
+## 4224 10/12/2020    25.65    25.65   24.14     25.07 2020-10-12
+## 4225 10/13/2020    25.67    26.93   25.16     26.07 2020-10-13
+## 4226 10/14/2020    25.72    27.23   25.53     26.40 2020-10-14
+## 4227 10/15/2020    27.10    29.06   26.82     26.97 2020-10-15
+## 4228 10/16/2020    27.16    27.46   26.19     27.41 2020-10-16</code></pre>
 <p>The data was straightforward to get a hold of. Now let me plot it. I want to do this with a candlestick plot – a way of displaying intra-day volatility. There’s so much data that the views aren’t great.</p>
 <pre class="r"><code>library(plotly)
 # create the candlestick plot
@@ -50,17 +47,19 @@ fig &lt;- VIX  %&gt;% plot_ly(x = ~Dates, type=&quot;candlestick&quot;,
 fig &lt;- fig %&gt;% layout(title = &quot;A Historical Look at VIX&quot;)
 library(widgetframe)
 # Need a frameWidget to render the underlying plotly object
-frameWidget(fig, width = 1000)</code></pre>
-<div id="htmlwidget-1" style="width:1000px;height:480px;" class="widgetframe html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/post/2020-02-27-a-look-at-vix/index_files/figure-html//widgets/widget_unnamed-chunk-2.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+htmlwidgets::saveWidget(
+  widgetframe::frameableWidget(fig), here:::here(&#39;static/img/widgets/vixfig.html&#39;))</code></pre>
+<iframe width="600" height="405" src="https://rww.science/img/widgets/vixfig.html" frameborder="0" allowfullscreen>
+</iframe>
 <p><em>As an overall it has been worse, but keep in mind, that big blip happened TODAY!</em> What does it look like in perspective [keeping in mind that the futures are currently just under 40] since 2012?</p>
 <pre class="r"><code>fig2 &lt;- VIX %&gt;% filter(Dates &gt; as.Date(&quot;01/01/2012&quot;, format = &quot;%m/%d/%Y&quot;)) %&gt;% plot_ly(x = ~Dates, type=&quot;candlestick&quot;,
           open = ~VIX.Open, close = ~VIX.Close,
           high = ~VIX.High, low = ~VIX.Low) 
 fig2 &lt;- fig2 %&gt;% layout(title = &quot;VIX Since 2012&quot;)
-frameWidget(fig2, width = 1000)</code></pre>
-<div id="htmlwidget-2" style="width:1000px;height:480px;" class="widgetframe html-widget"></div>
-<script type="application/json" data-for="htmlwidget-2">{"x":{"url":"/post/2020-02-27-a-look-at-vix/index_files/figure-html//widgets/widget_unnamed-chunk-3.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+htmlwidgets::saveWidget(
+  widgetframe::frameableWidget(fig2), here:::here(&#39;static/img/widgets/vixfig2.html&#39;))</code></pre>
+<iframe width="600" height="405" src="https://rww.science/img/widgets/vixfig2.html" frameborder="0" allowfullscreen>
+</iframe>
 <div id="day-to-day-changes" class="section level2">
 <h2>Day to Day Changes?</h2>
 <p>I will touch the file about daily to track the evolution.</p>
@@ -78,10 +77,11 @@ p &lt;- ggplot(VIX, aes(x=Dates, y=Percent.Change, size=Percent.Change/10, color
   scale_color_viridis_c(guide=FALSE) +
   scale_fill_viridis_c(guide=FALSE) +
     theme_ipsum()
-fig &lt;- ggplotly(p)
-frameWidget(fig, width = 1000)</code></pre>
-<div id="htmlwidget-3" style="width:1000px;height:480px;" class="widgetframe html-widget"></div>
-<script type="application/json" data-for="htmlwidget-3">{"x":{"url":"/post/2020-02-27-a-look-at-vix/index_files/figure-html//widgets/widget_unnamed-chunk-4.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+fig3 &lt;- ggplotly(p)
+htmlwidgets::saveWidget(
+  widgetframe::frameableWidget(fig3), here:::here(&#39;static/img/widgets/vixfig3.html&#39;))</code></pre>
+<iframe width="800" height="600" src="https://rww.science/img/widgets/vixfig3.html" frameborder="0" allowfullscreen>
+</iframe>
 <p><em>NB: This commentary was in mid-March.</em> This doesn’t look good. The smooth on a small span is uncomfortably headed upward and today will shock it like no previous day in a very long while.</p>
 </div>
 </div>

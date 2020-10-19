@@ -1,0 +1,56 @@
+---
+title: Datasaurus Dozen
+author: Robert W. Walker
+date: '2020-10-19'
+slug: datasaurus-dozen
+categories:
+  - tidyTuesday
+  - dataviz
+tags:
+  - tidyTuesday
+  - tidyverse
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2020-10-19T12:46:43-07:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+```{r setup, include=FALSE}
+library(tidyverse)
+library(skimr)
+```
+
+## The `datasaurus dozen`
+
+
+The datasaurus sozen is a fantastic teaching resource for examining the importance of data visualization.  Let's have a look.
+
+```{r}
+datasaurus <- readr::read_csv('https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-10-13/datasaurus.csv')
+```
+
+Two libraries to make our work easy.
+
+```
+library(tidyverse)
+library(skimr)
+```
+
+First, the summary statistics.  Summary statistics are great but they are no substitute for basic data familiarity.  Notice, we have nearly identical means and standard deviations though the five number summaries do vary.
+
+```{r}
+datasaurus %>% group_by(dataset) %>% skim(x,y)
+```
+
+Notice that all of the datasets are nearly identical.  But have a look at them.
+
+```{r}
+DP <- datasaurus %>% ggplot() + aes(x=x, y=y, color=dataset, group=dataset) + geom_point() + facet_wrap(vars(dataset))
+DP
+```

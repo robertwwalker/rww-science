@@ -121,7 +121,7 @@ OR.Hospital.C <- OR.Hospital.C %>%
     mutate(Hospital.Capacity = str_replace(Hospital.Capacity, "Pediatric beds", "Pediatric non-ICU beds"))
 OR.Hospital.Caps <- bind_rows(Today$Hospital.Cap, OR.Hospital.C) %>% distinct(.) # 5 
 # Save the imageformat(Sys.Date(), "%d")
-save.image(paste0("~/Sandbox/awful/content/R/COVID/data/OregonCOVID",Sys.Date(),".RData")) # Save the data with a date flag in the name.
+save.image(paste0(here::here("content/R/COVID/data"),"OregonCOVID",Sys.Date(),".RData")) # Save the data with a date flag in the name.
   cat(paste0("Added new data... \n",Sys.time())) # Report the updates
 } else {
   cat(paste0("Nothing new to add; have a nice day! \n",Sys.time())) # Report no updates.

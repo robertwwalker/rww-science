@@ -1,7 +1,7 @@
 ---
 title: New York Times Data on COVID
 author: Robert W. Walker
-date: '2020-10-16'
+date: '2020-10-19'
 slug: new-york-times-data-on-covid
 categories:
   - R
@@ -21,14 +21,11 @@ projects: []
 ---
 
 <script src="index_files/header-attrs/header-attrs.js"></script>
-<script src="index_files/htmlwidgets/htmlwidgets.js"></script>
-<script src="index_files/pymjs/pym.v1.js"></script>
-<script src="index_files/widgetframe-binding/widgetframe.js"></script>
 
 
 <div id="new-york-times-data-for-the-us" class="section level1">
 <h1>New York Times data for the US</h1>
-<p>The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-10-17 00:44:15.</p>
+<p>The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-10-19 13:54:20.</p>
 </div>
 <div id="the-basic-state-of-things" class="section level1">
 <h1>The Basic State of Things</h1>
@@ -183,10 +180,10 @@ ggplot(., aes(x=date, y=CFR)) +
   labs(title = &quot;Case Fatality Rate of COVID-19 in the US&quot;, subtitle=&quot;Very uncertain estimate... Numerator and denominator uncertain \n Data: NY Times GitHub&quot;, caption=&quot;Data from nytimes/covid-19-data on guthub.&quot;, color=&quot;Greater \n than 0.02&quot;) + 
   dark_theme_bw()
 GPCFR &lt;- ggplotly(CFR)
-library(widgetframe)
-frameWidget(GPCFR)</code></pre>
-<div id="htmlwidget-1" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"index_files/figure-html//widgets/widget_unnamed-chunk-11.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+htmlwidgets::saveWidget(
+  widgetframe::frameableWidget(GPCFR), here:::here(&#39;static/img/widgets/gpcfrmap.html&#39;))</code></pre>
+<iframe width="600" height="405" src="https://rww.science/img/widgets/gpcfrmap.html" frameborder="0" allowfullscreen>
+</iframe>
 </div>
 <div id="this-may-prove-useful" class="section level2">
 <h2>This may prove useful</h2>
@@ -197,10 +194,10 @@ P1 &lt;- NCFR %&gt;% ggplot(., aes(x=date, y=CFR)) +
   labs(y=&quot;New Cases per New Death&quot;, title = &quot;New Cases to New Deaths&quot;, subtitle=&quot;Very uncertain estimate... Numerator and denominator uncertain \n Data: NY Times GitHub&quot;, caption=&quot;Data from nytimes/covid-19-data on github.&quot;) + 
   dark_theme_bw()
 GPNCFR &lt;- ggplotly(P1)
-library(widgetframe)
-frameWidget(GPNCFR)</code></pre>
-<div id="htmlwidget-2" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
-<script type="application/json" data-for="htmlwidget-2">{"x":{"url":"index_files/figure-html//widgets/widget_unnamed-chunk-12.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+htmlwidgets::saveWidget(
+  widgetframe::frameableWidget(GPNCFR), here:::here(&#39;static/img/widgets/gpncfrmap.html&#39;))</code></pre>
+<iframe width="600" height="405" src="https://rww.science/img/widgets/gpncfrmap.html" frameborder="0" allowfullscreen>
+</iframe>
 </div>
 </div>
 <div id="states" class="section level1">

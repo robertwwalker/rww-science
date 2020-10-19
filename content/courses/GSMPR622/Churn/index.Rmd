@@ -7,6 +7,7 @@ output:
      self_contained: true
 ---
 
+
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
@@ -16,14 +17,13 @@ knitr::opts_chunk$set(echo = TRUE)
 The loss of customers is known as churn.  Here is some data on telephone companies that gives us a number of features of the customer and the billing history relevant to this.
 
 ```{r, message=FALSE, warning=FALSE}
-library(radiant)
 library(tidyverse)
 library(readr)
 library(skimr)
-telco <- read_csv("https://github.com/robertwwalker/DADMStuff/raw/master/WA_Fn-UseC_-Telco-Customer-Churn.csv")
+telco <- read_csv(url("https://github.com/robertwwalker/DADMStuff/raw/master/WA_Fn-UseC_-Telco-Customer-Churn.csv"))
 skim(telco)
 telco <- telco[complete.cases(telco),] # Keep only rows with complete cases
-telco.analyse <- subset(telco, select = -customerID) # Drop customer ID
+telco.analyse <- telco %>% select(-customerID) # Drop customer ID
 telco.F <- mutate_if(telco.analyse, is.character, as.factor)
 ```
 
@@ -38,7 +38,8 @@ create_report(telco.F)
 Remove the missing data.  The outcome of interest is Churn.  Let's look at it and take on a few examples from proportions.  Because it is Yes and No, everything will be about the probability of No unless we turn them to factors and order them backwards.  I will just describe this as the probability of *retention*.
 
 ```{r}
-( Tab.PaperlessY <- xtabs(~PaperlessBilling+Churn, data=telco.analyse, subset=telco.analyse$PaperlessBilling=="Yes") )
+Paperless <- telco.analyse %>% filter(PaperlessBilling=="Yes")
+Tab.PaperlessY <- xtabs(~PaperlessBilling+Churn, data=Paperless)
 prop.table(Tab.PaperlessY, 1)
 prop.test(Tab.PaperlessY)
 ```
@@ -46,7 +47,8 @@ prop.test(Tab.PaperlessY)
 For the paperless customers, the probability of retention is 0.65 to 0.68 with 95% confidence.  For the paper customers, we have...
 
 ```{r}
-( Tab.PaperlessN <- xtabs(~PaperlessBilling+Churn, data=telco.analyse, subset=telco.analyse$PaperlessBilling=="No") )
+PaperBill <- telco.analyse %>% filter(PaperlessBilling=="Yes")
+Tab.PaperlessN <- xtabs(~PaperlessBilling+Churn, data=PaperBill)
 prop.table(Tab.PaperlessN, 1)
 prop.test(Tab.PaperlessN)
 ```
@@ -73,65 +75,33 @@ prop.table(Tab.PS, 1)
 prop.test(Tab.PS)
 ```
 
-It seems not.  Those without phone service could be 0.017 less likely or 0.053 more likely to be retained; no difference is likely.  Now, let's turn to regression models.  The character variable will cause problems in this case so we will have to analyse it.
+It seems not.  Those without phone service could be 0.017 less likely or 0.053 more likely to be retained; no difference is certainly among the plausible values.
+
+## Contracts?
 
 ```{r}
-library(rpart)
-split.me <- function(data, prop1=0.7) {
-  train <- data[sample(1:nrow(data), size=prop1*nrow(data)),]
-  test <- anti_join(data,train)
-  return(list(train=train,test=test))
-}
-split.data <- split.me(telco.analyse, prop1=0.666)
-train <- split.data$train
-test <- split.data$test
-Tree1 <- rpart(as.factor(Churn)~., data = telco.F)
-library(partykit)
-plot(as.party(Tree1))
+(Tab.Contract <- table(telco.analyse$Contract, telco.analyse$Churn))
+prop.table(Tab.Contract, 1)
+prop.test(Tab.Contract)
 ```
+With more than two proportions, the question is, `are the probabilities of churn the same or not`.
 
-## A sankey
+Perhaps we should reexamine the row dimension to combine those under contracts of different lengths to one.
+
+# Contracts: Yes or No
+
+First, use mutate to separate those under contract from those that are month-to-month.  Second, I will examine the table and the proportions from the table calculated by rows.
 
 ```{r}
-library(sankeytreeR); library(pipeR)
-sankeytree(Tree1, tooltip="all")
+TAC <- telco.analyse %>% mutate(No.Contract = (Contract=="Month-to-month"))
+table(TAC$No.Contract, TAC$Churn)
+prop.table(table(TAC$No.Contract, TAC$Churn), 1)
 ```
 
-
-# How does it perform?
-
-A predict function...  Every model has one.
+Those under contract have a six percent churn rate while those not under contract churn just under forty-three percent of the time.  It is likely that contracts are a very useful way to diminish the likelihood of churn.  How much?  We can use the test of proportions to examine this.
 
 ```{r}
-# What does predict do?
-head(predict(Tree1))
-# Predict the Test set using the Training model
-test$pred1 <- predict(Tree1, test, "class")
-table(test$Churn,test$pred1)
-# Conditional Probabilities
-prop.table(table(test$Churn,test$pred1), 1)
-# The Overall Comparison
-prop.table(table(telco.F$Churn))
-prop.table(table(test$Churn,test$pred1))
+prop.test(table(TAC$No.Contract, TAC$Churn))
 ```
 
-
-# A GLM Regression
-
-```{r}
-result <- logistic(
-  telco.F, 
-  rvar = "Churn", 
-  evar = c("tenure", "Contract"), 
-  lev = "Yes"
-)
-summary(result, sum_check = c("vif", "confint", "odds"))
-plot(result, plots = "fit", custom = FALSE)
-```
-
-Predict a few rows in the original data.
-
-```{r}
-head(predict(result, telco.F))
-```
-
+In evaluating the claim of no difference, the probability of no difference is estimated to be basically zero [2.2e-16].  So what are the likely values?  With 95% confidence, the probability of churning is between 0.34 and 0.377 more likely for those without a contract.

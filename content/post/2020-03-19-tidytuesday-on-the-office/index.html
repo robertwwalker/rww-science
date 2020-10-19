@@ -22,9 +22,7 @@ image:
 projects: []
 ---
 
-<script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
-<script src="/rmarkdown-libs/pymjs/pym.v1.js"></script>
-<script src="/rmarkdown-libs/widgetframe-binding/widgetframe.js"></script>
+<script src="index_files/header-attrs/header-attrs.js"></script>
 
 
 <div id="the-office" class="section level2">
@@ -39,21 +37,21 @@ office_ratings &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfor
 TableS &lt;- office_ratings %&gt;% tabyl(season)
 p1 &lt;- TableS %&gt;% ggplot(., aes(x=as.factor(season), y=n, fill=as.factor(season))) + geom_col() + labs(x=&quot;Season&quot;, y=&quot;Episodes&quot;, title=&quot;The Office: Episodes&quot;) + guides(fill=FALSE)
 p1</code></pre>
-<p><img src="/post/2020-03-19-tidytuesday-on-the-office/index_files/figure-html/pressure-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/pressure-1.png" width="672" /></p>
 </div>
 <div id="ratings" class="section level1">
 <h1>Ratings</h1>
 <p>How are the various seasons and episodes rated?</p>
 <pre class="r"><code>p2 &lt;- office_ratings %&gt;% ggplot(., aes(x=as.factor(season), y=imdb_rating, fill=as.factor(season), color=as.factor(season))) + geom_violin(alpha=0.3) + guides(fill=FALSE, color=FALSE) + labs(x=&quot;Season&quot;, y=&quot;IMDB Rating&quot;) + geom_point()
 p2</code></pre>
-<p><img src="/post/2020-03-19-tidytuesday-on-the-office/index_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
 </div>
 <div id="patchwork" class="section level1">
 <h1>Patchwork</h1>
 <p>Using <code>patchwork</code>, we can combine multiple plots.</p>
 <pre class="r"><code>library(patchwork)
 (p1) / p2</code></pre>
-<p><img src="/post/2020-03-19-tidytuesday-on-the-office/index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
 </div>
 <div id="ratings-part-ii" class="section level1">
 <h1>Ratings Part II</h1>
@@ -64,7 +62,7 @@ p3 &lt;- office_ratings %&gt;% ggplot(., aes(x=as.factor(season), y=imdb_rating,
 library(plotly)
 # ggplotly(p3, tooltip = &quot;text&quot;)
 p3</code></pre>
-<p><img src="/post/2020-03-19-tidytuesday-on-the-office/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 </div>
 <div id="something-i-like" class="section level1">
 <h1>Something I Like</h1>
@@ -72,9 +70,9 @@ p3</code></pre>
 <pre class="r"><code>library(hrbrthemes); library(ggthemes)</code></pre>
 <pre><code>## NOTE: Either Arial Narrow or Roboto Condensed fonts are required to use these themes.</code></pre>
 <pre><code>##       Please use hrbrthemes::import_roboto_condensed() to install Roboto Condensed and</code></pre>
-<pre><code>##       if Arial Narrow is not on your system, please see http://bit.ly/arialnarrow</code></pre>
+<pre><code>##       if Arial Narrow is not on your system, please see https://bit.ly/arialnarrow</code></pre>
 <pre class="r"><code>ggplot(office_ratings, aes(x=as.factor(season), y=imdb_rating, fill=as.factor(season), color=as.factor(season))) + geom_violin(alpha=0.3) + guides(fill=FALSE, color=FALSE) + labs(x=&quot;Season&quot;, y=&quot;IMDB Rating&quot;, title=&quot;IMDB Ratings: The Office by Season&quot;, caption=&quot;a #tidyTuesday&quot;) + theme_economist_white() + scale_fill_ipsum() + scale_color_ipsum() + geom_jitter()</code></pre>
-<p><img src="/post/2020-03-19-tidytuesday-on-the-office/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 </div>
 <div id="a-plotly" class="section level1">
 <h1>A Plotly</h1>
@@ -83,7 +81,8 @@ p3</code></pre>
 # The tooltip kills the smooth.
 p5 &lt;- ggplotly(p4)</code></pre>
 <pre><code>## `geom_smooth()` using method = &#39;loess&#39; and formula &#39;y ~ x&#39;</code></pre>
-<pre class="r"><code>frameWidget(p5)</code></pre>
-<div id="htmlwidget-1" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/post/2020-03-19-tidytuesday-on-the-office/index_files/figure-html//widgets/widget_unnamed-chunk-5.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>htmlwidgets::saveWidget(
+  widgetframe::frameableWidget(p5), here:::here(&#39;static/img/widgets/ttop5map.html&#39;))</code></pre>
+<iframe width="600" height="405" src="https://rww.science/img/widgets/ttop5map.html" frameborder="0" allowfullscreen>
+</iframe>
 </div>

@@ -22,9 +22,7 @@ image:
 projects: []
 ---
 
-<script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
-<script src="/rmarkdown-libs/pymjs/pym.v1.js"></script>
-<script src="/rmarkdown-libs/widgetframe-binding/widgetframe.js"></script>
+<script src="index_files/header-attrs/header-attrs.js"></script>
 
 
 <div id="trees-in-san-francisco" class="section level1">
@@ -182,6 +180,19 @@ skim(sf_trees)</code></pre>
 </table>
 <p><strong>Variable type: numeric</strong></p>
 <table>
+<colgroup>
+<col width="12%" />
+<col width="9%" />
+<col width="12%" />
+<col width="9%" />
+<col width="8%" />
+<col width="7%" />
+<col width="8%" />
+<col width="9%" />
+<col width="9%" />
+<col width="9%" />
+<col width="5%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th align="left">skim_variable</th>
@@ -266,15 +277,16 @@ skim(sf_trees)</code></pre>
 </tbody>
 </table>
 <pre class="r"><code>( My.Map &lt;- ggmap(get_map(&quot;San Francisco, CA&quot;, zoom=12)) + geom_point(data=sf_trees, aes(x=longitude, y=latitude, color=legal_status, text=address), size=0.1, alpha=0.1) + theme_minimal() )</code></pre>
-<pre><code>## Source : https://maps.googleapis.com/maps/api/staticmap?center=San%20Francisco,%20CA&amp;zoom=12&amp;size=640x640&amp;scale=2&amp;maptype=terrain&amp;language=en-EN&amp;key=xxx-k</code></pre>
-<pre><code>## Source : https://maps.googleapis.com/maps/api/geocode/json?address=San+Francisco,+CA&amp;key=xxx-k</code></pre>
+<pre><code>## Source : https://maps.googleapis.com/maps/api/staticmap?center=San%20Francisco,%20CA&amp;zoom=12&amp;size=640x640&amp;scale=2&amp;maptype=terrain&amp;language=en-EN&amp;key=xxx-jAsYoenYRmMfzTFwXpVYE76s</code></pre>
+<pre><code>## Source : https://maps.googleapis.com/maps/api/geocode/json?address=San+Francisco,+CA&amp;key=xxx-jAsYoenYRmMfzTFwXpVYE76s</code></pre>
 <pre><code>## Warning: Ignoring unknown aesthetics: text</code></pre>
 <pre><code>## Warning: Removed 2963 rows containing missing values (geom_point).</code></pre>
-<p><img src="/post/2020-01-31-mapping-san-francisco-trees/index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
 <pre class="r"><code>library(plotly)
 library(widgetframe)
 MMGGP &lt;- ggplotly(My.Map)
-frameWidget(MMGGP)</code></pre>
-<div id="htmlwidget-1" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/post/2020-01-31-mapping-san-francisco-trees/index_files/figure-html//widgets/widget_unnamed-chunk-3.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+htmlwidgets::saveWidget(
+  widgetframe::frameableWidget(MMGGP), here:::here(&#39;static/img/widgets/mmmgp1map.html&#39;))</code></pre>
+<iframe width="800" height="800" src="https://rww.science/img/widgets/mmmgp1map.html" frameborder="0" allowfullscreen>
+</iframe>
 </div>

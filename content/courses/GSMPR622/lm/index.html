@@ -1,0 +1,312 @@
+---
+title: "R Notes on Linear Models"
+author: "Robert W. Walker"
+date: "10/18/2020"
+output:
+   html_document:
+     self_contained: true
+---
+
+<script src="index_files/header-attrs/header-attrs.js"></script>
+
+
+<div id="fake-data" class="section level2">
+<h2>Fake Data</h2>
+<p>I will fake some data to work with according to the following equation.</p>
+<p><span class="math display">\[ y = 2 + 2*x_{1} + 1*x_{2} -1*x_{3} + \epsilon \]</span>
+where each x and <span class="math inline">\(\epsilon\)</span> are random draws from a standard normal distribution with mean zero and standard deviation 1.</p>
+<pre class="r"><code>x1 &lt;- rnorm(100); x2 &lt;- rnorm(100); x3 &lt;- rnorm(100); e &lt;- rnorm(100)
+y &lt;- 2 + 2*x1 + x2 - x3 + e
+My.data &lt;- data.frame(y, x1, x2, x3)
+head(My.data)
+save(My.data, file=&quot;MyData.RData&quot;)</code></pre>
+<pre class="r"><code>load(url(&quot;https://github.com/robertwwalker/DADMStuff/raw/master/MyData.RData&quot;))</code></pre>
+<p>It all starts with <code>lm()</code>.</p>
+</div>
+<div id="lm" class="section level2">
+<h2>lm</h2>
+<p>Let’s estimate a regression with y taken as a function of an intercept, a slope for each of x1, x2, and x3, and residual given the aforementioned. I will estimate</p>
+<p><span class="math display">\[ y = \alpha + \beta_1 x_1 + \beta_2 x_2 + beta_3 x_3 + \epsilon  \]</span></p>
+<pre class="r"><code>( My.Regression &lt;- lm(y ~ x1+x2+x3, data=My.data) )</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = y ~ x1 + x2 + x3, data = My.data)
+## 
+## Coefficients:
+## (Intercept)           x1           x2           x3  
+##      2.0491       2.0687       0.8762      -0.8639</code></pre>
+</div>
+<div id="summarylm" class="section level2">
+<h2>summary(lm)</h2>
+<p>The core details of a fitted regression can be gleaned from a summary().</p>
+<pre class="r"><code>summary(My.Regression)</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = y ~ x1 + x2 + x3, data = My.data)
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -2.22834 -0.62924 -0.03868  0.67298  2.27252 
+## 
+## Coefficients:
+##             Estimate Std. Error t value Pr(&gt;|t|)    
+## (Intercept)  2.04909    0.09446  21.693  &lt; 2e-16 ***
+## x1           2.06873    0.10339  20.009  &lt; 2e-16 ***
+## x2           0.87619    0.09608   9.120 1.16e-14 ***
+## x3          -0.86387    0.09204  -9.386 3.11e-15 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
+## 
+## Residual standard error: 0.9412 on 96 degrees of freedom
+## Multiple R-squared:  0.8536, Adjusted R-squared:  0.8491 
+## F-statistic: 186.6 on 3 and 96 DF,  p-value: &lt; 2.2e-16</code></pre>
+<p>The top line gives a summary() of the residuals. Then we get the <code>parameters</code> – the slope(s) and intercept – and their standard errors along with a t and a two-sided probability that the particular slope or intercept is zero. In this instance, the parameters are close[ish] to their true values. The residual standard error on 100 - 1 - 3 slopes = 96 degrees of freedom is 0.94 – almost 1, the true value. These three factors account for 85.36% of the variation. Each has a slope with a t-statistic that is clearly different from zero [at least 9 standard errors away from zero]. At the bottom, the F statistic examines the claim that the set of included predictors [all 3 of them] explain no more than random variation against the alternative that at least of the predictors has a non-zero slope (is related to y). The p-value is the probability that each of the included predictors explain no more than random variation. If it is very low, then the predictors account for <code>significant</code> variation in <code>y</code>.</p>
+</div>
+<div id="confidence-intervals-confint" class="section level1">
+<h1>Confidence intervals: confint()</h1>
+<p>To obtain the confidence intervals for the slopes and the intercept, we embed our linear model in confint().</p>
+<pre class="r"><code>confint(My.Regression)</code></pre>
+<pre><code>##                  2.5 %     97.5 %
+## (Intercept)  1.8615867  2.2365868
+## x1           1.8635022  2.2739616
+## x2           0.6854841  1.0669012
+## x3          -1.0465660 -0.6811651</code></pre>
+<p>With 95% confidence, the intercept is between 1.86 and 2.24; the slope linking x1 and y ranges from 1.86 to 2.27. The slope linking x2 and y ranges from 0.69 to 1.07 and the slope linking x3 to y ranges from -1.05 to -0.68. All include the true values in the interval.</p>
+</div>
+<div id="anova-for-accounting" class="section level1">
+<h1>anova() for accounting</h1>
+<p><code>anova()</code> applied to a single regression gives a sequential accounting of the sums of squares.</p>
+<pre class="r"><code>anova(My.Regression)</code></pre>
+<pre><code>## Analysis of Variance Table
+## 
+## Response: y
+##           Df Sum Sq Mean Sq F value    Pr(&gt;F)    
+## x1         1 338.64  338.64 382.241 &lt; 2.2e-16 ***
+## x2         1  79.38   79.38  89.604 2.089e-15 ***
+## x3         1  78.04   78.04  88.090 3.109e-15 ***
+## Residuals 96  85.05    0.89                      
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>x1 accounts for 4 times the variation of x2 and x3. On 1 and 96 degrees of freedom, 99% of F values would be below 6.9064673. These are all clearly higher.</p>
+<p>If we wish to compare two regressions using anova, it will show the sums of squares for the two models. Let me eliminate x3 and see what happens. We know from the above table that x3 accounts for 78.04 squares, that should be the difference between these two models. They should not be equivalent because x3 is important.</p>
+<pre class="r"><code>( My.Regression.2 &lt;- lm(y ~ x1+x2, data=My.data) )</code></pre>
+<pre><code>## 
+## Call:
+## lm(formula = y ~ x1 + x2, data = My.data)
+## 
+## Coefficients:
+## (Intercept)           x1           x2  
+##      2.0755       2.0286       0.9088</code></pre>
+<pre class="r"><code>anova(My.Regression.2, My.Regression)</code></pre>
+<pre><code>## Analysis of Variance Table
+## 
+## Model 1: y ~ x1 + x2
+## Model 2: y ~ x1 + x2 + x3
+##   Res.Df    RSS Df Sum of Sq     F    Pr(&gt;F)    
+## 1     97 163.09                                 
+## 2     96  85.05  1    78.042 88.09 3.109e-15 ***
+## ---
+## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1</code></pre>
+<p>It shows. We reject the claim that the two models are equivalent – explain the same variance. Here, the first does considerably worser than the second. The one degree of freedom for x3 is responsible for 88 times the average residual and 6.91 is the threshhold with 99% probability.</p>
+<div id="residuals-and-fitted.values" class="section level2">
+<h2>residuals and fitted.values</h2>
+<p>To obtain the residuals from a regression model, we can use the <code>residuals(lm)</code> function.</p>
+<pre class="r"><code>My.data$residuals &lt;- residuals(My.Regression)</code></pre>
+<p>To obtain the algebraic prediction, we can ask for the fitted values.</p>
+<pre class="r"><code>My.data$fitted.values &lt;- fitted.values(My.Regression)</code></pre>
+<p>Let me show the data, now.</p>
+<pre class="r"><code>My.data %&gt;% head() %&gt;% kable()</code></pre>
+<table>
+<thead>
+<tr>
+<th style="text-align:right;">
+y
+</th>
+<th style="text-align:right;">
+x1
+</th>
+<th style="text-align:right;">
+x2
+</th>
+<th style="text-align:right;">
+x3
+</th>
+<th style="text-align:right;">
+residuals
+</th>
+<th style="text-align:right;">
+fitted.values
+</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:right;">
+0.4854983
+</td>
+<td style="text-align:right;">
+-0.8887555
+</td>
+<td style="text-align:right;">
+0.3099350
+</td>
+<td style="text-align:right;">
+-0.8027193
+</td>
+<td style="text-align:right;">
+-0.6899960
+</td>
+<td style="text-align:right;">
+1.1754943
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1.9829614
+</td>
+<td style="text-align:right;">
+-0.7149266
+</td>
+<td style="text-align:right;">
+0.9495822
+</td>
+<td style="text-align:right;">
+-0.4682931
+</td>
+<td style="text-align:right;">
+0.1763069
+</td>
+<td style="text-align:right;">
+1.8066545
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+3.9189824
+</td>
+<td style="text-align:right;">
+0.5196613
+</td>
+<td style="text-align:right;">
+-1.4247387
+</td>
+<td style="text-align:right;">
+-0.6839269
+</td>
+<td style="text-align:right;">
+1.4523804
+</td>
+<td style="text-align:right;">
+2.4666020
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+1.7440977
+</td>
+<td style="text-align:right;">
+-0.2439637
+</td>
+<td style="text-align:right;">
+0.0918838
+</td>
+<td style="text-align:right;">
+0.5452104
+</td>
+<td style="text-align:right;">
+0.5901870
+</td>
+<td style="text-align:right;">
+1.1539107
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+-2.3874190
+</td>
+<td style="text-align:right;">
+-0.6649309
+</td>
+<td style="text-align:right;">
+-2.0671758
+</td>
+<td style="text-align:right;">
+0.9448249
+</td>
+<td style="text-align:right;">
+-0.4334962
+</td>
+<td style="text-align:right;">
+-1.9539228
+</td>
+</tr>
+<tr>
+<td style="text-align:right;">
+0.6922076
+</td>
+<td style="text-align:right;">
+0.1700020
+</td>
+<td style="text-align:right;">
+-0.9864477
+</td>
+<td style="text-align:right;">
+0.7048787
+</td>
+<td style="text-align:right;">
+-0.2353291
+</td>
+<td style="text-align:right;">
+0.9275367
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div id="predict" class="section level2">
+<h2>predict</h2>
+<p>The predict function can arrive at two intervals.</p>
+<p>First, we could predict the mean’s confidence interval given some value of the inputs, x1, x2, and x3. Let’s set each to 1.</p>
+<pre class="r"><code>Pred.Data &lt;- data.frame(x1=1, x2=1, x3=1)
+predict(My.Regression, newdata = Pred.Data, interval = &quot;confidence&quot;)</code></pre>
+<pre><code>##        fit      lwr     upr
+## 1 4.130146 3.742922 4.51737</code></pre>
+<p>If we plug in the values for x1, x2, and x3 we would obtain a predicted value of 4.130146; the 95% interval for the average ranges from 3.743 to 4.517 given x1=1, x2=1, x3=1. Now let us predict the range of the data.</p>
+<pre class="r"><code>predict(My.Regression, newdata=Pred.Data, interval = &quot;prediction&quot;)</code></pre>
+<pre><code>##        fit      lwr      upr
+## 1 4.130146 2.222094 6.038198</code></pre>
+<p>GIven x1=1, x2=1, x3=1, the range of y, with 95% confidence, is 2.22 to 6.04.</p>
+</div>
+<div id="residual-diagnostics" class="section level2">
+<h2>Residual Diagnostics</h2>
+<p>The plot of the linear model gives a few fit assessment graphics.</p>
+<pre class="r"><code>plot(My.Regression)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-12-1.png" width="672" /><img src="index_files/figure-html/unnamed-chunk-12-2.png" width="672" /><img src="index_files/figure-html/unnamed-chunk-12-3.png" width="672" /><img src="index_files/figure-html/unnamed-chunk-12-4.png" width="672" /></p>
+<p>The quantile-quantile plot can be applied to the residuals, as well.</p>
+<pre class="r"><code>shapiro.test(My.data$residuals)</code></pre>
+<pre><code>## 
+##  Shapiro-Wilk normality test
+## 
+## data:  My.data$residuals
+## W = 0.99469, p-value = 0.9662</code></pre>
+<pre class="r"><code>car::qqPlot(My.data$residuals)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<pre><code>## [1] 63 57</code></pre>
+<p>The fitted.values and the original data in a plot can also be used to assess this.</p>
+<pre class="r"><code>ggplot(My.data, aes(x=fitted.values, y=y)) + geom_point() + geom_abline(slope=1, intercept = 0) + labs(x=&quot;Predicted Values&quot;, y=&quot;Actual Values&quot;)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p>The effects plot are useful for assessing the functional form – line or nonline. This is the one part of this that relies on an outside library.</p>
+<pre class="r"><code>library(effects)</code></pre>
+<pre><code>## Loading required package: carData</code></pre>
+<pre><code>## Registered S3 methods overwritten by &#39;lme4&#39;:
+##   method                          from
+##   cooks.distance.influence.merMod car 
+##   influence.merMod                car 
+##   dfbeta.influence.merMod         car 
+##   dfbetas.influence.merMod        car</code></pre>
+<pre><code>## lattice theme set by effectsTheme()
+## See ?effectsTheme for details.</code></pre>
+<pre class="r"><code>plot(allEffects(My.Regression, partial.residuals=TRUE))</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+</div>
+</div>

@@ -27,5 +27,3 @@ The setup for a Google Cloud account is kind of a pain and it requires a billing
 PDX <- get_map(getbb("Portland, OR"))
 PDX %>% ggmap()
 ```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.

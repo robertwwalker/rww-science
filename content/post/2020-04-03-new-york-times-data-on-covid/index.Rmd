@@ -1,7 +1,7 @@
 ---
 title: New York Times Data on COVID
 author: Robert W. Walker
-date: '2020-10-16'
+date: '2020-10-19'
 slug: new-york-times-data-on-covid
 categories:
   - R
@@ -194,9 +194,11 @@ ggplot(., aes(x=date, y=CFR)) +
   labs(title = "Case Fatality Rate of COVID-19 in the US", subtitle="Very uncertain estimate... Numerator and denominator uncertain \n Data: NY Times GitHub", caption="Data from nytimes/covid-19-data on guthub.", color="Greater \n than 0.02") + 
   dark_theme_bw()
 GPCFR <- ggplotly(CFR)
-library(widgetframe)
-frameWidget(GPCFR)
+htmlwidgets::saveWidget(
+  widgetframe::frameableWidget(GPCFR), here:::here('static/img/widgets/gpcfrmap.html'))
 ```
+
+<iframe width="600" height="405" src="https://rww.science/img/widgets/gpcfrmap.html" frameborder="0" allowfullscreen></iframe>
 
 ## This may prove useful
 
@@ -208,9 +210,11 @@ P1 <- NCFR %>% ggplot(., aes(x=date, y=CFR)) +
   labs(y="New Cases per New Death", title = "New Cases to New Deaths", subtitle="Very uncertain estimate... Numerator and denominator uncertain \n Data: NY Times GitHub", caption="Data from nytimes/covid-19-data on github.") + 
   dark_theme_bw()
 GPNCFR <- ggplotly(P1)
-library(widgetframe)
-frameWidget(GPNCFR)
+htmlwidgets::saveWidget(
+  widgetframe::frameableWidget(GPNCFR), here:::here('static/img/widgets/gpncfrmap.html'))
 ```
+
+<iframe width="600" height="405" src="https://rww.science/img/widgets/gpncfrmap.html" frameborder="0" allowfullscreen></iframe>
 
 
 # 50 States?

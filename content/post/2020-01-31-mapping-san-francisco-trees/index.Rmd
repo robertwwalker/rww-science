@@ -42,6 +42,8 @@ skim(sf_trees)
 library(plotly)
 library(widgetframe)
 MMGGP <- ggplotly(My.Map)
-frameWidget(MMGGP)
+htmlwidgets::saveWidget(
+  widgetframe::frameableWidget(MMGGP), here:::here('static/img/widgets/mmmgp1map.html'))
 ```
 
+<iframe width="800" height="800" src="https://rww.science/img/widgets/mmmgp1map.html" frameborder="0" allowfullscreen></iframe>

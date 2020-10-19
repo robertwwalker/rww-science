@@ -17,10 +17,9 @@ header:
   preview: yes
 ---
 
-<script src="/rmarkdown-libs/kePrint/kePrint.js"></script>
-<script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
-<script src="/rmarkdown-libs/pymjs/pym.v1.js"></script>
-<script src="/rmarkdown-libs/widgetframe-binding/widgetframe.js"></script>
+<script src="index_files/header-attrs/header-attrs.js"></script>
+<script src="index_files/kePrint/kePrint.js"></script>
+<link href="index_files/lightable/lightable.css" rel="stylesheet" />
 
 
 <div id="searching-and-mapping-the-census" class="section level2">
@@ -562,7 +561,7 @@ FAMILY TYPE BY PRESENCE AND AGE OF RELATED CHILDREN (ASIAN ALONE HOUSEHOLDER)
 <pre class="r"><code>library(viridis)</code></pre>
 <pre><code>## Loading required package: viridisLite</code></pre>
 <pre class="r"><code>library(sf); library(ggthemes)</code></pre>
-<pre><code>## Linking to GEOS 3.6.2, GDAL 2.2.3, PROJ 4.9.3</code></pre>
+<pre><code>## Linking to GEOS 3.8.0, GDAL 3.0.4, PROJ 6.3.1</code></pre>
 <pre class="r"><code># I need supply the names of the variables to fetch from Census: column `name` above
 vars10 &lt;- c(&quot;P012D031&quot;, &quot;P012D032&quot;, &quot;P012D033&quot;, &quot;P012D034&quot;, &quot;P012D035&quot;, &quot;P012D036&quot;)
 # Get the census data with the relevant map by county; 2010 is the most recent
@@ -579,11 +578,12 @@ ggplot(MapDat, aes(fill = value, color = value)) +
   scale_fill_viridis_c(guide=FALSE)+ 
   scale_color_viridis_c(guide=FALSE) + 
   facet_wrap(~variable)</code></pre>
-<p><img src="/post/2019-12-08-uscensus-mapping/index_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
 </div>
 <div id="totals-of-the-target-population" class="section level2">
 <h2>Totals of the Target Population</h2>
-<p><img src="/post/2019-12-08-uscensus-mapping/index_files/figure-html/pressure-1.png" width="672" /></p>
+<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
+<p><img src="index_files/figure-html/pressure-1.png" width="672" /></p>
 <p>A plotly</p>
 <pre class="r"><code>library(plotly)</code></pre>
 <pre><code>## 
@@ -600,15 +600,16 @@ ggplot(MapDat, aes(fill = value, color = value)) +
 <pre class="r"><code>PLM &lt;- ggplotly(PlotlyMe)
 library(widgetframe)</code></pre>
 <pre><code>## Loading required package: htmlwidgets</code></pre>
-<pre class="r"><code>frameWidget(PLM)</code></pre>
-<div id="htmlwidget-1" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/post/2019-12-08-uscensus-mapping/index_files/figure-html//widgets/widget_unnamed-chunk-2.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+<pre class="r"><code>htmlwidgets::saveWidget(
+  widgetframe::frameableWidget(PLM), here:::here(&#39;static/img/widgets/plm11map.html&#39;))</code></pre>
+<iframe width="800" height="600" src="https://rww.science/img/widgets/plm11map.html" frameborder="0" allowfullscreen>
+</iframe>
 <p>To get rid of some of the messiness because LA is a huge outlier, perhaps it should be binned.</p>
 <pre class="r"><code>MapDatSum &lt;- MapDatSum %&gt;% mutate(Binned.Total = cut_number(Total, 5, ordered_result=TRUE))
 PlotlyMe &lt;- ggplot(MapDatSum, aes(fill = Binned.Total, text=NAME)) +
      geom_sf(size=0.02, color=&quot;white&quot;) + theme_map() + scale_fill_viridis_d() +         labs(&quot;Asian Females Ages 18 to 34&quot;, caption = &quot;Census Table SF1&quot;)  
 PlotlyMe</code></pre>
-<p><img src="/post/2019-12-08-uscensus-mapping/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 </div>
 <div id="more-than-1000-in-the-relevant-age-group" class="section level1">
 <h1>More than 1000 in the Relevant Age Group</h1>
@@ -616,7 +617,7 @@ PlotlyMe</code></pre>
 PlotlyMe &lt;- ggplot(MapDatSum, aes(fill = Total.1000, text=NAME)) +
      geom_sf(size=0.02, color=&quot;white&quot;) + theme_map() + scale_fill_viridis_d() +         labs(&quot;Asian Females Ages 18 to 34&quot;, caption = &quot;Census Table SF1&quot;, fill=&quot;More than 1000&quot;)  
 PlotlyMe</code></pre>
-<p><img src="/post/2019-12-08-uscensus-mapping/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 </div>
 <div id="more-than-5000-in-the-relevant-age-group" class="section level1">
 <h1>More than 5000 in the Relevant Age Group</h1>
@@ -624,7 +625,7 @@ PlotlyMe</code></pre>
 PlotlyMe &lt;- ggplot(MapDatSum, aes(fill = Total.5000)) +
      geom_sf(size=0.02, color=&quot;white&quot;) + theme_map() + scale_fill_viridis_d() +         labs(&quot;Asian Females Ages 18 to 34&quot;, caption = &quot;Census Table SF1&quot;, fill=&quot;More than 5000&quot;)  
 PlotlyMe</code></pre>
-<p><img src="/post/2019-12-08-uscensus-mapping/index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 </div>
 <div id="more-than-10000-in-the-relevant-age-group" class="section level1">
 <h1>More than 10000 in the Relevant Age Group</h1>
@@ -632,7 +633,7 @@ PlotlyMe</code></pre>
 PlotlyMe &lt;- ggplot(MapDatSum, aes(fill = Total.10K)) +
      geom_sf(size=0.02, color=&quot;white&quot;) + theme_map() + scale_fill_viridis_d() +         labs(&quot;Asian Females Ages 18 to 34&quot;, caption = &quot;Census Table SF1&quot;, fill=&quot;More than 10000&quot;)  
 PlotlyMe</code></pre>
-<p><img src="/post/2019-12-08-uscensus-mapping/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <pre class="r"><code># This takes a really long time to run.  It is not evaluated.
 library(cartogram)
 Carto &lt;- cartogram_cont(
@@ -646,5 +647,5 @@ threshold = 0.05
 <p>Load the cartogram already cooked.</p>
 <pre class="r"><code>load(url(&quot;https://github.com/robertwwalker/DADMStuff/raw/master/Cartogram.RData&quot;))
 ggplot(Carto, aes(fill=Total)) + geom_sf(size=0.01) + theme_map() + labs(caption=&quot;A Cartogram&quot;)</code></pre>
-<p><img src="/post/2019-12-08-uscensus-mapping/index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 </div>

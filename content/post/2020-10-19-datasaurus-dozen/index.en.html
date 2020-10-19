@@ -1,0 +1,468 @@
+---
+title: Datasaurus Dozen
+author: Robert W. Walker
+date: '2020-10-19'
+slug: datasaurus-dozen
+categories:
+  - tidyTuesday
+  - dataviz
+tags:
+  - tidyTuesday
+  - tidyverse
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2020-10-19T12:46:43-07:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<div id="the-datasaurus-dozen" class="section level2">
+<h2>The <code>datasaurus dozen</code></h2>
+<p>The datasaurus sozen is a fantastic teaching resource for examining the importance of data visualization. Let’s have a look.</p>
+<pre class="r"><code>datasaurus &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-10-13/datasaurus.csv&#39;)</code></pre>
+<pre><code>## 
+## ── Column specification ────────────────────────────────────────────────────────
+## cols(
+##   dataset = col_character(),
+##   x = col_double(),
+##   y = col_double()
+## )</code></pre>
+<p>Two libraries to make our work easy.</p>
+<pre><code>library(tidyverse)
+library(skimr)</code></pre>
+<p>First, the summary statistics.</p>
+<pre class="r"><code>datasaurus %&gt;% group_by(dataset) %&gt;% skim()</code></pre>
+<table>
+<caption><span id="tab:unnamed-chunk-2">Table 1: </span>Data summary</caption>
+<tbody>
+<tr class="odd">
+<td align="left">Name</td>
+<td align="left">Piped data</td>
+</tr>
+<tr class="even">
+<td align="left">Number of rows</td>
+<td align="left">1846</td>
+</tr>
+<tr class="odd">
+<td align="left">Number of columns</td>
+<td align="left">3</td>
+</tr>
+<tr class="even">
+<td align="left">_______________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Column type frequency:</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">numeric</td>
+<td align="left">2</td>
+</tr>
+<tr class="odd">
+<td align="left">________________________</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">Group variables</td>
+<td align="left">dataset</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="left">dataset</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">p0</th>
+<th align="right">p25</th>
+<th align="right">p50</th>
+<th align="right">p75</th>
+<th align="right">p100</th>
+<th align="left">hist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">x</td>
+<td align="left">away</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">54.27</td>
+<td align="right">16.77</td>
+<td align="right">15.56</td>
+<td align="right">39.72</td>
+<td align="right">53.34</td>
+<td align="right">69.15</td>
+<td align="right">91.64</td>
+<td align="left">▁▇▃▇▁</td>
+</tr>
+<tr class="even">
+<td align="left">x</td>
+<td align="left">bullseye</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">54.27</td>
+<td align="right">16.77</td>
+<td align="right">19.29</td>
+<td align="right">41.63</td>
+<td align="right">53.84</td>
+<td align="right">64.80</td>
+<td align="right">91.74</td>
+<td align="left">▂▆▇▅▂</td>
+</tr>
+<tr class="odd">
+<td align="left">x</td>
+<td align="left">circle</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">54.27</td>
+<td align="right">16.76</td>
+<td align="right">21.86</td>
+<td align="right">43.38</td>
+<td align="right">54.02</td>
+<td align="right">64.97</td>
+<td align="right">85.66</td>
+<td align="left">▅▃▇▅▃</td>
+</tr>
+<tr class="even">
+<td align="left">x</td>
+<td align="left">dino</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">54.26</td>
+<td align="right">16.77</td>
+<td align="right">22.31</td>
+<td align="right">44.10</td>
+<td align="right">53.33</td>
+<td align="right">64.74</td>
+<td align="right">98.21</td>
+<td align="left">▅▇▇▅▂</td>
+</tr>
+<tr class="odd">
+<td align="left">x</td>
+<td align="left">dots</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">54.26</td>
+<td align="right">16.77</td>
+<td align="right">25.44</td>
+<td align="right">50.36</td>
+<td align="right">50.98</td>
+<td align="right">75.20</td>
+<td align="right">77.95</td>
+<td align="left">▂▁▇▁▅</td>
+</tr>
+<tr class="even">
+<td align="left">x</td>
+<td align="left">h_lines</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">54.26</td>
+<td align="right">16.77</td>
+<td align="right">22.00</td>
+<td align="right">42.29</td>
+<td align="right">53.07</td>
+<td align="right">66.77</td>
+<td align="right">98.29</td>
+<td align="left">▅▇▇▅▁</td>
+</tr>
+<tr class="odd">
+<td align="left">x</td>
+<td align="left">high_lines</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">54.27</td>
+<td align="right">16.77</td>
+<td align="right">17.89</td>
+<td align="right">41.54</td>
+<td align="right">54.17</td>
+<td align="right">63.95</td>
+<td align="right">96.08</td>
+<td align="left">▂▅▇▃▁</td>
+</tr>
+<tr class="even">
+<td align="left">x</td>
+<td align="left">slant_down</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">54.27</td>
+<td align="right">16.77</td>
+<td align="right">18.11</td>
+<td align="right">42.89</td>
+<td align="right">53.14</td>
+<td align="right">64.47</td>
+<td align="right">95.59</td>
+<td align="left">▂▅▇▃▁</td>
+</tr>
+<tr class="odd">
+<td align="left">x</td>
+<td align="left">slant_up</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">54.27</td>
+<td align="right">16.77</td>
+<td align="right">20.21</td>
+<td align="right">42.81</td>
+<td align="right">54.26</td>
+<td align="right">64.49</td>
+<td align="right">95.26</td>
+<td align="left">▃▆▇▃▂</td>
+</tr>
+<tr class="even">
+<td align="left">x</td>
+<td align="left">star</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">54.27</td>
+<td align="right">16.77</td>
+<td align="right">27.02</td>
+<td align="right">41.03</td>
+<td align="right">56.53</td>
+<td align="right">68.71</td>
+<td align="right">86.44</td>
+<td align="left">▅▇▇▃▆</td>
+</tr>
+<tr class="odd">
+<td align="left">x</td>
+<td align="left">v_lines</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">54.27</td>
+<td align="right">16.77</td>
+<td align="right">30.45</td>
+<td align="right">49.96</td>
+<td align="right">50.36</td>
+<td align="right">69.50</td>
+<td align="right">89.50</td>
+<td align="left">▃▇▁▅▁</td>
+</tr>
+<tr class="even">
+<td align="left">x</td>
+<td align="left">wide_lines</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">54.27</td>
+<td align="right">16.77</td>
+<td align="right">27.44</td>
+<td align="right">35.52</td>
+<td align="right">64.55</td>
+<td align="right">67.45</td>
+<td align="right">77.92</td>
+<td align="left">▇▂▁▇▅</td>
+</tr>
+<tr class="odd">
+<td align="left">x</td>
+<td align="left">x_shape</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">54.26</td>
+<td align="right">16.77</td>
+<td align="right">31.11</td>
+<td align="right">40.09</td>
+<td align="right">47.14</td>
+<td align="right">71.86</td>
+<td align="right">85.45</td>
+<td align="left">▇▆▁▃▅</td>
+</tr>
+<tr class="even">
+<td align="left">y</td>
+<td align="left">away</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">47.83</td>
+<td align="right">26.94</td>
+<td align="right">0.02</td>
+<td align="right">24.63</td>
+<td align="right">47.54</td>
+<td align="right">71.80</td>
+<td align="right">97.48</td>
+<td align="left">▅▆▃▇▃</td>
+</tr>
+<tr class="odd">
+<td align="left">y</td>
+<td align="left">bullseye</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">47.83</td>
+<td align="right">26.94</td>
+<td align="right">9.69</td>
+<td align="right">26.24</td>
+<td align="right">47.38</td>
+<td align="right">72.53</td>
+<td align="right">85.88</td>
+<td align="left">▇▆▃▅▇</td>
+</tr>
+<tr class="even">
+<td align="left">y</td>
+<td align="left">circle</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">47.84</td>
+<td align="right">26.93</td>
+<td align="right">16.33</td>
+<td align="right">18.35</td>
+<td align="right">51.03</td>
+<td align="right">77.78</td>
+<td align="right">85.58</td>
+<td align="left">▇▁▁▂▆</td>
+</tr>
+<tr class="odd">
+<td align="left">y</td>
+<td align="left">dino</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">47.83</td>
+<td align="right">26.94</td>
+<td align="right">2.95</td>
+<td align="right">25.29</td>
+<td align="right">46.03</td>
+<td align="right">68.53</td>
+<td align="right">99.49</td>
+<td align="left">▇▇▇▅▆</td>
+</tr>
+<tr class="even">
+<td align="left">y</td>
+<td align="left">dots</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">47.84</td>
+<td align="right">26.93</td>
+<td align="right">15.77</td>
+<td align="right">17.11</td>
+<td align="right">51.30</td>
+<td align="right">82.88</td>
+<td align="right">94.25</td>
+<td align="left">▇▁▇▁▆</td>
+</tr>
+<tr class="odd">
+<td align="left">y</td>
+<td align="left">h_lines</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">47.83</td>
+<td align="right">26.94</td>
+<td align="right">10.46</td>
+<td align="right">30.48</td>
+<td align="right">50.47</td>
+<td align="right">70.35</td>
+<td align="right">90.46</td>
+<td align="left">▆▇▇▅▅</td>
+</tr>
+<tr class="even">
+<td align="left">y</td>
+<td align="left">high_lines</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">47.84</td>
+<td align="right">26.94</td>
+<td align="right">14.91</td>
+<td align="right">22.92</td>
+<td align="right">32.50</td>
+<td align="right">75.94</td>
+<td align="right">87.15</td>
+<td align="left">▇▁▁▃▅</td>
+</tr>
+<tr class="odd">
+<td align="left">y</td>
+<td align="left">slant_down</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">47.84</td>
+<td align="right">26.94</td>
+<td align="right">0.30</td>
+<td align="right">27.84</td>
+<td align="right">46.40</td>
+<td align="right">68.44</td>
+<td align="right">99.64</td>
+<td align="left">▆▇▇▅▆</td>
+</tr>
+<tr class="even">
+<td align="left">y</td>
+<td align="left">slant_up</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">47.83</td>
+<td align="right">26.94</td>
+<td align="right">5.65</td>
+<td align="right">24.76</td>
+<td align="right">45.29</td>
+<td align="right">70.86</td>
+<td align="right">99.58</td>
+<td align="left">▇▇▇▅▅</td>
+</tr>
+<tr class="odd">
+<td align="left">y</td>
+<td align="left">star</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">47.84</td>
+<td align="right">26.93</td>
+<td align="right">14.37</td>
+<td align="right">20.37</td>
+<td align="right">50.11</td>
+<td align="right">63.55</td>
+<td align="right">92.21</td>
+<td align="left">▇▂▂▅▅</td>
+</tr>
+<tr class="even">
+<td align="left">y</td>
+<td align="left">v_lines</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">47.84</td>
+<td align="right">26.94</td>
+<td align="right">2.73</td>
+<td align="right">22.75</td>
+<td align="right">47.11</td>
+<td align="right">65.85</td>
+<td align="right">99.69</td>
+<td align="left">▇▆▇▃▅</td>
+</tr>
+<tr class="odd">
+<td align="left">y</td>
+<td align="left">wide_lines</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">47.83</td>
+<td align="right">26.94</td>
+<td align="right">0.22</td>
+<td align="right">24.35</td>
+<td align="right">46.28</td>
+<td align="right">67.57</td>
+<td align="right">99.28</td>
+<td align="left">▇▇▇▅▆</td>
+</tr>
+<tr class="even">
+<td align="left">y</td>
+<td align="left">x_shape</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">47.84</td>
+<td align="right">26.93</td>
+<td align="right">4.58</td>
+<td align="right">23.47</td>
+<td align="right">39.88</td>
+<td align="right">73.61</td>
+<td align="right">97.84</td>
+<td align="left">▇▇▂▆▅</td>
+</tr>
+</tbody>
+</table>
+<p>Notice that all of the datasets are nearly identical. But have a look at them.</p>
+<pre class="r"><code>datasaurus %&gt;% ggplot() + aes(x=x, y=y, color=dataset) + geom_point() + facet_wrap(vars(dataset))</code></pre>
+<p><img src="/post/2020-10-19-datasaurus-dozen/index.en_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+</div>

@@ -92,6 +92,9 @@ ggplot(office_ratings, aes(x=as.factor(season), y=imdb_rating, fill=as.factor(se
 p4 <- ggplot(office_ratings, aes(x=air_date, y=imdb_rating, color=as.factor(season), text=title)) + geom_point() + geom_smooth() +  guides(color=FALSE) + labs(x="Date Aired", y="IMDB Rating")
 # The tooltip kills the smooth.
 p5 <- ggplotly(p4)
-frameWidget(p5)
+htmlwidgets::saveWidget(
+  widgetframe::frameableWidget(p5), here:::here('static/img/widgets/ttop5map.html'))
 ```
+
+<iframe width="600" height="405" src="https://rww.science/img/widgets/ttop5map.html" frameborder="0" allowfullscreen></iframe>
 
