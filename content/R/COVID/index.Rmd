@@ -173,7 +173,7 @@ save_animation(GGAnim, file="./MapAnim.gif")
 
 Divide the number of cases by the total number of tests completed and show them by county.
 
-```{r, warning=FALSE, message=FALSE}
+```{r pt1, warning=FALSE, message=FALSE}
 library(plotly)
 Res1 <- Res.1 %>% 
   mutate(Percent.Positive = Number.of.cases / (Number.of.cases + Negative.test.results) ) %>%
@@ -183,8 +183,7 @@ Res1 <- Res.1 %>%
    scale_fill_viridis_c(option = "A") + 
    theme_map() + 
    labs(title="Positive COVID-19 Tests in Oregon", subtitle=paste0(Sys.Date(),": \nonly counties with 10+ tests shown."), x="", y="", caption="Made with R, ggplot2, and ggrepel by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19", fill="Percent Positive")
-GGP <- ggplotly(Res1)
-frameWidget(GGP)
+ggplotly(Res1)
 ```
 
 # Testing in Oregon
@@ -225,7 +224,7 @@ Test2
 
 Cumulative results are perhaps more informative when viewed alongside the marginal changes from day to day.  Here, I show the proportion of test outcomes just considering those test results reported for that day -- the daily distribution of test outcomes.
 
-```{r, warning=FALSE, message=FALSE}
+```{r abcl1, warning=FALSE, message=FALSE}
 library(hrbrthemes); library(ggrepel); library(plotly)
 MyDat <- Oregon.Tests %>%
   pivot_wider(., names_from = Category, values_from = Outcome) %>% 
@@ -243,14 +242,13 @@ BaseP <- MyDat2 %>%
   geom_point() +
   guides(fill=FALSE, color=FALSE) +
   labs(title="Daily Distribution of Test Outcomes", subtitle="Percent of Positive Tests Shown") + theme_ft_rc()
-RGP1 <- ggplotly(BaseP)
-frameWidget(RGP1)
+ggplotly(BaseP)
 ```
 
 
 ## Per-capita Testing by County
 
-```{r, warning=FALSE, message=FALSE}
+```{r ctytest1, warning=FALSE, message=FALSE}
 library(rvest); library(htmltools)
 read_html("https://www.oregon-demographics.com/counties_by_population") %>% html_nodes("table") %>% .[1] %>% html_table(fill=TRUE) %>% data.frame() -> ORPOP
 ORPOP[1:36,] %>% mutate(county = str_remove(County, " County"), Population = as.numeric(str_remove(Population,","))) -> ORPOP
@@ -260,8 +258,7 @@ R2GPM <- Res.2 %>% ggplot(., aes(geometry=geometry, fill=PerCap.Tests, label=NAM
    scale_fill_viridis_c(option = "A") + 
    theme_map() + 
    labs(title="per capita COVID Testing in Oregon", subtitle=Sys.Date(), fill="per capita testing")
-R2GPM3 <- ggplotly(R2GPM)
-frameWidget(R2GPM3)
+ggplotly(R2GPM) 
 ```
 
 

@@ -1399,6 +1399,5 @@ Res1 <- ggplot(Res.1, aes(geometry=geometry, fill=Number.of.cases, label=NAME, t
 
 ```{r, warning=FALSE, message=FALSE}
 library(plotly)
-ggp <- ggplotly(Res1)
-frameWidget(ggp)
+ggplotly(Res1)
 ```
