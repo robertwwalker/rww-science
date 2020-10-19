@@ -34,7 +34,7 @@ library(ggthemes)
 library(gganimate)
 library(patchwork)
 library(hrbrthemes); library(here)
-load(paste0(here(),"/content/R/COVID/data/OregonCOVID",Sys.Date()-2,".RData"))
+load(paste0(here(),"/content/R/COVID/data/OregonCOVID",Sys.Date()-3,".RData"))
 load(paste0(here(),"/content/R/COVID/data/CountyMap.RData"))
 ```
 
@@ -1397,7 +1397,11 @@ Res1 <- ggplot(Res.1, aes(geometry=geometry, fill=Number.of.cases, label=NAME, t
 
 ## A Plotly
 
-```{r, warning=FALSE, message=FALSE}
+```{r PLTL, warning=FALSE, message=FALSE}
 library(plotly)
-ggplotly(Res1)
+GGP <- ggplotly(Res1)
+htmlwidgets::saveWidget(
+  widgetframe::frameableWidget(GGP), here:::here('static/img/widgets/covidmap.html'))
 ```
+
+<iframe width="600" height="405" src="https://rww.science/img/widgets/covidmap.html" frameborder="0" allowfullscreen></iframe>

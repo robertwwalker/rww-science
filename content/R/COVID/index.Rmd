@@ -49,7 +49,7 @@ library(patchwork)
 library(hrbrthemes)
 library(widgetframe); library(here)
 library(magrittr)
-load(paste0(here(),"/content/R/COVID/data/OregonCOVID",Sys.Date()-2,".RData"))
+load(paste0(here(),"/content/R/COVID/data/OregonCOVID",Sys.Date()-3,".RData"))
 load(paste0(here(),"/content/R/COVID/data/CountyMap.RData"))
 ```
 
@@ -183,8 +183,13 @@ Res1 <- Res.1 %>%
    scale_fill_viridis_c(option = "A") + 
    theme_map() + 
    labs(title="Positive COVID-19 Tests in Oregon", subtitle=paste0(Sys.Date(),": \nonly counties with 10+ tests shown."), x="", y="", caption="Made with R, ggplot2, and ggrepel by @PieRatio \n data: https://govstatus.egov.com/OR-OHA-COVID-19", fill="Percent Positive")
-ggplotly(Res1)
+GGP <- ggplotly(Res1)
+htmlwidgets::saveWidget(
+  widgetframe::frameableWidget(GGP), here:::here('static/img/widgets/pposmap.html'))
 ```
+
+<iframe width="600" height="405" src="https://rww.science/img/widgets/pposmap.html" frameborder="0" allowfullscreen></iframe>
+
 
 # Testing in Oregon
 
@@ -242,8 +247,12 @@ BaseP <- MyDat2 %>%
   geom_point() +
   guides(fill=FALSE, color=FALSE) +
   labs(title="Daily Distribution of Test Outcomes", subtitle="Percent of Positive Tests Shown") + theme_ft_rc()
-ggplotly(BaseP)
+GBP <- ggplotly(BaseP)
+htmlwidgets::saveWidget(
+  widgetframe::frameableWidget(GBP), here:::here('static/img/widgets/gbpmap.html'))
 ```
+
+<iframe width="600" height="405" src="https://rww.science/img/widgets/gbpmap.html" frameborder="0" allowfullscreen></iframe>
 
 
 ## Per-capita Testing by County
@@ -258,8 +267,12 @@ R2GPM <- Res.2 %>% ggplot(., aes(geometry=geometry, fill=PerCap.Tests, label=NAM
    scale_fill_viridis_c(option = "A") + 
    theme_map() + 
    labs(title="per capita COVID Testing in Oregon", subtitle=Sys.Date(), fill="per capita testing")
-ggplotly(R2GPM) 
+GGPPG <- ggplotly(R2GPM) 
+htmlwidgets::saveWidget(
+  widgetframe::frameableWidget(GGPPG), here:::here('static/img/widgets/pctymap.html'))
 ```
+
+<iframe width="600" height="405" src="https://rww.science/img/widgets/pctymap.html" frameborder="0" allowfullscreen></iframe>
 
 
 ## New Cases: Moving Average
