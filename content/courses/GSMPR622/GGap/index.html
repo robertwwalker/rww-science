@@ -8,6 +8,7 @@ output:
      code_folding: hide
 ---
 
+<script src="index_files/header-attrs/header-attrs.js"></script>
 
 
 <div id="variance-in-the-outcome-the-black-box" class="section level2">
@@ -47,7 +48,7 @@ abline(h=mean(OregonSalaries$Salary), col=&quot;blue&quot;)
 arrows(x0=c(1:32), x1=c(1:32), y1=OregonSalaries$Salary,y0=mean(OregonSalaries$Salary), col=&quot;blue&quot;, code=3, length=0.05)
 text(x=seq(1,16), y=rep(c(47000,48000,49000,50000),4), labels = paste(ceiling(ORSalScale[c(1:16)])), cex=0.7, col=&quot;blue&quot;)
 text(x=c(17:32), y=rep(c(30000,31000,32000,33000),4), labels = paste(ceiling(ORSalScale[c(17:32)])), cex=0.7, col=&quot;blue&quot;)</code></pre>
-<p><img src="/courses/GSMPR622/GGap/index_files/figure-html/PlotG-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/PlotG-1.png" width="672" /></p>
 <p>The total sum of squares can be represented as the sum of all the squared distances to the blue line; each vertical distance is demarcated with an arrow below in blue. By definition, the vertical distances would/will sum to zero. <strong>This sum to zero constraint is what consumes a degree of freedom; it is why the standard deviation has N-1 degrees of freedom.</strong> The distance from the point to the line is also shown in blue; that is the observed residual salary. It shows how far that individual’s salary is from the overall average. The total sum of squares: the total area of the <code>black box</code> in the original metric (squared dollars) is: 892955385. The length of each side is the square root of that area, e.g. 892955384.31 in dollars.</p>
 <p>NB: If we recall that <code>scale</code> centers and scales data [z-score], we can see these calculations directly: The total sum of squares is:</p>
 <pre class="r"><code>sum(scale(OregonSalaries$Salary, scale = FALSE)^2)</code></pre>
@@ -80,7 +81,7 @@ summary(mod1)</code></pre>
 ## A Graphic</p>
 <p>To represent the black box,let me draw it. The length of each side will be the square root of the black box; our total sum of squares is just under 900 million squared dollars so each side will be approximately 30000 dollars. The box appears below.</p>
 <pre class="r"><code>black.box.maker(mod1)</code></pre>
-<p><img src="/courses/GSMPR622/GGap/index_files/figure-html/BBBase-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/BBBase-1.png" width="672" /></p>
 </div>
 <div id="a-regression-model" class="section level2">
 <h2>A Regression Model</h2>
@@ -104,7 +105,7 @@ text(x=seq(1,16), y=rep(c(47000,48000,49000,50000),4), labels = paste(ceiling(OR
 text(x=c(17:32), y=rep(c(30000,31000,32000,33000),4), labels = paste(ceiling(ORSalScale[c(17:32)])), cex=0.7, col=&quot;blue&quot;)
 text(x=seq(1,16), y=rep(c(42000,43000,44000,45000),4), labels = paste(ceiling(resids[c(1:16)])), cex=0.7, col=&quot;black&quot;)
 text(x=c(17:32), y=rep(c(36000,37000,38000,39000),4), labels = paste(ceiling(resids[c(17:32)])), cex=0.7, col=&quot;red&quot;)</code></pre>
-<p><img src="/courses/GSMPR622/GGap/index_files/figure-html/BasePlot-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/BasePlot-1.png" width="672" /></p>
 <p>The sum of the remaining squared vertical distances is 238621277 and is obtained by squaring each black/red number and summing them. The amount explained by gender [measured in squared dollars] is the difference between the sums of blue and black/red numbers, squared. It is important to notice that the highest paid females and the lowest paid males may have more residual salary given two averages but the different averages, overall, lead to far less residual salary than a single average for all salaries. Indeed, gender alone accounts for:</p>
 <pre class="r"><code>sum(scale(OregonSalaries$Salary, scale = FALSE)^2) - sum(lm(Salary~Gender, data=OregonSalaries)$residuals^2)</code></pre>
 <pre><code>## [1] 654334108</code></pre>
@@ -114,7 +115,7 @@ text(x=c(17:32), y=rep(c(36000,37000,38000,39000),4), labels = paste(ceiling(res
 <p>Showing it graphically as squares.</p>
 <pre class="r"><code>mod2 &lt;- lm(Salary~Gender, data=OregonSalaries)
 black.box.maker(mod2)</code></pre>
-<p><img src="/courses/GSMPR622/GGap/index_files/figure-html/BBReg-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/BBReg-1.png" width="672" /></p>
 <p>The details of the regression estimates and the analysis of variance – the sums of squares – completes the rendering.</p>
 <pre class="r"><code>summary(mod2)</code></pre>
 <pre><code>## 
@@ -159,7 +160,7 @@ black.box.maker(mod2)</code></pre>
 <pre class="r"><code>library(tidyverse)
 my.df &lt;- data.frame(x=seq(0,30, by=0.01), y=pf(seq(0,30, by=0.01), 1, 30))
 ggplot(my.df, aes(x=x, y=y)) + geom_line() + labs(y=&quot;Pr(&lt;F)&quot;, x=&quot;F(1,30)&quot;) + geom_hline(yintercept=0.95, color=&quot;purple&quot;)</code></pre>
-<p><img src="/courses/GSMPR622/GGap/index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 <p>As the purple line shows, 95% of these F should be less than 4.17 [the purple line]. Put in English, once the average explained squares [averaging by degrees of freedom] to unexplained squares [averaging by degrees of freedom] is bigger than 4.17, it is unlikely that such a large quantity of squares could occur by chance and we are left to conclude that the average depends on gender. In our case, the F is</p>
 <p><span class="math display">\[ \frac{654334108}{7954042.57} = 82.26\]</span>
 The F that we have, 82.26 is literally off the charts; it is near certain that average salary depends on gender.</p>

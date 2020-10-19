@@ -8,9 +8,10 @@ header:
   preview: yes
 ---
 
-<script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
-<script src="/rmarkdown-libs/pymjs/pym.v1.js"></script>
-<script src="/rmarkdown-libs/widgetframe-binding/widgetframe.js"></script>
+<script src="index_files/header-attrs/header-attrs.js"></script>
+<script src="index_files/htmlwidgets/htmlwidgets.js"></script>
+<script src="index_files/pymjs/pym.v1.js"></script>
+<script src="index_files/widgetframe-binding/widgetframe.js"></script>
 
 
 <div id="fast-food-data" class="section level1">
@@ -45,7 +46,7 @@ FFood &lt;- read.csv(&quot;https://raw.githubusercontent.com/rfordatascience/tid
 <td align="left"></td>
 </tr>
 <tr class="even">
-<td align="left">factor</td>
+<td align="left">character</td>
 <td align="left">3</td>
 </tr>
 <tr class="odd">
@@ -62,16 +63,18 @@ FFood &lt;- read.csv(&quot;https://raw.githubusercontent.com/rfordatascience/tid
 </tr>
 </tbody>
 </table>
-<p><strong>Variable type: factor</strong></p>
+<p><strong>Variable type: character</strong></p>
 <table>
 <thead>
 <tr class="header">
 <th align="left">skim_variable</th>
 <th align="right">n_missing</th>
 <th align="right">complete_rate</th>
-<th align="left">ordered</th>
+<th align="right">min</th>
+<th align="right">max</th>
+<th align="right">empty</th>
 <th align="right">n_unique</th>
-<th align="left">top_counts</th>
+<th align="right">whitespace</th>
 </tr>
 </thead>
 <tbody>
@@ -79,25 +82,31 @@ FFood &lt;- read.csv(&quot;https://raw.githubusercontent.com/rfordatascience/tid
 <td align="left">restaurant</td>
 <td align="right">0</td>
 <td align="right">1</td>
-<td align="left">FALSE</td>
+<td align="right">5</td>
+<td align="right">11</td>
+<td align="right">0</td>
 <td align="right">8</td>
-<td align="left">Tac: 115, Sub: 96, Bur: 70, Mcd: 57</td>
+<td align="right">0</td>
 </tr>
 <tr class="even">
 <td align="left">item</td>
 <td align="right">0</td>
 <td align="right">1</td>
-<td align="left">FALSE</td>
+<td align="right">5</td>
+<td align="right">63</td>
+<td align="right">0</td>
 <td align="right">505</td>
-<td align="left">Cri: 3, Gri: 3, Che: 2, Chi: 2</td>
+<td align="right">0</td>
 </tr>
 <tr class="odd">
 <td align="left">salad</td>
 <td align="right">0</td>
 <td align="right">1</td>
-<td align="left">FALSE</td>
+<td align="right">5</td>
+<td align="right">5</td>
+<td align="right">0</td>
 <td align="right">1</td>
-<td align="left">Oth: 515</td>
+<td align="right">0</td>
 </tr>
 </tbody>
 </table>
@@ -622,7 +631,7 @@ tems, the mean and sample standard deviation of calories, and the mean and sampl
 <pre class="r"><code>FFood %&gt;% group_by(restaurant) %&gt;% summarise(Median.Calories = median(calories)) %&gt;% arrange(Median.Calories)</code></pre>
 <pre><code>## # A tibble: 8 x 2
 ##   restaurant  Median.Calories
-##   &lt;fct&gt;                 &lt;dbl&gt;
+##   &lt;chr&gt;                 &lt;dbl&gt;
 ## 1 Chick Fil-A             390
 ## 2 Taco Bell               420
 ## 3 Subway                  460
@@ -638,7 +647,7 @@ tems, the mean and sample standard deviation of calories, and the mean and sampl
 <pre class="r"><code>FFood %&gt;% group_by(restaurant) %&gt;% summarise(Median.Sodium = median(sodium))</code></pre>
 <pre><code>## # A tibble: 8 x 2
 ##   restaurant  Median.Sodium
-##   &lt;fct&gt;               &lt;dbl&gt;
+##   &lt;chr&gt;               &lt;dbl&gt;
 ## 1 Arbys                1480
 ## 2 Burger King          1150
 ## 3 Chick Fil-A          1000
@@ -653,7 +662,7 @@ tems, the mean and sample standard deviation of calories, and the mean and sampl
 <pre class="r"><code>FFood %&gt;% group_by(restaurant) %&gt;% summarise(Q3.Calories = quantile(calories, 0.75))</code></pre>
 <pre><code>## # A tibble: 8 x 2
 ##   restaurant  Q3.Calories
-##   &lt;fct&gt;             &lt;dbl&gt;
+##   &lt;chr&gt;             &lt;dbl&gt;
 ## 1 Arbys               690
 ## 2 Burger King         760
 ## 3 Chick Fil-A         480
@@ -668,7 +677,7 @@ tems, the mean and sample standard deviation of calories, and the mean and sampl
 <pre class="r"><code>FFood %&gt;% group_by(restaurant) %&gt;% summarise(Q3.Protein = quantile(protein, 0.75, na.rm = TRUE))</code></pre>
 <pre><code>## # A tibble: 8 x 2
 ##   restaurant  Q3.Protein
-##   &lt;fct&gt;            &lt;dbl&gt;
+##   &lt;chr&gt;            &lt;dbl&gt;
 ## 1 Arbys               38
 ## 2 Burger King         36
 ## 3 Chick Fil-A         37
@@ -682,13 +691,13 @@ tems, the mean and sample standard deviation of calories, and the mean and sampl
 <li>In R, provide two graphics – a boxplot and something resembling a density plot or histogram – that shows the distributions of sodium and cholesterol.</li>
 </ol>
 <pre class="r"><code>boxplot(FFood$sodium)</code></pre>
-<p><img src="/courses/GSMPR622/FastFood-Solution/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <pre class="r"><code>hist(FFood$sodium)</code></pre>
-<p><img src="/courses/GSMPR622/FastFood-Solution/index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <pre class="r"><code>boxplot(FFood$cholesterol)</code></pre>
-<p><img src="/courses/GSMPR622/FastFood-Solution/index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 <pre class="r"><code>hist(FFood$cholesterol)</code></pre>
-<p><img src="/courses/GSMPR622/FastFood-Solution/index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <ol start="12" style="list-style-type: decimal">
 <li>In R, provide two graphics – a boxplot and something resembling a density plot – that compares the distributions of total fat and cholesterol by chain. ** I will use an R package called <code>patchwork</code> to create multipane graphics with add (+).</li>
 </ol>
@@ -700,18 +709,18 @@ ggplot(FFood) + aes(x=restaurant, y=total_fat, fill=restaurant) + geom_boxplot()
 ggplot(FFood) + aes(x=restaurant, y=total_fat, fill=restaurant) + geom_violin() + coord_flip() + guides(fill=FALSE) + 
 ggplot(FFood) + aes(x=restaurant, y=cholesterol, fill=restaurant) + geom_boxplot() + coord_flip() + guides(fill=FALSE) + 
 ggplot(FFood) + aes(x=restaurant, y=cholesterol, fill=restaurant) + geom_violin() + coord_flip() + guides(fill=FALSE)</code></pre>
-<p><img src="/courses/GSMPR622/FastFood-Solution/index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 <ol start="13" style="list-style-type: decimal">
 <li>In R, let’s construct some summary visualizations. We will use the piping operator, group_by() and summarise, to plot by chain: (a) average calories and (b) average sodium.</li>
 </ol>
 <pre class="r"><code>library(tidyverse)
 ( My.Plot &lt;- FFood %&gt;% group_by(restaurant) %&gt;% summarise(calories = mean(calories, na.rm=TRUE)) %&gt;% ggplot(.) + aes(x=reorder(x=restaurant, calories), y=calories) + geom_bar(stat=&quot;identity&quot;, fill=&quot;magenta&quot;) + labs(title=&quot;Average Calories for Fast Food Chains&quot;, x=&quot;Chain&quot;, y=&quot;Average Calories&quot;) + theme_light() + coord_flip() )</code></pre>
-<p><img src="/courses/GSMPR622/FastFood-Solution/index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 <p>Ok. Now, something quite fancy.</p>
 <pre class="r"><code>MP &lt;- ggplotly(My.Plot)
 frameWidget(MP)</code></pre>
 <div id="htmlwidget-1" style="width:100%;height:480px;" class="widgetframe html-widget"></div>
-<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"/courses/GSMPR622/FastFood-Solution/index_files/figure-html//widgets/widget_unnamed-chunk-12.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
+<script type="application/json" data-for="htmlwidget-1">{"x":{"url":"index_files/figure-html//widgets/widget_unnamed-chunk-12.html","options":{"xdomain":"*","allowfullscreen":false,"lazyload":false}},"evals":[],"jsHooks":[]}</script>
 </div>
 </div>
 <div id="a-great-feature-filter-grepl" class="section level1">
@@ -723,5 +732,5 @@ FFood$Chicken[FFood$restaurant==&quot;Chick Fil-A&quot;] &lt;- TRUE</code></pre>
 <div id="graphing-just-chicken" class="section level1">
 <h1>Graphing Just Chicken</h1>
 <pre class="r"><code>FFood %&gt;% filter(Chicken==TRUE) %&gt;% ggplot(.) + aes(x=restaurant, y=calories, fill=restaurant, color=restaurant) + geom_violin(alpha=0.3) + scale_fill_viridis_d() + scale_color_viridis_d() + geom_jitter(alpha=0.2) + coord_flip() + guides(fill=FALSE, color=FALSE) + labs(x=&quot;Chain&quot;, y=&quot;Calories&quot;, main=&quot;Calories of Chicken Items by Chain&quot;)</code></pre>
-<p><img src="/courses/GSMPR622/FastFood-Solution/index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 </div>

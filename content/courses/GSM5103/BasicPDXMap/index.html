@@ -5,7 +5,7 @@ date: "12/19/2019"
 output: html_document
 ---
 
-<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+<script src="index_files/header-attrs/header-attrs.js"></script>
 
 
 <div id="mapping-points-in-r" class="section level1">
@@ -28,7 +28,7 @@ library(osmdata)
 register_google()
 pdx_map &lt;- get_map(getbb(&quot;portland oregon&quot;), maptype = &quot;roadmap&quot;)
 ggmap(pdx_map)</code></pre>
-<p><img src="/courses/GSM5103/BasicPDXMap/index_files/figure-html/cars-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/cars-1.png" width="672" /></p>
 </div>
 <div id="load-some-data-and-geocode-it-with-google" class="section level2">
 <h2>Load Some Data and Geocode it with Google</h2>
@@ -43,6 +43,6 @@ Portland.Center</code></pre>
 <h2>Put them together</h2>
 <p>Because they are same source geocodings, this works directly.</p>
 <pre class="r"><code>ggmap(pdx_map) + geom_point(data=Portland.Center, aes(x=lon, y=lat), size=3, color=&quot;magenta&quot;)</code></pre>
-<p><img src="/courses/GSM5103/BasicPDXMap/index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
 </div>
 </div>

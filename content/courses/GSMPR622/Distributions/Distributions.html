@@ -90,17 +90,17 @@ z.Income &lt;- scale(Hypo.Income)
 Income &lt;- data.frame(Hypo.Income,z.Income)
 # Show the data.frame
 head(Income)</code></pre>
-<pre><code>##   Hypo.Income    z.Income
-## 1    74085.80  1.86161521
-## 2    58826.16  0.36545663
-## 3    61074.39  0.58588771
-## 4    54930.01 -0.01654923
-## 5    47791.23 -0.71648342
-## 6    51546.87 -0.34825537</code></pre>
+<pre><code>##   Hypo.Income   z.Income
+## 1    45019.16 -0.9653965
+## 2    39919.97 -1.4603249
+## 3    50147.87 -0.4676020
+## 4    77351.37  2.1727766
+## 5    44625.71 -1.0035842
+## 6    70096.21  1.4685892</code></pre>
 <pre class="r"><code>table(sign(z.Income))</code></pre>
 <pre><code>## 
 ##  -1   1 
-## 507 493</code></pre>
+## 496 504</code></pre>
 </div>
 <div id="probability-distributions" class="section level1">
 <h1>Probability Distributions</h1>
@@ -130,18 +130,18 @@ hist(Jars)</code></pre>
 <pre class="r"><code>table(Jars &lt; 15.95 | Jars &gt; 16.05) # | captures or</code></pre>
 <pre><code>## 
 ## FALSE  TRUE 
-##   494   506</code></pre>
+##   510   490</code></pre>
 <ul>
 <li>Scale (z) the jars and summarise them.</li>
 </ul>
 <pre class="r"><code>summary(scale(Jars))</code></pre>
 <pre><code>##        V1          
-##  Min.   :-1.68891  
-##  1st Qu.:-0.88975  
-##  Median :-0.02968  
+##  Min.   :-1.75808  
+##  1st Qu.:-0.85515  
+##  Median : 0.05029  
 ##  Mean   : 0.00000  
-##  3rd Qu.: 0.86581  
-##  Max.   : 1.76630</code></pre>
+##  3rd Qu.: 0.85368  
+##  Max.   : 1.71617</code></pre>
 <pre class="r"><code>sd(scale(Jars))</code></pre>
 <pre><code>## [1] 1</code></pre>
 <hr />

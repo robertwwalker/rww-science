@@ -7,13 +7,14 @@ output:
      self_contained: true
 ---
 
-<script src="/rmarkdown-libs/htmlwidgets/htmlwidgets.js"></script>
-<script src="/rmarkdown-libs/d3/d3.min.js"></script>
-<link href="/rmarkdown-libs/d3-tip/d3-tip.css" rel="stylesheet" />
-<script src="/rmarkdown-libs/d3-tip/d3-tip.js"></script>
-<script src="/rmarkdown-libs/treecolors/treecolors.js"></script>
-<link href="/rmarkdown-libs/sankeytree/sankeytree.css" rel="stylesheet" />
-<script src="/rmarkdown-libs/sankeytree-binding/sankeytree.js"></script>
+<script src="index_files/header-attrs/header-attrs.js"></script>
+<script src="index_files/htmlwidgets/htmlwidgets.js"></script>
+<script src="index_files/d3/d3.min.js"></script>
+<link href="index_files/d3-tip/d3-tip.css" rel="stylesheet" />
+<script src="index_files/d3-tip/d3-tip.js"></script>
+<script src="index_files/treecolors/treecolors.js"></script>
+<link href="index_files/sankeytree/sankeytree.css" rel="stylesheet" />
+<script src="index_files/sankeytree-binding/sankeytree.js"></script>
 
 
 <div id="telco-churn" class="section level1">
@@ -442,7 +443,7 @@ library(partykit)</code></pre>
 <pre><code>## Loading required package: grid</code></pre>
 <pre><code>## Loading required package: libcoin</code></pre>
 <pre class="r"><code>plot(as.party(Tree1))</code></pre>
-<p><img src="/courses/GSMPR622/Churn/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 </div>
 <div id="a-sankey" class="section level2">
 <h2>A sankey</h2>
@@ -469,14 +470,14 @@ test$pred1 &lt;- predict(Tree1, test, &quot;class&quot;)
 table(test$Churn,test$pred1)</code></pre>
 <pre><code>##      
 ##         No  Yes
-##   No  1605   97
-##   Yes  387  252</code></pre>
+##   No  1622  110
+##   Yes  367  241</code></pre>
 <pre class="r"><code># Conditional Probabilities
 prop.table(table(test$Churn,test$pred1), 1)</code></pre>
 <pre><code>##      
 ##               No        Yes
-##   No  0.94300823 0.05699177
-##   Yes 0.60563380 0.39436620</code></pre>
+##   No  0.93648961 0.06351039
+##   Yes 0.60361842 0.39638158</code></pre>
 <pre class="r"><code># The Overall Comparison
 prop.table(table(telco.F$Churn))</code></pre>
 <pre><code>## 
@@ -485,8 +486,8 @@ prop.table(table(telco.F$Churn))</code></pre>
 <pre class="r"><code>prop.table(table(test$Churn,test$pred1))</code></pre>
 <pre><code>##      
 ##               No        Yes
-##   No  0.68560444 0.04143528
-##   Yes 0.16531397 0.10764630</code></pre>
+##   No  0.69316239 0.04700855
+##   Yes 0.15683761 0.10299145</code></pre>
 </div>
 <div id="a-glm-regression" class="section level1">
 <h1>A GLM Regression</h1>
@@ -505,11 +506,11 @@ summary(result, sum_check = c(&quot;vif&quot;, &quot;confint&quot;, &quot;odds&q
 ## Null hyp.: there is no effect of x on Churn
 ## Alt. hyp.: there is an effect of x on Churn
 ## 
-##                       OR coefficient std.error z.value p.value    
-##  (Intercept)                   0.001     0.044   0.028   0.978    
-##  tenure            0.983      -0.017     0.002  -9.795  &lt; .001 ***
-##  Contract|One year 0.248      -1.396     0.096 -14.583  &lt; .001 ***
-##  Contract|Two year 0.073      -2.618     0.161 -16.214  &lt; .001 ***
+##                       OR    OR% coefficient std.error z.value p.value    
+##  (Intercept)                          0.001     0.044   0.028   0.978    
+##  tenure            0.983  -1.7%      -0.017     0.002  -9.795  &lt; .001 ***
+##  Contract|One year 0.248 -75.2%      -1.396     0.096 -14.583  &lt; .001 ***
+##  Contract|Two year 0.073 -92.7%      -2.618     0.161 -16.214  &lt; .001 ***
 ## 
 ## Signif. codes:  0 &#39;***&#39; 0.001 &#39;**&#39; 0.01 &#39;*&#39; 0.05 &#39;.&#39; 0.1 &#39; &#39; 1
 ## 
@@ -534,7 +535,7 @@ summary(result, sum_check = c(&quot;vif&quot;, &quot;confint&quot;, &quot;odds&q
 ## Contract|One year      0.248 0.205 0.299
 ## Contract|Two year      0.073 0.053 0.100</code></pre>
 <pre class="r"><code>plot(result, plots = &quot;fit&quot;, custom = FALSE)</code></pre>
-<p><img src="/courses/GSMPR622/Churn/index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <p>Predict a few rows in the original data.</p>
 <pre class="r"><code>head(predict(result, telco.F))</code></pre>
 <pre><code>## Logistic regression (GLM)

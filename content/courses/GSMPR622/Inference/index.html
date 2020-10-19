@@ -7,6 +7,7 @@ output:
   slidy_presentation
 ---
 
+<script src="index_files/header-attrs/header-attrs.js"></script>
 
 
 <div id="the-basic-idea" class="section level1">
@@ -40,7 +41,7 @@ The true mean is symmetric about the sample mean with t defining the number of s
 <pre><code>## Loading required package: car</code></pre>
 <pre><code>## Loading required package: carData</code></pre>
 <pre><code>## Loading required package: sandwich</code></pre>
-<p><img src="/courses/GSMPR622/Inference/index_files/figure-html/Pic1-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/Pic1-1.png" width="672" /></p>
 <hr />
 <pre class="r"><code># 99 percent, then 95, 90, and 80
 qt(c(0.005,0.995), df=24)</code></pre>
@@ -54,7 +55,7 @@ qt(c(0.005,0.995), df=24)</code></pre>
 </div>
 <div id="led-lifetimes-df24" class="section level1">
 <h1>LED Lifetimes (df=24)</h1>
-<p><img src="/courses/GSMPR622/Inference/index_files/figure-html/Pic2-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/Pic2-1.png" width="672" /></p>
 <hr />
 <pre class="r"><code># 99 percent, then 95, 90, and 80
 mean(LEDLifetimes$lifetime)+sd(LEDLifetimes$lifetime)/sqrt(25)*qt(c(0.005,0.995), df=24)</code></pre>
@@ -65,7 +66,7 @@ mean(LEDLifetimes$lifetime)+sd(LEDLifetimes$lifetime)/sqrt(25)*qt(c(0.005,0.995)
 </div>
 <div id="the-complete-picture" class="section level1">
 <h1>The Complete Picture</h1>
-<p><img src="/courses/GSMPR622/Inference/index_files/figure-html/Pic3-1.png" width="672" />
+<p><img src="index_files/figure-html/Pic3-1.png" width="672" />
 ***</p>
 <pre class="r"><code>with(LEDLifetimes, (t.test(lifetime, alternative=&#39;two.sided&#39;, mu=0.0, 
   conf.level=.95)))</code></pre>
@@ -98,7 +99,7 @@ t = \frac{36800 - 38000}{\frac{2000}{\sqrt{16}}} = -2.4
 <p>=============================
 left: 40%
 title: false</p>
-<p><img src="/courses/GSMPR622/Inference/index_files/figure-html/Pic5a-1.png" width="672" />
+<p><img src="index_files/figure-html/Pic5a-1.png" width="672" />
 ***
 N=25 [the data]</p>
 <pre class="r"><code>with(LEDLifetimes, (t.test(lifetime, alternative=&#39;two.sided&#39;, mu=36800, 
@@ -185,7 +186,7 @@ and
 <div id="the-distribution" class="section level1">
 <h1>The Distribution</h1>
 <p>left: 70%
-<img src="/courses/GSMPR622/Inference/index_files/figure-html/Ch1a-1.png" width="672" />
+<img src="index_files/figure-html/Ch1a-1.png" width="672" />
 ***
 I reordered the outcomes.</p>
 <p>================================
@@ -353,8 +354,8 @@ binom.test(144,200)</code></pre>
 ##    p 
 ## 0.72</code></pre>
 <pre class="r"><code>quantile(Cred.Prod.Res, c(0.025,0.975))</code></pre>
-<pre><code>##  2.5% 97.5% 
-##  0.66  0.78</code></pre>
+<pre><code>##     2.5%    97.5% 
+## 0.655000 0.780125</code></pre>
 <p>The probability distributions are all very similar. They all attempt to capture the same idea.</p>
 </div>
 <div id="two-independent-sample-comparisons" class="section level1">
@@ -387,7 +388,7 @@ binom.test(144,200)</code></pre>
 ##    prop 1    prop 2 
 ## 0.1550000 0.1809524</code></pre>
 <pre><code>##        2.5%       97.5% 
-## -0.11309524  0.05885714</code></pre>
+## -0.11859524  0.06119048</code></pre>
 <p>My simulated interval is a bit tighter; the z is an approximation.</p>
 </div>
 <div id="why-it-matters-independence" class="section level1">
@@ -399,7 +400,7 @@ binom.test(144,200)</code></pre>
 <pre class="r"><code>data(&quot;UCBAdmissions&quot;)
 mosaicplot(apply(UCBAdmissions, c(1, 2), sum),
            main = &quot;Student admissions at UC Berkeley&quot;)</code></pre>
-<p><img src="/courses/GSMPR622/Inference/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 </div>
 <div id="or" class="section level1">
 <h1>Or</h1>
@@ -410,7 +411,7 @@ for(i in 1:6)
     main = paste(&quot;Department&quot;, LETTERS[i]))
 mtext(expression(bold(&quot;Student admissions at UC Berkeley&quot;)),
       outer = TRUE, cex = 1.5)</code></pre>
-<p><img src="/courses/GSMPR622/Inference/index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <pre class="r"><code>par(opar)</code></pre>
 </div>
 <div id="the-statistics" class="section level1">
