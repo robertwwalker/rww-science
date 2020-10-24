@@ -1,11 +1,11 @@
 ---
 title: COVID-19 Maps for Oregon
 author: Robert W. Walker
-date: '2020-10-22' 
+date: '2020-10-23' 
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning = FALSE)
+knitr::opts_chunk$set(echo = TRUE, message=FALSE, warning = FALSE, cache = TRUE)
 library(tidyverse)
 ```
 
@@ -23,7 +23,7 @@ library(hrbrthemes)
 load(url(paste0("https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID",Sys.Date(),".RData")))
 ```
 
-```{r, echo=FALSE, message=FALSE, warning=FALSE}
+```{r, echo=FALSE, message=FALSE, warning=FALSE, cache=FALSE}
 library(tigris)
 library(rgdal)
 library(htmltools)
@@ -44,8 +44,7 @@ Verifying, these data are current as of `r max(Oregon.COVID$Scraped.date)` accor
 
 To build a map to work from, I need a map library.  Load the `tigris` library then grab the map as an `sf` object; there is a `geom_sf` that makes them easy to work with.  Finally, I join the map to the data.
 
-```{r, message=FALSE, warning=FALSE, results='hide'}
-
+```{r, message=FALSE, warning=FALSE, results='hide', cache=FALSE}
 Map.Me <- left_join(counties.t,Oregon.COVID, by=c("NAME" = "County"))
 ```
 
@@ -57,7 +56,7 @@ The main visualization page has an animation of COVID in Oregon.  These are snap
 
 To save time later, I turned the plots into a function so that I can use to reproduce each frame.  Two inputs to the function, the dataset that is always the merged data from above and the date that I want to plot located in `date1` in a `YYYY-MM-DD` format.
 
-```{r}
+```{r, cache=FALSE}
 Plot.COVID <- function(date1, data) {
 data %>% filter(date==date1) %>%
   ggplot(., aes(geometry=geometry, fill=Number.of.cases, label=NAME)) + 
@@ -1399,7 +1398,31 @@ Plot.COVID("2020-10-18", Map.Me)
 
 ## The Result for 10/19/2020
 
-```{r, warning=FALSE, message=FALSE}
+```{r}
+Plot.COVID("2020-10-19", Map.Me)
+```
+
+## The Result for 10/20/2020
+
+```{r}
+Plot.COVID("2020-10-20", Map.Me)
+```
+
+## The Result for 10/21/2020
+
+```{r}
+Plot.COVID("2020-10-21", Map.Me)
+```
+
+## The Result for 10/22/2020
+
+```{r}
+Plot.COVID("2020-10-22", Map.Me)
+```
+
+## The Result for 10/23/2020
+
+```{r, warning=FALSE, message=FALSE, cache=FALSE}
 library(widgetframe); library(ggthemes); library(RColorBrewer)
 Map.Me <- Map.Me %>% 
   mutate(TTip = paste0("Deaths: ",Deaths,"<br> Negative Tests:",Negative.test.results))
@@ -1415,7 +1438,7 @@ Res1 <- ggplot(Res.1, aes(geometry=geometry, fill=Number.of.cases, label=NAME, t
 
 ## A Plotly
 
-```{r PLTL, warning=FALSE, message=FALSE}
+```{r PLTL, warning=FALSE, message=FALSE, cache=FALSE}
 library(plotly)
 GGP <- ggplotly(Res1)
 htmlwidgets::saveWidget(
