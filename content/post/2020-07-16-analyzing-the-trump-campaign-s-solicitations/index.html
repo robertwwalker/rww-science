@@ -1,7 +1,7 @@
 ---
 title: Analyzing the Trump Campaign's Solicitations
 author: Robert W. Walker
-date: '2020-10-23'
+date: '2020-10-26'
 slug: analyzing-the-trump-campaign-s-solicitations
 categories:
   - R
@@ -29,11 +29,11 @@ projects: []
 <div id="the-data" class="section level2">
 <h2>The Data</h2>
 <p>I will use the wonderful <code>gmailr</code> package to access my gmail. You need a key and an id that the vignette gives guidance on. I invoke those elsewhere to keep the tokens safe. First, let me grab all the solicitations; I identify them by the domain in from <em>rnchq.com</em>.</p>
-<pre class="r"><code>my.messages &lt;- gm_messages(&quot;rnchq.com&quot;, 1000)
+<pre class="r"><code>my.messages &lt;- gm_messages(&quot;rnchq.com&quot;, 1500)
 get_emails &lt;- function(message_ids) {
 results &lt;- list()
 for (message_id in message_ids) {
-results[[message_id]] &lt;- message(message_id)
+results[[message_id]] &lt;- gm_message(message_id)
 }
 return(results)
 }

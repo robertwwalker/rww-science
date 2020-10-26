@@ -1,7 +1,7 @@
 ---
 title: Analyzing the Trump Campaign's Solicitations
 author: Robert W. Walker
-date: '2020-10-23'
+date: '2020-10-26'
 slug: analyzing-the-trump-campaign-s-solicitations
 categories:
   - R
@@ -33,11 +33,11 @@ In September of 2018, I began to track email solicitations by the Trump Campaign
 I will use the wonderful `gmailr` package to access my gmail.  You need a key and an id that the vignette gives guidance on.  I invoke those elsewhere to keep the tokens safe.  First, let me grab all the solicitations; I identify them by the domain in from *rnchq.com*.
 
 ```{r, message=FALSE, warning=FALSE}
-my.messages <- gm_messages("rnchq.com", 1000)
+my.messages <- gm_messages("rnchq.com", 1500)
 get_emails <- function(message_ids) {
 results <- list()
 for (message_id in message_ids) {
-results[[message_id]] <- message(message_id)
+results[[message_id]] <- gm_message(message_id)
 }
 return(results)
 }

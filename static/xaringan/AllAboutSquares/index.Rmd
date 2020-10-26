@@ -601,6 +601,23 @@ plot(Model.HMB)
 ```
 
 ---
+### Predicting Costs
+
+### Average Costs `interval="confidence"`
+
+```{r}
+predict(Model.HMB, newdata=data.frame(units=c(200,250,300)), interval="confidence")
+```
+
+### All Costs   `interval="prediction"`
+
+```{r}
+predict(Model.HMB, newdata=data.frame(units=c(200,250,300)), interval="prediction")
+```
+
+
+
+---
 ## The Premier League
 
 ```{r}
@@ -631,6 +648,15 @@ qqnorm(residuals(Model.EPL))
 ```
 
 ---
+## Residuals
+
+```{r}
+par(mfrow=c(2,2))
+plot(Model.EPL)
+```
+
+
+---
 # Predicting Points
 
 ```{r}
@@ -645,8 +671,65 @@ Semiconductors %>% ggplot() + aes(x=units, y=TotCost4) + geom_point() + geom_smo
 ```
 
 ---
+## Residuals
+
+```{r}
+SClm <- lm(TotCost4~units, data=Semiconductors)
+SClm2 <- lm(TotCost4~poly(units, 2, raw=TRUE), data=Semiconductors)
+par(mfrow=c(2,2))
+plot(SClm)
+```
+
+---
+## Residuals
+
+```{r}
+par(mfrow=c(2,2))
+plot(SClm2)
+```
+
+
+
+---
+## Comparing Squares
+
+```{r}
+anova(SClm,SClm2)
+```
+
+---
 ## Line*s*?
 
 ```{r}
+PPlm <- lm(TotCost3 ~ units:PlantFac, data=PowerPlant)
 PowerPlant %>% ggplot() + aes(x=units, y=TotCost3, color=PlantFac) + geom_point() + geom_smooth(method = "lm") + theme_xaringan() + labs(x="Units", y="Total Cost", title="Power Plant")
 ```
+---
+## Comparison
+
+`test` or `anova`
+
+```{r}
+PPlm1 <- lm(TotCost3~units, data=PowerPlant)
+PPlm2 <- lm(TotCost3~PlantFac*units, data=PowerPlant)
+anova(PPlm1,PPlm)
+```
+
+---
+
+```{r}
+anova(PPlm,PPlm2)
+```
+
+---
+
+## Some Concluding Remarks
+
+1. It's all about squares.  But really, it's all about *normals*.  
+2. Assessing normality is crucial to inference in linear models.  But we cannot really **know** whether or not it holds.  But if it does:  
+   a. Slopes and intercepts are `t`,  as are their confidence intervals.  
+   b. Sums of squares have ratios defined by `F`.  
+   c. Predictions have `t` averages and `normal` intervals.  
+   d. **All founded upon the sum of squared errors being $\chi^2$.**  
+3. This core idea of **explaining variance** or unpacking a black box is the core question to virtually all *machine learning* and modelling.
+   
