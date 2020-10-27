@@ -1,8 +1,23 @@
 ---
 title: COVID-19 in Oregon
 author: Robert W. Walker
-date: '2020-10-26'
-output: html_document
+date: '2020-10-27'
+slug: COVID
+categories:
+  - R
+tags:
+  - plot
+  - gganimate
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2020-09-12T20:04:06-07:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
 ---
 
 <script src="index_files/header-attrs/header-attrs.js"></script>
@@ -27,7 +42,7 @@ library(patchwork)
 library(hrbrthemes)
 library(widgetframe)
 load(url(paste0(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&quot;,Sys.Date(),&quot;.RData&quot;)))</code></pre>
-<p>Verifying, these data are current as of 2020-10-26 according to the loaded dataset.</p>
+<p>Verifying, these data are current as of 2020-10-27 according to the loaded dataset.</p>
 <div id="a-running-commentary-on-the-data" class="section level3">
 <h3>A running commentary on the data</h3>
 <p>The central takeaway is that the underlying data reports are constantly changing over time. The weekend data has been discontinued and it is quite spotty. They are reporting new and different quantities and this destroys the comparability of data. Some of it can be reconstructed but much of it is only useful going forward and keeping the schema constant. I hope that will happen at some point.</p>

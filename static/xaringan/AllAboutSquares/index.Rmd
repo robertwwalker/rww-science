@@ -81,6 +81,10 @@ pre {
 }
 ```
 
+```{r broadcast, echo=FALSE}
+xaringanExtra::use_broadcast()
+```
+
 ![Black Box Technology](img/bbox.png)
 ---
 
@@ -323,6 +327,7 @@ data.frame(x=scale(lm(OregonSalaries$Salary~1)$residuals)) %>% ggplot() + aes(sa
 We can examine the claim that residual salary is plausibly normal by examining the slope of the sample and theoretical quantiles: the slope of the q-q plot.  This is exactly what the following does under the null hypothesis of a normal.
 
 ```{r}
+xaringanExtra::use_clipboard()
 shapiro.test(lm(Salary~1, data=OregonSalaries)$residuals)
 ```
 
@@ -731,5 +736,7 @@ anova(PPlm,PPlm2)
    b. Sums of squares have ratios defined by `F`.  
    c. Predictions have `t` averages and `normal` intervals.  
    d. **All founded upon the sum of squared errors being $\chi^2$.**  
-3. This core idea of **explaining variance** or unpacking a black box is the core question to virtually all *machine learning* and modelling.
+3. This core idea of **explaining variance** or unpacking a black box is the core question to virtually all *machine learning* and modelling.  
+4. The capital asset pricing model.
+
    

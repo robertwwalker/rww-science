@@ -2,6 +2,22 @@
 title: COVID-19 Maps for Oregon
 author: Robert W. Walker
 date: '2020-10-23' 
+slug: covid-maps
+categories:
+  - R
+tags:
+  - maps
+  - COVID
+subtitle: ''
+summary: ''
+authors: []
+lastmod: '2020-09-12T20:04:06-07:00'
+featured: no
+image:
+  caption: ''
+  focal_point: ''
+  preview_only: no
+projects: []
 ---
 
 ```{r setup, include=FALSE}
