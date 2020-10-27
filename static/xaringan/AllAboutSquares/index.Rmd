@@ -22,7 +22,7 @@ class: center, middle
 
 ```{r setup, include=FALSE}
 options(htmltools.dir.version = FALSE)
-knitr::opts_chunk$set(warning=FALSE, message=FALSE, comment=NA, prompt=TRUE, fig.height=6, fig.width=6.5, fig.retina = 3, dev = 'svg', dev.args = list(bg = "transparent"))
+knitr::opts_chunk$set(warning=FALSE, message=FALSE, comment=NA, prompt=FALSE, fig.height=6, fig.width=6.5, fig.retina = 3, dev = 'svg', dev.args = list(bg = "transparent"))
 library(xaringanthemer); library(kableExtra); library(tidyverse); library(skimr)
 # style_mono_accent(
 style_duo_accent(
@@ -134,6 +134,18 @@ class: inverse
 --
 
 ## We will literally do it with boxes/squares
+
+
+---
+# Data and a Library
+
+```{r, warning=FALSE, message=FALSE}
+library(tidyverse); library(patchwork); library(skimr)
+load(url("https://github.com/robertwwalker/DADMStuff/raw/master/RegressionExamples.RData"))
+source('https://github.com/robertwwalker/DADMStuff/raw/master/ResidPlotter.R')
+source('https://github.com/robertwwalker/DADMStuff/raw/master/PlotlyReg.R')
+```
+
 
 ---
 class: inverse
@@ -327,7 +339,6 @@ data.frame(x=scale(lm(OregonSalaries$Salary~1)$residuals)) %>% ggplot() + aes(sa
 We can examine the claim that residual salary is plausibly normal by examining the slope of the sample and theoretical quantiles: the slope of the q-q plot.  This is exactly what the following does under the null hypothesis of a normal.
 
 ```{r}
-xaringanExtra::use_clipboard()
 shapiro.test(lm(Salary~1, data=OregonSalaries)$residuals)
 ```
 
@@ -601,8 +612,7 @@ confint(Model.HMB,level = 0.9)
 ## Plots
 
 ```{r}
-par(mfrow=c(2,2))
-plot(Model.HMB)
+RegressionPlots(Model.HMB)
 ```
 
 ---
@@ -614,12 +624,69 @@ plot(Model.HMB)
 predict(Model.HMB, newdata=data.frame(units=c(200,250,300)), interval="confidence")
 ```
 
-### All Costs   `interval="prediction"`
+### All Costs `interval="prediction"`
 
 ```{r}
 predict(Model.HMB, newdata=data.frame(units=c(200,250,300)), interval="prediction")
 ```
 
+
+---
+### Diminshing Marginal Cost?
+
+```{r, warning=FALSE, message=FALSE}
+Semiconductors %>% ggplot() + aes(x=units, y=TotCost4) + geom_point() + geom_smooth(method = "lm") + geom_smooth(method = "loess", color="red") + theme_xaringan() + labs(x="Units", y="Total Cost", title="Semiconductors")
+```
+
+---
+## Residuals
+
+```{r}
+SClm <- lm(TotCost4~units, data=Semiconductors)
+SClm2 <- lm(TotCost4~poly(units, 2, raw=TRUE), data=Semiconductors)
+par(mfrow=c(2,2))
+plot(SClm)
+```
+
+---
+## Residuals
+
+```{r}
+resid.plotter(SClm2)
+```
+
+
+
+---
+## Comparing Squares
+
+```{r}
+anova(SClm,SClm2)
+```
+
+---
+## Line*s*?
+
+```{r}
+PPlm <- lm(TotCost3 ~ units:PlantFac, data=PowerPlant)
+PowerPlant %>% ggplot() + aes(x=units, y=TotCost3, color=PlantFac) + geom_point() + geom_smooth(method = "lm") + theme_xaringan() + labs(x="Units", y="Total Cost", title="Power Plant")
+```
+---
+## Comparison
+
+`test` or `anova`
+
+```{r}
+PPlm1 <- lm(TotCost3~units, data=PowerPlant)
+PPlm2 <- lm(TotCost3~PlantFac*units, data=PowerPlant)
+anova(PPlm1,PPlm)
+```
+
+---
+
+```{r}
+anova(PPlm,PPlm2)
+```
 
 
 ---
@@ -656,8 +723,7 @@ qqnorm(residuals(Model.EPL))
 ## Residuals
 
 ```{r}
-par(mfrow=c(2,2))
-plot(Model.EPL)
+resid.plotter(Model.EPL)
 ```
 
 
@@ -668,63 +734,6 @@ plot(Model.EPL)
 head(predict(Model.EPL, newdata=data.frame(Wage.Bill.milGBP=seq(0,200,10)), interval = "confidence"), 10)
 ```
 
----
-### Diminshing Marginal Cost?
-
-```{r, warning=FALSE, message=FALSE}
-Semiconductors %>% ggplot() + aes(x=units, y=TotCost4) + geom_point() + geom_smooth(method = "lm") + geom_smooth(method = "loess", color="red") + theme_xaringan() + labs(x="Units", y="Total Cost", title="Semiconductors")
-```
-
----
-## Residuals
-
-```{r}
-SClm <- lm(TotCost4~units, data=Semiconductors)
-SClm2 <- lm(TotCost4~poly(units, 2, raw=TRUE), data=Semiconductors)
-par(mfrow=c(2,2))
-plot(SClm)
-```
-
----
-## Residuals
-
-```{r}
-par(mfrow=c(2,2))
-plot(SClm2)
-```
-
-
-
----
-## Comparing Squares
-
-```{r}
-anova(SClm,SClm2)
-```
-
----
-## Line*s*?
-
-```{r}
-PPlm <- lm(TotCost3 ~ units:PlantFac, data=PowerPlant)
-PowerPlant %>% ggplot() + aes(x=units, y=TotCost3, color=PlantFac) + geom_point() + geom_smooth(method = "lm") + theme_xaringan() + labs(x="Units", y="Total Cost", title="Power Plant")
-```
----
-## Comparison
-
-`test` or `anova`
-
-```{r}
-PPlm1 <- lm(TotCost3~units, data=PowerPlant)
-PPlm2 <- lm(TotCost3~PlantFac*units, data=PowerPlant)
-anova(PPlm1,PPlm)
-```
-
----
-
-```{r}
-anova(PPlm,PPlm2)
-```
 
 ---
 
