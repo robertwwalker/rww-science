@@ -1,0 +1,222 @@
+---
+title: "Tidyquant and CAPM"
+subtitle: "On beta"  
+author: 
+  - "Robert W. Walker"
+date: '`r Sys.Date()`'
+output:
+  xaringan::moon_reader:
+    includes:
+      after_body: insert-logo.html
+    lib_dir: libs
+    css: xaringan-themer.css
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(warning=FALSE, message=FALSE, comment=NA, prompt=FALSE, fig.height=6, fig.width=6.5, fig.retina = 3, dev = 'svg', dev.args = list(bg = "transparent"))
+library(xaringanthemer); library(kableExtra); library(tidyverse); library(skimr)
+# style_mono_accent(
+style_duo_accent(
+#style_solarized_light(
+primary_color = "#371142", 
+# header_color = "#ffffff",
+          secondary_color = "#1c5253", 
+#          text_bold_color = "#FF00FF",
+          link_color = "#F97B64",
+          text_font_google   = google_font("EB Garamond"),
+          code_font_google   = google_font("Fira Mono")
+)
+options(scipen=8)
+black.box.maker <- function(mod1) {
+            d1 <- dim(mod1$model)[[1]]
+            sumsq1 <- var(mod1$model[,1], na.rm=TRUE)*(d1-1)
+            rt1 <- sqrt(sumsq1)
+            sumsq2 <- var(mod1$fitted.values, na.rm=TRUE)*(d1-1)
+            rsquare <- round(sumsq2/sumsq1, digits=4)
+            rt2 <- sqrt(sumsq2)
+            plot(x=NA, y=NA, xlim=c(0,rt1), ylim=c(0,rt1), main=paste("R-squared:",rsquare), xlab="", ylab="", bty="n", cex=0.5)
+            polygon(x=c(0,0,rt1,rt1), y=c(0,rt1,rt1,0), col="black")
+            polygon(x=c(0,0,rt2,rt2), y=c(0,rt2,rt2,0), col="green")
+}
+
+black.box.maker.NT <- function(mod1) {
+            d1 <- dim(mod1$model)[[1]]
+            sumsq1 <- var(mod1$model[,1], na.rm=TRUE)*(d1-1)
+            rt1 <- sqrt(sumsq1)
+            sumsq2 <- var(mod1$fitted.values, na.rm=TRUE)*(d1-1)
+            rsquare <- round(sumsq2/sumsq1, digits=4)
+            rt2 <- sqrt(sumsq2)
+            plot(x=NA, y=NA, xlim=c(0,rt1), ylim=c(0,rt1), main="", xlab="", ylab="", bty="n", cex=0.5)
+            polygon(x=c(0,0,rt1,rt1), y=c(0,rt1,rt1,0), col="black")
+            polygon(x=c(0,0,rt2,rt2), y=c(0,rt2,rt2,0), col="green")
+            }
+```
+
+
+```{css, echo = FALSE, include=FALSE}
+.remark-slide-content p, il, ol, li {
+  font-size: 32px;
+  padding: 8px 16px 8px 16px;
+}
+code.r{
+  font-size: 18px;
+}
+pre {
+  font-size: 24px;
+}
+.red { 
+  color: red; 
+}
+.green { 
+  color: green; 
+}
+```
+
+```{r broadcast, echo=FALSE}
+xaringanExtra::use_broadcast()
+```
+
+class: inverse
+# The Capital Asset Pricing Model
+
+The finance theory embodied in and building on the capital asset pricing model is extensive.  For our purposes, we will be interested in replicating it as it is commonly reported on financial information websites [usually with the period specified].  Before developing the idea, a brief bit on the software.
+
+---
+class: inverse
+# `tidyquant`
+
+`tidyquant` will considerably simplify our ingestion and manipulation of equity market data [and other finance tools].  Using **Yahoo!** finance data, tidyquant can put a wealth of data at our fingertips.  For this example, I will use Microsoft and the [Standard and Poor's 500](https://www.spglobal.com/spdji/en/indices/equity/sp-500/#overview).
+
+To install it:
+
+```
+install.packages("tidyquant")
+```
+
+---
+## Acquiring data
+
+Equity market data is defined by tickers -- up to four character representations -- and in this case we need: MSFT (`MSFT`) and the S and P 500 (`^GSPC`).
+
+```{r, message=FALSE, warning=FALSE}
+library(tidyquant)
+msft <- tq_get("MSFT", get = "stock.prices", from = "2015-10-01")
+snp <- tq_get("^GSPC", get = "stock.prices", from = "2015-10-01")
+```
+
+---
+### The Data are **ohlc**: open, high, low, close
+
+```{r}
+head(msft, 5)
+head(snp, 5)
+```
+
+---
+### A Visualization
+
+
+.left-column[
+```{r Graph1, eval=FALSE}
+library(patchwork)
+MSFTG <- msft %>%
+    ggplot(aes(x = date, y = close)) +
+    geom_candlestick(aes(open = open, high = high, low = low, close = close)) +
+    labs(title = "MSFT Candlestick Chart", y = "Closing Price", x = "") +
+    theme_tq()
+SNPG <- snp %>%
+    ggplot(aes(x = date, y = close)) +
+    geom_candlestick(aes(open = open, high = high, low = low, close = close)) +
+    labs(title = "S & P 500 Candlestick Chart", y = "Closing Price", x = "") +
+    theme_tq()
+MSFTG + SNPG
+```
+]
+
+.right-column[
+```{r,ref.label="Graph1", eval=TRUE, echo=FALSE}
+
+```
+]
+
+---
+### Returns
+
+Stocks vary along a number of dimensions including price, number of shares, classes of shares, and a host of other things.  Equity structures can be quite complicated.  To normalize much of this out, we will work with returns: 
+
+$$Return = \frac{Close_{t} - Open_{t}}{Open_{t}}$$
+
+---
+### tidyquant makes that easy
+
+```{r}
+msft.p <- msft %>% 
+  tq_transmute(select = adjusted, 
+               mutate_fun = periodReturn, 
+               period = "monthly", 
+               col_rename = "msft.returns")
+sp.p <- snp %>% 
+  tq_transmute(select = adjusted, 
+               mutate_fun = periodReturn, 
+               period = "monthly", 
+               col_rename = "sp.returns")
+# Join the data
+stocks <- left_join(sp.p,msft.p)
+head(stocks, 5)
+```
+
+---
+## CAPM
+
+The capital asset pricing model relates returns to a given equity to returns in an index.  In particular, it is commonplace to report $\beta$ from the following regression:
+
+$$ Returns_{Equity} = \alpha + \beta * SP500 + e_{t} $$
+
+Where $\alpha$ is the expected returns when the S and P is unchanged and $\beta$ links the index to the equity of interest.  The result is a regression.
+
+---
+### A reference point
+
+```{r}
+Model.MSFT <- lm(msft.returns ~ sp.returns, data=stocks)
+summary(Model.MSFT)
+```
+
+---
+### The Reference
+
+[The target for an accessible benchmark.](https://finance.yahoo.com/quote/MSFT?p=MSFT&.tsrc=fin-srch).
+
+
+---
+### The general case
+
+```{r}
+c("AAPL","^GSPC") %>% 
+  tq_get(., get="stock.prices", from="2015-10-01") %>% 
+  group_by(symbol) %>% 
+  tq_transmute(select = adjusted, mutate_fun = periodReturn, period = "monthly") %>% pivot_wider(., names_from=symbol, values_from=monthly.returns) %>% lm(AAPL ~ `^GSPC`, data=.) %>% summary()
+```
+
+---
+## Plotter
+
+Equities have fat tails.
+
+.pull-left[
+```{r RP, eval=FALSE}
+source(url("https://github.com/robertwwalker/DADMStuff/raw/master/ResidPlotter.R"))
+resid.plotter(Model.MSFT)
+```
+]
+
+.pull-right[
+```{r, ref.label="RP", echo=FALSE, eval=TRUE}
+
+```
+]
