@@ -25,7 +25,7 @@ projects: []
 
 <div id="new-york-times-data-for-the-us" class="section level1">
 <h1>New York Times data for the US</h1>
-<p>The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-10-28 13:30:36.</p>
+<p>The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-10-28 22:43:21.</p>
 </div>
 <div id="the-basic-state-of-things" class="section level1">
 <h1>The Basic State of Things</h1>
@@ -34,17 +34,25 @@ library(tidyverse); library(hrbrthemes); library(patchwork); library(plotly); li
 CTP &lt;- read.csv(&quot;https://covidtracking.com/api/v1/states/daily.csv&quot;)
 state.data &lt;- read_csv(url(&quot;https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv&quot;))
 Rect.NYT &lt;- complete(state.data, state,date)
+# Create new cases and new deaths
 Rect.NYT &lt;- Rect.NYT %&gt;% group_by(state) %&gt;% mutate(New.Cases = cases - lag(cases, order_by = date), New.Deaths = deaths - lag(deaths, order_by = date)) %&gt;% ungroup()
+# Total the county data
 NYT.Totals &lt;- Rect.NYT %&gt;% group_by(date) %&gt;% summarise(Deaths = sum(deaths, na.rm=TRUE), New.Deaths = sum(New.Deaths, na.rm = TRUE), Cases = sum(cases, na.rm=TRUE), New.Cases = sum(New.Cases, na.rm = TRUE)) %&gt;% ungroup()
+# Load patchwork
 library(patchwork)
+# Build a plot of deaths
 plot1 &lt;- NYT.Totals %&gt;% ggplot(., aes(x=date, y=Deaths)) + geom_line() + labs(title=&quot;Deaths&quot;) + dark_mode()
+# Build a plot of new deaths
 plot2 &lt;- NYT.Totals %&gt;% ggplot(., aes(x=date, y=New.Deaths)) + geom_line() + labs(title=&quot;New Deaths&quot;) + geom_smooth(fill=&quot;white&quot;) + dark_mode()
+# Build a plot of cases
 plot3 &lt;- NYT.Totals %&gt;% ggplot(., aes(x=date, y=Cases)) + geom_line() + labs(title=&quot;Cases&quot;) + dark_mode()
+# Build a plot of new cases
 plot4 &lt;- NYT.Totals %&gt;% ggplot(., aes(x=date, y=New.Cases)) + geom_line() + labs(title=&quot;New Cases&quot;) + geom_smooth(fill=&quot;white&quot;) + dark_mode()
 (plot1 + plot2) / (plot3 + plot4)</code></pre>
 <p><img src="index_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
 <div id="wheres-the-current-problem" class="section level2">
 <h2>Where’s the Current Problem?</h2>
+<p>Here I will use a seven day delay to isolate current rates of growth.</p>
 <pre class="r"><code>NYTD1 &lt;- Rect.NYT %&gt;% group_by(state) %&gt;% mutate(Cases.7DD = (cases - lag(cases, 7, order_by = date))/ lag(cases, 7, order_by = date), Deaths.7DD = (deaths - lag(deaths, 7, order_by = date))/ lag(deaths, 7, order_by = date))
 NYTD1 %&gt;% filter(date &gt; Sys.Date()-8) %&gt;% mutate(Avg.7DD = mean(Cases.7DD, na.rm=TRUE)) %&gt;% top_n(25, Avg.7DD) %&gt;% ggplot(., aes(x=forcats::fct_reorder(state, Avg.7DD), y=Avg.7DD, fill=state)) + geom_col() + coord_flip() + guides(fill=FALSE) + labs(x=&quot;&quot;, y=&quot;Avg. 7 Day Change over the last week&quot;, title=&quot;Average 7 Day Percent Change in New COVID-19 Cases \nAveraged over the last week&quot;)</code></pre>
 <p><img src="index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>

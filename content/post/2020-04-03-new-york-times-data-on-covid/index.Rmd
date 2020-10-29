@@ -33,17 +33,26 @@ library(tidyverse); library(hrbrthemes); library(patchwork); library(plotly); li
 CTP <- read.csv("https://covidtracking.com/api/v1/states/daily.csv")
 state.data <- read_csv(url("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv"))
 Rect.NYT <- complete(state.data, state,date)
+# Create new cases and new deaths
 Rect.NYT <- Rect.NYT %>% group_by(state) %>% mutate(New.Cases = cases - lag(cases, order_by = date), New.Deaths = deaths - lag(deaths, order_by = date)) %>% ungroup()
+# Total the county data
 NYT.Totals <- Rect.NYT %>% group_by(date) %>% summarise(Deaths = sum(deaths, na.rm=TRUE), New.Deaths = sum(New.Deaths, na.rm = TRUE), Cases = sum(cases, na.rm=TRUE), New.Cases = sum(New.Cases, na.rm = TRUE)) %>% ungroup()
+# Load patchwork
 library(patchwork)
+# Build a plot of deaths
 plot1 <- NYT.Totals %>% ggplot(., aes(x=date, y=Deaths)) + geom_line() + labs(title="Deaths") + dark_mode()
+# Build a plot of new deaths
 plot2 <- NYT.Totals %>% ggplot(., aes(x=date, y=New.Deaths)) + geom_line() + labs(title="New Deaths") + geom_smooth(fill="white") + dark_mode()
+# Build a plot of cases
 plot3 <- NYT.Totals %>% ggplot(., aes(x=date, y=Cases)) + geom_line() + labs(title="Cases") + dark_mode()
+# Build a plot of new cases
 plot4 <- NYT.Totals %>% ggplot(., aes(x=date, y=New.Cases)) + geom_line() + labs(title="New Cases") + geom_smooth(fill="white") + dark_mode()
 (plot1 + plot2) / (plot3 + plot4)
 ```
 
 ## Where's the Current Problem?
+
+Here I will use a seven day delay to isolate current rates of growth.
 
 ```{r}
 NYTD1 <- Rect.NYT %>% group_by(state) %>% mutate(Cases.7DD = (cases - lag(cases, 7, order_by = date))/ lag(cases, 7, order_by = date), Deaths.7DD = (deaths - lag(deaths, 7, order_by = date))/ lag(deaths, 7, order_by = date))

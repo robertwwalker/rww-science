@@ -4,7 +4,7 @@
     <title>Tidyquant and CAPM</title>
     <meta charset="utf-8" />
     <meta name="author" content="Robert W. Walker" />
-    <meta name="date" content="2020-10-28" />
+    <meta name="date" content="2020-10-29" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <script src="libs/js-cookie/js.cookie.js"></script>
     <script src="libs/peerjs/peerjs.min.js"></script>
@@ -20,7 +20,7 @@ class: center, middle, inverse, title-slide
 # Tidyquant and CAPM
 ## On beta
 ### Robert W. Walker
-### 2020-10-28
+### 2020-10-29
 
 ---
 
@@ -38,7 +38,6 @@ class: inverse
 The finance theory embodied in and building on the capital asset pricing model is extensive.  For our purposes, we will be interested in replicating it as it is commonly reported on financial information websites [usually with the period specified].  Before developing the idea, a brief bit on the software.
 
 ---
-class: inverse
 # `tidyquant`
 
 `tidyquant` will considerably simplify our ingestion and manipulation of equity market data [and other finance tools].  Using **Yahoo!** finance data, tidyquant can put a wealth of data at our fingertips.  For this example, I will use Microsoft and the [Standard and Poor's 500](https://www.spglobal.com/spdji/en/indices/equity/sp-500/#overview).
@@ -57,8 +56,8 @@ Equity market data is defined by tickers -- up to four character representations
 
 ```r
 library(tidyquant)
-msft &lt;- tq_get("MSFT", get = "stock.prices", from = "2015-10-01")
-snp &lt;- tq_get("^GSPC", get = "stock.prices", from = "2015-10-01")
+msft &lt;- tq_get("MSFT", get = "stock.prices", from = "2015-10-01", to="2020-09-30")
+snp &lt;- tq_get("^GSPC", get = "stock.prices", from = "2015-10-01", to="2020-09-30")
 ```
 
 ---
@@ -164,7 +163,7 @@ head(stocks, 5)
 
 The capital asset pricing model relates returns to a given equity to returns in an index.  In particular, it is commonplace to report `\(\beta\)` from the following regression:
 
-$$ Returns_{Equity} = \alpha + \beta * SP500 + e_{t} $$
+`$$Returns_{Equity_{t}} = \alpha + \beta * Returns_{SP500_{t}} + e_{t}$$`
 
 Where `\(\alpha\)` is the expected returns when the S and P is unchanged and `\(\beta\)` links the index to the equity of interest.  The result is a regression.
 
@@ -184,57 +183,24 @@ lm(formula = msft.returns ~ sp.returns, data = stocks)
 
 Residuals:
       Min        1Q    Median        3Q       Max 
--0.119190 -0.021688  0.002493  0.018867  0.086235 
+-0.119255 -0.021597  0.003297  0.018574  0.085639 
 
 Coefficients:
             Estimate Std. Error t value       Pr(&gt;|t|)    
-(Intercept) 0.019667   0.005187   3.792       0.000354 ***
-sp.returns  0.916547   0.119509   7.669 0.000000000199 ***
+(Intercept) 0.019714   0.005283   3.731       0.000435 ***
+sp.returns  0.923342   0.120409   7.668 0.000000000221 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 0.03937 on 59 degrees of freedom
-Multiple R-squared:  0.4992,	Adjusted R-squared:  0.4907 
-F-statistic: 58.82 on 1 and 59 DF,  p-value: 0.0000000001986
+Residual standard error: 0.03982 on 58 degrees of freedom
+Multiple R-squared:  0.5034,	Adjusted R-squared:  0.4949 
+F-statistic:  58.8 on 1 and 58 DF,  p-value: 0.0000000002206
 ```
 
 ---
 ### The Reference
 
 [The target for an accessible benchmark.](https://finance.yahoo.com/quote/MSFT?p=MSFT&amp;.tsrc=fin-srch).
-
-
----
-### The general case
-
-
-```r
-c("AAPL","^GSPC") %&gt;% 
-  tq_get(., get="stock.prices", from="2015-10-01") %&gt;% 
-  group_by(symbol) %&gt;% 
-  tq_transmute(select = adjusted, mutate_fun = periodReturn, period = "monthly") %&gt;% pivot_wider(., names_from=symbol, values_from=monthly.returns) %&gt;% lm(AAPL ~ `^GSPC`, data=.) %&gt;% summary()
-```
-
-```
-
-Call:
-lm(formula = AAPL ~ `^GSPC`, data = .)
-
-Residuals:
-      Min        1Q    Median        3Q       Max 
--0.220309 -0.032338 -0.008084  0.043532  0.144926 
-
-Coefficients:
-            Estimate Std. Error t value     Pr(&gt;|t|)    
-(Intercept) 0.015521   0.008809   1.762       0.0833 .  
-`^GSPC`     1.320938   0.202971   6.508 0.0000000183 ***
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-Residual standard error: 0.06686 on 59 degrees of freedom
-Multiple R-squared:  0.4179,	Adjusted R-squared:  0.408 
-F-statistic: 42.35 on 1 and 59 DF,  p-value: 0.0000000183
-```
 
 ---
 ## Plotter
@@ -250,8 +216,179 @@ resid.plotter(Model.MSFT)
 ]
 
 .pull-right[
-&lt;img src="index_files/figure-html/unnamed-chunk-8-1.svg" width="468" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-7-1.svg" width="468" /&gt;
 ]
+
+
+---
+### The general case
+
+
+```r
+c("TGT","^GSPC") %&gt;% 
+  tq_get(., get="stock.prices", from="2015-10-01", to="2020-09-30") %&gt;% 
+  group_by(symbol) %&gt;% 
+  tq_transmute(select = adjusted, mutate_fun = periodReturn, period = "monthly") %&gt;% pivot_wider(., names_from=symbol, values_from=monthly.returns) %&gt;% lm(TGT ~ `^GSPC`, data=.) %&gt;% summary()
+```
+
+```
+
+Call:
+lm(formula = TGT ~ `^GSPC`, data = .)
+
+Residuals:
+      Min        1Q    Median        3Q       Max 
+-0.168436 -0.038314 -0.003875  0.044311  0.254517 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) 0.009029   0.010208   0.884 0.380113    
+`^GSPC`     0.836826   0.232654   3.597 0.000667 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.07694 on 58 degrees of freedom
+Multiple R-squared:  0.1824,	Adjusted R-squared:  0.1683 
+F-statistic: 12.94 on 1 and 58 DF,  p-value: 0.0006666
+```
+
+---
+# A Little R Magic
+
+
+```r
+Beta.Maker &lt;- function(ticker) {
+  form1 &lt;- formula(paste0(ticker," ~ `^GSPC`"))
+  c(ticker,"^GSPC") %&gt;% 
+  tq_get(., get="stock.prices", from="2015-10-01", to="2020-09-30") %&gt;% 
+  group_by(symbol) %&gt;% tq_transmute(select = adjusted, mutate_fun = periodReturn, period = "monthly") %&gt;% pivot_wider(., names_from=symbol, values_from=monthly.returns) %&gt;% lm(form1, data=.) %&gt;% summary()
+}
+Beta.Maker("F")
+```
+
+```
+
+Call:
+lm(formula = form1, data = .)
+
+Residuals:
+      Min        1Q    Median        3Q       Max 
+-0.168227 -0.026070  0.002404  0.027251  0.174931 
+
+Coefficients:
+            Estimate Std. Error t value      Pr(&gt;|t|)    
+(Intercept) -0.01708    0.00790  -2.163        0.0347 *  
+`^GSPC`      1.30879    0.18004   7.269 0.00000000103 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.05954 on 58 degrees of freedom
+Multiple R-squared:  0.4767,	Adjusted R-squared:  0.4677 
+F-statistic: 52.84 on 1 and 58 DF,  p-value: 0.000000001034
+```
+
+---
+## Even Better
+
+
+```r
+tickers &lt;- c("JNJ","PG","TGT","JPM")
+res1 &lt;- tickers %&gt;% map(~Beta.Maker(.))
+names(res1) &lt;- tickers
+```
+---
+
+
+```r
+res1
+```
+
+```
+$JNJ
+
+Call:
+lm(formula = form1, data = .)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.07808 -0.02107  0.00149  0.02145  0.07182 
+
+Coefficients:
+            Estimate Std. Error t value     Pr(&gt;|t|)    
+(Intercept) 0.003950   0.004732   0.835        0.407    
+`^GSPC`     0.691431   0.107851   6.411 0.0000000284 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.03566 on 58 degrees of freedom
+Multiple R-squared:  0.4147,	Adjusted R-squared:  0.4046 
+F-statistic:  41.1 on 1 and 58 DF,  p-value: 0.00000002838
+
+
+$PG
+
+Call:
+lm(formula = form1, data = .)
+
+Residuals:
+      Min        1Q    Median        3Q       Max 
+-0.090195 -0.022796  0.002637  0.018926  0.094946 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) 0.009927   0.005139   1.931 0.058315 .  
+`^GSPC`     0.431926   0.117131   3.688 0.000501 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.03873 on 58 degrees of freedom
+Multiple R-squared:  0.1899,	Adjusted R-squared:  0.176 
+F-statistic:  13.6 on 1 and 58 DF,  p-value: 0.0005007
+
+
+$TGT
+
+Call:
+lm(formula = form1, data = .)
+
+Residuals:
+      Min        1Q    Median        3Q       Max 
+-0.168436 -0.038314 -0.003875  0.044311  0.254517 
+
+Coefficients:
+            Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) 0.009029   0.010208   0.884 0.380113    
+`^GSPC`     0.836826   0.232654   3.597 0.000667 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.07694 on 58 degrees of freedom
+Multiple R-squared:  0.1824,	Adjusted R-squared:  0.1683 
+F-statistic: 12.94 on 1 and 58 DF,  p-value: 0.0006666
+
+
+$JPM
+
+Call:
+lm(formula = form1, data = .)
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-0.08098 -0.03308 -0.01128  0.02851  0.11778 
+
+Coefficients:
+             Estimate Std. Error t value        Pr(&gt;|t|)    
+(Intercept) 0.0004003  0.0060844   0.066           0.948    
+`^GSPC`     1.1512061  0.1386677   8.302 0.0000000000191 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 0.04586 on 58 degrees of freedom
+Multiple R-squared:  0.543,	Adjusted R-squared:  0.5351 
+F-statistic: 68.92 on 1 and 58 DF,  p-value: 0.00000000001914
+```
+
+
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>

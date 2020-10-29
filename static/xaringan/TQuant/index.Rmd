@@ -87,7 +87,6 @@ class: inverse
 The finance theory embodied in and building on the capital asset pricing model is extensive.  For our purposes, we will be interested in replicating it as it is commonly reported on financial information websites [usually with the period specified].  Before developing the idea, a brief bit on the software.
 
 ---
-class: inverse
 # `tidyquant`
 
 `tidyquant` will considerably simplify our ingestion and manipulation of equity market data [and other finance tools].  Using **Yahoo!** finance data, tidyquant can put a wealth of data at our fingertips.  For this example, I will use Microsoft and the [Standard and Poor's 500](https://www.spglobal.com/spdji/en/indices/equity/sp-500/#overview).
@@ -105,8 +104,8 @@ Equity market data is defined by tickers -- up to four character representations
 
 ```{r, message=FALSE, warning=FALSE}
 library(tidyquant)
-msft <- tq_get("MSFT", get = "stock.prices", from = "2015-10-01")
-snp <- tq_get("^GSPC", get = "stock.prices", from = "2015-10-01")
+msft <- tq_get("MSFT", get = "stock.prices", from = "2015-10-01", to="2020-09-30")
+snp <- tq_get("^GSPC", get = "stock.prices", from = "2015-10-01", to="2020-09-30")
 ```
 
 ---
@@ -175,7 +174,7 @@ head(stocks, 5)
 
 The capital asset pricing model relates returns to a given equity to returns in an index.  In particular, it is commonplace to report $\beta$ from the following regression:
 
-$$ Returns_{Equity} = \alpha + \beta * SP500 + e_{t} $$
+$$Returns_{Equity_{t}} = \alpha + \beta * Returns_{SP500_{t}} + e_{t}$$
 
 Where $\alpha$ is the expected returns when the S and P is unchanged and $\beta$ links the index to the equity of interest.  The result is a regression.
 
@@ -191,17 +190,6 @@ summary(Model.MSFT)
 ### The Reference
 
 [The target for an accessible benchmark.](https://finance.yahoo.com/quote/MSFT?p=MSFT&.tsrc=fin-srch).
-
-
----
-### The general case
-
-```{r}
-c("AAPL","^GSPC") %>% 
-  tq_get(., get="stock.prices", from="2015-10-01") %>% 
-  group_by(symbol) %>% 
-  tq_transmute(select = adjusted, mutate_fun = periodReturn, period = "monthly") %>% pivot_wider(., names_from=symbol, values_from=monthly.returns) %>% lm(AAPL ~ `^GSPC`, data=.) %>% summary()
-```
 
 ---
 ## Plotter
@@ -220,3 +208,43 @@ resid.plotter(Model.MSFT)
 
 ```
 ]
+
+
+---
+### The general case
+
+```{r}
+c("TGT","^GSPC") %>% 
+  tq_get(., get="stock.prices", from="2015-10-01", to="2020-09-30") %>% 
+  group_by(symbol) %>% 
+  tq_transmute(select = adjusted, mutate_fun = periodReturn, period = "monthly") %>% pivot_wider(., names_from=symbol, values_from=monthly.returns) %>% lm(TGT ~ `^GSPC`, data=.) %>% summary()
+```
+
+---
+# A Little R Magic
+
+```{r}
+Beta.Maker <- function(ticker) {
+  form1 <- formula(paste0(ticker," ~ `^GSPC`"))
+  c(ticker,"^GSPC") %>% 
+  tq_get(., get="stock.prices", from="2015-10-01", to="2020-09-30") %>% 
+  group_by(symbol) %>% tq_transmute(select = adjusted, mutate_fun = periodReturn, period = "monthly") %>% pivot_wider(., names_from=symbol, values_from=monthly.returns) %>% lm(form1, data=.) %>% summary()
+}
+Beta.Maker("F")
+```
+
+---
+## Even Better
+
+```{r}
+tickers <- c("JNJ","PG","TGT","JPM")
+res1 <- tickers %>% map(~Beta.Maker(.))
+names(res1) <- tickers
+```
+---
+
+```{r}
+res1
+```
+
+
