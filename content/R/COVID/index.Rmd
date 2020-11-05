@@ -403,13 +403,18 @@ OR.Gender %>%
 
 ## Admissions
 
-```{r}
+Discontinued.  OHA stopped reporting this data in an accessible form on November 4, 2020.
+
+```{r, eval=FALSE}
 OR.COVID.Strain %>% filter(COVID.19.Details=="COVID-19 admissions") %>% ggplot(., aes(x=date, y=COVID19.Patients)) + geom_point() + geom_line() + labs(title="COVID-19 Admissions", x="Date", y="Count", caption = "data: https://govstatus.egov.com/OR-OHA-COVID-19 \n By: @PieRatio") + theme_ipsum() + theme(axis.text.x = element_text(angle = 90))
 ```
 
 ## Hospital Capacity
 
-```{r}
+Discontinued.  OHA stopped reporting this data in an accessible form on November 4, 2020.
+
+
+```{r, eval=FALSE}
 OR.Hospital.Caps %>% filter(date > "2020-03-28") %>%
   filter(Hospital.Capacity != "Ventilators") %>% 
   mutate(Hospital.Capacity = as.character(Hospital.Capacity)) %>%
@@ -422,7 +427,10 @@ OR.Hospital.Caps %>% filter(date > "2020-03-28") %>%
     facet_wrap(vars(Hospital.Capacity), scales = "free_y")
 ```
 
-```{r}
+Discontinued.  OHA stopped reporting this data in an accessible form on November 4, 2020.
+
+
+```{r, eval=FALSE}
 OR.Hospital.Caps %>% filter(date > "2020-03-28") %>% pivot_wider(., names_from = Type, values_from = Number, id_cols = c(date, Scraped.date, Hospital.Capacity)) %>%
     filter(Hospital.Capacity != "Ventilators") %>% 
     mutate(Hospital.Capacity = as.character(Hospital.Capacity)) %>%
@@ -437,7 +445,10 @@ OR.Hospital.Caps %>% filter(date > "2020-03-28") %>% pivot_wider(., names_from =
 
 ## ICU Beds
 
-```{r}
+Discontinued.  OHA stopped reporting this data in an accessible form on November 4, 2020.
+
+
+```{r, eval=FALSE}
 ICUB <- OR.COVID.Strain %>% 
   filter(str_detect(COVID.19.Details, "ICU beds")) %>% 
   mutate(Capacity = COVID.19.Details) %>% 
@@ -453,7 +464,9 @@ ICUB %>%
 
 ## Ventilators
 
-```{r}
+Discontinued.  OHA stopped reporting this data in an accessible form on November 4, 2020.
+
+```{r, eval=FALSE}
 Vents <- OR.COVID.Strain %>% 
   filter(str_detect(COVID.19.Details, "ventilators")) %>% 
   mutate(Capacity = COVID.19.Details) %>% 
