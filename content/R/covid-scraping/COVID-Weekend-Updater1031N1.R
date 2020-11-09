@@ -1,6 +1,6 @@
 library(here)
 rm(list=ls())
-load(paste0(here(),"/content/R/COVID/data/OregonCOVID",Sys.Date()-3,".RData")) # 1
+load(paste0(here(),"/content/R/COVID/data/OregonCOVID",Sys.Date()-2,".RData")) # 1
 library(rvest); library(htmltools); library(tidyverse); library(rlang)
 # A function to remove commas from numbers.
 comma.rm.to.numeric <- function(variable) {
@@ -21,4 +21,4 @@ OR.Testing <- Oregon.Tests %>% group_by(date) %>% summarise(Total = sum(Outcome)
 Oregon.COVID.All <- Oregon.COVID.All %>% bind_rows(Oregon.COVID.All, Oct31N1.COVID) %>% unique.data.frame()
 Oregon.COVID.Total <- Oregon.COVID.All %>% filter(County=="Total") # 6
 Oregon.COVID <- Oregon.COVID.All %>% filter(County!="Total")  # 6
-save.image(paste0(here::here("content/R/COVID/data/"),"OregonCOVID",Sys.Date()-1,".RData")) # Save the data with a date flag in the name.
+save.image(paste0(here::here("content/R/COVID/data/"),"OregonCOVID",Sys.Date(),".RData")) # Save the data with a date flag in the name.

@@ -104,7 +104,23 @@ library(lubridate); library(hrbrthemes)
 Trump.dates <- make_email_dates_dt(my.Trump.mails)
 # Trump.dates
 Trump.dates %>% group_by(email_date) %>% summarise(Count = n()) -> Trump.dates.Counted
-Trump.dates.Counted %>% ggplot(., aes(x=email_date, y=Count)) + geom_line(color="red") + labs(title="Trump Fundraising Emails", x="Date of Email", y="Solicitations") + theme_ipsum_rc()
+Trump.dates.Counted %>% filter(email_date <= Sys.Date()) %>% ggplot(., aes(x=email_date, y=Count)) + geom_line(color="red") + geom_vline(aes(xintercept=as.Date("2020-11-03")), color="blue", alpha=0.3) + labs(title="Trump Fundraising Emails", x="Date of Email", y="Solicitations") + theme_ipsum_rc() -> p1
+p1 + geom_text(data = data.frame(x = as.Date("2020-11-02"),
+y = 2.87691946455173,
+label = "Election"),
+mapping = aes(x = x,
+y = y,
+label = label),
+size = 3.86605783866058,
+angle = 0L,
+lineheight = 1L,
+hjust = 0.5,
+vjust = 0.5,
+colour = "blue",
+family = "sans",
+fontface = "plain",
+inherit.aes = FALSE,
+show.legend = FALSE)
 ```
 
 ## Sent by Whom?

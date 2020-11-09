@@ -98,7 +98,23 @@ library(lubridate); library(hrbrthemes)
 Trump.dates &lt;- make_email_dates_dt(my.Trump.mails)
 # Trump.dates
 Trump.dates %&gt;% group_by(email_date) %&gt;% summarise(Count = n()) -&gt; Trump.dates.Counted
-Trump.dates.Counted %&gt;% ggplot(., aes(x=email_date, y=Count)) + geom_line(color=&quot;red&quot;) + labs(title=&quot;Trump Fundraising Emails&quot;, x=&quot;Date of Email&quot;, y=&quot;Solicitations&quot;) + theme_ipsum_rc()</code></pre>
+Trump.dates.Counted %&gt;% filter(email_date &lt;= Sys.Date()) %&gt;% ggplot(., aes(x=email_date, y=Count)) + geom_line(color=&quot;red&quot;) + geom_vline(aes(xintercept=as.Date(&quot;2020-11-03&quot;)), color=&quot;blue&quot;, alpha=0.3) + labs(title=&quot;Trump Fundraising Emails&quot;, x=&quot;Date of Email&quot;, y=&quot;Solicitations&quot;) + theme_ipsum_rc() -&gt; p1
+p1 + geom_text(data = data.frame(x = as.Date(&quot;2020-11-02&quot;),
+y = 2.87691946455173,
+label = &quot;Election&quot;),
+mapping = aes(x = x,
+y = y,
+label = label),
+size = 3.86605783866058,
+angle = 0L,
+lineheight = 1L,
+hjust = 0.5,
+vjust = 0.5,
+colour = &quot;blue&quot;,
+family = &quot;sans&quot;,
+fontface = &quot;plain&quot;,
+inherit.aes = FALSE,
+show.legend = FALSE)</code></pre>
 <p><img src="index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 </div>
 </div>

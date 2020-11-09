@@ -11,7 +11,7 @@ tags:
 subtitle: ''
 summary: ''
 authors: []
-lastmod: '2020-09-12T20:04:06-07:00'
+lastmod: '2020-11-08T21:49:06-07:00'
 featured: no
 image:
   caption: ''
@@ -1514,8 +1514,27 @@ Plot.COVID("2020-11-03", Map.Me)
 Plot.COVID("2020-11-04", Map.Me)
 ```
 
-
 ## The Result for 11/05/2020
+
+```{r}
+Plot.COVID("2020-11-05", Map.Me)
+```
+
+## The Result for 11/06/2020
+
+```{r}
+Plot.COVID("2020-11-06", Map.Me)
+```
+
+
+## The Result for 11/07/2020
+
+```{r}
+Plot.COVID("2020-11-07", Map.Me)
+```
+
+
+## The Result for 11/08/2020
 
 ```{r, warning=FALSE, message=FALSE, cache=FALSE}
 library(widgetframe); library(ggthemes); library(RColorBrewer)
