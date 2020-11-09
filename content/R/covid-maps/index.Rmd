@@ -1533,8 +1533,14 @@ Plot.COVID("2020-11-06", Map.Me)
 Plot.COVID("2020-11-07", Map.Me)
 ```
 
-
 ## The Result for 11/08/2020
+
+```{r}
+Plot.COVID("2020-11-08", Map.Me)
+```
+
+
+## The Result for 11/09/2020
 
 ```{r, warning=FALSE, message=FALSE, cache=FALSE}
 library(widgetframe); library(ggthemes); library(RColorBrewer)
