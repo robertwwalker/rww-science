@@ -11,7 +11,7 @@ tags:
 subtitle: ''
 summary: ''
 authors: []
-lastmod: '2020-09-12T20:04:06-07:00'
+lastmod: '2020-11-17T20:04:06-07:00'
 featured: no
 image:
   caption: ''
@@ -24,12 +24,11 @@ projects: []
 
 The New York Times has a wonderful compilation of United States on the novel coronavirus.  The data update automatically so the following graphics were generated with data retrieved at `r Sys.time()`.
 
-
 # The Basic State of Things
 
 ```{r, message=FALSE, warning=FALSE}
 options(scipen=9)
-library(tidyverse); library(hrbrthemes); library(patchwork); library(plotly); library(ggdark); library(ggrepel)
+library(tidyverse); library(hrbrthemes); library(patchwork); library(plotly); library(ggdark); library(ggrepel); library(lubridate)
 CTP <- read.csv("https://covidtracking.com/api/v1/states/daily.csv")
 state.data <- read_csv(url("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv"))
 Rect.NYT <- complete(state.data, state,date)
@@ -42,13 +41,33 @@ library(patchwork)
 # Build a plot of deaths
 plot1 <- NYT.Totals %>% ggplot(., aes(x=date, y=Deaths)) + geom_line() + labs(title="Deaths") + dark_mode()
 # Build a plot of new deaths
-plot2 <- NYT.Totals %>% ggplot(., aes(x=date, y=New.Deaths)) + geom_line() + labs(title="New Deaths") + geom_smooth(fill="white") + dark_mode()
+plot2 <- NYT.Totals %>% ggplot(., aes(x=date, y=New.Deaths)) + geom_line() + labs(title="New Deaths") + geom_smooth(method="loess", span=0.2, fill="white") + dark_mode()
 # Build a plot of cases
 plot3 <- NYT.Totals %>% ggplot(., aes(x=date, y=Cases)) + geom_line() + labs(title="Cases") + dark_mode()
 # Build a plot of new cases
-plot4 <- NYT.Totals %>% ggplot(., aes(x=date, y=New.Cases)) + geom_line() + labs(title="New Cases") + geom_smooth(fill="white") + dark_mode()
+plot4 <- NYT.Totals %>% ggplot(., aes(x=date, y=New.Cases)) + geom_line() + labs(title="New Cases") + geom_smooth(method="loess", span=0.2, fill="white") + dark_mode()
 (plot1 + plot2) / (plot3 + plot4)
 ```
+
+
+# Some New Stuff from 11/2020
+
+The pandemic has ebbed and flowed since March in the United States.  After settling, as predicted, during the the summer months, the arrival and Fall has seen the onset of another wave.  
+
+## New Case Maxima by State and Territory
+
+What month did the new (daily) case maximum occur?
+
+```{r}
+Rect.NYT %>% group_by(state) %>% slice_max(New.Cases, n=1) %>% mutate(Month = month(date, label=TRUE)) %$% table(Month) %>% data.frame() %>% ggplot() + aes(x=Month, y=Freq, label=Freq) + geom_col() + geom_text(color="red") + labs(y="Number of States with New Case Maxima") + theme_ipsum()
+```
+
+What month did the new (daily) death maximum occur in?
+
+```{r}
+Rect.NYT %>% group_by(state) %>% slice_max(New.Deaths, n=1) %>% mutate(Month = month(date, label=TRUE)) %$% table(Month) %>% data.frame() %>% ggplot() + aes(x=Month, y=Freq, label=Freq) + geom_col() + geom_text(color="red") + labs(y="Number of States with New Death Maxima") + theme_minimal()
+```
+
 
 ## Where's the Current Problem?
 

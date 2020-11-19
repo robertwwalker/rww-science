@@ -18,8 +18,8 @@ OHA.Corona <- function(website, date) {
     data.frame()  # 4 
   # Acquire the scraped date from the heading on the page.  The rest is 5
   Scraped.date <- names(COVID.Head)[1] %>% 
-    str_remove(.,"X.Updated.") %>% 
-    str_remove(., ".with.data.from.12.01.a.m..updated.Monday...Friday...1")
+    str_remove(.,"X.U.FEFF.Updated.") %>% 
+    str_remove(., ".with.data.from.12.01.a.m..updated.Monday...Friday..")
   names(COVID.Head) <- c("Category","Outcome") # Change the names
   COVID.Head <- COVID.Head %>% 
     mutate(Outcome = str_replace(Outcome, "Pending*", "NA")) %>%

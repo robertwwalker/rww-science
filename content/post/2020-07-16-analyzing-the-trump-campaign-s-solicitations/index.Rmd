@@ -21,7 +21,7 @@ projects: []
 ---
 
 ```{r, include=FALSE}
-source("/home/rob/Gmail-Setup.R")
+source("E:/Gmail-Setup.R")
 ```
 
 # tl;dr
