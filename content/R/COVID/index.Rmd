@@ -246,7 +246,7 @@ Cumulative results are perhaps more informative when viewed alongside the margin
 
 ```{r abcl1, warning=FALSE, message=FALSE}
 library(hrbrthemes); library(ggrepel); library(plotly)
-MyDat <- Oregon.Tests %>%
+MyDat <- Oregon.Tests %>% unique() %>%
   pivot_wider(., names_from = Category, values_from = Outcome) %>% 
   mutate(Positive.Chg = Positive - lag(Positive, order_by = date), 
          Negative.Chg = Negative - lag(Negative, order_by = date)) %>% 

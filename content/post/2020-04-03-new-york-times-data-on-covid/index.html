@@ -20,11 +20,14 @@ image:
 projects: []
 ---
 
+<script src="index_files/header-attrs/header-attrs.js"></script>
+<link href="index_files/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="index_files/anchor-sections/anchor-sections.js"></script>
 
 
 <div id="new-york-times-data-for-the-us" class="section level1">
 <h1>New York Times data for the US</h1>
-<p>The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-11-20 20:30:11.</p>
+<p>The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at 2020-11-23 13:24:04.</p>
 </div>
 <div id="the-basic-state-of-things" class="section level1">
 <h1>The Basic State of Things</h1>
@@ -57,30 +60,6 @@ plot4 &lt;- NYT.Totals %&gt;% ggplot(., aes(x=date, y=New.Cases)) + geom_line() 
 <h2>New Case Maxima by State and Territory</h2>
 <p>What month did the new (daily) case maximum occur?</p>
 <pre class="r"><code>Rect.NYT %&gt;% group_by(state) %&gt;% slice_max(New.Cases, n=1) %&gt;% mutate(Month = month(date, label=TRUE)) %$% table(Month) %&gt;% data.frame() %&gt;% ggplot() + aes(x=Month, y=Freq, label=Freq) + geom_col() + geom_text(color=&quot;red&quot;) + labs(y=&quot;Number of States with New Case Maxima&quot;) + theme_ipsum()</code></pre>
-<pre><code>## Warning in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)): font family not
-## found in Windows font database
-
-## Warning in grid.Call(C_stringMetric, as.graphicsAnnot(x$label)): font family not
-## found in Windows font database</code></pre>
-<pre><code>## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
-## family not found in Windows font database
-
-## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
-## family not found in Windows font database
-
-## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
-## family not found in Windows font database
-
-## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
-## family not found in Windows font database
-
-## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
-## family not found in Windows font database
-
-## Warning in grid.Call(C_textBounds, as.graphicsAnnot(x$label), x$x, x$y, : font
-## family not found in Windows font database</code></pre>
-<pre><code>## Warning in grid.Call.graphics(C_text, as.graphicsAnnot(x$label), x$x, x$y, :
-## font family not found in Windows font database</code></pre>
 <p><img src="index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
 <p>What month did the new (daily) death maximum occur in?</p>
 <pre class="r"><code>Rect.NYT %&gt;% group_by(state) %&gt;% slice_max(New.Deaths, n=1) %&gt;% mutate(Month = month(date, label=TRUE)) %$% table(Month) %&gt;% data.frame() %&gt;% ggplot() + aes(x=Month, y=Freq, label=Freq) + geom_col() + geom_text(color=&quot;red&quot;) + labs(y=&quot;Number of States with New Death Maxima&quot;) + theme_minimal()</code></pre>

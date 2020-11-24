@@ -20,6 +20,9 @@ image:
 projects: []
 ---
 
+<script src="index_files/header-attrs/header-attrs.js"></script>
+<link href="index_files/anchor-sections/anchor-sections.css" rel="stylesheet" />
+<script src="index_files/anchor-sections/anchor-sections.js"></script>
 
 
 <div id="oregon-covid-data" class="section level1">
@@ -41,7 +44,7 @@ library(patchwork)
 library(hrbrthemes)
 library(widgetframe)
 load(url(paste0(&quot;https://github.com/robertwwalker/rww-science/raw/master/content/R/COVID/data/OregonCOVID&quot;,Sys.Date(),&quot;.RData&quot;)))</code></pre>
-<p>Verifying, these data are current as of 2020-11-20 according to the loaded dataset.</p>
+<p>Verifying, these data are current as of 2020-11-23 according to the loaded dataset.</p>
 <div id="a-running-commentary-on-the-data" class="section level3">
 <h3>A running commentary on the data</h3>
 <p>The central takeaway is that the underlying data reports are constantly changing over time. The weekend data has been discontinued and it is quite spotty. They are reporting new and different quantities and this destroys the comparability of data. Some of it can be reconstructed but much of it is only useful going forward and keeping the schema constant. I hope that will happen at some point.</p>
@@ -188,7 +191,7 @@ Test2</code></pre>
 <h2>A Better Look at This</h2>
 <p>Cumulative results are perhaps more informative when viewed alongside the marginal changes from day to day. Here, I show the proportion of test outcomes just considering those test results reported for that day – the daily distribution of test outcomes.</p>
 <pre class="r"><code>library(hrbrthemes); library(ggrepel); library(plotly)
-MyDat &lt;- Oregon.Tests %&gt;%
+MyDat &lt;- Oregon.Tests %&gt;% unique() %&gt;%
   pivot_wider(., names_from = Category, values_from = Outcome) %&gt;% 
   mutate(Positive.Chg = Positive - lag(Positive, order_by = date), 
          Negative.Chg = Negative - lag(Negative, order_by = date)) %&gt;% 
