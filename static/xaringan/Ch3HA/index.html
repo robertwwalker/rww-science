@@ -250,6 +250,18 @@ family of <strong>Box-Cox transformations</strong>:
 <hr />
 </div>
 </div>
+<div id="a-note-on-deseasoning" class="section level1">
+<h1>A Note on DeSeasoning</h1>
+<pre class="r"><code>us_retail_employment &lt;- us_employment %&gt;%
+  filter(year(Month) &gt;= 1990, Title == &quot;Retail Trade&quot;) %&gt;%
+  select(-Series_ID)
+dcmp &lt;- us_retail_employment %&gt;%
+  model(STL(Employed))
+autoplot(us_retail_employment, Employed, color = &quot;gray&quot;) +
+  autolayer(components(dcmp), season_adjust, color = &quot;blue&quot;) +
+  labs(y = &quot;Persons (thousands)&quot;, title = &quot;Total employment in US retail&quot;)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-3-1.png" width="768" /></p>
+</div>
 <div id="moving-averages" class="section level1">
 <h1>Moving Averages</h1>
 <hr />
@@ -280,7 +292,7 @@ aus_exports</code></pre>
   autolayer(aus_exports, `5-MA`, color = &quot;red&quot;) +
   labs(y = &quot;Exports (% of GDP)&quot;, title = &quot;Total Australian exports&quot;) +
   guides(colour = guide_legend(title = &quot;series&quot;))+ theme_xaringan()</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-4-1.png" width="768" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-5-1.png" width="768" /></p>
 <hr />
 <div id="we-can-even-have-moving-averages-of-moving-averages." class="section level2">
 <h2>We can even have moving averages of moving averages.</h2>
@@ -310,7 +322,7 @@ aus_exports2</code></pre>
   autolayer(aus_exports2, `2x5-MA`, color = &quot;blue&quot;) +
   labs(y = &quot;Exports (% of GDP)&quot;, title = &quot;Total Australian exports&quot;) +
   guides(colour = guide_legend(title = &quot;series&quot;)) + theme_xaringan()</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" width="768" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-7-1.png" width="768" /></p>
 <hr />
 </div>
 <div id="time-series-decomposition" class="section level2">
@@ -391,7 +403,7 @@ USREDC</code></pre>
 <hr />
 <pre class="r"><code>autoplot(USREDC) +
   labs(title = &quot;Classical additive decomposition of total US retail employment&quot;) + theme_xaringan()</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-8-1.png" width="768" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-9-1.png" width="768" /></p>
 <hr />
 </div>
 <div id="us-retail-employment-2" class="section level2">
@@ -540,7 +552,7 @@ X11_dcmp</code></pre>
 ## # ... with 347 more rows</code></pre>
 <hr />
 <pre class="r"><code>autoplot(X11_dcmp) + theme_xaringan()</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-10-1.png" width="768" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-11-1.png" width="768" /></p>
 <hr />
 </div>
 <div id="extensions-x-12-arima-and-x-13-arima" class="section level2">
@@ -595,7 +607,7 @@ seats_dcmp</code></pre>
 <hr />
 <pre class="r"><code>autoplot(seats_dcmp) +
   labs(title = &quot;SEATS decomposition of total US retail employment&quot;) + theme_xaringan()</code></pre>
-<p><img src="index_files/figure-html/unnamed-chunk-12-1.png" width="768" /></p>
+<p><img src="index_files/figure-html/unnamed-chunk-13-1.png" width="768" /></p>
 <hr />
 </div>
 </div>
