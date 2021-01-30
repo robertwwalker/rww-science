@@ -22,7 +22,7 @@ projects: []
 
 # New York Times data for the US
 
-The New York Times has a wonderful compilation of United States on the novel coronavirus.  The data update automatically so the following graphics were generated with data retrieved at `r Sys.time()`.
+The New York Times has a wonderful compilation of United States on the novel coronavirus. The data update automatically so the following graphics were generated with data retrieved at `r Sys.time()`.
 
 # The Basic State of Things
 
@@ -49,10 +49,9 @@ plot4 <- NYT.Totals %>% ggplot(., aes(x=date, y=New.Cases)) + geom_line() + labs
 (plot1 + plot2) / (plot3 + plot4)
 ```
 
-
 # Some New Stuff from 11/2020
 
-The pandemic has ebbed and flowed since March in the United States.  After settling, as predicted, during the the summer months, the arrival and Fall has seen the onset of another wave.  
+The pandemic has ebbed and flowed since March in the United States. After settling, as predicted, during the the summer months, the arrival and Fall has seen the onset of another wave.
 
 ## New Case Maxima by State and Territory
 
@@ -68,7 +67,6 @@ What month did the new (daily) death maximum occur in?
 Rect.NYT %>% group_by(state) %>% slice_max(New.Deaths, n=1) %>% mutate(Month = month(date, label=TRUE)) %$% table(Month) %>% data.frame() %>% ggplot() + aes(x=Month, y=Freq, label=Freq) + geom_col() + geom_text(color="red") + labs(y="Number of States with New Death Maxima") + theme_minimal()
 ```
 
-
 ## Where's the Current Problem?
 
 Here I will use a seven day delay to isolate current rates of growth.
@@ -78,10 +76,9 @@ NYTD1 <- Rect.NYT %>% group_by(state) %>% mutate(Cases.7DD = (cases - lag(cases,
 NYTD1 %>% filter(date > Sys.Date()-8) %>% mutate(Avg.7DD = mean(Cases.7DD, na.rm=TRUE)) %>% top_n(25, Avg.7DD) %>% ggplot(., aes(x=forcats::fct_reorder(state, Avg.7DD), y=Avg.7DD, fill=state)) + geom_col() + coord_flip() + guides(fill=FALSE) + labs(x="", y="Avg. 7 Day Change over the last week", title="Average 7 Day Percent Change in New COVID-19 Cases \nAveraged over the last week")
 ```
 
-
 ## The Initial vs. The Subsequent
 
-The problem was initially concentrated in New York, New Jersey, Massachusetts, California, and Illinois.  How do things look if we remove those states?
+The problem was initially concentrated in New York, New Jersey, Massachusetts, California, and Illinois. How do things look if we remove those states?
 
 ```{r, message=FALSE, warning=FALSE}
 NYT.Totals2 <- Rect.NYT  %>% filter(!(state %in% c("California","Massachusetts","New York","New Jersey","Illinois"))) %>% group_by(date) %>% summarise(Deaths = sum(deaths, na.rm=TRUE), New.Deaths = sum(New.Deaths, na.rm = TRUE), Cases = sum(cases, na.rm=TRUE), New.Cases = sum(New.Cases, na.rm = TRUE)) %>% ungroup()
@@ -92,7 +89,6 @@ plot4a <- NYT.Totals2  %>% ggplot(., aes(x=date, y=New.Cases)) + geom_line() + l
 (plot1a + plot2a) / (plot3a + plot4a)
 ```
 
-
 ```{r}
 plot1 <- NYT.Totals %>% ggplot(., aes(x=date, y=Deaths)) + geom_line() + labs(title="Deaths") + scale_y_log10() + dark_mode()
 plot2 <- NYT.Totals %>% ggplot(., aes(x=date, y=New.Deaths)) + geom_line() + labs(title="New Deaths") + geom_smooth(fill="white") + dark_mode()
@@ -100,7 +96,6 @@ plot3 <- NYT.Totals %>% ggplot(., aes(x=date, y=Cases)) + geom_line() + labs(tit
 plot4 <- NYT.Totals %>% ggplot(., aes(x=date, y=New.Cases)) + geom_line() + labs(title="New Cases") + geom_smooth(fill="white") + dark_mode()
 (plot1 + plot2) / (plot3 + plot4)
 ```
-
 
 # The `@jburnmurdoch` graphics for US States
 
@@ -177,11 +172,9 @@ Plot2 <- R2.NYT %>%
 Plot1 + Plot2
 ```
 
-
-
 ## New Cases by State over Time
 
-Let me first track the incidence of new cases by state.  There is no particularly good way to visualize this because New York is wildly different.
+Let me first track the incidence of new cases by state. There is no particularly good way to visualize this because New York is wildly different.
 
 ```{r, warning=FALSE, message=FALSE}
 WCStates <- Rect.NYT %>% filter(date==max(date)) %>% top_n(5, wt=New.Cases) %>% mutate(Top5 = 1)
@@ -211,7 +204,7 @@ ggplot(NYT.Totals, aes(x=date, y=Deaths)) + geom_line() + labs(x="Date", y="Tota
 
 ## US Death Rate
 
-Given the data, what does the US Case Fatality Rate look like at this point?  Two caveats for this.  The first, uncertainty in the numerator.  The number of deaths is surely undercounted, probably dramatically based on anecdotes from non-medical first responders.  Second, we know the numerator is also undercounted.  Assuming asymptomatic cases, the rules prohibited testing them for a substantial period of time on top of the existing scarcity of tests. 
+Given the data, what does the US Case Fatality Rate look like at this point? Two caveats for this. The first, uncertainty in the numerator. The number of deaths is surely undercounted, probably dramatically based on anecdotes from non-medical first responders. Second, we know the numerator is also undercounted. Assuming asymptomatic cases, the rules prohibited testing them for a substantial period of time on top of the existing scarcity of tests.
 
 ```{r, message=FALSE, warning=FALSE}
 CFR <- NYT.Totals %>% 
@@ -226,7 +219,9 @@ htmlwidgets::saveWidget(
   widgetframe::frameableWidget(GPCFR), here:::here('static/img/widgets/gpcfrmap.html'))
 ```
 
-<iframe width="600" height="405" src="https://rww.science/img/widgets/gpcfrmap.html" frameborder="0" allowfullscreen></iframe>
+<iframe width="600" height="405" src="https://rww.science/img/widgets/gpcfrmap.html" frameborder="0" allowfullscreen>
+
+</iframe>
 
 ## This may prove useful
 
@@ -242,8 +237,9 @@ htmlwidgets::saveWidget(
   widgetframe::frameableWidget(GPNCFR), here:::here('static/img/widgets/gpncfrmap.html'))
 ```
 
-<iframe width="600" height="405" src="https://rww.science/img/widgets/gpncfrmap.html" frameborder="0" allowfullscreen></iframe>
+<iframe width="600" height="405" src="https://rww.science/img/widgets/gpncfrmap.html" frameborder="0" allowfullscreen>
 
+</iframe>
 
 # 50 States?
 
@@ -258,4 +254,3 @@ CFR2 %>% filter(!(state %in% c("puerto rico","northern mariana islands", "virgin
 #  labs(title = "Case Fatality Rate of COVID-19 in the US", subtitle="Very uncertain estimate... Numerator and denominator uncertain \n Data: NY Times GitHub", caption="Data from nytimes/covid-19-data on guthub.", color="Greater \n than 0.02") + 
 #  dark_theme_bw()
 ```
-
