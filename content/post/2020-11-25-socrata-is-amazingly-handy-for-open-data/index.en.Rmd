@@ -70,9 +70,10 @@ VoterReg %>% filter(sysdate == "2020-11-03") %>% group_by(county) %>% summarise(
 Plot1
 ```
 
-```{r, message=FALSE, warning=FALSE}
-library(plotly)
-ggplotly(Plot1)
+```{r Plotly1, message=FALSE, warning=FALSE}
+library(plotly); library(widgetframe)
+ggp1 <- ggplotly(Plot1)
+frameWidget(ggp1)
 ```
 
 

@@ -25,6 +25,7 @@ projects: []
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(tidytext)
+library(here)
 ```
 
 ## tidyTuesday `beyonce_lyrics`
@@ -54,7 +55,7 @@ beyonce_lyrics %>%
 
 ## Beyonce's Cloud
 
-```{r}
+```{r BC1}
 library(wordcloud2)
 beyonce_lyrics %>% 
   unnest_tokens(word, line) %>%   # Parse the lyric lines to tidy: one word per row.
@@ -62,15 +63,13 @@ beyonce_lyrics %>%
   group_by(word) %>%              # Group them by word
   summarise(Count = n()) %>%      # How common is the word?
   wordcloud2::wordcloud2(size = 0.7, shuffle = TRUE) -> WC111
-htmlwidgets::saveWidget(widgetframe::frameWidget(WC111), file='widgets/wcbey.html')
+# htmlwidgets::saveWidget(widgetframe::frameWidget(WC111), file='widgets/wcbey.html')
 # MyWC
-# widgetframe::frameWidget(MyWC)
+# widgetframe::frameWidget(WC111)
+WC111
 ```
 
-<iframe width="600" height="600" src="widgets/wcbey.html" frameborder="0" allowfullscreen></iframe>
-
-
-```{r, results='markup'}
+```{r BC2, eval=FALSE}
 library(wordcloud2)
 MyDat <- beyonce_lyrics %>% 
   unnest_tokens(word, line) %>%   # Parse the lyric lines to tidy: one word per row.
@@ -84,5 +83,5 @@ htmlwidgets::saveWidget(widgetframe::frameWidget(MyWC), file='widgets/beyonce.ht
 # widgetframe::frameWidget(MyWC)
 ```
 
-<iframe width="600" height="405" src="widgets/beyonce.html" frameborder="0" allowfullscreen></iframe>
- 
+Something about this does not seem to work now.
+
