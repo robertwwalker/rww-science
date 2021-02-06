@@ -35,7 +35,7 @@ my.plot <- Major.Employment %>% ggplot(aes(Unemployment_rate,Median, label=str_t
   xlab("Unemployment Rate") +
   ylab("Median Income") +
   ggtitle("Median Income and Unemployment") +
-  theme(text=element_text(family = "Roboto Light", size=8), title = element_text(size=12)) 
+  theme(text=element_text(size=8), title = element_text(size=12)) 
 my.plot
 ```
 

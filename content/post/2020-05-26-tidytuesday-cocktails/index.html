@@ -21,13 +21,14 @@ image:
 projects: []
 ---
 
-<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
 
 
 <div id="the-data" class="section level2">
 <h2>The Data</h2>
 <pre class="r"><code>cocktails &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-26/cocktails.csv&#39;)</code></pre>
-<pre><code>## Parsed with column specification:
+<pre><code>## 
+## ── Column specification ────────────────────────────────────────────────────────
 ## cols(
 ##   row_id = col_double(),
 ##   drink = col_character(),
@@ -44,7 +45,8 @@ projects: []
 ##   measure = col_character()
 ## )</code></pre>
 <pre class="r"><code>boston_cocktails &lt;- readr::read_csv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-05-26/boston_cocktails.csv&#39;)</code></pre>
-<pre><code>## Parsed with column specification:
+<pre><code>## 
+## ── Column specification ────────────────────────────────────────────────────────
 ## cols(
 ##   name = col_character(),
 ##   category = col_character(),
@@ -61,8 +63,7 @@ projects: []
   theme_economist_white() + 
   labs(title=&quot;How Many Ingredients in a Mr. Boston Drink Recipe?&quot;, 
        caption=&quot;#tidyTuesday by @PieRatio&quot;)</code></pre>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<p><img src="/post/2020-05-26-tidytuesday-cocktails/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 <pre class="r"><code>boston_cocktails %&gt;% 
   group_by(ingredient) %&gt;% 
   summarise(Drinks = n()) %&gt;% 
@@ -73,7 +74,6 @@ projects: []
        caption=&quot;#tidyTuesday by @PieRatio&quot;, x=&quot;&quot;) + 
   scale_fill_viridis_d() + 
   guides(fill=FALSE)</code></pre>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
 <pre><code>## Selecting by Drinks</code></pre>
-<p><img src="/post/2020-05-26-tidytuesday-cocktails/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 </div>

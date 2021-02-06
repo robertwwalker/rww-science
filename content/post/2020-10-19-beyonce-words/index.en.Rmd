@@ -62,12 +62,12 @@ beyonce_lyrics %>%
   group_by(word) %>%              # Group them by word
   summarise(Count = n()) %>%      # How common is the word?
   wordcloud2::wordcloud2(size = 0.7, shuffle = TRUE) -> WC111
-htmlwidgets::saveWidget(widgetframe::frameWidget(WC111), file=here:::here('/static/img/widgets/wcbey.html'))
+htmlwidgets::saveWidget(widgetframe::frameWidget(WC111), file='widgets/wcbey.html')
 # MyWC
 # widgetframe::frameWidget(MyWC)
 ```
 
-<iframe width="600" height="600" src="https://rww.science/img/widgets/wcbey.html" frameborder="0" allowfullscreen></iframe>
+<iframe width="600" height="600" src="widgets/wcbey.html" frameborder="0" allowfullscreen></iframe>
 
 
 ```{r, results='markup'}
@@ -79,10 +79,10 @@ MyDat <- beyonce_lyrics %>%
   summarise(freq = n()) %>%      # How common is the word?
   arrange(desc(freq))
 MyWC <- wordcloud2::letterCloud(MyDat, word="Most Popular \n Words in \n Beyonce \n Lyrics", wordSize = 1.75, backgroundColor="lightblue", color='random-dark', size=0.8)
-htmlwidgets::saveWidget(widgetframe::frameWidget(MyWC), file=here::here('/static/img/widgets/beyonce.html'))
+htmlwidgets::saveWidget(widgetframe::frameWidget(MyWC), file='widgets/beyonce.html')
 # MyWC
 # widgetframe::frameWidget(MyWC)
 ```
 
-<iframe width="600" height="405" src="https://rww.science/img/widgets/beyonce.html" frameborder="0" allowfullscreen></iframe>
+<iframe width="600" height="405" src="widgets/beyonce.html" frameborder="0" allowfullscreen></iframe>
  

@@ -20,7 +20,7 @@ image:
 projects: []
 ---
 
-<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+<script src="{{< blogdown/postref >}}index.en_files/header-attrs/header-attrs.js"></script>
 
 
 <div id="tidytuesday-beyonce_lyrics" class="section level2">
@@ -38,7 +38,7 @@ projects: []
 ##   song_line = col_double()
 ## )</code></pre>
 <pre class="r"><code>str(beyonce_lyrics)</code></pre>
-<pre><code>## tibble [22,616 × 6] (S3: spec_tbl_df/tbl_df/tbl/data.frame)
+<pre><code>## spec_tbl_df [22,616 × 6] (S3: spec_tbl_df/tbl_df/tbl/data.frame)
 ##  $ line       : chr [1:22616] &quot;If I ain&#39;t got nothing, I got you&quot; &quot;If I ain&#39;t got something, I don&#39;t give a damn&quot; &quot;&#39;Cause I got it with you&quot; &quot;I don&#39;t know much about algebra, but I know 1+1 equals 2&quot; ...
 ##  $ song_id    : num [1:22616] 50396 50396 50396 50396 50396 ...
 ##  $ song_name  : chr [1:22616] &quot;1+1&quot; &quot;1+1&quot; &quot;1+1&quot; &quot;1+1&quot; ...
@@ -69,9 +69,8 @@ projects: []
   coord_flip() + 
   labs(x=&quot;Word&quot;, title=&quot;Beyonce&#39;s Top Words in Lyrics&quot;)</code></pre>
 <pre><code>## Joining, by = &quot;word&quot;</code></pre>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
 <pre><code>## Selecting by Count</code></pre>
-<p><img src="/post/2020-10-19-beyonce-words/index.en_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index.en_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
 </div>
 <div id="beyonces-cloud" class="section level2">
 <h2>Beyonce’s Cloud</h2>
@@ -83,11 +82,10 @@ beyonce_lyrics %&gt;%
   summarise(Count = n()) %&gt;%      # How common is the word?
   wordcloud2::wordcloud2(size = 0.7, shuffle = TRUE) -&gt; WC111</code></pre>
 <pre><code>## Joining, by = &quot;word&quot;</code></pre>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
-<pre class="r"><code>htmlwidgets::saveWidget(widgetframe::frameWidget(WC111), file=here:::here(&#39;/static/img/widgets/wcbey.html&#39;))
+<pre class="r"><code>htmlwidgets::saveWidget(widgetframe::frameWidget(WC111), file=&#39;widgets/wcbey.html&#39;)
 # MyWC
 # widgetframe::frameWidget(MyWC)</code></pre>
-<iframe width="600" height="600" src="https://rww.science/img/widgets/wcbey.html" frameborder="0" allowfullscreen>
+<iframe width="600" height="600" src="widgets/wcbey.html" frameborder="0" allowfullscreen>
 </iframe>
 <pre class="r"><code>library(wordcloud2)
 MyDat &lt;- beyonce_lyrics %&gt;% 
@@ -97,11 +95,10 @@ MyDat &lt;- beyonce_lyrics %&gt;%
   summarise(freq = n()) %&gt;%      # How common is the word?
   arrange(desc(freq))</code></pre>
 <pre><code>## Joining, by = &quot;word&quot;</code></pre>
-<pre><code>## `summarise()` ungrouping output (override with `.groups` argument)</code></pre>
 <pre class="r"><code>MyWC &lt;- wordcloud2::letterCloud(MyDat, word=&quot;Most Popular \n Words in \n Beyonce \n Lyrics&quot;, wordSize = 1.75, backgroundColor=&quot;lightblue&quot;, color=&#39;random-dark&#39;, size=0.8)
-htmlwidgets::saveWidget(widgetframe::frameWidget(MyWC), file=here::here(&#39;/static/img/widgets/beyonce.html&#39;))
+htmlwidgets::saveWidget(widgetframe::frameWidget(MyWC), file=&#39;widgets/beyonce.html&#39;)
 # MyWC
 # widgetframe::frameWidget(MyWC)</code></pre>
-<iframe width="600" height="405" src="https://rww.science/img/widgets/beyonce.html" frameborder="0" allowfullscreen>
+<iframe width="600" height="405" src="widgets/beyonce.html" frameborder="0" allowfullscreen>
 </iframe>
 </div>

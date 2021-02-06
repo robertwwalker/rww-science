@@ -11,6 +11,7 @@ tags:
   - tidyverse
 ---
 
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
 
 
 <div id="tidytuesday-on-global-mortality" class="section level1">
@@ -102,7 +103,20 @@ skim(global_mortality)</code></pre>
 </tbody>
 </table>
 <p><strong>Variable type: numeric</strong></p>
-<table>
+<table style="width:100%;">
+<colgroup>
+<col width="32%" />
+<col width="7%" />
+<col width="11%" />
+<col width="6%" />
+<col width="4%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="6%" />
+<col width="4%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th align="left">skim_variable</th>
@@ -558,7 +572,7 @@ pp.df &lt;- pp.df %&gt;% arrange(Total.Deaths)
 pp.df$name &lt;- factor(pp.df$name, levels = pp.df$name)
 cplot &lt;- ggplot(pp.df, aes(name,Total.Deaths)) + geom_bar(stat=&quot;identity&quot;) + coord_flip() + scale_fill_gradientn(colours = terrain.colors(10)) + ggtitle(&quot;The Causes of Global Mortailty (2016)&quot;)
 cplot</code></pre>
-<p><img src="/post/2018-04-17-tidytuesday-takes-on-global-mortality/index_files/figure-html/COrig-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/COrig-1.png" width="672" /></p>
 <p>With a reenactment of the base target plots, I can turn to new visuals. I wanted to be able to develop a comparison of the various classified causes of death and to try out my nifty function for summarizing panel data. So here goes.</p>
 <pre class="r"><code>xtsum &lt;- function(formula, data) {
   pform &lt;- terms(formula, data=data)
@@ -660,15 +674,15 @@ mydf &lt;- mydf %&gt;% arrange(value)
 mydf$name &lt;- factor(mydf$name, levels = mydf$name)
 mydf &lt;- mydf %&gt;% mutate(Emph=as.numeric(value&gt;0.5))
 mydf %&gt;% ggplot(aes(name,value, fill=Emph)) + geom_bar(stat=&quot;identity&quot;) + coord_flip() + ylab(&quot;Within Percent of Total Variation&quot;) + xlab(&quot;Cause of Mortality&quot;) + ggtitle(&quot;Within-country variation in the Causes of Death&quot;) + guides(fill=&quot;none&quot;)</code></pre>
-<p><img src="/post/2018-04-17-tidytuesday-takes-on-global-mortality/index_files/figure-html/Result-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/Result-1.png" width="672" /></p>
 <pre class="r"><code>Mean.Homicide &lt;- global_mortality %&gt;% group_by(countryF) %&gt;% summarise(mymean=mean(Homicide, na.rm=TRUE))
 Mean.Homicide %&gt;% ungroup() %&gt;% arrange(mymean) -&gt; mydf
 mydf$countryF &lt;- factor(mydf$countryF, levels = mydf$countryF)
 mydf %&gt;% ungroup() %&gt;% top_n(30, mymean) %&gt;% arrange(mymean) %&gt;% mutate(Emph=c(rep(1,10),rep(2,10),rep(3,10))) -&gt; mydf
 mydf %&gt;% ggplot(aes(countryF,mymean, fill=Emph)) + geom_bar(stat=&quot;identity&quot;) + coord_flip() + ylab(&quot;Homicides&quot;) + ggtitle(&quot;Top 30 Countries/Places in Homicide&quot;) + xlab(&quot;&quot;) + guides(fill=&quot;none&quot;) -&gt; Homicideplot
 Homicideplot</code></pre>
-<p><img src="/post/2018-04-17-tidytuesday-takes-on-global-mortality/index_files/figure-html/MHG30-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/MHG30-1.png" width="672" /></p>
 <pre class="r"><code>global_mortality %&gt;% filter(year==2016) %&gt;% ggplot(aes(`Drug disorders`,`Alcohol disorders`)) + geom_point() + ggtitle(&quot;Drugs and Alcohol in 2016&quot;) -&gt; scatterDA
 scatterDA</code></pre>
-<p><img src="/post/2018-04-17-tidytuesday-takes-on-global-mortality/index_files/figure-html/DandA-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/DandA-1.png" width="672" /></p>
 </div>

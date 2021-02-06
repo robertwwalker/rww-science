@@ -21,7 +21,7 @@ image:
 projects: []
 ---
 
-<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
 
 
 <div id="r-markdown" class="section level2">
@@ -30,7 +30,8 @@ projects: []
 <p><img src="https://camo.githubusercontent.com/0c831f8d61fee52c54b4edf861012ea51643195f/68747470733a2f2f776f726470726573732e736d6172746c6f6f6b2e636f6d2f77702d636f6e74656e742f75706c6f6164732f323031382f30312f676470722e706e67" /></p>
 <p>This week’s tidyTuesday data cover violations of the GDPR.</p>
 <pre class="r"><code>gdpr_violations &lt;- readr::read_tsv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-04-21/gdpr_violations.tsv&#39;)</code></pre>
-<pre><code>## Parsed with column specification:
+<pre><code>## 
+## ── Column specification ────────────────────────────────────────────────────────
 ## cols(
 ##   id = col_double(),
 ##   picture = col_character(),
@@ -45,7 +46,8 @@ projects: []
 ##   summary = col_character()
 ## )</code></pre>
 <pre class="r"><code>gdpr_text &lt;- readr::read_tsv(&#39;https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2020/2020-04-21/gdpr_text.tsv&#39;)</code></pre>
-<pre><code>## Parsed with column specification:
+<pre><code>## 
+## ── Column specification ────────────────────────────────────────────────────────
 ## cols(
 ##   chapter = col_double(),
 ##   chapter_title = col_character(),
@@ -258,12 +260,12 @@ skim(gdpr_violations)</code></pre>
 <div id="violations" class="section level2">
 <h2>Violations</h2>
 <pre class="r"><code>library(tidyverse); library(janitor)</code></pre>
-<pre><code>## ── Attaching packages ─────────────────────────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
-<pre><code>## ✓ ggplot2 3.3.0     ✓ purrr   0.3.3
-## ✓ tibble  3.0.0     ✓ dplyr   0.8.5
-## ✓ tidyr   1.0.2     ✓ stringr 1.4.0
-## ✓ readr   1.3.1     ✓ forcats 0.5.0</code></pre>
-<pre><code>## ── Conflicts ────────────────────────────────────────────────────────────── tidyverse_conflicts() ──
+<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
+<pre><code>## ✓ ggplot2 3.3.3     ✓ purrr   0.3.4
+## ✓ tibble  3.0.6     ✓ dplyr   1.0.4
+## ✓ tidyr   1.1.2     ✓ stringr 1.4.0
+## ✓ readr   1.4.0     ✓ forcats 0.5.1</code></pre>
+<pre><code>## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
 ## x dplyr::filter() masks stats::filter()
 ## x dplyr::lag()    masks stats::lag()</code></pre>
 <pre><code>## 
@@ -451,20 +453,20 @@ skim(gdpr_violations)</code></pre>
 <h1>Revenue?</h1>
 <pre class="r"><code>GDPT &lt;- gdpr_violations %&gt;% group_by(name) %&gt;% summarise(Collected = sum(price), Violations = n())
 GDPT %&gt;% select(name, Collected) %&gt;% ggplot(., aes(x=fct_reorder(name, Collected), y=Collected/1e7, fill=name)) + geom_col() + scale_fill_viridis_d() + coord_flip() + labs(x=&quot;Country&quot;, y=&quot;Total Fines Collected (in Millions)&quot;) + guides(fill=FALSE)</code></pre>
-<p><img src="/post/2020-04-25-gdpr-violations/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 </div>
 <div id="a-map" class="section level1">
 <h1>A Map</h1>
 <pre class="r"><code>library(rnaturalearth)
 Europe &lt;- ne_countries(scale = &#39;medium&#39;, type = &#39;map_units&#39;, returnclass = &#39;sf&#39;, continent=&quot;Europe&quot;)
 library(sf)</code></pre>
-<pre><code>## Linking to GEOS 3.7.2, GDAL 2.4.2, PROJ 5.2.0</code></pre>
+<pre><code>## Linking to GEOS 3.8.1, GDAL 3.1.4, PROJ 6.3.1</code></pre>
 <pre class="r"><code>Europe &lt;- sf::st_crop(Europe, xmin = -20, xmax = 45, ymin = 30, ymax = 73)</code></pre>
 <pre><code>## although coordinates are longitude/latitude, st_intersection assumes that they are planar</code></pre>
 <pre><code>## Warning: attribute variables are assumed to be spatially constant throughout all
 ## geometries</code></pre>
 <pre class="r"><code>ggplot(Europe) + geom_sf()</code></pre>
-<p><img src="/post/2020-04-25-gdpr-violations/index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <div id="merge-data" class="section level2">
 <h2>Merge Data</h2>
 <p>Plot some Europe Maps.</p>
@@ -473,16 +475,16 @@ library(sf)</code></pre>
 <h2>Total Collections</h2>
 <pre class="r"><code>Map.Me &lt;- left_join(Europe, GDPT, by = c(&quot;sovereignt&quot; = &quot;name&quot;))
 ggplot(Map.Me) + aes(fill=Collected) + geom_sf() + scale_fill_viridis_c()</code></pre>
-<p><img src="/post/2020-04-25-gdpr-violations/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 </div>
 <div id="count-of-violations" class="section level2">
 <h2>Count of Violations</h2>
 <pre class="r"><code>ggplot(Map.Me) + aes(fill=Violations) + geom_sf() + scale_fill_viridis_c()</code></pre>
-<p><img src="/post/2020-04-25-gdpr-violations/index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 </div>
 <div id="cost-per-violation" class="section level2">
 <h2>Cost per violation</h2>
 <pre class="r"><code>Map.Me %&gt;% mutate(Avg.Fine = Collected / Violations) %&gt;% ggplot(.) + aes(fill=Avg.Fine) + geom_sf() + labs(title=&quot;Average Fine per Violation&quot;) + scale_fill_viridis_c()</code></pre>
-<p><img src="/post/2020-04-25-gdpr-violations/index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 </div>
 </div>

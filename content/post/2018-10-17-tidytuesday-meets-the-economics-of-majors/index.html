@@ -10,6 +10,7 @@ header:
   image: ''
 ---
 
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
 
 
 <p>This week’s tidyTuesday focuses on degrees and majors and their deployment in the labor market. The original data came from 538. A description of sources and measures. The tidyTesday writeup is <a href="https://github.com/fivethirtyeight/data/tree/master/college-majors">here</a>.</p>
@@ -46,7 +47,7 @@ skim(Major.Employment)</code></pre>
 <td align="left"></td>
 </tr>
 <tr class="even">
-<td align="left">factor</td>
+<td align="left">character</td>
 <td align="left">2</td>
 </tr>
 <tr class="odd">
@@ -63,16 +64,18 @@ skim(Major.Employment)</code></pre>
 </tr>
 </tbody>
 </table>
-<p><strong>Variable type: factor</strong></p>
+<p><strong>Variable type: character</strong></p>
 <table>
 <thead>
 <tr class="header">
 <th align="left">skim_variable</th>
 <th align="right">n_missing</th>
 <th align="right">complete_rate</th>
-<th align="left">ordered</th>
+<th align="right">min</th>
+<th align="right">max</th>
+<th align="right">empty</th>
 <th align="right">n_unique</th>
-<th align="left">top_counts</th>
+<th align="right">whitespace</th>
 </tr>
 </thead>
 <tbody>
@@ -80,22 +83,39 @@ skim(Major.Employment)</code></pre>
 <td align="left">Major</td>
 <td align="right">0</td>
 <td align="right">1</td>
-<td align="left">FALSE</td>
+<td align="right">5</td>
+<td align="right">65</td>
+<td align="right">0</td>
 <td align="right">173</td>
-<td align="left">ACC: 1, ACT: 1, ADV: 1, AER: 1</td>
+<td align="right">0</td>
 </tr>
 <tr class="even">
 <td align="left">Major_category</td>
 <td align="right">0</td>
 <td align="right">1</td>
-<td align="left">FALSE</td>
+<td align="right">4</td>
+<td align="right">35</td>
+<td align="right">0</td>
 <td align="right">16</td>
-<td align="left">Eng: 29, Edu: 16, Hum: 15, Bio: 14</td>
+<td align="right">0</td>
 </tr>
 </tbody>
 </table>
 <p><strong>Variable type: numeric</strong></p>
-<table>
+<table style="width:100%;">
+<colgroup>
+<col width="18%" />
+<col width="8%" />
+<col width="12%" />
+<col width="8%" />
+<col width="8%" />
+<col width="5%" />
+<col width="8%" />
+<col width="8%" />
+<col width="8%" />
+<col width="8%" />
+<col width="5%" />
+</colgroup>
 <thead>
 <tr class="header">
 <th align="left">skim_variable</th>
@@ -372,9 +392,9 @@ skim(Major.Employment)</code></pre>
   xlab(&quot;Unemployment Rate&quot;) +
   ylab(&quot;Median Income&quot;) +
   ggtitle(&quot;Median Income and Unemployment&quot;) +
-  theme(text=element_text(family = &quot;Roboto Light&quot;, size=8), title = element_text(size=12)) 
+  theme(text=element_text(size=8), title = element_text(size=12)) 
 my.plot</code></pre>
-<p><img src="/post/2018-10-17-tidytuesday-meets-the-economics-of-majors/index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
 <pre class="r"><code>Major.Employment &lt;- Major.Employment %&gt;% mutate(ShareCol= College_jobs / Total)
 my.plot &lt;- Major.Employment %&gt;% ggplot(aes(Unemployment_rate,ShareCol, label=str_to_title(Major), color=ShareWomen)) +
   geom_point(alpha=0.1) +
@@ -389,14 +409,14 @@ my.plot &lt;- Major.Employment %&gt;% ggplot(aes(Unemployment_rate,ShareCol, lab
 my.plot</code></pre>
 <pre><code>## Warning: Removed 1 rows containing missing values (geom_point).</code></pre>
 <pre><code>## Warning: Removed 1 rows containing missing values (geom_text).</code></pre>
-<p><img src="/post/2018-10-17-tidytuesday-meets-the-economics-of-majors/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 <p>An Esquisse starter. Unemployment rate is x. Median wage is y. Major categories are colors and size is a function of Total</p>
 <pre class="r"><code>ggplot(data = Major.Employment) +
 aes(x = Unemployment_rate, y = Median, color = Major_category, size = Total) +
 geom_point() +
 theme_minimal()</code></pre>
 <pre><code>## Warning: Removed 1 rows containing missing values (geom_point).</code></pre>
-<p><img src="/post/2018-10-17-tidytuesday-meets-the-economics-of-majors/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 <pre class="r"><code>Major.Employment %&gt;% drop_na() %&gt;% ggplot() +
   aes(x = Unemployment_rate, y = Median, color = ShareWomen, label=str_to_title(Major)) +
 #  geom_point() +
@@ -408,5 +428,5 @@ theme_minimal()</code></pre>
   xlab(&quot;Unemployment Rate&quot;) +
   ylab(&quot;Median Wage&quot;) +
   ggtitle(&quot;Wages and Unemployment with Women in the Profession&quot;)</code></pre>
-<p><img src="/post/2018-10-17-tidytuesday-meets-the-economics-of-majors/index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <p>Alas.</p>

@@ -14,6 +14,7 @@ header:
   preview: yes
 ---
 
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
 
 
 <div id="tidyquant" class="section level2">
@@ -159,7 +160,7 @@ Returns %&gt;% skim()</code></pre>
 </tr>
 <tr class="even">
 <td align="left">date</td>
-<td align="left">V</td>
+<td align="left">TSLA</td>
 <td align="right">0</td>
 <td align="right">1</td>
 <td align="left">2018-01-02</td>
@@ -288,17 +289,17 @@ Returns %&gt;% skim()</code></pre>
 </tr>
 <tr class="even">
 <td align="left">daily.returns</td>
-<td align="left">V</td>
+<td align="left">TSLA</td>
 <td align="right">0</td>
 <td align="right">1</td>
 <td align="right">0</td>
-<td align="right">0.02</td>
-<td align="right">-0.05</td>
-<td align="right">-0.01</td>
+<td align="right">0.04</td>
+<td align="right">-0.14</td>
+<td align="right">-0.02</td>
 <td align="right">0</td>
-<td align="right">0.01</td>
-<td align="right">0.07</td>
-<td align="left">▁▅▇▁▁</td>
+<td align="right">0.02</td>
+<td align="right">0.17</td>
+<td align="left">▁▃▇▁▁</td>
 </tr>
 </tbody>
 </table>
@@ -318,5 +319,43 @@ p &lt;- ggplot(C.Returns, aes(date, wealth.index, group = symbol, colour=symbol)
   labs(title = &#39;Cumulative Wealth Index for S&amp;P Top 10&#39;, subtitle=&quot;Begins January 1, 2018: Base 100&quot;, y = &#39;Cumulative Change&#39;, x = &#39;Date&#39;) +
   theme_minimal() + theme(legend.position = &quot;none&quot;)
 animate(p, nframes=300)</code></pre>
-<p><img src="/post/2019-03-17-stocks-and-gganimate/index_files/figure-html/AnimPlot-1.gif" /><!-- --></p>
+<pre><code>## Warning: ggrepel: 8 unlabeled data points (too many overlaps). Consider
+## increasing max.overlaps
+
+## Warning: ggrepel: 8 unlabeled data points (too many overlaps). Consider
+## increasing max.overlaps
+
+## Warning: ggrepel: 8 unlabeled data points (too many overlaps). Consider
+## increasing max.overlaps
+
+## Warning: ggrepel: 8 unlabeled data points (too many overlaps). Consider
+## increasing max.overlaps
+
+## Warning: ggrepel: 8 unlabeled data points (too many overlaps). Consider
+## increasing max.overlaps
+
+## Warning: ggrepel: 8 unlabeled data points (too many overlaps). Consider
+## increasing max.overlaps</code></pre>
+<pre><code>## Warning: ggrepel: 7 unlabeled data points (too many overlaps). Consider
+## increasing max.overlaps</code></pre>
+<pre><code>## Warning: ggrepel: 6 unlabeled data points (too many overlaps). Consider
+## increasing max.overlaps
+
+## Warning: ggrepel: 6 unlabeled data points (too many overlaps). Consider
+## increasing max.overlaps
+
+## Warning: ggrepel: 6 unlabeled data points (too many overlaps). Consider
+## increasing max.overlaps
+
+## Warning: ggrepel: 6 unlabeled data points (too many overlaps). Consider
+## increasing max.overlaps</code></pre>
+<pre><code>## Warning: ggrepel: 7 unlabeled data points (too many overlaps). Consider
+## increasing max.overlaps</code></pre>
+<pre><code>## Warning: ggrepel: 5 unlabeled data points (too many overlaps). Consider
+## increasing max.overlaps</code></pre>
+<pre><code>## Warning: ggrepel: 4 unlabeled data points (too many overlaps). Consider
+## increasing max.overlaps</code></pre>
+<pre><code>## Warning: ggrepel: 2 unlabeled data points (too many overlaps). Consider
+## increasing max.overlaps</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/AnimPlot-1.gif" /><!-- --></p>
 </div>

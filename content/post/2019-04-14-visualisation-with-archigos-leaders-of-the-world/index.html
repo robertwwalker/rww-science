@@ -18,6 +18,7 @@ header:
   preview: yes
 ---
 
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
 
 
 <div id="archigos" class="section level2">
@@ -97,7 +98,7 @@ Full.LTS &lt;- LTS.Data %&gt;% left_join(Archigos, by=c(&quot;obsid&quot; = &quo
 Full.LTS %&gt;% group_by(leadid.x) %&gt;% summarise(CC.sd = sd(ccode)) %&gt;% arrange(desc(CC.sd)) %&gt;% filter(CC.sd &gt; 0)</code></pre>
 <pre><code>## # A tibble: 2 x 2
 ##   leadid.x                             CC.sd
-##   &lt;fct&gt;                                &lt;dbl&gt;
+##   &lt;chr&gt;                                &lt;dbl&gt;
 ## 1 81de4823-1e42-11e4-b4cd-db5882bf8def  6.93
 ## 2 821be4de-1e42-11e4-b4cd-db5882bf8def  2.67</code></pre>
 <pre class="r"><code># If countries are a proper nesting operator, then things can be made much easier.  They 
@@ -537,21 +538,9 @@ skimr::skim(Shorty)</code></pre>
 <td align="right">141</td>
 <td align="left">▇▂▁▁▁</td>
 </tr>
-<tr class="even">
-<td align="left">Hmm, there are c</td>
-<td align="right">ountries tha</td>
-<td align="right">t only had one l</td>
-<td align="right">eader.</td>
-<td align="right">I wonder</td>
-<td align="right">who</td>
-<td align="right">they a</td>
-<td align="right">re.</td>
-<td align="right"></td>
-<td align="right"></td>
-<td align="left"></td>
-</tr>
 </tbody>
 </table>
+<p>Hmm, there are countries that only had one leader. I wonder who they are.</p>
 <pre class="r"><code>Shorty %&gt;% filter(count==1)</code></pre>
 <pre><code>## # A tibble: 8 x 2
 ##   idacr count
@@ -566,7 +555,7 @@ skimr::skim(Shorty)</code></pre>
 ## 8 VIE       1</code></pre>
 <p>The names are not extremely informative but two are post-Soviet republics, Eritrea is very young, and that some are countries that ceased to exist shortly after the start point of the data. What are the other extremum? What countries have had more than 50 leaders?</p>
 <pre class="r"><code>Shorty %&gt;% filter(count &gt; 50) %&gt;%   ggplot(aes(x=idacr, y=count, label=idacr, fill=cut_interval(count, 5))) + geom_label(color=&quot;white&quot;) + scale_fill_colorblind(guide=FALSE) + theme_minimal() + ggtitle(&quot;Countries with More than 50 Leaders&quot;) + labs(x=&quot;&quot;, y=&quot;Number of Leaders&quot;) + theme(axis.text.x = element_blank())</code></pre>
-<p><img src="/post/2019-04-14-visualisation-with-archigos-leaders-of-the-world/index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 <p>France, Greece, Japan, and Switzerland have had a large number of leaders during this period. All of the top 50 are in Europe or Latin America, save Japan. What does the overall data look like?</p>
 <pre class="r"><code>ggplot(data = Shorty) +
     aes(x = count) +
@@ -576,13 +565,13 @@ skimr::skim(Shorty)</code></pre>
          y = &#39;Number of Countries&#39;,
          caption = &#39;data from Archigos&#39;) +
     theme_economist_white()</code></pre>
-<p><img src="/post/2019-04-14-visualisation-with-archigos-leaders-of-the-world/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 </div>
 <div id="on-duration" class="section level2">
 <h2>On Duration</h2>
 <pre class="r"><code>Archigos %&gt;% mutate(Duration = difftime(enddate, startdate, units=&quot;weeks&quot;)/52) %&gt;% ggplot(aes(Duration)) + geom_histogram(bins=50, fill = &#39;#9c179e&#39;) + theme_economist_white() + labs(y=&quot;Frequency&quot;, x=&quot;Tenure of Leader in Weeks [divided by 52]&quot;)</code></pre>
 <pre><code>## Don&#39;t know how to automatically pick scale for object of type difftime. Defaulting to continuous.</code></pre>
-<p><img src="/post/2019-04-14-visualisation-with-archigos-leaders-of-the-world/index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 </div>
 <div id="who-leads-longest" class="section level2">
 <h2>Who leads longest?</h2>
@@ -606,7 +595,7 @@ skimr::skim(Shorty)</code></pre>
 <h2>What happens to leaders?</h2>
 <p>The data includes the post tenure fate of all leaders. For now, I will take the data and build a bar graph of their fates as they are recorded.</p>
 <pre class="r"><code>Archigos %&gt;% ggplot(., aes(posttenurefate)) + geom_bar(fill=&quot;purple&quot;) + coord_flip() + labs(y=&quot;Frequency&quot;, x=&quot;&quot;) + theme(axis.text.y = element_text(color = &quot;purple&quot;, size = 8))</code></pre>
-<p><img src="/post/2019-04-14-visualisation-with-archigos-leaders-of-the-world/index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 </div>
 <div id="discrete-annual-data" class="section level2">
 <h2>Discrete Annual Data</h2>
@@ -617,10 +606,11 @@ Archigos &lt;- Archigos %&gt;% mutate(ExitAge = endYear - YearBorn)</code></pre>
 <h3>How Old are Leaders When They Exit?</h3>
 <p>The smooth of these values is messy, but I will plot a simple static graph.</p>
 <pre class="r"><code>Archigos %&gt;% filter(ExitAge &gt; 12) %&gt;% group_by(ExitAge) %&gt;% summarise(countS=n()) %&gt;% ggplot(., aes(x=ExitAge, y=countS))+ geom_point() + geom_smooth(method = &quot;loess&quot;, span=0.25) + labs(title=&quot;Age at End of Tenure&quot;, x=&quot;Age in Years&quot;, y=&quot;Count&quot;) </code></pre>
-<p><img src="/post/2019-04-14-visualisation-with-archigos-leaders-of-the-world/index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<pre><code>## `geom_smooth()` using formula &#39;y ~ x&#39;</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 <p>Or as a barplot.</p>
 <pre class="r"><code>Archigos %&gt;% filter(ExitAge &gt; 12) %&gt;% ggplot(., aes(x=ExitAge, fill=cut_number(ExitAge, n=5))) + geom_bar() + scale_fill_viridis_d(guide=FALSE) + labs(title=&quot;Age at End of Tenure&quot;, x=&quot;Age in Years&quot;, y=&quot;Count&quot;) </code></pre>
-<p><img src="/post/2019-04-14-visualisation-with-archigos-leaders-of-the-world/index_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 </div>
 <div id="yearly-turnovers" class="section level3">
 <h3>Yearly Turnovers</h3>
@@ -630,7 +620,7 @@ YearlyD$label &lt;- emoji(&quot;pencil2&quot;)
 p &lt;- YearlyD %&gt;% ggplot(., aes(x=endYear, y=Endeds, label=label, colour=&quot;steelblue&quot;)) + geom_text(family=&quot;EmojiOne&quot;, size=10, position=position_nudge(x = 5, y = 5), color=&quot;steelblue&quot;) + geom_line(colour=&quot;steelblue&quot;) + theme_minimal() + labs(x=&quot;Year&quot;, y=&quot;Number of Leader-Tenures Ending&quot;)
 panim &lt;- p +  transition_reveal(endYear)
 animate(panim, nframes=200)</code></pre>
-<p><img src="/post/2019-04-14-visualisation-with-archigos-leaders-of-the-world/index_files/figure-html/unnamed-chunk-13-1.gif" /><!-- --></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-13-1.gif" /><!-- --></p>
 <p><code>gganimate</code> is a very neat tool. Now on to looking at what is happening at the country year and year level. In some ways, the previous is deceiving because the number of countries is widely varying over time. I build the country year and leader year data in the beginning. I will just recreate the Archigos version with the new variables that we have created in the interim.</p>
 <pre class="r"><code>Archigos &lt;- Archigos %&gt;% mutate(startYear = year(startdate), endYear = year(enddate))
 DI &lt;- dim(Archigos)[[1]]
@@ -652,7 +642,7 @@ Shorty2$label &lt;- emoji(&quot;pencil2&quot;)
 p &lt;- Shorty2 %&gt;% ggplot(., aes(x=year, y=FailRate, label=label, colour=&#39;steelblue&#39;)) + geom_text(family=&quot;EmojiOne&quot;, size=10, position=position_nudge(x = 5, y = 0.03), color=&#39;steelblue&#39;) + geom_line(color=&#39;steelblue&#39;) + theme_minimal() + labs(x=&quot;Year&quot;, y=&quot;Proportion of Leaders Ending&quot;) + ylim(c(0,0.5))
 panim &lt;- p +  transition_reveal(year)
 animate(panim, nframes=200)</code></pre>
-<p><img src="/post/2019-04-14-visualisation-with-archigos-leaders-of-the-world/index_files/figure-html/unnamed-chunk-15-1.gif" /><!-- --></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-15-1.gif" /><!-- --></p>
 </div>
 </div>
 <div id="averaging-turnover" class="section level2">
@@ -661,9 +651,8 @@ animate(panim, nframes=200)</code></pre>
 <pre class="r"><code>library(ggrepel)
 PlotSet &lt;- Keepers %&gt;% filter(year&gt;1874 &amp; year &lt; 2015) %&gt;% group_by(idacr) %&gt;% summarise(Turnover.Pct = mean(Event)) %&gt;% arrange(desc(Turnover.Pct)) %&gt;% mutate(id=row_number(), facetID = cut_number(Turnover.Pct, n=4)) 
 NameAbb &lt;- iisystem %&gt;% select(idacr, CountryName)
-PlotSet &lt;- PlotSet %&gt;% left_join(NameAbb, by=c(&quot;idacr&quot;=&quot;idacr&quot;))</code></pre>
-<pre><code>## Warning: Column `idacr` has different attributes on LHS and RHS of join</code></pre>
-<pre class="r"><code>knitr::kable(PlotSet)</code></pre>
+PlotSet &lt;- PlotSet %&gt;% left_join(NameAbb, by=c(&quot;idacr&quot;=&quot;idacr&quot;))
+knitr::kable(PlotSet)</code></pre>
 <table>
 <thead>
 <tr class="header">
@@ -2093,7 +2082,7 @@ PlotSet &lt;- PlotSet %&gt;% left_join(NameAbb, by=c(&quot;idacr&quot;=&quot;ida
 </table>
 <p>Now a picture.</p>
 <pre class="r"><code>PlotSet %&gt;% ggplot(., aes(x=Turnover.Pct)) + geom_histogram(fill=&quot;purple&quot;, binwidth=0.05) + ggtitle(&quot;Turnover by Country&quot;)</code></pre>
-<p><img src="/post/2019-04-14-visualisation-with-archigos-leaders-of-the-world/index_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
 <p>Switzerland turnover is 1.</p>
 </div>
 <div id="the-fun-stuff-durations" class="section level2">
@@ -2106,9 +2095,9 @@ PlotSet &lt;- PlotSet %&gt;% left_join(NameAbb, by=c(&quot;idacr&quot;=&quot;ida
 <pre class="r"><code>Full.LTS$spell &lt;- Full.LTS$year - Full.LTS$startYear
 p &lt;- Full.LTS %&gt;% filter(!is.na(posttenurefate)) %&gt;% mutate(howEndedF = factor(posttenurefate)) %&gt;% ggplot(aes(x=spell)) + geom_density(aes(color=howEndedF)) + scale_color_viridis_d(guide=FALSE)+ theme_minimal() + labs(title=&quot;How Long Do Leaders Last Given Fates?&quot;, x=&quot;Leader Duration in Years&quot;) 
 p</code></pre>
-<p><img src="/post/2019-04-14-visualisation-with-archigos-leaders-of-the-world/index_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
 <p>Animate it.</p>
 <pre class="r"><code>panim &lt;- Full.LTS %&gt;% filter(!is.na(posttenurefate)) %&gt;% mutate(howEndedF = factor(posttenurefate)) %&gt;% ggplot(aes(x=spell)) + geom_density(aes(color=howEndedF, fill=howEndedF)) + scale_color_viridis_d(guide=FALSE) + scale_fill_viridis_d(guide=FALSE) + theme_minimal() + labs(title=&quot;How Long Do Leaders Last Given Fates?&quot;, subtitle = &quot;Ended in: {closest_state}&quot;, x=&quot;Leader Duration in Years&quot;) + transition_states(howEndedF, transition_length = 10, state_length = 40) + enter_fade() + exit_fade()
 animate(panim, nframes=400)</code></pre>
-<p><img src="/post/2019-04-14-visualisation-with-archigos-leaders-of-the-world/index_files/figure-html/unnamed-chunk-19-1.gif" /><!-- --></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-19-1.gif" /><!-- --></p>
 </div>
