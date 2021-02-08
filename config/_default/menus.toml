@@ -15,7 +15,7 @@
 
 [[main]]
   name = "Posts"
-  url = "#posts"
+  url = "https://rww-science.website"
   weight = 20
 
 [[main]]

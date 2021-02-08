@@ -1,15 +1,15 @@
 ---
-authors:
+authors: 
 - admin
-bio: My research interests include causal inference, statistical computation and data
-  visualisation.
+- RWW
+bio: My research interests include causal inference, statistical computation and data visualization.
 education:
   courses:
   - course: PhD in Political Science
     institution: University of Rochester
     year: 2005
   - course: MA in Political Science
-    institution: Universty of Rochester
+    institution: University of Rochester
     year: 2002
   - course: BA in Post-Soviet and East European Studies
     institution: University of Texas at Austin

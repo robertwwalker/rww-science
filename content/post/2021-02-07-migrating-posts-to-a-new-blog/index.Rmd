@@ -1,0 +1,25 @@
+---
+# Documentation: https://sourcethemes.com/academic/docs/managing-content/
+
+title: "Migrating Posts to a New Blog"
+subtitle: ""
+summary: ""
+authors: ["RWW"]
+author: RWW
+date: '2021-02-08'
+slug: migrating-posts-new-blog
+categories: ["R"]
+tags: []
+featured: false
+draft: false
+image:
+  caption: ""
+  focal_point: ""
+  preview_only: false
+projects: []
+---
+
+My new blog will be [rww-science.website](https://rww-science.website).
+
+I am going to host the blogdown part under a new url.  All of the content in one static site was never something that I complete thought through and making it a bit more modular makes sense on a whole bunch of levels.  Besides, new versions of Hugo have made it far easier to do a variety of things than it was when this started in 2018 and I would like to take advantage of a lot of new features in an updated blog.
+
