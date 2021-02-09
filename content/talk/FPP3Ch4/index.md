@@ -1,14 +1,14 @@
 +++
-date = 2020-04-20T15:00:00  # Schedule page publish date.
+date = 2021-01-12T00:00:00  # Schedule page publish date.
 
-title = "flipbookr meets a ggplot"
-time_start = 2020-09-17T10:30:00
-time_end = 2020-09-17T12:30:00
-abstract = "Basic ggplot one step at a time."
-abstract_short = "ggflipbook"
-event = "AGSM 5103"
+title = "Forecasting: FEASTS and Features"
+time_start = 2021-02-05T18:00:00
+time_end = 2021-02-05T22:00:00
+abstract = "Feature Extraction for Time Series using FEASTS"
+abstract_short = "FEASTS"
+event = "MBAP"
 event_url = "https://agsm.willamette.edu"
-location = "Salem, OR USA"
+location = "Portland, OR USA"
 
 # Is this a selected talk? (true/false)
 selected = false
@@ -16,11 +16,11 @@ selected = false
 # Projects (optional).
 #   Associate this talk with one or more of your projects.
 #   Simply enter the filename (excluding '.md') of your project file in `content/project/`.
-projects = []
+projects = [""]
 
 # Links (optional).
 url_pdf = ""
-url_slides = "https://rww.science/xaringan/ggsc/"
+url_slides = "https://rww.science/xaringan/CH4HA/index.html"
 url_video = ""
 url_code = ""
 
@@ -33,10 +33,9 @@ highlight = true
 # Featured image
 # Place your image in the `static/img/` folder and reference its filename below, e.g. `image = "example.jpg"`.
 [header]
-image = "headers/bubbles-wide.jpg"
+image = "headers/wuagsm.jpg"
 caption = ":smile:"
 
 +++
 
-Slides in [xaringan](https://rww.science/xaringan/flipbookgg/) :smile:
-
+We will explore the most common decompositions in forecasting following Chapter 4 of HA.  Slides in [xaringan](https://rww.science/xaringan/CH4HA/index.html)
