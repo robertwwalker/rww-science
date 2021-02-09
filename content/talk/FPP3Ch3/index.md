@@ -1,5 +1,5 @@
 +++
-date = 2021-01-12T00:00:00  # Schedule page publish date.
+date = 2021-01-11T00:00:00  # Schedule page publish date.
 
 title = "Forecasting: Decompositions"
 time_start = 2021-01-29T18:00:00
