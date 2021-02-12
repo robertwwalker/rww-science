@@ -1,0 +1,26 @@
+---
+title: "A Basic and Common Time Series Reshaping"
+author: "RWW"
+date: "1/22/2021"
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<div id="a-bit-on-equities" class="section level2">
+<h2>A bit on equities</h2>
+<p>Some equities data is available from tidyquant.</p>
+<pre class="r"><code>Ford &lt;- tq_get(&quot;F&quot;, from=&quot;2019-01-01&quot;)
+FordT &lt;- Ford %&gt;% as_tsibble(index=date)
+FPT &lt;- FordT %&gt;% autoplot(adjusted)</code></pre>
+</div>
+<div id="a-transformation" class="section level2">
+<h2>A Transformation</h2>
+<p>I want to show this as both the time series and as the returns – the far more common method for analysing them.</p>
+<pre class="r"><code>FC &lt;- Ford %&gt;% tq_transmute(adjusted, mutate_fun = periodReturn, period = &quot;daily&quot;)
+FCT &lt;- FC %&gt;% as_tsibble(., index=date) %&gt;% autoplot(daily.returns)</code></pre>
+<p>What do they look like together?</p>
+<pre class="r"><code>library(patchwork)
+FPT + FCT</code></pre>
+<p><img src="/courses/DATA521/Equities/Equities_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+</div>

@@ -1,0 +1,38 @@
+---
+title: "Employment"
+author: "RWW"
+date: "2/5/2021"
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<div id="r-markdown" class="section level2">
+<h2>R Markdown</h2>
+<p>You will need to create a FRED api login.</p>
+<pre class="r"><code>library(fredr); library(tidyverse); library(fpp3)</code></pre>
+<pre><code>## ── Attaching packages ─────────────────────────────────────── tidyverse 1.3.0 ──</code></pre>
+<pre><code>## ✓ ggplot2 3.3.3     ✓ purrr   0.3.4
+## ✓ tibble  3.0.6     ✓ dplyr   1.0.4
+## ✓ tidyr   1.1.2     ✓ stringr 1.4.0
+## ✓ readr   1.4.0     ✓ forcats 0.5.1</code></pre>
+<pre><code>## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()</code></pre>
+<pre><code>## ── Attaching packages ────────────────────────────────────────────── fpp3 0.3 ──</code></pre>
+<pre><code>## ✓ lubridate   1.7.9.2     ✓ feasts      0.1.6  
+## ✓ tsibble     0.9.3       ✓ fable       0.3.0  
+## ✓ tsibbledata 0.2.0</code></pre>
+<pre><code>## ── Conflicts ───────────────────────────────────────────────── fpp3_conflicts ──
+## x lubridate::date()   masks base::date()
+## x dplyr::filter()     masks stats::filter()
+## x tsibble::interval() masks lubridate::interval()
+## x dplyr::lag()        masks stats::lag()</code></pre>
+<pre class="r"><code>NFP &lt;- c(&quot;PAYNSA&quot;,&quot;PAYEMS&quot;) %&gt;% map_dfr(., fredr_series_observations) %&gt;% mutate(YM=yearmonth(date)) %&gt;% as_tsibble(., index=YM, key=series_id)</code></pre>
+</div>
+<div id="seasonal-adjustment" class="section level2">
+<h2>Seasonal Adjustment?</h2>
+<pre class="r"><code>NFP %&gt;% filter(YM &gt; yearmonth(&quot;2019-01&quot;)) %&gt;% autoplot() + labs(y=&quot;Employment in Thousands&quot;)</code></pre>
+<pre><code>## Plot variable not specified, automatically selected `.vars = value`</code></pre>
+<p><img src="/courses/DATA521/fredr-employment/fredr-employment_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+</div>

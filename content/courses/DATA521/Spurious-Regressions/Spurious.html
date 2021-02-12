@@ -1,0 +1,44 @@
+---
+title: "Spurious Regressions"
+author: "RWW"
+date: "1/15/2021"
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<div id="regression-basics" class="section level2">
+<h2>Regression Basics</h2>
+<p>A regression of two completely random variables, in this case normal, should result in about 5% of t-statistics with p-values less than 0.05. This is the basis for the interpretation of a p-value; how often would we see something this extreme or even more extreme randomly?</p>
+<pre class="r"><code>NReg &lt;- function(junk) {
+y1 &lt;- rnorm(200)
+y2 &lt;- rnorm(200)
+return(summary(lm(y1~y2))$coefficients[2,4])
+}
+NReg.Result &lt;- data.frame(Res=sapply(1:1000, function(x) {NReg(x)}))
+table(NReg.Result$Res &lt; 0.05)</code></pre>
+<pre><code>## 
+## FALSE  TRUE 
+##   949    51</code></pre>
+<p>Checks out.</p>
+</div>
+<div id="regressions-of-cumulated-time-series" class="section level2">
+<h2>Regressions of Cumulated Time Series</h2>
+<pre class="r"><code>Spurious &lt;- function(junk) {
+y1 &lt;- cumsum(rnorm(200))
+y2 &lt;- cumsum(rnorm(200))
+return(summary(lm(y1~y2))$coefficients[2,4])
+}
+Spurious.Result &lt;- data.frame(Res=sapply(1:1000, function(x) {Spurious(x)}))</code></pre>
+<p>Finally, let’s plot the p-values.</p>
+<pre class="r"><code>Spurious.Result %&gt;% ggplot(., aes(x=Res)) + geom_histogram(bins=20)</code></pre>
+<p><img src="/courses/DATA521/Spurious-Regressions/Spurious_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p>This is unexpected. Over 80% are less than 0.05. Let’s understand a bit of why. What does a series from each look like?</p>
+</div>
+<div id="example-series" class="section level2">
+<h2>Example Series</h2>
+<pre class="r"><code>par(mfrow=c(2,1))
+plot(seq(1,1000), rnorm(1000), type=&quot;l&quot;)
+plot(seq(1,1000), cumsum(rnorm(1000)), type=&quot;l&quot;)</code></pre>
+<p><img src="/courses/DATA521/Spurious-Regressions/Spurious_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>

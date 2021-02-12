@@ -1,0 +1,155 @@
+---
+title: "fredr is neat"
+author: "Robert W. Walker"
+date: "2021-02-12"
+output:
+  rmdformats::readthedown:
+    highlight: kate
+    self_contained: true
+    code_folding: hide
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<div id="fred-via-fredr" class="section level1">
+<h1>FRED via <code>fredr</code></h1>
+<p>The Federal Reserve Economic Database [FRED] is a wonderful public resource for data and the r api that connects to it is very easy to use for the things that I have previously needed. For example, one of my students was interested in commercial credit default data. I used the FRED search instructions from the following vignette to find that data. My first step was the <a href="https://cran.r-project.org/web/packages/fredr/vignettes/fredr.html">vignette for using <code>fredr</code></a>. Some library lines give me tools.</p>
+<pre class="r"><code>library(fredr)
+library(purrr)
+library(dplyr)
+library(ggplot2)
+library(gifski)</code></pre>
+</div>
+<div id="searching" class="section level1">
+<h1>Searching</h1>
+<p><code>fredr</code> has a search capability. Let’s see what we can find; I will look at real estate charge offs.</p>
+<pre class="r"><code>ChargeOff &lt;- fredr_series_search_text(
+  search_text = &quot;real estate charge offs&quot;,
+  order_by = &quot;popularity&quot;,
+  sort_order = &quot;desc&quot;)
+ChargeOff %&gt;% select(title)</code></pre>
+<pre><code># A tibble: 24 x 1
+   title                                                                        
+   &lt;chr&gt;                                                                        
+ 1 Charge-Off Rate on Commercial Real Estate Loans (Excluding Farmland), Booked…
+ 2 Charge-Off Rate on Loans Secured by Real Estate, All Commercial Banks        
+ 3 Charge-Off Rate on Commercial Real Estate Loans (Excluding Farmland), Booked…
+ 4 Net Charge-Offs on All Loans and Leases, Secured by Real Estate, Single Fami…
+ 5 Charge-Off Rate on Commercial Real Estate Loans (Excluding Farmland), Booked…
+ 6 Charge-Off Rate on Commercial Real Estate Loans (Excluding Farmland), Booked…
+ 7 Net Charge-Offs on All Loans and Leases, Secured by Real Estate, Single Fami…
+ 8 Net Charge-Offs on All Loans and Leases, Secured by Real Estate, Commercial …
+ 9 Charge-Off Rate on Loans Secured by Real Estate, All Commercial Banks        
+10 Net Charge-Offs on All Loans and Leases, Secured by Real Estate, All Commerc…
+# … with 14 more rows</code></pre>
+<p>Wow, there is a rich array of data from that query.</p>
+</div>
+<div id="using-the-map_-functions" class="section level1">
+<h1>Using the <code>map_*</code> functions</h1>
+<p>An even cooler feature is the ability to retrieve multiple at once in combination with the <code>map_dfr</code> command from the <code>purrr</code> library to make it tidy; that will go through the search results and stack the data that is returned [bind it together by rows]. These map commands are the tidy version of apply. In this case, binding the columns will likely fail because the times series are unlikely to be of the same length and that would create ragged columns. Better tidy from the start here.</p>
+<pre class="r"><code>library(stringr)
+ChargeOff.Data &lt;- map_dfr(ChargeOff$id, fredr) %&gt;% left_join(ChargeOff, by=c(&quot;series_id&quot; = &quot;id&quot;))</code></pre>
+<p>Just to finish one piece, let me show what these data look like for one series. Splitting the name into two parts gives us the title and subtitle but the split is inconsistent so the solution is not general.</p>
+<pre class="r"><code>ChargeOff.Short &lt;- ChargeOff.Data %&gt;% filter(series_id==&quot;CORSREOBS&quot;) 
+SeriesTitle &lt;- ChargeOff.Short[1,&quot;title&quot;] %&gt;% str_split(., &quot;[,]&quot;) %&gt;% unlist()
+ChargeOff.Short %&gt;% ggplot(data = ., mapping = aes(x = date, y = value)) +
+    geom_line() +
+    labs(x = &quot;Date&quot;, y = &quot;Rate&quot;, title=SeriesTitle[[1]], subtitle = SeriesTitle[[2]] )</code></pre>
+<p><img src="/courses/DATA521/FRED/fredr-2_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+<div id="counties-and-mapping" class="section level2">
+<h2>Counties and Mapping</h2>
+<p>When I was setting up <code>fredr</code>, I came across some data on subprime credit percentages. The data that I need for what I want to do is not obvious from the vignette and it turns out that this data is stored in a rather inconvenient fashion.</p>
+<pre><code># A tibble: 1 x 1
+  id                
+  &lt;chr&gt;             
+1 EQFXSUBPRIME036061</code></pre>
+<p>The way that these are organized in FRED is going to make this a mess. The series_id actually contains data. Every data vector is stored as the series name and a FIPS code embdeded. The FIPS code is likely to be the last five characters/numbers. Fun. My other limitation is that I am only seeing 1000 of 3000+ counties. That’s a limit of the API. I am going to have to do this a bit differently. I am going to work backward. I have access to the full set of county fips codes so I think that I can build the dataset to query. Here goes.</p>
+<pre class="r"><code>library(readr)
+CFIPS &lt;- read_delim(url(&quot;https://github.com/robertwwalker/academic-mymod/raw/master/data/COUNTYFIPS.txt&quot;), &quot;\t&quot;, escape_double = FALSE, trim_ws = TRUE)
+head(CFIPS)</code></pre>
+<pre><code># A tibble: 6 x 3
+  FIPS  Name    State
+  &lt;chr&gt; &lt;chr&gt;   &lt;chr&gt;
+1 01001 Autauga AL   
+2 01003 Baldwin AL   
+3 01005 Barbour AL   
+4 01007 Bibb    AL   
+5 01009 Blount  AL   
+6 01011 Bullock AL   </code></pre>
+<p>That is all the FIPS codes that I will need. To create a new character vector for the data, it should just be a new column. From above, I know the names. Let me just concatenate the names to the FIPS code.</p>
+<pre class="r"><code>CFIPS$series_id &lt;- as.character(paste0(&quot;EQFXSUBPRIME0&quot;,CFIPS$FIPS))</code></pre>
+<p>Now for the moment of truth; I will only try this for Oregon.</p>
+<pre class="r"><code>SubPrime.OR &lt;- CFIPS %&gt;% filter(State==&quot;OR&quot;) %&gt;% select(series_id) %&gt;% unlist() %&gt;% map_dfr(., fredr)
+SubPrime.OR &lt;- left_join(SubPrime.OR, CFIPS, by=&quot;series_id&quot;)
+SubPrime.OR %&gt;% ggplot(aes(x=date, y=value, colour=series_id)) +
+  geom_line() + theme(legend.position=&quot;none&quot;) + ggtitle(&quot;The Subprime Credit Rate Across Oregon Counties&quot;)</code></pre>
+<p><img src="/courses/DATA521/FRED/fredr-2_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>Now I have something to work with. Just to show what <code>gganimate</code> can do; I will animate that.</p>
+<pre class="r"><code>library(gganimate)
+library(ggrepel)
+library(tidyr)
+pl2 &lt;- SubPrime.OR %&gt;% ggplot(aes(x=date, y=value, colour=series_id)) +
+  geom_line() + 
+  geom_point(aes(group=series_id)) +
+  geom_text_repel(aes(y = value, x = as.Date(&quot;2019-01-01&quot;), label = Name), hjust = 1, nudge_x = 8) + theme(legend.position=&quot;none&quot;) + labs(title=&#39;The Subprime Credit Rate Across Oregon Counties: {frame_along}&#39;, y =&quot;Subprime Rate&quot;) +
+  transition_reveal(date)
+animate(pl2)</code></pre>
+<p><img src="/courses/DATA521/FRED/fredr-2_files/figure-html/ba1-1.gif" /><!-- --></p>
+<p>My goal here is to build an animation of the map of this. So here goes.</p>
+<pre class="r"><code>states &lt;- map_data(&quot;state&quot;)
+OR.df &lt;- subset(states, region == &quot;oregon&quot;)
+OR_base &lt;- ggplot(data = OR.df, mapping = aes(x = long, y = lat, group = group)) +
+geom_polygon(color = &quot;black&quot;, fill = &quot;gray&quot;)+ theme_minimal() 
+OR_base + geom_point(aes(x=-123.0433, y=44.925167))</code></pre>
+<p><img src="/courses/DATA521/FRED/fredr-2_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<pre class="r"><code>library(emoGG)
+counties &lt;- map_data(&quot;county&quot;)
+OR.county &lt;- subset(counties, region == &quot;oregon&quot;)
+OR.Map &lt;- ggplot(data = OR.df, mapping = aes(x = long, y = lat, group = group)) + 
+    geom_polygon(color = &quot;black&quot;, fill = &quot;gray&quot;)+ theme_minimal() 
+OR_emoj &lt;- OR_base +  add_emoji(&quot;1f352&quot;, x=-123.0433, y=44.925167, ysize=0.5)
+OR_emoj</code></pre>
+<p><img src="/courses/DATA521/FRED/fredr-2_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p>Now to build a first map to make sure that it works.</p>
+<pre class="r"><code>library(maps)
+county.fips$fips &lt;- as.character(county.fips$fips)
+SubPrime.M &lt;- left_join(SubPrime.OR, county.fips, by=c(&quot;FIPS&quot;=&quot;fips&quot;))
+SubPrime.M &lt;- SubPrime.M %&gt;% separate(., polyname, c(&quot;region&quot;,&quot;subregion&quot;), sep=&quot;,&quot;)
+SubPrime.M %&gt;% filter(date==&quot;1999-01-01&quot;) -&gt; OneYear
+OR.MD &lt;- inner_join(OR.county, OneYear, by = &quot;subregion&quot;)</code></pre>
+<p>One of my favortite bits of code from I do not know where:</p>
+<pre class="r"><code>ditch_the_axes &lt;- theme(
+  axis.text = element_blank(),
+  axis.line = element_blank(),
+  axis.ticks = element_blank(),
+  panel.border = element_blank(),
+  panel.grid = element_blank(),
+  axis.title = element_blank()
+  )</code></pre>
+<p>Now to a single map.</p>
+<pre class="r"><code>Polt1 &lt;- OR.Map + 
+      geom_polygon(data = OR.MD, aes(fill = value), color=&quot;white&quot;) +
+#      geom_polygon(color = &quot;black&quot;, fill = NA) +
+      theme_bw() +
+      ditch_the_axes +
+      ggtitle(&quot;Subprime Credit Percentages by County&quot;)
+Polt1</code></pre>
+<p><img src="/courses/DATA521/FRED/fredr-2_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p>Now for the general case. Same merge but with all the data.</p>
+<pre class="r"><code>OR.MD2 &lt;- left_join(SubPrime.M, OR.county, by = &quot;subregion&quot;)
+OR.MD2 &lt;- OR.MD2 %&gt;% mutate(Subprime.Pct = value)</code></pre>
+<p>Here goes.</p>
+<pre class="r"><code>library(viridis)
+# ggplot(data = OR.MD2, mapping = aes(x = long, y = lat, group = group)) +
+p &lt;- OR.Map +
+  geom_polygon(data=OR.MD2, aes(x = long, y = lat, group = subregion, fill = Subprime.Pct), color=&quot;white&quot;) +
+  viridis::scale_fill_viridis(option=&quot;C&quot;) +   
+  ditch_the_axes +
+  labs(title = &#39;Subprime Credit Percentage by Quarter: {closest_state}&#39;) +
+  transition_states(date, transition_length = 3, state_length = 3)
+ggp &lt;- animate(p, nframes = 300)
+ggp</code></pre>
+<p><img src="/courses/DATA521/FRED/fredr-2_files/figure-html/ggp1-1.gif" /><!-- --></p>
+</div>
+</div>

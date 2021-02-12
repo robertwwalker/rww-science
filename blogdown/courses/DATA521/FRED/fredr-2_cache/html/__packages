@@ -1,0 +1,17 @@
+base
+knitr
+rmdformats
+fredr
+purrr
+dplyr
+ggplot2
+gifski
+stringr
+readr
+gganimate
+ggrepel
+tidyr
+emoGG
+maps
+viridisLite
+viridis

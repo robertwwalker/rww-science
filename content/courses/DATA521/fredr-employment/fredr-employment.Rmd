@@ -1,0 +1,25 @@
+---
+title: "Employment"
+author: "RWW"
+date: "2/5/2021"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+You will need to create a FRED api login.
+
+```{r}
+library(fredr); library(tidyverse); library(fpp3)
+NFP <- c("PAYNSA","PAYEMS") %>% map_dfr(., fredr_series_observations) %>% mutate(YM=yearmonth(date)) %>% as_tsibble(., index=YM, key=series_id)
+```
+
+## Seasonal Adjustment?
+
+
+```{r}
+NFP %>% filter(YM > yearmonth("2019-01")) %>% autoplot() + labs(y="Employment in Thousands")
+```

@@ -1,0 +1,74 @@
+---
+title: "A Basic and Common Time Series Reshaping"
+author: "RWW"
+date: "1/14/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+## Common Time Series Data Arrangments
+
+I want to display common forms for time series data.  These data are used in Hyndman's text.  For example,
+
+### Durations
+
+Data on the age of death of successive kings of England, starting with William the Conqueror (original source: Hipel and Mcleod, 1994).  This is not what we normally think of as time series data because the index is not time.
+
+```{r}
+kings <- scan("http://robjhyndman.com/tsdldata/misc/kings.dat",skip=3)
+kings.TS <- ts(kings)
+kings.TS
+```
+
+```{r}
+plot(kings.TS, xlab="King [starting with WtC]", ylab="Age at Death")
+```
+
+
+### A Sequence
+
+Let's look at some data on the number of births per month in New York city, from January 1946 to December 1959 (originally collected by Newton).  It is a sequence with a known starting point: January, 1946.
+
+```{r cars}
+births <- scan("http://robjhyndman.com/tsdldata/data/nybirths.dat")
+births
+```
+Incorporating the starting point can be done in base R by declaring the time frequency and the start point.
+
+```{r}
+births.TS <- ts(births, frequency=12, start=c(1946,1))
+births.TS
+```
+
+## a default plot
+
+```{r}
+plot(births.TS, bty="n", ylab="Births")
+```
+
+
+## a ggplot
+
+```{r, message=FALSE, warning=FALSE}
+ggp.birth <- data.frame(births=births.TS, time=time(births.TS))
+ggplot(ggp.birth) + 
+  aes(x=time, y=births) + 
+  geom_line() + 
+  theme_minimal() + 
+  labs(x="Time", y="Births")
+```
+
+## `ggfortify`
+
+A handy reference for `ggfortify` and the integration of *ts* objects can be found in the [vignette](https://cran.r-project.org/web/packages/ggfortify/vignettes/plot_ts.html).
+
+```{r}
+library(ggfortify)
+autoplot(births.TS) + 
+  theme_dark()  + 
+  labs(x="Time", y="Births")
+```

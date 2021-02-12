@@ -1,0 +1,39 @@
+---
+title: "A Basic and Common Time Series Reshaping"
+author: "RWW"
+date: "1/22/2021"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(tidyquant)
+library(fpp3)
+```
+
+## A bit on equities
+
+Some equities data is available from tidyquant.
+
+```{r}
+Ford <- tq_get("F", from="2019-01-01")
+FordT <- Ford %>% as_tsibble(index=date)
+FPT <- FordT %>% autoplot(adjusted)
+```
+
+## A Transformation
+
+I want to show this as both the time series and as the returns -- the far more common method for analysing them.
+
+```{r}
+FC <- Ford %>% tq_transmute(adjusted, mutate_fun = periodReturn, period = "daily")
+FCT <- FC %>% as_tsibble(., index=date) %>% autoplot(daily.returns)
+```
+
+What do they look like together?
+
+```{r}
+library(patchwork)
+FPT + FCT
+```
+
