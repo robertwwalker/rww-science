@@ -24,6 +24,13 @@ Software:
 
 # Slides
 
+
+complete week 4 data for week 5:
+```
+load(url("https://github.com/robertwwalker/DADMStuff/raw/master/Ch4HA.RData"))
+```
+
++ [Slides for Week 5](https://rww.science/xaringan/CH5HA/index.html)  
 + [Slides for Week 4](https://rww.science/xaringan/CH4HA/index.html)  
 + [Slides for Week 3](https://rww.science/xaringan/CH3HA/index.html)  
 + [Partial slides for Week 1](https://rww.science/xaringan/tidyDS/tidy.html)  
