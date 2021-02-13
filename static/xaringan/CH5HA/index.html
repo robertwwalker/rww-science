@@ -1,0 +1,1249 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>A Forecasting Workflow</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Robert W. Walker" />
+    <meta name="date" content="2021-02-12" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <script src="libs/kePrint/kePrint.js"></script>
+    <link href="libs/lightable/lightable.css" rel="stylesheet" />
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# A Forecasting Workflow
+## FPP3, Chapter 5
+### Robert W. Walker
+### AGSM
+### 2021-02-12
+
+---
+
+
+
+
+
+
+# An Overview
+
+---
+
+## Packages
+
+Getting started
+
+```
+library(tidyverse)
+library(fpp3)
+library(purrr)
+library(gganimate)
+library(seasonal)
+```
+
+
+---
+# A bit on homework
+
+
+```r
+PBS %&gt;% features(Cost, list(mean = mean, sd = sd))  %&gt;% arrange(desc(mean))
+```
+
+```
+## # A tibble: 336 x 6
+##    Concession   Type        ATC1  ATC2       mean        sd
+##    &lt;chr&gt;        &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;     &lt;dbl&gt;     &lt;dbl&gt;
+##  1 Concessional Co-payments C     C10   24845501. 18384824.
+##  2 Concessional Co-payments A     A02   16455044.  7498596.
+##  3 Concessional Co-payments C     C09   15869141.  7038693.
+##  4 Concessional Co-payments R     R03   11945939.  4802822.
+##  5 Concessional Co-payments N     N06   10938864.  6635907.
+##  6 Concessional Co-payments N     N05    9778107.  7684177.
+##  7 General      Co-payments C     C10    8094232.  5193091.
+##  8 Concessional Co-payments J     J01    7725842.  1492648.
+##  9 Concessional Co-payments C     C08    7569233.  2028232.
+## 10 Concessional Safety net  C     C10    7388557. 10170428.
+## # ... with 326 more rows
+```
+
+```r
+PBS %&gt;% features(Cost, list(mean = mean, sd = sd))  %&gt;% arrange(sd)
+```
+
+```
+## # A tibble: 336 x 6
+##    Concession   Type        ATC1  ATC2    mean    sd
+##    &lt;chr&gt;        &lt;chr&gt;       &lt;chr&gt; &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt;
+##  1 General      Co-payments R     R      0      0   
+##  2 General      Co-payments S     S      0      0   
+##  3 General      Co-payments M     M02    0.683  1.40
+##  4 General      Co-payments S     S03    1.30   4.06
+##  5 General      Safety net  R     R      3.11   8.10
+##  6 Concessional Safety net  R     R      6.64  12.6 
+##  7 General      Co-payments A     A15    5.53  12.8 
+##  8 General      Co-payments S     S02    2.82  16.9 
+##  9 Concessional Co-payments R     R     14.8   22.5 
+## 10 Concessional Safety net  J     J06    9.25  39.8 
+## # ... with 326 more rows
+```
+
+---
+# q2
+
+
+```r
+tourism_features &lt;- tourism %&gt;%
+  features(Trips, feature_set(pkgs = "feasts"))
+library(glue)
+tourism_features %&gt;%
+    select_at(vars(contains("season"), c(Purpose, State, Region))) %&gt;%
+    mutate(
+        seasonal_peak_year = glue("Q{seasonal_peak_year+1}"),
+        seasonal_trough_year = glue("Q{seasonal_trough_year+1}"),
+    ) %&gt;% filter(Purpose == "Holiday") %&gt;% ggplot() + aes(x=seasonal_peak_year, facet=State) + geom_bar() + facet_wrap(vars(State))
+```
+
+&lt;img src="index_files/figure-html/unnamed-chunk-2-1.png" width="576" /&gt;
+
+---
+# q3
+
+---
+
+## Features: Summary
+
+
+The features command is the magic tool for tidy summary and statistics for time series in this index/key format.  For example, basic summary
+
+
+```r
+load("USEmployment.RData")
+us_employment %&gt;% data.frame() %&gt;% group_by(Series_ID) %&gt;% summarise(Title = first(Title)) %&gt;% mutate(series_id = Series_ID) %&gt;% ungroup() %&gt;% select(-Series_ID) -&gt; Names.List
+US.Employment.T &lt;- left_join(US.Employment, Names.List, by = c("series_id" = "series_id")) %&gt;% mutate(YM = yearmonth(date)) %&gt;% rename(Employed = value) %&gt;% as_tsibble(., index=YM, key=Title)
+USET &lt;- US.Employment.T %&gt;% filter(YM &gt; yearmonth("1990-01"), Title%in%c("Retail Trade","Financial Activities","Manufacturing")) %&gt;% as_tsibble(., index=YM, key=Title) 
+USET %&gt;% features(Employed, features=list(mean=mean,min=min,max=max,sd=sd,quantile))
+```
+
+```
+## # A tibble: 3 x 10
+##   Title              mean    min    max    sd   `0%`  `25%`  `50%`  `75%` `100%`
+##   &lt;chr&gt;             &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;
+## 1 Financial Activ~  7767.  6472   8846   640.  6472   7363   7876   8226.  8846 
+## 2 Manufacturing    14554. 11340  17870  2241. 11340  12333. 14219  17088  17870 
+## 3 Retail Trade     14746. 12548. 16394.  915. 12548. 14336. 14962. 15387. 16394.
+```
+
+---
+
+### Features: Correlation Features
+
+Learning about the time series properties
+
+
+```r
+USET %&gt;% features(Employed, features=feat_acf)
+```
+
+```
+## # A tibble: 3 x 8
+##   Title     acf1 acf10 diff1_acf1 diff1_acf10 diff2_acf1 diff2_acf10 season_acf1
+##   &lt;chr&gt;    &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;       &lt;dbl&gt;      &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;
+## 1 Financi~ 0.990  8.94     0.283        0.165     -0.313       0.415       0.883
+## 2 Manufac~ 0.995  9.35     0.0466       0.128     -0.499       0.505       0.925
+## 3 Retail ~ 0.951  7.29     0.133        0.377     -0.198       0.305       0.876
+```
+
+```r
+USET %&gt;% group_by(Title) %&gt;% ACF(Employed) %&gt;% autoplot()
+```
+
+&lt;img src="index_files/figure-html/unnamed-chunk-5-1.png" width="576" /&gt;
+
+---
+### For Contrast: Ford Returns
+
+
+```r
+library(tidyquant)
+Ford &lt;- tq_get("F", from="2000-01-01")
+FordT &lt;- Ford %&gt;% as_tsibble(index=date)
+FordT %&gt;% autoplot(adjusted)
+```
+
+&lt;img src="index_files/figure-html/unnamed-chunk-6-1.png" width="576" /&gt;
+
+---
+
+
+```r
+FC &lt;- Ford %&gt;% tq_transmute(adjusted, mutate_fun = periodReturn, period = "monthly") %&gt;% mutate(YM = yearmonth(date)) %&gt;% as_tsibble(., index=YM)
+FC %&gt;% autoplot(monthly.returns)
+```
+
+&lt;img src="index_files/figure-html/unnamed-chunk-7-1.png" width="576" /&gt;
+
+---
+## Ford's ACF
+
+The 6/7 and 12/13 patterns are interesting....
+
+
+```r
+library(patchwork)
+FC1 &lt;- FC %&gt;% ACF(monthly.returns) %&gt;% autoplot()
+FC2 &lt;- FC %&gt;% PACF(monthly.returns) %&gt;% autoplot()
+FC1+FC2
+```
+
+&lt;img src="index_files/figure-html/unnamed-chunk-8-1.png" width="576" /&gt;
+
+---
+
+## Decomposition Features
+
+
+```r
+USET %&gt;% features(Employed, feat_stl)
+```
+
+```
+## # A tibble: 3 x 10
+##   Title trend_strength seasonal_streng~ seasonal_peak_y~ seasonal_trough~
+##   &lt;chr&gt;          &lt;dbl&gt;            &lt;dbl&gt;            &lt;dbl&gt;            &lt;dbl&gt;
+## 1 Fina~          0.999            0.812                6                3
+## 2 Manu~          0.999            0.531                8                3
+## 3 Reta~          0.982            0.824               11                3
+## # ... with 5 more variables: spikiness &lt;dbl&gt;, linearity &lt;dbl&gt;, curvature &lt;dbl&gt;,
+## #   stl_e_acf1 &lt;dbl&gt;, stl_e_acf10 &lt;dbl&gt;
+```
+
+---
+
+## With More Data
+
+
+```r
+NUSET8k &lt;- US.Employment.T %&gt;% data.frame() %&gt;% group_by(Title) %&gt;% summarise(MaxE = max(Employed)) %&gt;% arrange(desc(MaxE)) %&gt;% filter(MaxE &gt; 8000 &amp; MaxE &lt; 120000) 
+USET8k &lt;- left_join(NUSET8k, US.Employment.T) %&gt;% as_tsibble(., index=YM, key=Title)
+```
+
+---
+# An Improvement on the Trend/Season
+
+
+
+&lt;iframe src="st.html" width="800" height="500" seamless="seamless" frameBorder="0"&gt; &lt;/iframe&gt;
+
+---
+
+The details are at the bottom [for other statistics](https://otexts.com/fpp3/stlfeatures.html).
+
+
+```r
+library(kableExtra)
+USET8k %&gt;%
+    features(Employed, feat_stl) %&gt;% knitr::kable(format="html") %&gt;% scroll_box(width = "100%", height = "300px")
+```
+
+&lt;div style="border: 1px solid #ddd; padding: 0px; overflow-y: scroll; height:300px; overflow-x: scroll; width:100%; "&gt;&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;position: sticky; top:0; background-color: #FFFFFF;"&gt; Title &lt;/th&gt;
+   &lt;th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"&gt; trend_strength &lt;/th&gt;
+   &lt;th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"&gt; seasonal_strength_year &lt;/th&gt;
+   &lt;th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"&gt; seasonal_peak_year &lt;/th&gt;
+   &lt;th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"&gt; seasonal_trough_year &lt;/th&gt;
+   &lt;th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"&gt; spikiness &lt;/th&gt;
+   &lt;th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"&gt; linearity &lt;/th&gt;
+   &lt;th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"&gt; curvature &lt;/th&gt;
+   &lt;th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"&gt; stl_e_acf1 &lt;/th&gt;
+   &lt;th style="text-align:right;position: sticky; top:0; background-color: #FFFFFF;"&gt; stl_e_acf10 &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Construction &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.9992344 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.9609181 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 229.8766271 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 53917.767 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -1083.89554 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.5727899 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.5300631 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Durable Goods &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.9942068 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.1901103 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 9 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 7 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3750.8679821 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1297.216 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -40395.39360 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.7459027 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.2253160 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Education and Health Services &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.9998700 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.6981878 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 11 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 7 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8196.8445837 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 217957.384 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 58541.46490 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.5322021 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.6022304 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Education and Health Services: Health Care &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.9990282 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.3143228 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 18072.7192847 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 46027.690 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -433.39830 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.4985224 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.5506820 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Education and Health Services: Health Care and Social Assistance &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.9989230 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.2723145 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 70415.0863382 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 63330.409 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 22.27873 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.5196615 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.6020996 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Financial Activities &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.9999733 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.8640456 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 7 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.7851155 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 78437.507 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -272.33652 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.7198773 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.8848930 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Goods-Producing &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.9962894 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.8047913 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 9 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 12648.5279515 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 43346.420 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -64790.70918 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.7299629 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.0572237 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Government &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.9999110 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.9791623 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 11 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 7 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 466.3720488 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 190943.166 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -19813.98634 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.5978552 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.5534737 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Government: Local Government &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.9998498 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.9846446 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 7 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 361.6591621 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 96009.466 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -15448.65308 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.6392240 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.7131609 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Government: Local Government Education &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.9998035 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.9957586 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 7 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 42.1496509 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 54937.058 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -8478.90619 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.5415432 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.5148335 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Leisure and Hospitality &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.9973560 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.5856421 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 7 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 618138.6017445 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 136403.031 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 22437.16037 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.5241725 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.6176190 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Leisure and Hospitality: Accommodation and Food Services &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.9695570 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.4433255 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 7 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5950597.7985599 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 31625.824 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -1145.29901 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.5008340 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.5518675 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Leisure and Hospitality: Food Services and Drinking Places &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.9741965 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.3712467 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3677463.4844264 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 29897.866 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -367.27495 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.4774776 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.5049604 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Manufacturing &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.9963853 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.4103339 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 9 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 7 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5877.1607931 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -8503.497 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -64156.40673 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.7680516 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.2343823 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Private Service-Providing &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.9996557 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.5175363 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 17071086.3318019 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 906515.882 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 115991.19165 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.5470875 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.6429675 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Professional and Business Services &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.9998321 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.6562861 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 11 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4127.3430793 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 187094.395 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 41549.15807 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.6288984 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.8486224 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Professional and Business Services: Administrative and Support Services &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.9949367 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.7960556 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 11 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 20889.0709374 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 21353.735 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -8020.12234 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.6198112 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.8347590 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Professional and Business Services: Administrative and Waste Services &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.9952160 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.7990821 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 10 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 21933.7465993 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 22523.211 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -8018.84650 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.6203460 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.8420384 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Professional and Business Services: Professional and Technical Services &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.9995486 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.6751413 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 2 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 207.6969552 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 29126.709 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -1378.48713 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.6276247 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.7556229 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Retail Trade &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.9997119 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.8748516 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 6500.9636969 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 135656.221 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -6874.57165 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.5121305 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.4866360 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Trade, Transportation, and Utilities &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.9997406 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.8359340 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 22975.5085045 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 211632.790 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -7663.28497 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.5685737 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.6108265 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;&lt;/div&gt;
+
+
+---
+### `coef_hurst`
+
+A measure of the degree to which adjacent observations depend on one another over time.  Generically, this statistic takes values between zero and one with one indicating very high levels of dependence through time.
+
+
+```r
+USET %&gt;% features(Employed, coef_hurst)
+```
+
+```
+## # A tibble: 3 x 2
+##   Title                coef_hurst
+##   &lt;chr&gt;                     &lt;dbl&gt;
+## 1 Financial Activities      1.00 
+## 2 Manufacturing             1.00 
+## 3 Retail Trade              0.999
+```
+
+
+---
+## Middling for Ford
+
+
+```r
+FC %&gt;% features(monthly.returns, features=coef_hurst)
+```
+
+```
+## # A tibble: 1 x 1
+##   coef_hurst
+##        &lt;dbl&gt;
+## 1      0.500
+```
+
+---
+# `feat_spectral`
+
+
+```r
+USET %&gt;% features(Employed, feat_spectral)
+```
+
+```
+## # A tibble: 3 x 2
+##   Title                spectral_entropy
+##   &lt;chr&gt;                           &lt;dbl&gt;
+## 1 Financial Activities            0.263
+## 2 Manufacturing                   0.180
+## 3 Retail Trade                    0.412
+```
+
+```r
+FC %&gt;% features(monthly.returns, features=feat_spectral)
+```
+
+```
+## # A tibble: 1 x 1
+##   spectral_entropy
+##              &lt;dbl&gt;
+## 1            0.988
+```
+
+---
+# The Absence of Correlation
+
+Ljung-Box modifies the idea in the Box-Pierce statistic for assessing whether or not a given series [or transformation thereof] is essentially uncorrelated.  In both cases, we will get to the details next week [chapter 5].  For now, the idea is simply that `\(k\)` squared autocorrelations will sum to a chi-squared distribution with `\(k\)` degrees of freedom.  Large correlations reveal dependence.
+
+
+```r
+USET %&gt;% features(Employed, features=list(box_pierce, ljung_box))
+```
+
+```
+## # A tibble: 3 x 5
+##   Title                bp_stat bp_pvalue lb_stat lb_pvalue
+##   &lt;chr&gt;                  &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;
+## 1 Financial Activities    365.         0    368.         0
+## 2 Manufacturing           368.         0    371.         0
+## 3 Retail Trade            337.         0    339.         0
+```
+
+```r
+FC %&gt;% features(monthly.returns, features=list(box_pierce, ljung_box))
+```
+
+```
+## # A tibble: 1 x 4
+##   bp_stat bp_pvalue lb_stat lb_pvalue
+##     &lt;dbl&gt;     &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;
+## 1 0.00657     0.935 0.00664     0.935
+```
+
+
+---
+# `feat_pacf`
+
+
+```r
+USET %&gt;% features(Employed, feat_pacf)
+```
+
+```
+## # A tibble: 3 x 5
+##   Title                pacf5 diff1_pacf5 diff2_pacf5 season_pacf
+##   &lt;chr&gt;                &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;
+## 1 Financial Activities 0.987       0.712       1.00      -0.0555
+## 2 Manufacturing        0.994       0.238       0.791      0.0348
+## 3 Retail Trade         1.08        0.834       1.06      -0.0188
+```
+
+```r
+FC %&gt;% features(monthly.returns, features=feat_pacf)
+```
+
+```
+## # A tibble: 1 x 4
+##     pacf5 diff1_pacf5 diff2_pacf5 season_pacf
+##     &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;       &lt;dbl&gt;
+## 1 0.00696       0.666        1.28       0.118
+```
+
+---
+# Unit Roots
+
+The stationarity issue from earlier is given much attention.  Can we reasonably think of characteristics as fixed?  There are three means of assessment with details to Chapter 9.
+
+
+```r
+USET %&gt;% features(Employed, features=list(unitroot_kpss, unitroot_pp, unitroot_ndiffs, unitroot_nsdiffs)) %&gt;% knitr::kable(format="html")
+```
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Title &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; kpss_stat &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; kpss_pvalue &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; pp_stat &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; pp_pvalue &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; ndiffs &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; nsdiffs &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Financial Activities &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 4.634610 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.01 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -1.1928191 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.1000000 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Manufacturing &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5.676845 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.01 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -0.9375425 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.1000000 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Retail Trade &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 3.909833 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.01 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; -2.6362729 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.0890691 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+```r
+FC %&gt;% features(monthly.returns, features=list(unitroot_kpss, unitroot_pp, unitroot_ndiffs, unitroot_nsdiffs))
+```
+
+```
+## # A tibble: 1 x 6
+##   kpss_stat kpss_pvalue pp_stat pp_pvalue ndiffs nsdiffs
+##       &lt;dbl&gt;       &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;  &lt;int&gt;   &lt;int&gt;
+## 1    0.0889         0.1   -15.9      0.01      0       0
+```
+
+---
+# Tiling
+
+[A reminder](https://davisvaughan.github.io/slider/)
+
+
+```r
+USET %&gt;% features(Employed, features=list(var_tiled_mean, var_tiled_var))
+```
+
+```
+## # A tibble: 3 x 3
+##   Title                var_tiled_mean var_tiled_var
+##   &lt;chr&gt;                         &lt;dbl&gt;         &lt;dbl&gt;
+## 1 Financial Activities          1.02      0.0000411
+## 2 Manufacturing                 1.03      0.0000923
+## 3 Retail Trade                  0.922     0.0136
+```
+
+```r
+FC %&gt;% features(monthly.returns, features=list(var_tiled_mean, var_tiled_var))
+```
+
+```
+## # A tibble: 1 x 2
+##   var_tiled_mean var_tiled_var
+##            &lt;dbl&gt;         &lt;dbl&gt;
+## 1          0.152          2.77
+```
+
+---
+# Detecting Shifts
+
+
+```r
+USET %&gt;% features(Employed, features=list(shift_level_max, shift_var_max, shift_kl_max)) %&gt;% kable(format="html")
+```
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Title &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; shift_level_max &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; shift_level_index &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; shift_var_max &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; shift_var_index &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; shift_kl_max &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; shift_kl_index &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Financial Activities &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 370.750 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 229 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 24036.55 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 233 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.2990911 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 227 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Manufacturing &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1558.667 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 228 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 417019.89 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 235 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.5217082 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 227 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Retail Trade &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 777.350 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 226 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 788930.74 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 354 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.8412503 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 227 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+```r
+FC %&gt;% features(monthly.returns, features=list(shift_level_max, shift_var_max, shift_kl_max)) %&gt;% kable(format="html")
+```
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; shift_level_max &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; shift_level_index &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; shift_var_max &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; shift_var_index &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; shift_kl_max &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; shift_kl_index &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0.2581199 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 110 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.1938302 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 113 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 37.93281 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 112 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+# Crossings and Flat Spots
+
+
+```r
+USET %&gt;% features(Employed, features=list(n_crossing_points, longest_flat_spot)) %&gt;% kable(format="html")
+```
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Title &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; n_crossing_points &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; longest_flat_spot &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Financial Activities &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 5 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 40 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Manufacturing &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 11 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 52 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Retail Trade &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 31 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 10 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+```r
+FC %&gt;% features(monthly.returns, features=list(n_crossing_points, longest_flat_spot)) %&gt;% kable(format="html")
+```
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; n_crossing_points &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; longest_flat_spot &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 121 &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 8 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+
+# ARCH
+
+What proportion of the current squared residual is explained by the prior squared residual?  This reports `\(R^2\)`; if the variance explained is large, volatility is persistent.  **There is a chi-square statistic also.**
+
+
+```r
+USET %&gt;% features(Employed, features=stat_arch_lm) %&gt;% kable(format="html")
+```
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Title &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; stat_arch_lm &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Financial Activities &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.9894145 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Manufacturing &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.9721737 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Retail Trade &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.9167522 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+```r
+FC %&gt;% features(monthly.returns, features=stat_arch_lm) %&gt;% kable(format="html")
+```
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; stat_arch_lm &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0.0509107 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+---
+
+## The Box-Cox
+
+
+```r
+USET %&gt;% features(Employed, features=guerrero) %&gt;% kable(format="html")
+```
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:left;"&gt; Title &lt;/th&gt;
+   &lt;th style="text-align:right;"&gt; lambda_guerrero &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Financial Activities &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 0.9481456 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Manufacturing &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.0369662 &lt;/td&gt;
+  &lt;/tr&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:left;"&gt; Retail Trade &lt;/td&gt;
+   &lt;td style="text-align:right;"&gt; 1.1860464 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+```r
+FC %&gt;% features(monthly.returns, features=guerrero) %&gt;% kable(format="html")
+```
+
+&lt;table&gt;
+ &lt;thead&gt;
+  &lt;tr&gt;
+   &lt;th style="text-align:right;"&gt; lambda_guerrero &lt;/th&gt;
+  &lt;/tr&gt;
+ &lt;/thead&gt;
+&lt;tbody&gt;
+  &lt;tr&gt;
+   &lt;td style="text-align:right;"&gt; 0.6853083 &lt;/td&gt;
+  &lt;/tr&gt;
+&lt;/tbody&gt;
+&lt;/table&gt;
+
+
+
+
+```r
+USET %&gt;% features(Employed, features=guerrero)
+```
+
+```
+## # A tibble: 3 x 2
+##   Title                lambda_guerrero
+##   &lt;chr&gt;                          &lt;dbl&gt;
+## 1 Financial Activities           0.948
+## 2 Manufacturing                  1.04 
+## 3 Retail Trade                   1.19
+```
+
+---
+# Filtered Manufacturing
+
+
+```r
+USET %&gt;% filter(Title=="Manufacturing") %&gt;% mutate(Filt = box_cox(Employed, 1.0369662)) %&gt;% select(YM,Filt,Employed) %&gt;% pivot_longer(c(Filt,Employed)) %&gt;% autoplot(value)
+```
+
+&lt;img src="index_files/figure-html/unnamed-chunk-25-1.png" width="576" /&gt;
+
+---
+
+
+```r
+USET %&gt;% filter(Title=="Financial Activities") %&gt;% autoplot(box_cox(Employed, 0.9481456))
+```
+
+&lt;img src="index_files/figure-html/unnamed-chunk-26-1.png" width="576" /&gt;
+
+---
+
+
+```r
+USET %&gt;% filter(Title=="Retail Trade") %&gt;% autoplot(box_cox(Employed, 1.1860464))
+```
+
+&lt;img src="index_files/figure-html/unnamed-chunk-27-1.png" width="576" /&gt;
+
+---
+
+
+```r
+FC %&gt;% features(monthly.returns, features=guerrero)
+```
+
+```
+## # A tibble: 1 x 1
+##   lambda_guerrero
+##             &lt;dbl&gt;
+## 1           0.685
+```
+
+```r
+FC %&gt;% autoplot(box_cox(monthly.returns, 0.6857523))
+```
+
+&lt;img src="index_files/figure-html/unnamed-chunk-28-1.png" width="576" /&gt;
+
+---
+# Australian Tourism
+
+[The example is great.](https://otexts.com/fpp3/exploring-australian-tourism-data.html)
+
+---
+# Principal Components
+
+Let's walk through this example.
+
+---
+# The Forecasting Workflow
+
+![The pic](img/Workflow.png)
+
+---
+# An Example: Forecast Annual GDP
+
+
+```r
+gdppc &lt;- global_economy %&gt;%
+  mutate(GDP_per_capita = GDP / Population)
+fit &lt;- gdppc %&gt;%
+  model(trend_model = TSLM(GDP_per_capita ~ trend()))
+```
+
+---
+# A Result [report]
+
+
+```r
+fit %&gt;% filter(Country=="Sweden") %&gt;% report()
+```
+
+```
+## Series: GDP_per_capita 
+## Model: TSLM 
+## 
+## Residuals:
+##      Min       1Q   Median       3Q      Max 
+## -11170.4  -2193.1   -505.7   3524.9  10850.2 
+## 
+## Coefficients:
+##             Estimate Std. Error t value  Pr(&gt;|t|)    
+## (Intercept) -6394.78    1324.72  -4.827 0.0000111 ***
+## trend()      1060.34      39.06  27.150   &lt; 2e-16 ***
+## ---
+## Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+## 
+## Residual standard error: 4979 on 56 degrees of freedom
+## Multiple R-squared: 0.9294,	Adjusted R-squared: 0.9281
+## F-statistic: 737.1 on 1 and 56 DF, p-value: &lt; 2.22e-16
+```
+
+---
+# The New Piece: Models
+
+What models?
+
+`fable`: [linked here](https://fable.tidyverts.org/reference/index.html)
+
+
+---
+# Basic Forecasts
+
+1. Averages  
+2. Naive methods
+3. Seasonal naive methods
+4. The drift method
+
+---
+# Key Features of a Model
+
+- Fits  
+- Residuals  
+
+---
+# Residual diagnostics are crucial
+
+At a minimum, residuals should be `white noise` [or remaining exploitable information] and have zero mean [unbiased forecasts].
+
+---
+# `forecast` is amazing
+
+Especially with `hilo`.
+
+---
+# Evaluation
+
+Point accuracy: training and test
+Distributional accuracy: measures
+Cross-validation: step ahead
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
