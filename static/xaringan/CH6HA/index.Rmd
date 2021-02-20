@@ -1,0 +1,651 @@
+---
+title: "Time Series: A Forecasting Toolbox"
+subtitle: "FPP3, Chapter 5"
+author: "Robert W. Walker"
+institute: "AGSM"
+date: "`r Sys.Date()`"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: xaringan-themer.css
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(fig.retina=3, fig.width=8, fig.height=5, warning=FALSE, message=FALSE)
+library(tidyverse)
+library(fpp3)
+library(purrr)
+library(gganimate)
+library(tsibble)
+options(scipen=9)
+library(tidyquant)
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringan)
+library(xaringanthemer)
+style_mono_accent(base_color = "#43418A", text_font_google   = google_font("Roboto Condensed", "300", "300i"))
+```
+
+# Colleen's Question
+
+---
+
+# An Overview
+
+---
+
+## Packages
+
+Getting started
+
+```
+library(tidyverse)
+library(fpp3)
+library(purrr)
+library(gganimate)
+library(seasonal)
+<<<<<<< HEAD
+library(tidyquant)
+library(magrittr)
+```
+---
+
+# The magic of `forecast`
+
+The method:
+1. Tidy  
+2. Visualise  
+3. Model  
+  a. Specify  
+  b. Estimate  
+  c. Evaluate  
+  d. Visualize  
+4. Forecast
+
+---
+# Four Simple Methods
+
+1. Average  
+2. Naive method [Last value]  
+3. Naive Seasonal Method  [Last seasonal values]
+4. Drift method [Constant rate of change]  
+
+---
+# Fits and leftovers
+
+Just as we can decompose a regression into explained and unexplained, we can decompose a time series regression into predicted or fitted and residual variation.
+
+In a regression setting, we might have something like:
+
+$$y = \alpha + \beta x + \epsilon$$
+where x and y are observed data, $\alpha$ is an intercept to be estimated, $\beta$ is a slope to be estimated and $\epsilon$ represents the residual.  Rearranging, the fitted/predicted value is 
+$$\hat{y} = \hat{\alpha} + x \hat{\beta}$$
+and the residual is: 
+
+$$\hat{e} = y - \hat{y}$$ or expanding and distributing:
+$$\hat{e} = y - \hat{\alpha} - x \hat{\beta}$$
+---
+# Diagnostics for residuals
+
+Seek to falsify two desirable characteristics:
+
+1. Residuals should be uncorrelated [remaining time series information] 
+2. Residuals should have mean zero [otherwise bias -- systematically wrong].
+
+Additional desiderata include: Constant variance and normalcy though the latter implies the former.
+
+`fable` makes this relatively straightforward with `augment` applied to a `tsibble`.  `tidy` renders details.
+
+---
+# Take Ford
+
+```{r}
+Ford <- tq_get("F", from="2018-01-01") %>% 
+  as_tsibble(index=date) 
+Ford %>% autoplot(close)
+```
+
+---
+# That's Complete, but has missings
+
+```{r}
+Clean.Ford <- Ford %>%
+  mutate(day = row_number()) %>%
+  update_tsibble(index = day, regular = TRUE)
+F.Ford <- Clean.Ford %>% filter(date < "2021-02-01")
+autoplot(F.Ford, close) +
+  labs(x = "Day", y = "Closing Price (US$)",
+       title = "Ford since 2018")
+```
+
+---
+# A Naive Forecast: Fitted values
+
+```{r}
+augmented <- F.Ford %>% model(NAIVE(close)) %>% augment()
+augmented %>% filter(day > 700) %>% ggplot() + aes(x=day, y=close) + geom_line() + geom_line(aes(y=.fitted), color="red")
+```
+
+---
+# Residual Plot
+
+
+```{r}
+autoplot(augmented, .innov) +
+  labs(x = "Day", y = "Residual",
+       title = "Residuals from naïve method")
+```
+
+---
+# Over time correlations?
+
+This looks pretty good....
+
+```{r}
+augmented %>% ACF(.innov) %>% autoplot()
+```
+
+---
+# THe automagic plot
+
+```{r}
+F.Ford %>% model(NAIVE(close)) %>% gg_tsresiduals()
+```
+
+---
+# A Statistic
+
+Could be white noise [the null hypothesis].....
+
+```{r}
+augmented %>% features(.innov, ljung_box, lag = 10, dof = 0)
+```
+---
+# A Random Walk
+
+There's no drift....
+
+```{r}
+fit <- F.Ford %>% model(RW(close ~ drift()))
+tidy(fit)
+```
+
+---
+# Assessment
+
+```{r}
+F.F2 <- F.Ford %>% model(RW(close ~ drift())) %>% augment()
+F.F2 %>% ggplot() + aes(x=day, y=close) + geom_line() + geom_line(aes(y=.fitted), color="red") + geom_line(data=augmented, aes(y=.fitted), color="blue")
+```
+
+---
+## Intervals and Predictions
+
+Two forms: 
+1. Parametric: Assume a distribution for $e$.
+2. Simluation: the bootstrap [using residuals]
+
+---
+# Parametric
+
+Note the tiny negative drift....
+
+```{r}
+F.Ford %>%
+  model(`Naive` = NAIVE(close), 
+        `RW` = RW(close ~ drift())) %>%
+  forecast(h = 30) %>% autoplot() + guides(level=FALSE)
+```
+
+---
+# Bootstrap
+
+```{r}
+F.Ford %>%
+  model(`Naive` = NAIVE(close), 
+        `RW` = RW(close ~ drift())) %>%
+  forecast(h = 30, times=5, bootstrap=TRUE) %>% autoplot() + guides(level=FALSE)
+```
+
+---
+# More Resamples make them smoother
+
+```{r}
+F.Ford %>%
+  model(`Naive` = NAIVE(close), 
+        `RW` = RW(close ~ drift())) %>%
+  forecast(h = 30, times=500, bootstrap=TRUE) %>% autoplot() + guides(level=FALSE)
+```
+
+# Transformations and Forecasts
+
+Are handled automagically by `fable` as long as they are a part of the workflow in the beginning of the chapter.
+
+```{r}
+F.Ford %>%
+  model(`Naive` = NAIVE(log(close)), 
+        `RW` = RW(log(close) ~ drift())) %>%
+  forecast(h = 30) %>% autoplot() + guides(level=FALSE)
+```
+
+---
+# Training and Test
+
+Creating benchmarks for a forecast by slicing the extant data.
+
+---
+# Evaluating Forecasts
+
+Three methods:
+1. Points  
+2. Distributions  
+3. Cross-Validation  
+
+---
+# The Metrics
+
+1. Mean Absolute Error [MAE]  
+2. Root Mean Square Error [RMSE]
+3. Mean Absolute Percentage Error [MAPE]  
+4. symmetric Mean Absolute Percentage Error [sMAPE]  
+5. Mean Absolute Scaled Error [MASE]
+6. Root Mean Squared Scaled Error [RMSSE]
+
+---
+# Points
+
+```{r}
+Ford.Feb <- Clean.Ford %>% filter(date >= "2020-02-01") %>% as_tsibble(index=day)
+ford_fit <- F.Ford %>%
+  model(
+    Mean = MEAN(close),
+    `Naïve` = NAIVE(close),
+    Drift = RW(close ~ drift())
+  )
+Ford.Forecast <- ford_fit %>% forecast(h=10)
+```
+
+---
+# Assessment of Points
+
+```{r}
+Ford.Forecast %>% accuracy(Clean.Ford)
+```
+
+---
+# Assessing Coverage
+
+Four scores:
+1. Quantile  
+2. Winkler Scores  
+3. Continuous Ranked Probability Scores  
+4. Relative Skill Scores  
+
+---
+# TSCV
+
+`stretch_tsibble`
+
+```{r}
+F.Ford.Training <- F.Ford %>% stretch_tsibble(.init=10, .step=1)
+F.Ford.Training %>% model(`RW` = RW(close ~ drift()), `Mean` = NAIVE(close)) %>% forecast(h=1) %>% accuracy(F.Ford)
+```
+---
+# The Forecast Horizon
+
+How bad and how fast?
+
+---
+# Chapter 6: Judgemental Forecasts
+
+Are not really why we are here but are common nevertheless....
+
+---
+# The Methods
+
+1. Delphi [An Expert Ensemble]
+2. Analogies  
+3. Scenarios  
+4. New things  
+5. Adjustment  
+
+
+=======
+```
+
+
+---
+# A bit on homework
+
+```{r}
+PBS %>% features(Cost, list(mean = mean, sd = sd))  %>% arrange(desc(mean))
+PBS %>% features(Cost, list(mean = mean, sd = sd))  %>% arrange(sd)
+```
+
+---
+# q2
+
+```{r}
+tourism_features <- tourism %>%
+  features(Trips, feature_set(pkgs = "feasts"))
+library(glue)
+tourism_features %>%
+    select_at(vars(contains("season"), c(Purpose, State, Region))) %>%
+    mutate(
+        seasonal_peak_year = glue("Q{seasonal_peak_year+1}"),
+        seasonal_trough_year = glue("Q{seasonal_trough_year+1}"),
+    ) %>% filter(Purpose == "Holiday") %>% ggplot() + aes(x=seasonal_peak_year, facet=State) + geom_bar() + facet_wrap(vars(State))
+```
+
+---
+# q3
+
+---
+
+## Features: Summary
+
+
+The features command is the magic tool for tidy summary and statistics for time series in this index/key format.  For example, basic summary
+
+```{r}
+load("USEmployment.RData")
+us_employment %>% data.frame() %>% group_by(Series_ID) %>% summarise(Title = first(Title)) %>% mutate(series_id = Series_ID) %>% ungroup() %>% select(-Series_ID) -> Names.List
+US.Employment.T <- left_join(US.Employment, Names.List, by = c("series_id" = "series_id")) %>% mutate(YM = yearmonth(date)) %>% rename(Employed = value) %>% as_tsibble(., index=YM, key=Title)
+USET <- US.Employment.T %>% filter(YM > yearmonth("1990-01"), Title%in%c("Retail Trade","Financial Activities","Manufacturing")) %>% as_tsibble(., index=YM, key=Title) 
+USET %>% features(Employed, features=list(mean=mean,min=min,max=max,sd=sd,quantile))
+```
+
+---
+
+### Features: Correlation Features
+
+Learning about the time series properties
+
+```{r}
+USET %>% features(Employed, features=feat_acf)
+```
+```{r}
+USET %>% group_by(Title) %>% ACF(Employed) %>% autoplot()
+```
+
+---
+### For Contrast: Ford Returns
+
+```{r}
+library(tidyquant)
+Ford <- tq_get("F", from="2000-01-01")
+FordT <- Ford %>% as_tsibble(index=date)
+FordT %>% autoplot(adjusted)
+```
+
+---
+
+```{r}
+FC <- Ford %>% tq_transmute(adjusted, mutate_fun = periodReturn, period = "monthly") %>% mutate(YM = yearmonth(date)) %>% as_tsibble(., index=YM)
+FC %>% autoplot(monthly.returns)
+```
+
+---
+## Ford's ACF
+
+The 6/7 and 12/13 patterns are interesting....
+
+```{r}
+library(patchwork)
+FC1 <- FC %>% ACF(monthly.returns) %>% autoplot()
+FC2 <- FC %>% PACF(monthly.returns) %>% autoplot()
+FC1+FC2
+```
+
+---
+
+## Decomposition Features
+
+```{r}
+USET %>% features(Employed, feat_stl)
+```
+
+---
+
+## With More Data
+
+```{r}
+NUSET8k <- US.Employment.T %>% data.frame() %>% group_by(Title) %>% summarise(MaxE = max(Employed)) %>% arrange(desc(MaxE)) %>% filter(MaxE > 8000 & MaxE < 120000) 
+USET8k <- left_join(NUSET8k, US.Employment.T) %>% as_tsibble(., index=YM, key=Title)
+```
+
+---
+# An Improvement on the Trend/Season
+
+```{r, cache=FALSE, results='hide', echo=FALSE}
+library(plotly); library(widgetframe)
+USET8k %>%
+    features(Employed, feat_stl) %>%
+    ggplot(aes(x = trend_strength, y = seasonal_strength_year, text = Title)) +
+    geom_point() -> jj
+k <- ggplotly(jj)
+htmltools::save_html(k, file="st.html")
+```
+
+<iframe src="st.html" width="800" height="500" seamless="seamless" frameBorder="0"> </iframe>
+
+---
+
+The details are at the bottom [for other statistics](https://otexts.com/fpp3/stlfeatures.html).
+
+```{r}
+library(kableExtra)
+USET8k %>%
+    features(Employed, feat_stl) %>% knitr::kable(format="html") %>% scroll_box(width = "100%", height = "300px")
+```
+
+
+---
+### `coef_hurst`
+
+A measure of the degree to which adjacent observations depend on one another over time.  Generically, this statistic takes values between zero and one with one indicating very high levels of dependence through time.
+
+```{r}
+USET %>% features(Employed, coef_hurst)
+```
+
+
+---
+## Middling for Ford
+
+```{r}
+FC %>% features(monthly.returns, features=coef_hurst)
+```
+
+---
+# `feat_spectral`
+
+```{r}
+USET %>% features(Employed, feat_spectral)
+FC %>% features(monthly.returns, features=feat_spectral)
+```
+
+---
+# The Absence of Correlation
+
+Ljung-Box modifies the idea in the Box-Pierce statistic for assessing whether or not a given series [or transformation thereof] is essentially uncorrelated.  In both cases, we will get to the details next week [chapter 5].  For now, the idea is simply that $k$ squared autocorrelations will sum to a chi-squared distribution with $k$ degrees of freedom.  Large correlations reveal dependence.
+
+```{r}
+USET %>% features(Employed, features=list(box_pierce, ljung_box))
+FC %>% features(monthly.returns, features=list(box_pierce, ljung_box))
+```
+
+
+---
+# `feat_pacf`
+
+```{r}
+USET %>% features(Employed, feat_pacf)
+FC %>% features(monthly.returns, features=feat_pacf)
+```
+
+---
+# Unit Roots
+
+The stationarity issue from earlier is given much attention.  Can we reasonably think of characteristics as fixed?  There are three means of assessment with details to Chapter 9.
+
+```{r}
+USET %>% features(Employed, features=list(unitroot_kpss, unitroot_pp, unitroot_ndiffs, unitroot_nsdiffs)) %>% knitr::kable(format="html")
+FC %>% features(monthly.returns, features=list(unitroot_kpss, unitroot_pp, unitroot_ndiffs, unitroot_nsdiffs))
+```
+
+---
+# Tiling
+
+[A reminder](https://davisvaughan.github.io/slider/)
+
+```{r}
+USET %>% features(Employed, features=list(var_tiled_mean, var_tiled_var))
+FC %>% features(monthly.returns, features=list(var_tiled_mean, var_tiled_var))
+```
+
+---
+# Detecting Shifts
+
+```{r}
+USET %>% features(Employed, features=list(shift_level_max, shift_var_max, shift_kl_max)) %>% kable(format="html")
+FC %>% features(monthly.returns, features=list(shift_level_max, shift_var_max, shift_kl_max)) %>% kable(format="html")
+```
+
+---
+# Crossings and Flat Spots
+
+```{r}
+USET %>% features(Employed, features=list(n_crossing_points, longest_flat_spot)) %>% kable(format="html")
+FC %>% features(monthly.returns, features=list(n_crossing_points, longest_flat_spot)) %>% kable(format="html")
+```
+
+---
+
+# ARCH
+
+What proportion of the current squared residual is explained by the prior squared residual?  This reports $R^2$; if the variance explained is large, volatility is persistent.  **There is a chi-square statistic also.**
+
+```{r}
+USET %>% features(Employed, features=stat_arch_lm) %>% kable(format="html")
+FC %>% features(monthly.returns, features=stat_arch_lm) %>% kable(format="html")
+```
+
+---
+
+## The Box-Cox
+
+```{r}
+USET %>% features(Employed, features=guerrero) %>% kable(format="html")
+FC %>% features(monthly.returns, features=guerrero) %>% kable(format="html")
+```
+
+
+
+```{r}
+USET %>% features(Employed, features=guerrero)
+```
+
+---
+# Filtered Manufacturing
+
+```{r}
+USET %>% filter(Title=="Manufacturing") %>% mutate(Filt = box_cox(Employed, 1.0369662)) %>% select(YM,Filt,Employed) %>% pivot_longer(c(Filt,Employed)) %>% autoplot(value)
+```
+
+---
+
+```{r}
+USET %>% filter(Title=="Financial Activities") %>% autoplot(box_cox(Employed, 0.9481456))
+```
+
+---
+
+```{r}
+USET %>% filter(Title=="Retail Trade") %>% autoplot(box_cox(Employed, 1.1860464))
+```
+
+---
+
+```{r}
+FC %>% features(monthly.returns, features=guerrero)
+FC %>% autoplot(box_cox(monthly.returns, 0.6857523))
+```
+
+---
+# Australian Tourism
+
+[The example is great.](https://otexts.com/fpp3/exploring-australian-tourism-data.html)
+
+---
+# Principal Components
+
+Let's walk through this example.
+
+---
+# The Forecasting Workflow
+
+![The pic](img/Workflow.png)
+
+---
+# An Example: Forecast Annual GDP
+
+```{r}
+gdppc <- global_economy %>%
+  mutate(GDP_per_capita = GDP / Population)
+fit <- gdppc %>%
+  model(trend_model = TSLM(GDP_per_capita ~ trend()))
+```
+
+---
+# A Result [report]
+
+```{r}
+fit %>% filter(Country=="Sweden") %>% report()
+```
+
+---
+# The New Piece: Models
+
+What models?
+
+`fable`: [linked here](https://fable.tidyverts.org/reference/index.html)
+
+
+---
+# Basic Forecasts
+
+1. Averages  
+2. Naive methods
+3. Seasonal naive methods
+4. The drift method
+
+---
+# Key Features of a Model
+
+- Fits  
+- Residuals  
+
+---
+# Residual diagnostics are crucial
+
+At a minimum, residuals should be `white noise` [or remaining exploitable information] and have zero mean [unbiased forecasts].
+
+---
+# `forecast` is amazing
+
+Especially with `hilo`.
+
+---
+# Evaluation
+
+Point accuracy: training and test
+Distributional accuracy: measures
+Cross-validation: step ahead
+>>>>>>> 220dcde2e3331534e4b4e0c567514fa9d5d58281
