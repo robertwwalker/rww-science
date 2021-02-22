@@ -50,7 +50,6 @@ library(fpp3)
 library(purrr)
 library(gganimate)
 library(seasonal)
-<<<<<<< HEAD
 library(tidyquant)
 library(magrittr)
 ```
@@ -125,6 +124,20 @@ autoplot(F.Ford, close) +
 ```
 
 ---
+# Visualizing the Forecast Trajectory
+
+`level` in the `autolayer` or `autoplot` containing the forecasts eliminates intervals.
+```{r}
+F.Res <- F.Ford %>%
+  model(`Naive` = NAIVE(close), 
+        `RW` = RW(close ~ drift()),
+        `AVG` = MEAN(close)) %>%
+  forecast(h = 30)
+autoplot(Clean.Ford, close) + autolayer(F.Res, level = NULL, size=1.25) + guides(level=FALSE) + hrbrthemes::theme_ipsum_rc() + labs(x="Trading Day since 1/1/2018", y="Closing Price", title="Comparing Simple Forecast Trajectories")
+```
+
+
+---
 # A Naive Forecast: Fitted values
 
 ```{r}
@@ -152,7 +165,7 @@ augmented %>% ACF(.innov) %>% autoplot()
 ```
 
 ---
-# THe automagic plot
+# The automagic plot
 
 ```{r}
 F.Ford %>% model(NAIVE(close)) %>% gg_tsresiduals()
@@ -197,10 +210,12 @@ Two forms:
 Note the tiny negative drift....
 
 ```{r}
-F.Ford %>%
+F.Res <- F.Ford %>%
   model(`Naive` = NAIVE(close), 
-        `RW` = RW(close ~ drift())) %>%
-  forecast(h = 30) %>% autoplot() + guides(level=FALSE)
+        `RW` = RW(close ~ drift()),
+        `AVG` = MEAN(close)) %>%
+  forecast(h = 30)
+autoplot(Clean.Ford, close) + autolayer(F.Res, level = NULL) + guides(level=FALSE)
 ```
 
 ---
@@ -228,10 +243,11 @@ F.Ford %>%
 Are handled automagically by `fable` as long as they are a part of the workflow in the beginning of the chapter.
 
 ```{r}
-F.Ford %>%
+FF3 <- F.Ford %>%
   model(`Naive` = NAIVE(log(close)), 
         `RW` = RW(log(close) ~ drift())) %>%
-  forecast(h = 30) %>% autoplot() + guides(level=FALSE)
+  forecast(h = 30)
+Clean.Ford %>% filter(day > 700) %>% autoplot(close) + autolayer(FF3, level=NULL) + guides(level=FALSE)
 ```
 
 ---
