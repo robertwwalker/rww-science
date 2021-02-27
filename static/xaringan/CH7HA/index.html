@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Time Series: Linear Models</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Robert W. Walker" />
+    <meta name="date" content="2021-02-26" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Time Series: Linear Models
+## FPP3, Chapter 7
+### Robert W. Walker
+### AGSM
+### 2021-02-26
+
+---
+
+
+
+
+
+
+# An Overview
+
+The workhorse of modelling is linear models; that will remain true for time series.  Some of the decompositions that we have seem **are** linear models.
+
+---
+
+## Packages
+
+Getting started
+
+```
+library(tidyverse)
+library(fpp3)
+library(purrr)
+library(gganimate)
+library(seasonal)
+library(tidyquant)
+library(magrittr)
+```
+---
+
+# The magic of `forecast`
+
+The method:
+1. Tidy  
+2. Visualise  
+3. Model  
+  a. Specify  
+  b. Estimate  
+  c. Evaluate  
+  d. Visualize  
+4. Forecast
+
+---
+
+# Models
+
+```
+3. Model  
+  a. Specify  
+  b. Estimate  
+  c. Evaluate  
+  d. Visualize  
+```
+
+---
+# The Linear Model
+
+`$$y_{t} = \beta_{0} + \beta_{1}x_{t} + \epsilon_{t}$$`
+---
+# A Simplified Example
+
+
+```r
+load("USEmployment.RData")
+us_employment %&gt;% data.frame() %&gt;% group_by(Series_ID) %&gt;% summarise(Title = first(Title)) %&gt;% mutate(series_id = Series_ID) %&gt;% ungroup() %&gt;% select(-Series_ID) -&gt; Names.List
+US.Employment.T &lt;- left_join(US.Employment, Names.List, by = c("series_id" = "series_id")) %&gt;% mutate(YM = yearmonth(date)) %&gt;% rename(Employed = value) %&gt;% as_tsibble(., index=YM, key=Title)
+USET &lt;- US.Employment.T %&gt;% filter(YM &gt; yearmonth("1990-01"), Title%in%c("Retail Trade")) %&gt;% as_tsibble(., index=YM, key=Title)
+```
+
+---
+# A Seasonal Linear Model
+
+`$$y_{t} = Month_{t} + \epsilon$$`
+The fitted/predicted value is 
+`$$\hat{y} = \hat{\alpha} + \hat{\beta}_{M}*Month_{t}$$`
+and the residual is: 
+
+`$$\hat{e} = y - \hat{y}$$` or expanding and distributing:
+`$$\hat{e} = y - \hat{\alpha} - \hat{\beta}_{M}*Month_{t}$$`
+
+---
+# A Model
+
+**April** is the baseline.
+
+
+```r
+USRTM &lt;- USET %&gt;% mutate(Month = month(YM, label=TRUE)) %&gt;% model(TSLM(Employed ~ as.character(Month)))
+USRTM %&gt;% report()
+```
+
+```
+Series: Employed 
+Model: TSLM 
+
+Residuals:
+    Min      1Q  Median      3Q     Max 
+-2024.7  -373.5   227.2   628.6  1201.3 
+
+Coefficients:
+                        Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept)            14485.255    160.019  90.522  &lt; 2e-16 ***
+as.character(Month)Aug   257.106    226.301   1.136 0.256660    
+as.character(Month)Dec   871.742    226.301   3.852 0.000139 ***
+as.character(Month)Feb   -20.642    226.301  -0.091 0.927373    
+as.character(Month)Jan   233.842    226.301   1.033 0.302147    
+as.character(Month)Jul   241.945    226.301   1.069 0.285727    
+as.character(Month)Jun   230.429    226.301   1.018 0.309247    
+as.character(Month)Mar     1.287    226.301   0.006 0.995465    
+as.character(Month)May   118.561    226.301   0.524 0.600664    
+as.character(Month)Nov   687.003    226.301   3.036 0.002574 ** 
+as.character(Month)Oct   318.745    226.301   1.409 0.159846    
+as.character(Month)Sep   185.329    226.301   0.819 0.413357    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 890.9 on 360 degrees of freedom
+Multiple R-squared: 0.07993,	Adjusted R-squared: 0.05181
+F-statistic: 2.843 on 11 and 360 DF, p-value: 0.0013911
+```
+
+---
+# `augment`
+
+
+```r
+augment(USRTM) %&gt;% ggplot(aes(x=YM)) + 
+   geom_line(aes(y = Employed, colour = "Data")) +
+  geom_line(aes(y = .fitted, colour = "Fitted")) +
+  scale_color_manual(
+    values = c(Data = "black", Fitted = "red")
+  )
+```
+
+&lt;img src="index_files/figure-html/unnamed-chunk-3-1.png" width="576" /&gt;
+
+---
+## The residual
+
+
+```r
+USRTM %&gt;% gg_tsresiduals()
+```
+
+&lt;img src="index_files/figure-html/unnamed-chunk-4-1.png" width="576" /&gt;
+
+
+---
+# A Trend?
+
+
+```r
+fit_USET &lt;- USET %&gt;% mutate(Month = as.character(month(YM, label=TRUE))) %&gt;%
+  model(TSLM(Employed ~ trend() + Month))
+```
+
+---
+
+
+```r
+fit_USET %&gt;% report()
+```
+
+```
+Series: Employed 
+Model: TSLM 
+
+Residuals:
+     Min       1Q   Median       3Q      Max 
+-2495.10  -439.43    84.18   443.63  1051.15 
+
+Coefficients:
+              Estimate Std. Error t value     Pr(&gt;|t|)    
+(Intercept) 13324.8903   112.5402 118.401      &lt; 2e-16 ***
+trend()         6.3408     0.2716  23.348      &lt; 2e-16 ***
+MonthAug      231.7433   142.8007   1.623       0.1055    
+MonthDec      821.0156   142.8131   5.749 0.0000000192 ***
+MonthFeb       -7.9604   142.7976  -0.056       0.9556    
+MonthJan      176.7748   142.8175   1.238       0.2166    
+MonthJul      222.9228   142.7989   1.561       0.1194    
+MonthJun      217.7475   142.7976   1.525       0.1282    
+MonthMar        7.6279   142.7968   0.053       0.9574    
+MonthMay      112.2205   142.7968   0.786       0.4325    
+MonthNov      642.6177   142.8092   4.500 0.0000091998 ***
+MonthOct      280.7004   142.8059   1.966       0.0501 .  
+MonthSep      153.6251   142.8030   1.076       0.2827    
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 562.2 on 359 degrees of freedom
+Multiple R-squared: 0.6347,	Adjusted R-squared: 0.6225
+F-statistic: 51.97 on 12 and 359 DF, p-value: &lt; 2.22e-16
+```
+
+---
+## Residuals
+
+
+```r
+fit_USET %&gt;% gg_tsresiduals()
+```
+
+&lt;img src="index_files/figure-html/unnamed-chunk-7-1.png" width="576" /&gt;
+
+---
+# Diagnostics for residuals
+
+Seek to falsify two desirable characteristics:
+
+1. Residuals should be uncorrelated [remaining time series information] 
+2. Residuals should have mean zero [otherwise bias -- systematically wrong].
+
+Additional desiderata include: Constant variance and normalcy though the latter implies the former.
+
+---
+## How Does it Look?
+
+
+```r
+augment(fit_USET) %&gt;% select(YM,Employed,.fitted) %&gt;% pivot_longer(c(Employed,.fitted)) %&gt;% autoplot()
+```
+
+&lt;img src="index_files/figure-html/unnamed-chunk-8-1.png" width="576" /&gt;
+
+---
+## Knots
+
+
+```r
+fit_USET2 &lt;- USET %&gt;% mutate(Month = as.character(month(YM, label=TRUE))) %&gt;% model(TSLM(Employed ~ trend(knots = yearmonth(c("2001-09","2008-10","2020-03"))) + Month))
+```
+
+---
+
+
+```r
+augment(fit_USET2) %&gt;% select(YM,Employed,.fitted) %&gt;% pivot_longer(c(Employed,.fitted)) %&gt;% autoplot()
+```
+
+&lt;img src="index_files/figure-html/unnamed-chunk-10-1.png" width="576" /&gt;
+
+---
+
+
+```r
+fit_USET2 %&gt;% gg_tsresiduals()
+```
+
+&lt;img src="index_files/figure-html/unnamed-chunk-11-1.png" width="576" /&gt;
+
+
+
+---
+## This Is Cheating
+
+
+```r
+fit_USET2 &lt;- USET %&gt;% mutate(Year = as.character(year(YM)), Month = as.character(month(YM, label=TRUE))) %&gt;% model(TSLM(Employed ~ Year + Month))
+```
+
+---
+
+
+```r
+fit_USET2 %&gt;% report()
+```
+
+```
+Series: Employed 
+Model: TSLM 
+
+Residuals:
+      Min        1Q    Median        3Q       Max 
+-1477.295   -45.325     5.931    53.380   765.746 
+
+Coefficients:
+             Estimate Std. Error t value Pr(&gt;|t|)    
+(Intercept) 12916.327     55.016 234.775  &lt; 2e-16 ***
+Year1991     -271.606     66.277  -4.098 5.25e-05 ***
+Year1992     -340.023     66.277  -5.130 4.95e-07 ***
+Year1993     -147.481     66.277  -2.225  0.02674 *  
+Year1994      322.885     66.277   4.872 1.72e-06 ***
+Year1995      729.019     66.277  11.000  &lt; 2e-16 ***
+Year1996      974.860     66.277  14.709  &lt; 2e-16 ***
+Year1997     1221.360     66.277  18.428  &lt; 2e-16 ***
+Year1998     1441.910     66.277  21.756  &lt; 2e-16 ***
+Year1999     1802.744     66.277  27.200  &lt; 2e-16 ***
+Year2000     2112.469     66.277  31.873  &lt; 2e-16 ***
+Year2001     2071.269     66.277  31.252  &lt; 2e-16 ***
+Year2002     1857.844     66.277  28.031  &lt; 2e-16 ***
+Year2003     1750.502     66.277  26.412  &lt; 2e-16 ***
+Year2004     1891.577     66.277  28.540  &lt; 2e-16 ***
+Year2005     2113.360     66.277  31.887  &lt; 2e-16 ***
+Year2006     2187.302     66.277  33.002  &lt; 2e-16 ***
+Year2007     2354.385     66.277  35.523  &lt; 2e-16 ***
+Year2008     2117.652     66.277  31.952  &lt; 2e-16 ***
+Year2009     1356.785     66.277  20.471  &lt; 2e-16 ***
+Year2010     1274.885     66.277  19.236  &lt; 2e-16 ***
+Year2011     1502.502     66.277  22.670  &lt; 2e-16 ***
+Year2012     1675.677     66.277  25.283  &lt; 2e-16 ***
+Year2013     1913.594     66.277  28.873  &lt; 2e-16 ***
+Year2014     2192.252     66.277  33.077  &lt; 2e-16 ***
+Year2015     2439.777     66.277  36.812  &lt; 2e-16 ***
+Year2016     2660.402     66.277  40.141  &lt; 2e-16 ***
+Year2017     2674.569     66.277  40.354  &lt; 2e-16 ***
+Year2018     2615.110     66.277  39.457  &lt; 2e-16 ***
+Year2019     2448.719     66.277  36.947  &lt; 2e-16 ***
+Year2020     1692.469     66.277  25.536  &lt; 2e-16 ***
+Year2021     2092.326    168.456  12.421  &lt; 2e-16 ***
+MonthAug      257.106     40.300   6.380 6.01e-10 ***
+MonthDec      871.742     40.300  21.631  &lt; 2e-16 ***
+MonthFeb      -20.642     40.300  -0.512  0.60885    
+MonthJan      166.348     40.665   4.091 5.41e-05 ***
+MonthJul      241.945     40.300   6.004 5.10e-09 ***
+MonthJun      230.429     40.300   5.718 2.42e-08 ***
+MonthMar        1.287     40.300   0.032  0.97454    
+MonthMay      118.561     40.300   2.942  0.00349 ** 
+MonthNov      687.003     40.300  17.047  &lt; 2e-16 ***
+MonthOct      318.745     40.300   7.909 3.97e-14 ***
+MonthSep      185.329     40.300   4.599 6.07e-06 ***
+---
+Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
+
+Residual standard error: 158.7 on 329 degrees of freedom
+Multiple R-squared: 0.9733,	Adjusted R-squared: 0.9699
+F-statistic: 285.9 on 42 and 329 DF, p-value: &lt; 2.22e-16
+```
+
+
+---
+
+
+```r
+augment(fit_USET2) %&gt;% select(YM,Employed,.fitted) %&gt;% pivot_longer(c(Employed,.fitted)) %&gt;% autoplot()
+```
+
+&lt;img src="index_files/figure-html/unnamed-chunk-14-1.png" width="576" /&gt;
+
+---
+
+
+```r
+fit_USET2 %&gt;% gg_tsresiduals()
+```
+
+&lt;img src="index_files/figure-html/unnamed-chunk-15-1.png" width="576" /&gt;
+
+---
+class: inverse
+
+# Back to the Story
+
+The core ideas carry over from any regression context.
+
+`$$y_{t} = \alpha + \beta*X_{t} + \epsilon_{t}$$`
+
+with data subscripted by time.  Patterns over time will be key but there is nothing special except that `\(y\)` will be a linear function of `\(x\)` with all the pattern inheritance that this implies.
+
+The first part reviews [linear regression](https://otexts.com/fpp3/regression-intro.html).  Least squares is the [core tool for estimation](https://otexts.com/fpp3/least-squares.html).
+
+---
+## Evaluation
+
+1. `fit %&gt;% gg_tsresiduals()` and `augment(fit) %&gt;% features(.innov, ljung_box, lag = ??, dof = ??)` for time series information in residuals.  
+2. plot of `.innov` or `.resid` against the predictors.  This many require joining the residuals to the original `tsibble`, e.g. `data %&gt;% left_join(residuals(fit), by="Index")`.  
+3. plot of residuals [`.resid`] and fitted.values [`.fitted`].  
+4. outliers and influence are always worthwhile to consider.  Regular regression diagnostics are relevant here.  It is just a `tibble` with a index: `timetk`.
+
+---
+## Handy predictors
+
+1. `trend()`
+2. `season()` the dummy/binary variable `month(label=TRUE)`, `weekday` and the **trap**
+3. interventions, trading days, holidays, and distributed lags.
+4. the Fourier series.  
+
+---
+# Predictor Selection
+
+Fit criterion.  A reference.
+
+Best subsets and stepwise.
+
+Inference and stepwise.
+
+---
+
+# Forecasting
+
+ex ante and and ex post
+dynamic models come up in chapter 10.
+
+intervals and their dynamism merit attention.
+
+---
+
+## Forecasting and Scenarios
+
+Take the model of quarterly consumption as a function of income.
+
+
+```r
+fit_cons &lt;- us_change %&gt;%
+    model(TSLM(Consumption ~ Income))
+new_cons &lt;- scenarios(
+    "Average increase" = new_data(us_change, 4) %&gt;% mutate(Income = mean(us_change$Income)),
+    "Extreme increase" = new_data(us_change, 4) %&gt;% mutate(Income = c(mean(us_change$Income),mean(us_change$Income)+3,mean(us_change$Income)+6,mean(us_change$Income)+9)),
+    names_to = "Scenario"
+)
+fcast &lt;- forecast(fit_cons, new_cons)
+us_change %&gt;%
+    autoplot(Consumption) +
+    autolayer(fcast) +
+    labs(y = "% change in US consumption")
+```
+
+---
+
+&lt;img src="index_files/figure-html/unnamed-chunk-17-1.png" width="576" /&gt;
+
+---
+
+## Knots and their Importance
+
+This section points out [splines and ties](https://otexts.com/fpp3/nonlinear-regression.html).
+
+---
+
+## Correlation and Causation
+
+ARE NOT THE SAME.
+
+---
+# The essential workflow
+
+[It all goes back to chapter 5](https://otexts.com/fpp3/a-tidy-forecasting-workflow.html).
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

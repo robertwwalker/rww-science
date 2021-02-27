@@ -1,0 +1,62 @@
+---
+title: "Timetk: an Exploration and Comparison"
+subtitle: ""
+summary: ""
+authors: ["RWW"]
+tags: []
+categories: []
+date: 2021-02-23T15:07:34-08:00
+lastmod: 2021-02-23T15:07:34-08:00
+featured: false
+draft: false
+---
+
+I want to use a dataset from `fpp3` and have a look at how the code translation works for the things that they do.  The organizing form for the data is a little bit different among the two as `fpp3` is built around the `tsibble` as construct while `timetk` dodges that with the use of a bit more explicit declarations.  In many ways, as some of you have learned through frustration with aggregation and tsibble, this is more flexible because not all time is neatly embedded in all other time [weeks <=> months].  Let's use US employment and focus in on the retail trade part since 1990.
+
+```{r}
+library(fpp3)
+us_employment %>% filter(Title=="Retail Trade")
+us_employment %>% filter(Title=="Retail Trade" & Month > yearmonth("1999-12") ) %>% autoplot()
+```
+There's the `tsibble`.  Let me create my own version of the data to operate on.
+
+```{r}
+my_usemp <- us_employment %>% filter(Title=="Retail Trade", Month > yearmonth("1999-12"))
+```
+
+`timetk` has a plotter that is very similar but we will need a proper date.  If you set `interactive` to true and pass it, you get plotly by default.  The key for making it work will be the deployment of a standard date format or something like it; the acceptable types are covered [here]().
+
+```{r}
+library(timetk); library(magrittr)
+my_usemp %<>% mutate(Date = as.Date(Month))
+interactive <- TRUE
+my_usemp %>% plot_time_series(Date, Employed, .interactive=interactive)
+```
+The `plotly` slider feature is particularly neat.
+
+```{r}
+my_usemp %>% plot_time_series(Date, Employed, .interactive=interactive, .plotly_slider = TRUE)
+```
+# Seasonality
+
+```{r}
+my_usemp %>%plot_seasonal_diagnostics(Date, Employed, .interactive=interactive)
+```
+# STL Diagnostics
+
+```{r}
+my_usemp %>% plot_stl_diagnostics(
+        Date, Employed,
+        .frequency = "auto", .trend = "auto",
+        .feature_set = c("observed", "season", "trend", "remainder"),
+        .interactive = interactive)
+```
+
+# An Autocorrelation Plot
+
+```{r}
+my_usemp %>% plot_acf_diagnostics(
+    Date, Employed,               # ACF & PACF
+    .lags = "12 months")
+```
+

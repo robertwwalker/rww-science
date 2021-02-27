@@ -1,0 +1,319 @@
+---
+title: "Time Series: Linear Models"
+subtitle: "FPP3, Chapter 7"
+author: "Robert W. Walker"
+institute: "AGSM"
+date: "`r Sys.Date()`"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: xaringan-themer.css
+    nature:
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{r setup, include=FALSE}
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(fig.retina=3, fig.width=8, fig.height=5, warning=FALSE, message=FALSE, comment='')
+library(tidyverse)
+library(fpp3)
+library(purrr)
+library(gganimate)
+library(tsibble)
+options(scipen=4)
+library(tidyquant)
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringan)
+library(xaringanthemer)
+style_mono_accent(base_color = "#43418A", text_font_google   = google_font("Fira Sans", "300", "300i"))
+```
+
+# An Overview
+
+The workhorse of modelling is linear models; that will remain true for time series.  Some of the decompositions that we have seem **are** linear models.
+
+---
+
+## Packages
+
+Getting started
+
+```
+library(tidyverse)
+library(fpp3)
+library(purrr)
+library(gganimate)
+library(seasonal)
+library(tidyquant)
+library(magrittr)
+```
+---
+
+# The magic of `forecast`
+
+The method:
+1. Tidy  
+2. Visualise  
+3. Model  
+  a. Specify  
+  b. Estimate  
+  c. Evaluate  
+  d. Visualize  
+4. Forecast
+
+---
+
+# Models
+
+```
+3. Model  
+  a. Specify  
+  b. Estimate  
+  c. Evaluate  
+  d. Visualize  
+```
+
+---
+# The Linear Model
+
+$$y_{t} = \beta_{0} + \beta_{1}x_{t} + \epsilon_{t}$$
+---
+# A Simplified Example
+
+```{r}
+load("USEmployment.RData")
+us_employment %>% data.frame() %>% group_by(Series_ID) %>% summarise(Title = first(Title)) %>% mutate(series_id = Series_ID) %>% ungroup() %>% select(-Series_ID) -> Names.List
+US.Employment.T <- left_join(US.Employment, Names.List, by = c("series_id" = "series_id")) %>% mutate(YM = yearmonth(date)) %>% rename(Employed = value) %>% as_tsibble(., index=YM, key=Title)
+USET <- US.Employment.T %>% filter(YM > yearmonth("1990-01"), Title%in%c("Retail Trade")) %>% as_tsibble(., index=YM, key=Title)
+```
+
+---
+# A Seasonal Linear Model
+
+$$y_{t} = Month_{t} + \epsilon$$
+The fitted/predicted value is 
+$$\hat{y} = \hat{\alpha} + \hat{\beta}_{M}*Month_{t}$$
+and the residual is: 
+
+$$\hat{e} = y - \hat{y}$$ or expanding and distributing:
+$$\hat{e} = y - \hat{\alpha} - \hat{\beta}_{M}*Month_{t}$$
+
+---
+# A Model
+
+**April** is the baseline.
+
+```{r}
+USRTM <- USET %>% mutate(Month = month(YM, label=TRUE)) %>% model(TSLM(Employed ~ as.character(Month)))
+USRTM %>% report()
+```
+
+---
+# `augment`
+
+```{r}
+augment(USRTM) %>% ggplot(aes(x=YM)) + 
+   geom_line(aes(y = Employed, colour = "Data")) +
+  geom_line(aes(y = .fitted, colour = "Fitted")) +
+  scale_color_manual(
+    values = c(Data = "black", Fitted = "red")
+  )
+```
+
+---
+## The residual
+
+```{r}
+USRTM %>% gg_tsresiduals()
+```
+
+
+---
+# A Trend?
+
+```{r}
+fit_USET <- USET %>% mutate(Month = as.character(month(YM, label=TRUE))) %>%
+  model(TSLM(Employed ~ trend() + Month))
+```
+
+---
+
+```{r}
+fit_USET %>% report()
+```
+
+---
+## Residuals
+
+```{r}
+fit_USET %>% gg_tsresiduals()
+```
+
+---
+# Diagnostics for residuals
+
+Seek to falsify two desirable characteristics:
+
+1. Residuals should be uncorrelated [remaining time series information] 
+2. Residuals should have mean zero [otherwise bias -- systematically wrong].
+
+Additional desiderata include: Constant variance and normalcy though the latter implies the former.
+
+---
+## How Does it Look?
+
+```{r}
+augment(fit_USET) %>% select(YM,Employed,.fitted) %>% pivot_longer(c(Employed,.fitted)) %>% autoplot()
+```
+
+---
+## Knots
+
+```{r}
+fit_USET2 <- USET %>% mutate(Month = as.character(month(YM, label=TRUE))) %>% model(TSLM(Employed ~ trend(knots = yearmonth(c("2001-09","2008-10","2020-03"))) + Month))
+```
+
+---
+
+```{r}
+augment(fit_USET2) %>% select(YM,Employed,.fitted) %>% pivot_longer(c(Employed,.fitted)) %>% autoplot()
+```
+
+---
+
+```{r}
+fit_USET2 %>% gg_tsresiduals()
+```
+
+
+
+---
+## This Is Cheating
+
+```{r}
+fit_USET2 <- USET %>% mutate(Year = as.character(year(YM)), Month = as.character(month(YM, label=TRUE))) %>% model(TSLM(Employed ~ Year + Month))
+```
+
+---
+
+```{r}
+fit_USET2 %>% report()
+```
+
+
+---
+
+```{r}
+augment(fit_USET2) %>% select(YM,Employed,.fitted) %>% pivot_longer(c(Employed,.fitted)) %>% autoplot()
+```
+
+---
+
+```{r}
+fit_USET2 %>% gg_tsresiduals()
+```
+
+---
+class: inverse
+
+# Back to the Story
+
+The core ideas carry over from any regression context.
+
+$$y_{t} = \alpha + \beta*X_{t} + \epsilon_{t}$$
+
+with data subscripted by time.  Patterns over time will be key but there is nothing special except that $y$ will be a linear function of $x$ with all the pattern inheritance that this implies.
+
+The first part reviews [linear regression](https://otexts.com/fpp3/regression-intro.html).  Least squares is the [core tool for estimation](https://otexts.com/fpp3/least-squares.html).
+
+---
+## Evaluation
+
+1. `fit %>% gg_tsresiduals()` and `augment(fit) %>% features(.innov, ljung_box, lag = ??, dof = ??)` for time series information in residuals.  
+2. plot of `.innov` or `.resid` against the predictors.  This many require joining the residuals to the original `tsibble`, e.g. `data %>% left_join(residuals(fit), by="Index")`.  
+3. plot of residuals [`.resid`] and fitted.values [`.fitted`].  
+4. outliers and influence are always worthwhile to consider.  Regular regression diagnostics are relevant here.  It is just a `tibble` with a index: `timetk`.
+
+---
+## Handy predictors
+
+1. `trend()`
+2. `season()` the dummy/binary variable `month(label=TRUE)`, `weekday` and the **trap**
+3. interventions, trading days, holidays, and distributed lags.
+4. the Fourier series.  
+
+---
+# Predictor Selection
+
+Fit criterion.  A reference.
+
+Best subsets and stepwise.
+
+Inference and stepwise.
+
+---
+
+# Forecasting
+
+ex ante and and ex post
+dynamic models come up in chapter 10.
+
+intervals and their dynamism merit attention.
+
+---
+
+## Forecasting and Scenarios
+
+Take the model of quarterly consumption as a function of income.
+
+```{r, echo=TRUE, eval=FALSE}
+fit_cons <- us_change %>%
+    model(TSLM(Consumption ~ Income))
+new_cons <- scenarios(
+    "Average increase" = new_data(us_change, 4) %>% mutate(Income = mean(us_change$Income)),
+    "Extreme increase" = new_data(us_change, 4) %>% mutate(Income = c(mean(us_change$Income),mean(us_change$Income)+3,mean(us_change$Income)+6,mean(us_change$Income)+9)),
+    names_to = "Scenario"
+)
+fcast <- forecast(fit_cons, new_cons)
+us_change %>%
+    autoplot(Consumption) +
+    autolayer(fcast) +
+    labs(y = "% change in US consumption")
+```
+
+---
+
+```{r, eval=TRUE, echo=FALSE}
+fit_cons <- us_change %>%
+    model(TSLM(Consumption ~ Income))
+new_cons <- scenarios(
+    "Average increase" = new_data(us_change, 4) %>% mutate(Income = mean(us_change$Income)),
+    "Extreme increase" = new_data(us_change, 4) %>% mutate(Income = c(mean(us_change$Income),mean(us_change$Income)+3,mean(us_change$Income)+6,mean(us_change$Income)+9)),
+    names_to = "Scenario"
+)
+fcast <- forecast(fit_cons, new_cons)
+us_change %>% autoplot(Consumption) +
+    autolayer(fcast) +
+    labs(y = "% change in US consumption")
+```
+
+---
+
+## Knots and their Importance
+
+This section points out [splines and ties](https://otexts.com/fpp3/nonlinear-regression.html).
+
+---
+
+## Correlation and Causation
+
+ARE NOT THE SAME.
+
+---
+# The essential workflow
+
+[It all goes back to chapter 5](https://otexts.com/fpp3/a-tidy-forecasting-workflow.html).
