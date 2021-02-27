@@ -304,6 +304,27 @@ Four scores:
 4. Relative Skill Scores  
 
 ---
+###  Computation
+
+```{r}
+F.Ford.Training <- F.Ford %>% stretch_tsibble(.init=10, .step=1)
+F.Ford.Training %>% model(`RW` = RW(close ~ drift()), `Mean` = NAIVE(close)) %>% forecast(h=1) %>% accuracy(F.Ford, list(qs=quantile_score), probs=0.10)
+```
+
+---
+
+```{r}
+F.Ford.Training <- F.Ford %>% stretch_tsibble(.init=10, .step=1)
+F.Ford.Training %>% model(`RW` = RW(close ~ drift()), `Mean` = NAIVE(close)) %>% forecast(h=1) %>% accuracy(F.Ford, list(winkler = winkler_score), level = 80)
+```
+
+```{r}
+F.Ford.Training <- F.Ford %>% stretch_tsibble(.init=10, .step=1)
+F.Ford.Training %>% model(`RW` = RW(close ~ drift()), `Mean` = NAIVE(close)) %>% forecast(h=1) %>% accuracy(F.Ford, list(crps = CRPS, skill = skill_score(CRPS)))
+```
+
+
+---
 # TSCV
 
 `stretch_tsibble`

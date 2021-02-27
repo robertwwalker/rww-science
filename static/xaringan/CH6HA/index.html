@@ -4,7 +4,7 @@
     <title>Time Series: A Forecasting Toolbox</title>
     <meta charset="utf-8" />
     <meta name="author" content="Robert W. Walker" />
-    <meta name="date" content="2021-02-22" />
+    <meta name="date" content="2021-02-26" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
   </head>
@@ -16,7 +16,7 @@ class: center, middle, inverse, title-slide
 ## FPP3, Chapter 5
 ### Robert W. Walker
 ### AGSM
-### 2021-02-22
+### 2021-02-26
 
 ---
 
@@ -104,7 +104,7 @@ Ford &lt;- tq_get("F", from="2018-01-01") %&gt;%
 Ford %&gt;% autoplot(close)
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-5-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-23-1.png" width="576" /&gt;
 
 ---
 # That's Complete, but has missings
@@ -120,7 +120,7 @@ autoplot(F.Ford, close) +
        title = "Ford since 2018")
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-6-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-24-1.png" width="576" /&gt;
 
 ---
 # Visualizing the Forecast Trajectory
@@ -136,7 +136,7 @@ F.Res &lt;- F.Ford %&gt;%
 autoplot(Clean.Ford, close) + autolayer(F.Res, level = NULL, size=1.25) + guides(level=FALSE) + hrbrthemes::theme_ipsum_rc() + labs(x="Trading Day since 1/1/2018", y="Closing Price", title="Comparing Simple Forecast Trajectories")
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-7-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-25-1.png" width="576" /&gt;
 
 
 ---
@@ -148,7 +148,7 @@ augmented &lt;- F.Ford %&gt;% model(NAIVE(close)) %&gt;% augment()
 augmented %&gt;% filter(day &gt; 700) %&gt;% ggplot() + aes(x=day, y=close) + geom_line() + geom_line(aes(y=.fitted), color="red")
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-8-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-26-1.png" width="576" /&gt;
 
 ---
 # Residual Plot
@@ -161,7 +161,7 @@ autoplot(augmented, .innov) +
        title = "Residuals from naïve method")
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-9-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-27-1.png" width="576" /&gt;
 
 ---
 # Over time correlations?
@@ -173,7 +173,7 @@ This looks pretty good....
 augmented %&gt;% ACF(.innov) %&gt;% autoplot()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-10-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-28-1.png" width="576" /&gt;
 
 ---
 # The automagic plot
@@ -183,7 +183,7 @@ augmented %&gt;% ACF(.innov) %&gt;% autoplot()
 F.Ford %&gt;% model(NAIVE(close)) %&gt;% gg_tsresiduals()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-11-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-29-1.png" width="576" /&gt;
 
 ---
 # A Statistic
@@ -228,7 +228,7 @@ F.F2 &lt;- F.Ford %&gt;% model(RW(close ~ drift())) %&gt;% augment()
 F.F2 %&gt;% ggplot() + aes(x=day, y=close) + geom_line() + geom_line(aes(y=.fitted), color="red") + geom_line(data=augmented, aes(y=.fitted), color="blue")
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-14-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-32-1.png" width="576" /&gt;
 
 ---
 ## Intervals and Predictions
@@ -252,7 +252,7 @@ F.Res &lt;- F.Ford %&gt;%
 autoplot(Clean.Ford, close) + autolayer(F.Res, level = NULL) + guides(level=FALSE)
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-15-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-33-1.png" width="576" /&gt;
 
 ---
 # Bootstrap
@@ -265,7 +265,7 @@ F.Ford %&gt;%
   forecast(h = 30, times=5, bootstrap=TRUE) %&gt;% autoplot() + guides(level=FALSE)
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-16-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-34-1.png" width="576" /&gt;
 
 ---
 # More Resamples make them smoother
@@ -278,7 +278,7 @@ F.Ford %&gt;%
   forecast(h = 30, times=500, bootstrap=TRUE) %&gt;% autoplot() + guides(level=FALSE)
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-17-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-35-1.png" width="576" /&gt;
 
 # Transformations and Forecasts
 
@@ -293,7 +293,7 @@ FF3 &lt;- F.Ford %&gt;%
 Clean.Ford %&gt;% filter(day &gt; 700) %&gt;% autoplot(close) + autolayer(FF3, level=NULL) + guides(level=FALSE)
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-18-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-36-1.png" width="576" /&gt;
 
 ---
 # Training and Test
@@ -358,6 +358,54 @@ Four scores:
 2. Winkler Scores  
 3. Continuous Ranked Probability Scores  
 4. Relative Skill Scores  
+
+---
+###  Computation
+
+
+```r
+F.Ford.Training &lt;- F.Ford %&gt;% stretch_tsibble(.init=10, .step=1)
+F.Ford.Training %&gt;% model(`RW` = RW(close ~ drift()), `Mean` = NAIVE(close)) %&gt;% forecast(h=1) %&gt;% accuracy(F.Ford, list(qs=quantile_score), probs=0.10)
+```
+
+```
+## # A tibble: 2 x 3
+##   .model .type     qs
+##   &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt;
+## 1 Mean   Test  0.0700
+## 2 RW     Test  0.0708
+```
+
+---
+
+
+```r
+F.Ford.Training &lt;- F.Ford %&gt;% stretch_tsibble(.init=10, .step=1)
+F.Ford.Training %&gt;% model(`RW` = RW(close ~ drift()), `Mean` = NAIVE(close)) %&gt;% forecast(h=1) %&gt;% accuracy(F.Ford, list(winkler = winkler_score), level = 80)
+```
+
+```
+## # A tibble: 2 x 3
+##   .model .type winkler
+##   &lt;chr&gt;  &lt;chr&gt;   &lt;dbl&gt;
+## 1 Mean   Test    0.696
+## 2 RW     Test    0.696
+```
+
+
+```r
+F.Ford.Training &lt;- F.Ford %&gt;% stretch_tsibble(.init=10, .step=1)
+F.Ford.Training %&gt;% model(`RW` = RW(close ~ drift()), `Mean` = NAIVE(close)) %&gt;% forecast(h=1) %&gt;% accuracy(F.Ford, list(crps = CRPS, skill = skill_score(CRPS)))
+```
+
+```
+## # A tibble: 2 x 4
+##   .model .type  crps skill
+##   &lt;chr&gt;  &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt;
+## 1 Mean   Test  0.101 0.925
+## 2 RW     Test  0.101 0.925
+```
+
 
 ---
 # TSCV
