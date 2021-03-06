@@ -54,7 +54,7 @@ Expanding the space of relevant models still operates in the circle of chapter 5
 ---
 ### A Bit More on Linear Models
 
-First, on knots.  Trends are not always *monotonic*.  Witness the example of population in Afghanistan.
+Nonlinearity; they argue against nonlinear trends.  So now what?  Knots.  Trends are not always *monotonic*.  Witness the example of population in Afghanistan.  **NB: But this probably gets unrealistic pretty fast.**
 
 ```{r, eval=FALSE}
 global_economy %>%
@@ -200,7 +200,7 @@ Strengths:
 + Can accommodate covariates and lag structures.
 
 Weaknesses:
-+ Persistence of unknown origin.
++ Persistence of unknown origin and the need for decay.  This will be inherently nonlinear.
 
 ---
 ## Simple Exponential Smoothing
@@ -212,7 +212,7 @@ $$\hat{y}_{T+1|T} = \alpha y_{T} + \alpha(1 - \alpha)y_{T-1} + \alpha(1-\alpha)^
 ---
 ## Weighted Averages and the Component Form
 
-Describe the outcome as two separate but combinable forms: a Forecast equation $$\hat{y}_{t+h|t} = S_{t}$$ and a Smoothing Equation $$S_{t} = \alpha y_{t} + (1-\alpha) S_{t-1}$$.
+Describe the outcome as two separate but combineable forms: a Forecast equation $$\hat{y}_{t+h|t} = S_{t}$$ and a Smoothing Equation $$S_{t} = \alpha y_{t} + (1-\alpha) S_{t-1}$$.
 
 If we combine them, we get:
 
@@ -223,6 +223,10 @@ $$\hat{y}_{t+h|t} = \alpha y_{t} + (1-\alpha) S_{t-1}$$
 ## The Model: `ETS`
 
 the `error` component (either `M` multiplicative or `A` additive)
+
+the `trend`
+
+the `season`
 
 Some comments on options -- the optimization method.
 
@@ -278,7 +282,9 @@ and a seasonal equation $$s_{t} = \gamma(y_{t} - S_{t-1} - b_{t-1}) + (1-\gamma)
 A [glorious taxonomy](https://otexts.com/fpp3/taxonomy.html) for the models that all fits in one simple code expression.
 
 ```
-model(ETS(outcome ~ error("A"/"M") + trend(method=c("N","A","Ad")) + season(method = c("N", "A", "M"))))
+model(ETS(outcome ~ error("A"/"M") 
++ trend(method=c("N","A","Ad")) 
++ season(method = c("N", "A", "M"))))
 ```
 
 ---
@@ -286,7 +292,7 @@ model(ETS(outcome ~ error("A"/"M") + trend(method=c("N","A","Ad")) + season(meth
 
 NB: Multiplicative errors and negative values  [also, next slide]
 
-Information criterion [IC] provide a measure of goodness of fit for models that may differ in number of parameters or underlying form.  
+Information criterion [IC] provide a measure of goodness of fit for models that may differ in number of parameters or underlying form.  Minimize it.  
 
 `ETS` will do this automagically if not given guidance.
 

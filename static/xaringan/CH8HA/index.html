@@ -47,7 +47,7 @@ Expanding the space of relevant models still operates in the circle of chapter 5
 ---
 ### A Bit More on Linear Models
 
-First, on knots.  Trends are not always *monotonic*.  Witness the example of population in Afghanistan.
+Nonlinearity; they argue against nonlinear trends.  So now what?  Knots.  Trends are not always *monotonic*.  Witness the example of population in Afghanistan.  **NB: But this probably gets unrealistic pretty fast.**
 
 
 ```r
@@ -84,12 +84,13 @@ fit %&gt;% report()
 
 ```
 # A tibble: 2 x 16
-  Country     .model    r_squared adj_r_squared  sigma2 statistic  p_value    df
-  &lt;fct&gt;       &lt;chr&gt;         &lt;dbl&gt;         &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt; &lt;int&gt;
-1 Afghanistan linear        0.838         0.835 1.02e13      290. 8.37e-24     2
-2 Afghanistan piecewise     0.999         0.999 9.05e10    12929. 4.34e-77     4
-# … with 8 more variables: log_lik &lt;dbl&gt;, AIC &lt;dbl&gt;, AICc &lt;dbl&gt;, BIC &lt;dbl&gt;,
-#   CV &lt;dbl&gt;, deviance &lt;dbl&gt;, df.residual &lt;int&gt;, rank &lt;int&gt;
+  Country     .model    r_squared adj_r_squared  sigma2 statistic
+  &lt;fct&gt;       &lt;chr&gt;         &lt;dbl&gt;         &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;
+1 Afghanistan linear        0.838         0.835 1.02e13      290.
+2 Afghanistan piecewise     0.999         0.999 9.05e10    12929.
+# … with 10 more variables: p_value &lt;dbl&gt;, df &lt;int&gt;,
+#   log_lik &lt;dbl&gt;, AIC &lt;dbl&gt;, AICc &lt;dbl&gt;, BIC &lt;dbl&gt;, CV &lt;dbl&gt;,
+#   deviance &lt;dbl&gt;, df.residual &lt;int&gt;, rank &lt;int&gt;
 ```
 
 ---
@@ -178,7 +179,7 @@ Strengths:
 + Can accommodate covariates and lag structures.
 
 Weaknesses:
-+ Persistence of unknown origin.
++ Persistence of unknown origin and the need for decay.  This will be inherently nonlinear.
 
 ---
 ## Simple Exponential Smoothing
@@ -190,7 +191,7 @@ Appropriate for absence of seasons and trends.  We could use **naive** (most rec
 ---
 ## Weighted Averages and the Component Form
 
-Describe the outcome as two separate but combinable forms: a Forecast equation `$$\hat{y}_{t+h|t} = S_{t}$$` and a Smoothing Equation `$$S_{t} = \alpha y_{t} + (1-\alpha) S_{t-1}$$`.
+Describe the outcome as two separate but combineable forms: a Forecast equation `$$\hat{y}_{t+h|t} = S_{t}$$` and a Smoothing Equation `$$S_{t} = \alpha y_{t} + (1-\alpha) S_{t-1}$$`.
 
 If we combine them, we get:
 
@@ -201,6 +202,10 @@ If we combine them, we get:
 ## The Model: `ETS`
 
 the `error` component (either `M` multiplicative or `A` additive)
+
+the `trend`
+
+the `season`
 
 Some comments on options -- the optimization method.
 
@@ -256,7 +261,9 @@ and a seasonal equation `$$s_{t} = \gamma(y_{t} - S_{t-1} - b_{t-1}) + (1-\gamma
 A [glorious taxonomy](https://otexts.com/fpp3/taxonomy.html) for the models that all fits in one simple code expression.
 
 ```
-model(ETS(outcome ~ error("A"/"M") + trend(method=c("N","A","Ad")) + season(method = c("N", "A", "M"))))
+model(ETS(outcome ~ error("A"/"M") 
++ trend(method=c("N","A","Ad")) 
++ season(method = c("N", "A", "M"))))
 ```
 
 ---
@@ -264,7 +271,7 @@ model(ETS(outcome ~ error("A"/"M") + trend(method=c("N","A","Ad")) + season(meth
 
 NB: Multiplicative errors and negative values  [also, next slide]
 
-Information criterion [IC] provide a measure of goodness of fit for models that may differ in number of parameters or underlying form.  
+Information criterion [IC] provide a measure of goodness of fit for models that may differ in number of parameters or underlying form.  Minimize it.  
 
 `ETS` will do this automagically if not given guidance.
 
@@ -358,10 +365,12 @@ Model: ETS(M,N,A)
     gamma = 0.000100245 
 
   Initial states:
-        l        s1       s2       s3       s4        s5        s6        s7
- 13431.53 -61.05507 587.4126 408.7336 40.73423 -87.14542 -9.647193 -12.55176
-        s8        s9       s10       s11       s12
- -21.01246 -124.4436 -228.6283 -233.3413 -259.0552
+        l        s1       s2       s3       s4        s5
+ 13431.53 -61.05507 587.4126 408.7336 40.73423 -87.14542
+        s6        s7        s8        s9       s10       s11
+ -9.647193 -12.55176 -21.01246 -124.4436 -228.6283 -233.3413
+       s12
+ -259.0552
 
   sigma^2:  0.0001
 
@@ -408,10 +417,12 @@ Model: ETS(A,Ad,A)
     phi   = 0.911447 
 
   Initial states:
-        l         b        s1       s2       s3       s4       s5       s6
- 17935.55 -45.87953 -104.5277 15.24663 31.31771 51.40015 80.23824 92.18335
-       s7       s8        s9       s10       s11       s12
- 20.34779 83.99983 -35.97472 -69.76497 -67.62791 -96.83835
+        l         b        s1       s2       s3       s4       s5
+ 17935.55 -45.87953 -104.5277 15.24663 31.31771 51.40015 80.23824
+       s6       s7       s8        s9       s10       s11
+ 92.18335 20.34779 83.99983 -35.97472 -69.76497 -67.62791
+       s12
+ -96.83835
 
   sigma^2:  7755.833
 
