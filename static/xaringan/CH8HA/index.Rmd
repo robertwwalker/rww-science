@@ -345,7 +345,7 @@ Not all are known analytically, but we can always use distributions of step ahea
 # A Simplified Example
 
 ```{r}
-load("USEmployment.RData")
+load(url("https://github.com/robertwwalker/rww-science/raw/master/static/xaringan/CH7HA/USEmployment.RData"))
 us_employment %>% data.frame() %>% group_by(Series_ID) %>% summarise(Title = first(Title)) %>% mutate(series_id = Series_ID) %>% ungroup() %>% select(-Series_ID) -> Names.List
 US.Employment.T <- left_join(US.Employment, Names.List, by = c("series_id" = "series_id")) %>% mutate(YM = yearmonth(date)) %>% rename(Employed = value) %>% as_tsibble(., index=YM, key=Title)
 USET <- US.Employment.T %>% filter(YM > yearmonth("1990-01"), Title%in%c("Retail Trade")) %>% as_tsibble(., index=YM, key=Title)
