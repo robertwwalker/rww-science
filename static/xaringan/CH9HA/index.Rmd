@@ -844,7 +844,7 @@ p1 | p2
 
 
 ---
-## Example: Mink trapping
+## Mink trapping
 
 ```{r, echo=TRUE}
 mink %>% gg_tsdisplay(value, plot_type='partial')
@@ -1147,6 +1147,16 @@ Start with $h=1$. Repeat for $h=2,3,\dots$.
 ## Intervals
 
 [Intervals](https://otexts.com/fpp3/arima-forecasting.html)
+
+---
+## Let's Try....
+
+For the GDP data (from `global_economy`):
+
+ * fit a suitable ARIMA model to the logged data for all countries
+ * check the residual diagnostics for Austria;
+ * produce forecasts of your fitted model for Austria.
+
 
 ---
 # Seasonal ARIMA models

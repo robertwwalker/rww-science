@@ -4,7 +4,7 @@
     <title>Time Series: ARMA and ARIMA</title>
     <meta charset="utf-8" />
     <meta name="author" content="Robert W. Walker" />
-    <meta name="date" content="2021-03-12" />
+    <meta name="date" content="2021-03-13" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
   </head>
@@ -16,7 +16,7 @@ class: center, middle, inverse, title-slide
 ## FPP3, Chapter 9
 ### Robert W. Walker
 ### AGSM
-### 2021-03-12
+### 2021-03-13
 
 ---
 
@@ -179,7 +179,7 @@ gafa_stock %&gt;%
   autoplot(Close) + ylab("Google closing stock price") + xlab("Day") + theme_ipsum_rc()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-2-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-4-1.png" width="576" /&gt;
 
 ---
 ## Stationary?
@@ -191,7 +191,7 @@ gafa_stock %&gt;%
   autoplot(difference(Close)) + ylab("Google closing stock price") + xlab("Day") + theme_ipsum_rc()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-3-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-5-1.png" width="576" /&gt;
 
 ---
 ## Stationary?
@@ -202,7 +202,7 @@ as_tsibble(fma::strikes) %&gt;% autoplot(value) +
   ylab("Number of strikes") + xlab("Year") + theme_ipsum_rc()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-4-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-6-1.png" width="576" /&gt;
 
 ---
 ## Stationary?
@@ -212,7 +212,7 @@ as_tsibble(fma::strikes) %&gt;% autoplot(value) +
 as_tsibble(fma::hsales) %&gt;% autoplot(value) + labs(x="Year", y="Total sales", title="Sales of new one-family houses, USA") + theme_ipsum_rc()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-5-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-7-1.png" width="576" /&gt;
 
 ---
 ## Stationary?
@@ -222,7 +222,7 @@ as_tsibble(fma::hsales) %&gt;% autoplot(value) + labs(x="Year", y="Total sales",
 as_tsibble(fma::eggs) %&gt;% autoplot(value) + labs(x="Year", y="$", title = "Price of a dozen eggs in 1993 dollars") + theme_ipsum_rc()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-6-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-8-1.png" width="576" /&gt;
 
 ---
 
@@ -234,7 +234,7 @@ aus_livestock %&gt;%
   filter(Animal == "Pigs", State == "Victoria", year(Month) &gt;= 2010) %&gt;% autoplot(Count/1e3) + labs(x="Year", y = "thousands", title="Number of pigs slaughtered in Victoria")
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-7-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-9-1.png" width="576" /&gt;
 
 ---
 
@@ -245,7 +245,7 @@ aus_livestock %&gt;%
 pelt %&gt;% autoplot(Lynx) + labs(x="Year", y = "Number trapped", title="Annual Canadian Lynx Trappings") + theme_ipsum_rc()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-8-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-10-1.png" width="576" /&gt;
 
 ---
 ## Definition
@@ -281,7 +281,7 @@ google_2018 &lt;- gafa_stock %&gt;%
 google_2018 %&gt;% autoplot(Close) + theme_ipsum_rc()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-9-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-11-1.png" width="576" /&gt;
 
 ---
 ## Google price: ACF
@@ -292,7 +292,7 @@ google_2018 %&gt;%
   ACF(Close) %&gt;% autoplot() + theme_ipsum_rc()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-10-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-12-1.png" width="576" /&gt;
 
 ---
 
@@ -306,7 +306,7 @@ gafa_stock %&gt;%
   labs(y="Change in Google closing stock price ( $USD)", x="Day") + theme_ipsum_rc()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-11-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-13-1.png" width="576" /&gt;
 
 ---
 ## Google change: ACF
@@ -316,7 +316,7 @@ gafa_stock %&gt;%
 google_2018 %&gt;% ACF(difference(Close)) %&gt;% autoplot() + theme_ipsum_rc()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-12-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-14-1.png" width="576" /&gt;
 
 ---
 ## Conclusion
@@ -367,7 +367,7 @@ The oscillation appears more variable in the latter half than the former half.
 usmelec %&gt;% autoplot(Generation) + theme_ipsum_rc()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-13-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-15-1.png" width="576" /&gt;
 
 ---
 ## Electricity Generation (log)
@@ -377,7 +377,7 @@ usmelec %&gt;% autoplot(Generation) + theme_ipsum_rc()
 usmelec %&gt;% autoplot(log(Generation)) + theme_ipsum_rc()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-14-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-16-1.png" width="576" /&gt;
 
 
 ---
@@ -390,7 +390,7 @@ usmelec %&gt;% autoplot(log(Generation)) + theme_ipsum_rc()
 usmelec %&gt;% autoplot(log(Generation) %&gt;% difference(12)) + theme_ipsum_rc()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-15-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-17-1.png" width="576" /&gt;
 
 ---
 ## Electricity Generation (seasonal difference and log)
@@ -402,7 +402,7 @@ Patterns seem to remain.
 usmelec %&gt;% ACF(log(Generation) %&gt;% difference(12)) %&gt;% autoplot() + theme_ipsum_rc()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-16-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-18-1.png" width="576" /&gt;
 
 ---
 ## Electricity Generation (seasonal difference and log with difference)
@@ -413,7 +413,7 @@ usmelec %&gt;% ACF(log(Generation) %&gt;% difference(12)) %&gt;% autoplot() + th
 usmelec %&gt;% autoplot(log(Generation) %&gt;% difference(12) %&gt;% difference()) + theme_ipsum_rc()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-17-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-19-1.png" width="576" /&gt;
 
 
 ---
@@ -425,7 +425,7 @@ usmelec %&gt;% autoplot(log(Generation) %&gt;% difference(12) %&gt;% difference(
 usmelec %&gt;% ACF(log(Generation) %&gt;% difference(12) %&gt;% difference()) %&gt;% autoplot() + theme_ipsum_rc()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-18-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-20-1.png" width="576" /&gt;
 
 ---
 ## Electricity production
@@ -504,10 +504,11 @@ usmelec %&gt;% mutate(log_gen = log(Generation)) %&gt;%
 
 ```
 # A tibble: 1 x 10
-  nsdiffs trend_strength seasonal_strength_… seasonal_peak_ye… seasonal_trough_…
-    &lt;int&gt;          &lt;dbl&gt;               &lt;dbl&gt;             &lt;dbl&gt;             &lt;dbl&gt;
-1       1          0.994               0.941                 7                 4
-# … with 5 more variables: spikiness &lt;dbl&gt;, linearity &lt;dbl&gt;, curvature &lt;dbl&gt;,
+  nsdiffs trend_strength seasonal_strength_year seasonal_peak_year
+    &lt;int&gt;          &lt;dbl&gt;                  &lt;dbl&gt;              &lt;dbl&gt;
+1       1          0.994                  0.941                  7
+# … with 6 more variables: seasonal_trough_year &lt;dbl&gt;,
+#   spikiness &lt;dbl&gt;, linearity &lt;dbl&gt;, curvature &lt;dbl&gt;,
 #   stl_e_acf1 &lt;dbl&gt;, stl_e_acf10 &lt;dbl&gt;
 ```
 
@@ -548,7 +549,7 @@ For the `tourism` dataset, compute the total number of trips and find an appropr
 tourism %&gt;%  summarise(Trips = sum(Trips)) %&gt;% autoplot() + labs(title="Total trips in tourism", x="Quarter", y="Trips") + theme_ipsum_rc()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-22-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-24-1.png" width="576" /&gt;
 
 ---
 ## The Backshift Operator
@@ -612,7 +613,7 @@ where `\(\varepsilon_t\)` is white noise. This is a multiple regression with **l
 `$$y_{t} = 18 -0.8 y_{t - 1} + \varepsilon_{t}$$`
 `\(\varepsilon_t\sim N(0,1)\)`, `\(T=100\)`.
 
-&lt;img src="index_files/figure-html/unnamed-chunk-23-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-25-1.png" width="576" /&gt;
 
 
 ---
@@ -636,7 +637,7 @@ where `\(\varepsilon_t\)` is white noise. This is a multiple regression with **l
 p2
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-24-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-26-1.png" width="576" /&gt;
 
 ---
 ## Stationarity conditions
@@ -686,7 +687,7 @@ p1 | p2
 p1
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-25-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-27-1.png" width="576" /&gt;
 
 ---
 ## MA(2) model
@@ -700,7 +701,7 @@ p1
 p2
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-26-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-28-1.png" width="576" /&gt;
 
 ---
 MA( `\(\infty\)` ) models
@@ -819,7 +820,7 @@ us_change %&gt;% autoplot(Consumption) +
   ggtitle("US consumption")
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-27-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-29-1.png" width="576" /&gt;
 
 ---
 ## US personal consumption
@@ -871,7 +872,7 @@ fit %&gt;% forecast(h=10) %&gt;%
   autoplot(tail(us_change, 80))
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-30-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-32-1.png" width="576" /&gt;
 
 ---
 ## Understanding ARIMA models
@@ -942,7 +943,7 @@ mink %&gt;% autoplot(value) +
   ggtitle("Annual number of minks trapped")
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-31-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-33-1.png" width="576" /&gt;
 
 ---
 ## Mink trapping
@@ -954,18 +955,18 @@ p2 &lt;- mink %&gt;% PACF(value) %&gt;% autoplot()
 p1 | p2
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-32-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-34-1.png" width="576" /&gt;
 
 
 ---
-## Example: Mink trapping
+## Mink trapping
 
 
 ```r
 mink %&gt;% gg_tsdisplay(value, plot_type='partial')
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-33-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-35-1.png" width="576" /&gt;
 
 ---
 ## ACF and PACF interpretation
@@ -1088,7 +1089,7 @@ web_usage &lt;- as_tsibble(WWWusage)
 web_usage %&gt;% gg_tsdisplay(value, plot_type = 'partial')
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-34-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-36-1.png" width="576" /&gt;
 
 ---
 ## Choosing your own model
@@ -1099,7 +1100,7 @@ web_usage %&gt;% mutate(diff = difference(value)) %&gt;%
   gg_tsdisplay(diff, plot_type = 'partial')
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-35-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-37-1.png" width="576" /&gt;
 
 ---
 ## Choosing your own model
@@ -1179,7 +1180,7 @@ AIC=511.99   AICc=512.42   BIC=522.37
 gg_tsresiduals(fit)
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-38-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-40-1.png" width="576" /&gt;
 
 ---
 ## Choosing your own model
@@ -1206,7 +1207,7 @@ fit %&gt;% forecast(h = 10) %&gt;%
   autoplot(web_usage)
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-40-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-42-1.png" width="576" /&gt;
 
 ---
 ## Modelling procedure with `ARIMA()`
@@ -1325,7 +1326,7 @@ AIC=995.38   AICc=995.7   BIC=1011.72
 
 6. ACF plot of residuals from ARIMA(3,1,1) model look like white noise.
 
-&lt;img src="index_files/figure-html/unnamed-chunk-43-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-45-1.png" width="576" /&gt;
 
 ---
 ## Seasonally adjusted electrical equipment
@@ -1351,7 +1352,7 @@ augment(fit) %&gt;%
 fit %&gt;% forecast %&gt;% autoplot(dcmp)
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-45-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-47-1.png" width="576" /&gt;
 
 ---
 # Forecasting
@@ -1369,6 +1370,16 @@ Start with `\(h=1\)`. Repeat for `\(h=2,3,\dots\)`.
 ## Intervals
 
 [Intervals](https://otexts.com/fpp3/arima-forecasting.html)
+
+---
+## Let's Try....
+
+For the GDP data (from `global_economy`):
+
+ * fit a suitable ARIMA model to the logged data for all countries
+ * check the residual diagnostics for Austria;
+ * produce forecasts of your fitted model for Austria.
+
 
 ---
 # Seasonal ARIMA models
@@ -1433,7 +1444,7 @@ usmelec %&gt;% autoplot(
 )
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-46-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-48-1.png" width="576" /&gt;
 
 ---
 ## US electricity production
@@ -1445,7 +1456,7 @@ usmelec %&gt;% autoplot(
 )
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-47-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-49-1.png" width="576" /&gt;
 
 ---
 ## US electricity production
@@ -1457,7 +1468,7 @@ usmelec %&gt;% autoplot(
 )
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-48-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-50-1.png" width="576" /&gt;
 
 ---
 ## US electricity production
@@ -1469,7 +1480,7 @@ usmelec %&gt;% gg_tsdisplay(
   plot_type = "partial")
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-49-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-51-1.png" width="576" /&gt;
 
 ---
 ## US electricity production
@@ -1536,7 +1547,7 @@ fit &lt;- usmelec %&gt;%
 gg_tsresiduals(fit)
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-50-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-52-1.png" width="576" /&gt;
 
 ---
 ## US electricity production
