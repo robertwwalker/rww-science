@@ -699,10 +699,10 @@ $$y_{t} = (1-\phi_1B - \cdots - \phi_p B^p) y_t = c + (1 + \theta_1 B + \cdots +
 ---
 ### ARIMA(1,1,1) model
 
-$$(1 - \phi_{1} B) & (1 - B) y_{t} &= &c + (1 + \theta_{1} B) \varepsilon_{t}\\
-{\uparrow} & {\uparrow} & &{\uparrow}\\
-{\text{AR(1)}} & {\text{First}} &  &{\text{MA(1)}}\\
-& {\hbox {\hss\text{difference}\hss}}$$
+$$(1 - \phi_{1} B) & (1 - B) y_{t} = c + (1 + \theta_{1} B) \varepsilon_{t}\\
+{\uparrow}  {\uparrow} {\uparrow}\\
+{\text{AR(1)}}  {\text{First}}   {\text{MA(1)}}\\
+ {\hbox {\hss\text{difference}\hss}}$$
 
 Written out:
 $$y_t = c + y_{t-1} + \phi_1 y_{t-1}- \phi_1 y_{t-2} + \theta_1\varepsilon_{t-1} + \varepsilon_t$$

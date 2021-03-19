@@ -1,10 +1,4 @@
 base
-methods
-datasets
-utils
-grDevices
-graphics
-stats
 tidyverse
 ggplot2
 tibble
@@ -32,3 +26,4 @@ xaringan
 xaringanthemer
 seasonal
 magrittr
+sugrrants

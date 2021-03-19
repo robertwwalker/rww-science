@@ -16,7 +16,7 @@ output:
 
 ```{r setup, include=FALSE}
 options(htmltools.dir.version = FALSE)
-knitr::opts_chunk$set(fig.retina=3, fig.width=8, fig.height=5, warning=FALSE, message=FALSE, comment='')
+knitr::opts_chunk$set(fig.retina=3, fig.width=8, fig.height=5, warning=FALSE, message=FALSE, comment='', cache=TRUE)
 library(tidyverse)
 library(fpp3)
 library(purrr)
