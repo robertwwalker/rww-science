@@ -104,6 +104,34 @@ fit %>% report()
 ```
 
 ---
+## Handling Multiple Models
+
+`mable` stores models.  The rows are given by the `key` and the columns are given by the model names.  For diagnostics on a particular model/subset, we will need a filter/select combination.
+
+```
+global_economy %>%
+  model(
+    linear = TSLM(Population ~ trend()),
+    piecewise = TSLM(Population ~ trend(knots = c(1980, 1989)))
+  ) %>%
+  filter(Country=="Afghanistan") %>%
+  select(piecewise) %>%
+  gg_tsresiduals()
+```
+
+
+---
+# Residual Assessment
+
+```{r, eval=FALSE}
+fit1 <- global_economy %>%
+  filter(Country == "Afghanistan") %>%
+  model(linear = TSLM(Population ~ trend()))
+gg_tsresiduals(fit1)
+```
+
+
+---
 # Residual Assessment
 
 ```{r, echo=FALSE}
@@ -112,6 +140,17 @@ fit1 <- global_economy %>%
   model(linear = TSLM(Population ~ trend()))
 gg_tsresiduals(fit1)
 ```
+
+---
+# Residual Assessment
+
+```{r, eval=FALSE}
+fit2 <- global_economy %>%
+  filter(Country == "Afghanistan") %>%
+  model(piecewise = TSLM(Population ~ trend(knots = c(1980, 1989))))
+gg_tsresiduals(fit2)
+```
+
 
 ---
 # Residual Assessment
