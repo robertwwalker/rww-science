@@ -30,7 +30,7 @@ complete week 4 data for week 5:
 load(url("https://github.com/robertwwalker/DADMStuff/raw/master/Ch4HA.RData"))
 ```
 
-+ [Slides for Week 10](https://rww.science/xaringan/ch10ts/index.html) 
++ [Slides for Week 10](https://rww.science/xaringan/CH10HA/index.html) 
 + [Slides for Week 9](https://rww.science/xaringan/CH9HA/index.html) 
 + [Slides for Week 8](https://rww.science/xaringan/CH8HA/index.html) 
 + [Slides for Week 7](https://rww.science/xaringan/CH7HA/index.html) 
@@ -39,3 +39,12 @@ load(url("https://github.com/robertwwalker/DADMStuff/raw/master/Ch4HA.RData"))
 + [Slides for Week 4](https://rww.science/xaringan/CH4HA/index.html)  
 + [Slides for Week 3](https://rww.science/xaringan/CH3HA/index.html)  
 + [Partial slides for Week 1](https://rww.science/xaringan/tidyDS/tidy.html)  
+
+
+Some Resources:
+
++ [Basic Time Series](https://rww.science/courses/DATA521/Basic-TS/Basic-TS.html)
++ [Equities](https://rww.science/courses/DATA521/Equities/Equities.html)
++ [FRED](https://rww.science/courses/DATA521/FRED/fred-2.html)
++ [fredr-employment](https://rww.science/courses/DATA521/fredr-employment/fredr-employment.html)
++ [Spurious Regressions](https://rww.science/courses/DATA521/Spurious-Regressions/Spurious.html)
