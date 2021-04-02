@@ -30,7 +30,7 @@ complete week 4 data for week 5:
 load(url("https://github.com/robertwwalker/DADMStuff/raw/master/Ch4HA.RData"))
 ```
 
-+ [Slides for Week 11](https://rww.science/xaringan/CH11TA/index.html) 
++ [Slides for Week 11](https://rww.science/xaringan/CH11HA/index.html) 
 + [Slides for Week 10](https://rww.science/xaringan/CH10HA/index.html) 
 + [Slides for Week 9](https://rww.science/xaringan/CH9HA/index.html) 
 + [Slides for Week 8](https://rww.science/xaringan/CH8HA/index.html) 
