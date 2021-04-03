@@ -386,6 +386,22 @@ where $g$ is piecewise linear *growth*; $s$ is Fourier seasonal terms; and $h$ i
 ---
 # Vector autoregression
 
+1. The economist's view of causation is built on **Granger causality** which stresses the idea of temporal precedence:  **cause must come before effect**.  This ran into problems with Lucas's rational expectations thesis and with Sims *Macroeconomics and Reality*.
+
+2. Normally, we conjecture a regression model with inputs and outputs with unidirectional "causation".  Drivers and driven.
+
+3. We can address the two problems above with a multiequation system.  We choose the set of interrelated variables (k) and the number of relevant lags (p).
+
+---
+## VAR doesn't appear to work
+
+Using `fpp3` type syntax.  It requires using the `fpp2` style.
+
+```{r}
+VAR(fpp2::uschange[,c(1:2)])
+```
+
+
 ---
 # Neural network models
 
