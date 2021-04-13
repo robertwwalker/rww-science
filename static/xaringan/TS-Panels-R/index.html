@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Time Series and Panels Data in R</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Robert W. Walker" />
+    <meta name="date" content="2021-04-13" />
+    <script src="libs/header-attrs/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Time Series and Panels Data in R
+## Guest Presentation for UTD EPS 7371
+### Robert W. Walker
+### AGSM-Willamette
+### 2021-04-13
+
+---
+
+
+
+
+
+
+# Panel Data and Time Series in R
+
+R has extensive capabilities for handling both time series and `grouped` time series, also known as Cross-Sectional Time Series, Time Series Cross-Sections, and Panel Data.
+
+There are a plethora of packages for this; I will pay particular attention to:
+
+1. `fpp3` from `tidyverts`
+2. `plm`
+3. `panelr` [much smaller set]
+
+---
+## `fpp3`
+
+The `fpp3` package was built to support the excellent *Forecasting: Principles and Practice, 3rd Edition* by Rob J Hyndman and George Athanasopoulos.  The book, complete with extensive R code, can be found [here](https://otexts.com/fpp3/).
+
+```
+install.packages("fpp3")
+```
+
+The `tidyverts` is a package ecosystem that seeks to extend Hadley Wickham's `tidyverse` principles to time series analysis.  The centrality of tidy data means that many basic panel data visualizations arise naturally in combination with `ggplot2`.
+
+---
+## `plm`
+
+The `plm` package by Croissant and Millo (2018) supports their *Panel Data Econometrics with R*.  The book is a fairly comprehensive treatment of modern panel methods.
+
+```
+install.packages("plm")
+```
+
+---
+## `panelr`
+
+The `panelr` package by Jacob A. Long of the University of South Carolina.  It contains some overlap with the `plm` package but adds models by Allison (2019) incorporating asymmetric effects and the **within-between** model explored in a series of papers by Bell and Jones.
+
+```
+install.packages("panelr")
+```
+
+---
+### Load the Necessary Libraries
+
+```
+library(tidyverse)
+library(fpp3)
+library(purrr)
+library(gganimate)
+library(tsibble)
+library(tidyquant)
+library(hrbrthemes)
+library(geofacet)
+```
+
+---
+## Some Data
+
+I will use some easily accessible daily data on COVID cases accessed April 13, 2021 from the New York Times.
+
+
+```r
+NYT.COVIDN &lt;- read.csv(url("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv"))
+# Define a tsibble; the date is imported as character so mutate that first.
+NYT.COVID &lt;- NYT.COVIDN %&gt;% 
+  mutate(date=as.Date(date)) %&gt;% 
+* as_tsibble(index=date, key=state) %&gt;%
+  group_by(state) %&gt;% 
+  mutate(New.Cases = difference(cases), 
+         New.Deaths = difference(deaths)) %&gt;% 
+  filter(!(state %in% c("Guam","Puerto Rico", "Virgin Islands","Northern Mariana Islands"))) %&gt;% 
+  filter(date &gt; as.Date("2020-03-31")) %&gt;%
+  ungroup()
+```
+
+The highlighted line is the innovation of a **tsibble** -- a time series data table.
+
+---
+## The `tsibble` is tidy
+
+
+```r
+NYT.COVID %&gt;% head()
+```
+
+```
+# A tsibble: 6 x 7 [1D]
+# Key:       state [1]
+  date       state    fips cases deaths New.Cases New.Deaths
+  &lt;date&gt;     &lt;chr&gt;   &lt;int&gt; &lt;int&gt;  &lt;int&gt;     &lt;int&gt;      &lt;int&gt;
+1 2020-04-01 Alabama     1  1108     28       109         14
+2 2020-04-02 Alabama     1  1270     32       162          4
+3 2020-04-03 Alabama     1  1535     38       265          6
+4 2020-04-04 Alabama     1  1632     44        97          6
+5 2020-04-05 Alabama     1  1840     45       208          1
+6 2020-04-06 Alabama     1  2005     53       165          8
+```
+
+where tidy data are defined by **key-value** pairs and panel data are defined by two non-overlapping **keys**: units and time.
+
+---
+## The Common Plots
+
+
+```r
+Cases.Plot &lt;- NYT.COVID %&gt;% autoplot(cases) + scale_y_log10() + guides(color=FALSE) + labs(title="COVID-19 Cases in the 50 US States", y="log(COVID-19 Cases)") + theme_ipsum_rc() 
+Cases.Plot
+```
+
+&lt;img src="index_files/figure-html/unnamed-chunk-2-1.png" width="576" /&gt;
+
+---
+## Fun
+
+
+```r
+Cases.Plot + transition_reveal(date)
+```
+
+![](index_files/figure-html/unnamed-chunk-3-1.gif)&lt;!-- --&gt;
+
+---
+## More Fun
+
+&lt;img src="index_files/figure-html/unnamed-chunk-4-1.png" width="1008" /&gt;
+
+---
+### Time Series Plots
+
+&lt;img src="index_files/figure-html/unnamed-chunk-5-1.png" width="1008" /&gt;
+
+---
+### Time Series Plots
+
+&lt;img src="index_files/figure-html/unnamed-chunk-6-1.png" width="1008" /&gt;
+
+
+---
+### The Core of Panel Data
+
+Panel data are two dimensional; they are time series of the same phenomenon across multiple units or they are repeated measures of the same cross-sectional data.  The idea is two **orthogonal** dimensions.  Indeed, an old idea from **ANOVA** is extremely useful: the **between** and **within** [unit] decomposition. `$$T = B + W$$`
+
++ W(ithin) for unit `\(i\)`: `$$W_{i} = \sum_{t=1}^{T} (x_{it} - \overline{x}_{i})^{2}$$`  
++ B(etween): `$$B_{T} = \sum_{i=1}^{N}  (\overline{x}_{i} - \overline{x})^{2}$$`  
++ T(otal): `$$T = \sum_{i=1}^{N} \sum_{t=1}^{T} (x_{it} - \overline{x})^{2}$$`  
+
+
+---
+## Basic Summary of Panels
+
+In *Stata* the data formatting is entirely handled by **xtset** with accompanying commands 
+
++ xtset: Declaring `\(\texttt{xt}\)` data
++ xtdes: Describing `\(\texttt{xt}\)` data structure of the **indices**
++ xtsum: Summarizing `\(\texttt{xt}\)` data
++ xttab: Summarizing categorical `\(\texttt{xt}\)` data.
++ xttrans: Transition matrix for `\(\texttt{xt}\)` data.
++ xtline: Line graphs for `\(\texttt{xt}\)` data.
+
+---
+## Similar Functionality in R
+
+I wrote the summary function to provide the equivalent for xtsum with advantages.  It only works for numeric variables.
+xttrans is interesting.  What does the table look like linking current and prior observations?
+xttab gives interesting insight into whether or not cross-sections experience variation in qualitative outcomes.
+xtdes simply summarizes the missing data patterns though it only does so in the indices.  *naniar* is great.
+
+In R, the easiest way to analyse xtdes on a variable by variable basis is dplyr's groupby and skim from skimr.
+xttrans and xttab are similar in terms of implementation.  For example, with a binary variable, xttrans is group_by(country) then table(xvar, lag(xvar))
+
+---
+## Summary
+
+
+```r
+source(url("https://raw.githubusercontent.com/robertwwalker/DADMStuff/master/xtsum.R"))
+xtsum(state~., data=data.frame(NYT.COVID))
+```
+
+```
+             O.mean     O.sd O.min   O.max          O.SumSQ   O.N   B.mean
+fips         28.961   15.677     1      56          4725288 19227   28.961
+cases        233655   412335   129 3704151 3268807838933908 19227   233655
+deaths     4943.447 8024.073     0   60457    1237880252154 19227 4943.447
+New.Cases  1609.304 3181.565 -7757   64987     194612372550 19227 1609.304
+New.Deaths   28.886   68.246  -598    2559         89545510 19227   28.886
+               B.sd     B.min    B.max B.Units B.t.bar     W.sd     W.min
+fips         15.833         1       56      51     377        0         0
+cases        271049  5368.207  1377354      51     377 313032.6  -1367497
+deaths     6480.508  95.72944 34336.26      51     377 4817.684 -31921.26
+New.Cases  1869.983  55.69761 9802.568      51     377 2587.258 -9493.024
+New.Deaths   34.653 0.5835544 159.8753      51     377   58.993 -647.7931
+              W.max          W.SumSQ Within.Ovr.Ratio
+fips              0                0                0
+cases       2326797 1883943819175495            0.576
+deaths     39562.08     446237072499             0.36
+New.Cases  55184.43     128696974430            0.661
+New.Deaths 2509.207         66909335            0.747
+```
+
+
+---
+## The Motivation
+
+Most discussions of panel data estimators draw on a **fixed** versus **random** effects distinction.  The subtle distinction is important but perhaps overstated because they can be merged, see Fairbrother, Bell, and Jones.
+
+Generally:
++ If `\(\alpha \neq \alpha_{i} \forall i\)`, then serial correlation is induced in the errors.  At a minimum, this implies incorrect standard errors for inference and inefficiency.  
+
++ If `\(\mathbb{E}[X_{it}\alpha_{i}] \neq 0\)`, then `\((\alpha_{i} - \alpha)\)` is an omitted variable with a consequent bias induced.
+
+---
+## The Models
+
+The structure is the same:
+
+`$$y_{it} = \alpha_{i} + X_{it}\beta + \epsilon_{it}$$`
+
++ Fixed effects: `$$y_{it} - \bar{y}_{i} = \Delta_{i}X_{it}\beta + \Delta_{i}\epsilon_{it}$$`
+
++ Random effects `\(\alpha_{i} \bot X_{it}\)`: `\(\alpha_{i} \sim [\alpha , \sigma^{2}_{\alpha}] \; \; \epsilon_{it} \sim [0 , \sigma^{2}_{\epsilon}]\)`
+
+
+---
+## Implications
+
+The fixed effects estimator **within** transforms all the data and then estimates the regression.  We are throwing away all the between information.  It is consistent, but inefficient, as a result.
+
+The random effects estimator combines within and between information.  It is efficient but consistency depends on `\(\alpha_{i}\)` being independent of `\(x_{it}\)`.
+
+---
+## That's Testable: sort of
+
+The testing philosophy from Hausman yields a test: the Hausman test.
+
+The test requires:
+
+1. Obtain and estimate a consistent estimator but inefficient estimator under the null of no heterogeneity.  **Fixed effects**
+
+2. Obtain and estimate an estimator that is consistent and efficient under the null hypothesis of no heterogeneity but inconsistent under the alternative hypothesis:  **Random effects**
+
+3. The difference in the two estimators is distributed `\(\chi^2\)`.
+
+Vera E. Troeger has an interesting paper on this called `Problematic Choices`, [a very preliminary draft is here](http://www-personal.umich.edu/~franzese/Troeger.RE.FE.Hausman.Polmeth08.pdf).
+
+---
+## Hausman's Idea
+
+The basic idea is that the fixed effects estimator is consistent but potentially inefficient.  The random effects estimator is only consistent under the null.  We can leverage this to form a test in the Hausman family using the result proved in the paper.  This is implemented in Stata using model storage capabilities and as `phtest` .  
+
++ Estimate a consistent model
++ Store the result as XXX.
++ Estimate an efficient model
++ Store the result as YYY.
++ `\(\texttt{hausman}\)` XXX YYY
+
+
+---
+## First-Differences
+
+Define `\(\Delta\)` to be a difference operator so that we can define `$$\Delta^x  =  X_{it} - X_{i,t-1}$$`
+`$$\Delta^y  =  y_{it} - y_{i,t-1}$$`
+
+Observation: N(T-1) observations if `\(T_{i} \geq 2\;\;\; \forall i\)`.  Equality case is interesting.
+The first-difference estimator is then: 
+`$$\Delta^y = \beta\Delta^x + \epsilon_{it}$$`
+
+And an OLS estimator.
+
+NB: For `\(T=2\)`, FE is FD.
+
+---
+## First Differences/Fixed Effects
+
+Either transformation removes heterogeneity.  The difference is that the two estimators operate at different orders of integration.  The difference is not purely convenience; there is substance to this and theory can help.  At the same time, the statistics matter.
+
+---
+## Specification Testing and Interpretation in the Fixed Effects Model
+
+
++ F-test of the dummy variables.  {\color{red}{What does this mean?}}
++ Above can be done in one- and two- way frameworks.
++ The substance depends on the first-order question.  Under what conditions are first-order effects unbiased (we know this)?  The RE/GLS approach works when the orthogonality is maintained.
++ Example from Arellano, p. 40
+
+---
+# Conditional versus unconditional prediction?
+
+---
+# Time-Invariant Explanatory Variables
+
+Disappear in **fixed effects** and **first differences**.  If your substantive interest is a time-invariant input [read sticky institutions], then the model choice is crucial to the substance.
+
+Moreover, a biased estimate of the substantive effect is of dubious value.
+
+Third, the **identification** of an estimated effect will be the few cases that experience change in the rarely-changing variable.  **The school's example.**
+
+---
+## Instrumental Variables
+
+Three key conditions for instruments in general:
++ Orthogonality with `\(y\)`
++ Relevance to endogenous `\(x\)`
++ Variance components of instruments are equivalent
+
+Literature on weak instruments is relevant.
+
+---
+There are two classes of instrumental variables estimators in Stata/plm.
+
++ Hausman-Taylor: Subset of RHS variables are correlated with random effects.
+The idea is that we can use time-varying covariates to achieve identification for time-invariant things correlated with random effects.  Not all that useful in applied setting because convincing instruments are hard to find.
++ General IV: Endogenous covariates
+
+`\(\texttt{xtivreg}\)` implements this for the usual models (FE, RE, BE, FD)
+
+
+---
+## xtfevd
+
+Plumper and Troeger have designed a procedure to solve one of the principle problems that arises in fixed effects regressions: it is either impossible or suboptimal to estimate the effects of time-invariant or nearly time-invariant regressors.  Their approach plays off of the generic consistency of the fixed effects estimator.  In general, they begin by estimating an LSDV model. 
+
+`$$y_{it} = \alpha_{i} + X_{it}\beta + \epsilon_{it}$$`
+
+They then proceed to model the unit effects as a function of (largely) time-invariant regressors that they denote as `\(Z\)`
+
+`$$\alpha_{i} = Z_{i}\gamma + \psi_{i}$$` 
+
+In a third stage, they then construct the regression with an offset.  In effect, they take the offset and add it to the regression such as,
+
+`$$y_{it} = \psi_{i} + X_{it}\beta + Z_{i}\gamma + \nu_{it}$$` 
+
+and adjust the variance/covariance matrix of the errors accordingly.
+
+
+---
+## Stata Implementation
+
+**xtreg**: contains five estimators.  For now, we will skip (pa).
+
++ `\(\texttt{be}\)`: the between effects estimator. `$$\overline{y}_{i} = \overline{x}_{i} + \epsilon_{i}$$`
++ `\(\texttt{fe}\)`: the fixed effects or within estimator. `$$y^{C_{i}} = \mathbf{X}^{C_{i}} + \epsilon_{it}$$`
++ `\(\texttt{re}\)`: the standard GLS random effects estimator.
++ `\(\texttt{mle}\)`: the maximum likelihood random effects estimator.
+
+---
+## Random Effects in Estimation
+
++ The between estimator ignores all within variation  `\(\psi=0\)`.  
++ OLS is a weighted average of between and within `\(\psi=1\)`. 
++ GLS is an optimally determined compromise given the orthogonality assumption `\(0\leq\psi\leq 1\)`.
+
+
+That weight is not in any sense optimally determined, it is a function of the relative ratio of the two quantities (all variance counts the same).  As Hsiao (p. 37) points out that the random effects estimator is often known as a quasi-demeaning estimator.  This is because it is a partial within transformation.  
+
+---
+## Details on Random Effects GLS (FGLS)
+
+We will start with the model we defined as random effects before.  We defined random effects `\(\alpha_{i} \bot X_{it}\)`: `\(\alpha_{i} \sim [\alpha , \sigma^{2}_{\alpha}] \; \; \epsilon_{it} \sim [0 , \sigma^{2}_{\epsilon}]\)`.  
+
+Consider `\(\nu_{it} = \alpha_{i} + \epsilon_{it}\)`.  
+
+For a single cross-section (the Kronecker product will help us here)
+
+`$$\mathbb{E}(\nu_{it}\nu_{it}^{\prime}) = \sigma^{2}_{\epsilon}\mathbf{I_{T}} + \sigma_{\alpha}^{2}\mathbf{1}_{T} = \Omega$$`
+
+The inverse is given by 
+
+`$$\Omega^{-1} = \frac{1}{\sigma^{2}_{\epsilon}}\left[\mathbf{I_{T}} - \frac{\sigma^{2}_{\alpha}}{\sigma_{\epsilon}^{2} + T\sigma^{2}_{\alpha}}\mathbf{1}_{T} \right]$$`
+
+---
+## OLS on pseudo-transformed data
+
+We can also estimate this by using ordinary least squares applied to transformed data.  The quasi-demeaning can be done in a first-stage with OLS estimates on the quasi-demeaned data.  Recall the pooled regression uses no transformation.  The within estimator uses complete demeaning.  The random effects estimator is somewhere in between.
+
+---
+## Mundlak
+
+The basic idea behind Mundlak's paper is that the fixed versus random effects debate is ill conceived.  Moreover, there is a 'right model'.  Why and how?
+
++ Conditional versus unconditional inference.
++ FE problem is inefficiency.
++ RE problem can be bias.
++ Maybe we want an MSE criterion?
++ As usual, `\(N\)` and `\(T\)` matter in size.  Plug-in estimators in general.  
+
+---
+## Bell, Fairbrother, and Jones
+
+Estimate a variant of the Mundlak model that accommodates all the concerns.
+
+`$$y_{it} = \beta_{0} + \beta_{1W}(x_{it} - \overline{x}_{i}) + \beta_{2B}\overline{x}_{i} + \beta_{3}z_{i} + ( \nu_{i} + \epsilon_{it})$$`
+
+[A stata blog post on this is linked here.](https://blog.stata.com/2015/10/29/fixed-effects-or-random-effects-the-mundlak-approach/).
+
+The model is called WBM or within-between model in `panelr`; an illustration is [contained in the vignette](https://cran.r-project.org/web/packages/panelr/vignettes/wbm.html).
+
+---
+# The Nesting Model: Hierarchical Models
+
+The Mundlak/Bell-Jones approach fits fairly comfortably as a special case of hierarchical models.
+
+---
+## Panel Unit Root Testing
+
+`plm` has combined versions of this; it is something of a cottage industry [or was].  `\(R\)` has the added advantage of automating this in the `tidyverts` framework.  Let me look at my data; **recall this is already differenced once**.  *These all appear to require two differences.*
+
+
+```r
+NYT.COVID %&gt;% features(New.Cases, list(unitroot_ndiffs)) %&gt;% as_tibble() %&gt;% ggplot(aes(x=ndiffs)) + geom_bar()
+```
+
+&lt;img src="index_files/figure-html/unnamed-chunk-8-1.png" width="576" /&gt;
+
+---
+## Panel Unit Roots in Stata and R
+
+In Stata, it is `xtunitroot`; [the details are here](https://www.stata.com/manuals/xtxtunitroot.pdf). 
+
+In `\(R\)`, it is `purtest` and [the details can be found here](https://rdrr.io/cran/plm/man/purtest.html).
+
+
+---
+## Some General Data Classification
+
+1. Small n and small t; there is not much information.  
+2. small n and large t; nearly a time series problem and most of the information is (usually) over time.  
+3. Large n and small t; a cross-sectional problem with the need for concern with the basics of `\(t\)`.  Most of this is typically solved with the *Generalized Method of Moments*
+4. Large n and large t: both concerns require solution as there is lots of information in both.
+
+---
+## Beck and Katz and `robust`
+
+Beck and Katz take a different tack to the general data types in common use (long `\(T\)`).  The basic idea is to generate estimates using OLS because GLS can be quite bad. **What do we need to be able to do this?**
+
+They suggest:
+$$ y_{it} = \alpha + \rho y_{i, t-1} + \beta X_{i,t} + \epsilon_{it}$$
+
++ Locate a specification to purge serial correlation (in `\(t\)`).
++ [p. 638] Construct the panel corrected standard error.  Construct `\(\Sigma\)` as `\(N \times N\)` using `$$\hat{\Sigma} = \frac{\sum_{t=1}^{T} e_{it} e_{jt} } {T}.$$`  Estimate the cross-sectional correlation matrix.  Kronecker product this in `\(\mathbf{I}_{T}\)` remembering how we got `\(\mathbf{I}\)`.
++ Inference with OLS and PCSE in the spirit of White, really Huber (1967) but the key is separable moments.  Brief diversion here about separability; it turns out the basic OLS unbiasedness result is what gives rise to the appropriate intuition.
+
+---
+## Brief Comment on Hurwicz/Nickell Bias
+
++ Bias is of stochastic order `\(\frac{1}{T}\)`.
++ Less bad as more `\(T\)`
+
+
+---
+## Interpretation of dynamic models
+
++ Do it.
++ Whitten and Williams \texttt{dynsim} uses `\(\texttt{Clarify}\)` to do this.
++ Their paper is "But Wait, There's More! Maximizing Substantive Inferences from TSCS Models".  Easy to find on the web and on the website.
++ They also have R software for this. `dynsim` is linked [here](https://cran.r-project.org/web/packages/dynsim/index.html).
+
+
+---
+## Thinking about `\(\texttt{robust}\)` and `\(\texttt{cluster}\)`
+
+Every `\(\texttt{Stata}\)` user is familiar with this, it seems.  Though not developed by Stata (but Hardin, a student of Huber), the two are synonymous.  What would these look like in an application?
+
++ just `\(\texttt{robust}\)` is unstructured heteroscedastic
++ `\(\texttt{cluster}\)` utilizes the multidimensional axes
+
+
+---
+## `\(\texttt{xtgls}\)` and `\(\texttt{xtpcse}\)`
+
+Two significant options of note
+
++ `\(\texttt{panels(iid,heteroscedastic,correlated)}\)`
++ `\(\texttt{correlation(ar1,psar1,independent)}\)`
+
+---
+### panels
+
++ `\(\texttt{iid}\)`
+`$$\epsilon\epsilon^{\prime} =  \sigma^{2}\mathbf{I}_{N\times N}$$`
+
++ `\(\texttt{heteroscedastic}\)`
+`$$\epsilon\epsilon^{\prime} =  \sigma_{i}^{2}\mathbf{I}_{N\times N}$$` gives us heteroscedasticity and no spatial correlation; `\(\sigma^{2}_{i}\)` is an `\(N\)`-vector.
++ `\(\texttt{correlated}\)`
+`$$\epsilon\epsilon^{\prime} =   \left(\begin{array}{ccccc}\sigma^{2}_{1} &amp; \sigma_{12} &amp; \sigma_{13} &amp; \ldots &amp; \sigma_{1N} \\ \sigma_{21} &amp; \sigma^{2}_{2} &amp; \sigma_{23} &amp; \ldots &amp; \sigma_{2N} \\ \sigma_{31} &amp; \sigma_{32} &amp; \sigma^{2}_{3} &amp; \ldots &amp; \sigma_{3N} \\ \vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\ \sigma_{N1} &amp; \sigma_{N2} &amp; \sigma_{N3} &amp; \ldots &amp; \sigma^{2}_{N} \end{array}\right)$$`
+gives us heteroscedastic and (contemporaneously) spatially correlated errors
+
+---
+### correlation
+
++ `\(\texttt{independent}\)` (over time)
+`$$\epsilon\epsilon^{\prime} =  \mathbf{I}_{T\times T}$$`
+
++ `\(\texttt{ar1}\)`
+`$$\epsilon\epsilon^{\prime} =   \left(\begin{array}{ccccc}1 &amp; \rho &amp; \rho^{2} &amp; \ldots &amp; \rho^{T-1} \\ \rho &amp; 1 &amp; \rho &amp; \ldots &amp; \rho^{T-2} \\ \rho^{2} &amp; \rho &amp; 1 &amp; \ldots &amp; \rho^{T-3} \\ \vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\ \rho^{T-1} &amp; \rho^{T-2} &amp; \rho^{T-3} &amp; \ldots &amp; 1 \end{array}\right)$$`
+gives us a global autoregressive parameter for the errors.
+
+---
+
++ `\(\texttt{psar1}\)`
+`$$\epsilon\epsilon^{\prime} =   \left(\begin{array}{ccccc}1 &amp; \rho_{i} &amp; \rho_{i}^{2} &amp; \ldots &amp; \rho_{i}^{T-1} \\ \rho_{i} &amp; 1 &amp; \rho_{i} &amp; \ldots &amp; \rho_{i}^{T-2} \\ \rho_{i}^{2} &amp; \rho_{i} &amp; 1 &amp; \ldots &amp; \rho_{i}^{T-3} \\ \vdots &amp; \vdots &amp; \vdots &amp; \ddots &amp; \vdots \\ \rho_{i}^{T-1} &amp; \rho_{i}^{T-2} &amp; \rho_{i}^{T-3} &amp; \ldots &amp; 1 \end{array}\right)$$`
+gives us an autoregressive parameter for the errors that is unique to each cross-section.  Each cross-section has a distinct **level** of serial correlation. *asymptotics in `\(t\)`*
+
+
+---
+## GMM
+
+Generalized method of moments estimators are a class of estimators created by analogs of the population moment conditions for sample moments.  For example, linear regression is a GMM estimator and the moment restriction that must hold for OLS is that `\(\mathbb{E}[\mathbf{X^{\prime}}\epsilon] = 0\)`.  With endogenous `\(x \in \mathbf{X}\)`, we instrument using `\(z\)`.  If there is one `\(z\)` for each endogenous `\(x\)`, we have a standard IV.  Without exact identification, we need iteration and GMM estimators will typically involve testing these overidentifying restrictions using a Sargan test, as we will see.  **Null hypothesis is valid instruments.**
+
+---
+### GMM for Panels
+
+The trick here is that the panel structure gives us numerous instruments for *free*.  Comes in two forms.  
+
++ Single-equation and systems estimators.  
++ With systems estimators, assumptions give us leverage on moment conditions in both level and difference forms, we use these jointly to estimate the parameters of interest.
++ In `\(R\)`, this is `pgmm` or `pdynmc`.  A very recent paper is [here](https://www.sciencedirect.com/science/article/pii/S0169716119300021).
++ `\(\texttt{xtabond}\)`
+1. `\(\texttt{estat abond}\)` gives a test for autocorrelation
+2. `\(\texttt{estat sargan}\)` gives the overidentifying restrictions test
++ `\(\texttt{xtlsdvc y x, initial(ah or ab or bb) vcov(1000 bs iter)}\)` will handle unbalanced panels.  Bias-corrected least-squares dummy variable (LSDV) estimators for the standard autoregressive panel-data model using the bias approximations in Bruno (2005a) for unbalanced panels
++ `\(\texttt{xtivreg}\)`
++ `\(\texttt{xtdpd}\)` fits Arellano-Bond and Arellano-Bover/Blundell-Bond
+1. `\(\texttt{estat abond}\)` gives a test for autocorrelation
+2. `\(\texttt{estat sargan}\)` gives the overidentifying restrictions test  (Rejection implies failure of assumptions)
+
+---
+## Systems Estimation
+
++ `\(\texttt{xtdpdsys}\)` is now a part of regular Stata.  The manual is linked [here](https://www.stata.com/manuals/xtxtdpdsys.pdf).
+
+---
+## Introducing DPD
+
++ We are interested in estimating the parameters of models of the form 
+`$$y_{it} = y_{i,t-1}\gamma + X_{it}\beta + \alpha_{i} + \epsilon_{it}$$` 
+for `\(i = \{1,\ldots,N\}\)` and `\(t = \{1,\ldots, T \}\)` using datasets with large `\(N\)` and fixed `\(T\)` 
++ By construction, `\(y_{i,t-1}\)` is correlated with the unobserved  individual-level effect `\(\alpha_{i}\)`. 
++ Removing `\(\alpha_{i}\)` by the within transform produces an inconsistent estimator with `\(T\)` fixed. 
++ First difference both sides and look for instrumental-variables (IV) and generalized method-of-moments (GMM) estimators
+
+---
+## Arrelano-Bond
+
++ First differencing the model equation yields 
+`$$\Delta y_{it} = \Delta y_{i,t-1}\gamma + \Delta x_{it}\beta + \Delta \epsilon_{it}$$`
+
++ The `\(\alpha_{i}\)` are gone, but the `\(y_{i,t-1}\)` in `\(\Delta y_{i,t-1}\)` is a function of the `\(\epsilon_{i,t-1}\)` which is also in `\(\Delta \epsilon_{it}\)`. 
+
++ `\(\Delta y_{i,t-1}\)` is correlated with `\(\Delta \epsilon_{it}\)` by construction 
+
++ Anderson and Hsiao (1981) give a 2SLS estimator based on (further) lags of `\(\Delta y_{it}\)` as instruments for `\(\Delta y_{i,t-1}\)`.  E.g. if `\(\epsilon_{it}\)` is IID over `\(i\)` and `\(t\)`, `\(\Delta y_{i,t-2}\)` is valid for `\(\Delta y_{i,t-1}\)`. 
+
++ Anderson and Hsiao (1981) also suggest a 2SLS estimator based on lagged levels of `\(y_{it}\)` as instruments for `\(\Delta y_{i,t-1}\)`.  E.g. if `\(\epsilon_{it}\)` is IID over `\(i\)` and `\(t\)`, `\(y_{i,t-2}\)` can instrument for `\(\Delta y_{i,t-1}\)`.
+
+---
+
+
++ Holtz-Eakin, and co-authors (1988) and Arellano and Bond (1991) showed how to construct estimators based 
+on moment equations constructed from further lagged levels of `\(y_{it}\)` and the first-differenced errors.
+
++ We are creating moment conditions using lagged levels of the 
+dependent variable with first differences, `\(\Delta \epsilon_{it}\)`.  First-differences of strictly exogenous covariates also create 
+moment conditions.
+
+
++ Assume that `\(\epsilon_{it}\)` are IID over `\(i\)` and `\(t\)` (no serial correlation)
+
++ GMM is needed because there are more instruments than parameters. 
+
+---
+## Strict Exogeneity vs. Predetermined
+
++ If regressors are strictly exogenous: `\(\mathbb{E}[x_{it}\epsilon_{is}]=0\; \forall s,t\)`.
++ If predetermined, `\(\mathbb{E}[x_{it}\epsilon_{is}]\neq0\; \textrm{if} s &lt; t\)` but `\(\mathbb{E}[x_{it}\epsilon_{is}]=0\; \forall s \geq t\)`
++ Dynamic panel data models allow predetermined regressors.  [backward feedback, no forward feedback]
+
+---
+## A bit more on this and GMM
+
++ The moment conditions formed by assuming that particular lagged 
+levels of the dependent variable are orthogonal to the differenced 
+disturbances are known as GMM-type moment conditions 
++ Sometimes they are called sequential moment conditions 
++ The moment conditions formed using the strictly exogenous 
+covariates are just standard IV moment conditions, so they are called standard moment conditions 
++ The dynamic panel-data estimators in Stata report which transforms
+of which variables were used as instruments 
++ In GMM estimators, we weight the vector of sample-average moment 
+conditions by the inverse of a positive definite matrix 
++ When that matrix is the covariance matrix of the moment conditions, we have an efficient GMM estimator 
++ In the case of nonidentically distributed disturbances, we can use a two-step GMM estimator that estimates the covariance matrix of the
+moment conditions using the first-step residuals 
++ Although the large-sample robust variance-covariance matrix of the two-step estimator does not depend on the fact that estimated 
+residuals were used, simulation studies have found that that 
+Windmejier's bias-corrected estimator performs much better
++ Specifying vce(robust) produces an estimated VCE that is robust to
+heteroskedasticity.
+
+---
+
++ There is a result in the large-sample theory for GMM which states 
+that the VCE of the two-step estimator does not depend on the fact 
+that it uses the residuals from the first step.  Windmeijer 2005 bias-corrects the VCE of the two-step GMM.
++ No robust Sargan test but Arrelano-Bond test exists.
++ When the variables are predetermined, it means that we cannot 
+include the whole vector of differences of observed xit into the 
+instrument matrix 
++ We just include the levels of `\(x_{it}\)` for those time periods that are 
+assumed to be unrelated to `\(\Delta \epsilon_{it}\)`. 
++ The Arellano-Bond estimator formed moment conditions using 
+lagged-levels of the dependent variable and the predetermined 
+variables with first-differences of the disturbances 
++ Arellano and Bover(1995) and Blundell and Bond (1998) found 
+that if the autoregressive process is too persistent, then the 
+lagged-levels are weak instruments 
++ These authors proposed using additional moment conditions in which lagged differences of the dependent variable are orthogonal to levels of the disturbances 
++ To get these additional moment conditions, they assumed that 
+panel-level effect is unrelated to the first observable first-difference of the dependent variable 
++ `\(\texttt{xtdpdsys}\)` is syntactically similar to `\(\texttt{xtabond}\)`
+
+---
+## Some Summary Remarks
+
+Panel data can cover an entire term, or more.  This is a very broad overview.  We usually categorize these models according to the length of `\(t\)` and `\(n\)`; it is related to the deployed asymptotic arguments.  
+
+Panel data are a two-dimensional problem: heterogeneity and dynamics.  You have spent a term on the latter; the key issues that arise in the former are comparability.
+
+The workhorse fixed effects model simply assumes away the heterogeneity by one of two forms of differencing/centering.  The short-term effects can be isolated but all the long-term/level is eliminated by design.
+
+Cointegration and panel VAR also exist; you have to cut somewhere.
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
