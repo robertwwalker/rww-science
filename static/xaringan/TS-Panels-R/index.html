@@ -4,7 +4,7 @@
     <title>Time Series and Panels Data in R</title>
     <meta charset="utf-8" />
     <meta name="author" content="Robert W. Walker" />
-    <meta name="date" content="2021-04-13" />
+    <meta name="date" content="2021-04-14" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
   </head>
@@ -16,7 +16,7 @@ class: center, middle, inverse, title-slide
 ## Guest Presentation for UTD EPS 7371
 ### Robert W. Walker
 ### AGSM-Willamette
-### 2021-04-13
+### 2021-04-14
 
 ---
 
@@ -158,6 +158,30 @@ Cases.Plot + transition_reveal(date)
 ### Time Series Plots
 
 &lt;img src="index_files/figure-html/unnamed-chunk-6-1.png" width="1008" /&gt;
+
+---
+### Extracting the Model Details
+
+
+```r
+NYT.COVID %&gt;% as_tibble() %&gt;% left_join(., state_ranks %&gt;% select(state, name)  %&gt;% distinct(), by=c("state" = "name")) %&gt;% as_tsibble(index=date, key=state) %&gt;% 
+  model(ARIMA = ARIMA(New.Cases)) %&gt;% 
+  filter(state=="Oregon") %&gt;% 
+  report()
+```
+
+```
+Series: New.Cases 
+Model: ARIMA(0,1,1)(0,0,2)[7] 
+
+Coefficients:
+          ma1    sma1    sma2
+      -0.7330  0.1541  0.1483
+s.e.   0.0349  0.0526  0.0466
+
+sigma^2 estimated as 24521:  log likelihood=-2432.77
+AIC=4873.54   AICc=4873.65   BIC=4889.26
+```
 
 
 ---
@@ -435,7 +459,7 @@ The Mundlak/Bell-Jones approach fits fairly comfortably as a special case of hie
 NYT.COVID %&gt;% features(New.Cases, list(unitroot_ndiffs)) %&gt;% as_tibble() %&gt;% ggplot(aes(x=ndiffs)) + geom_bar()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-8-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-9-1.png" width="576" /&gt;
 
 ---
 ## Panel Unit Roots in Stata and R

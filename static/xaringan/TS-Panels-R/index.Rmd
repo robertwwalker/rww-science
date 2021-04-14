@@ -148,8 +148,14 @@ NYT.COVID %>%
   left_join(., state_ranks %>% 
               select(state, name)  %>% 
               distinct(), by=c("state" = "name")) %>%
-  as_tsibble(index=date, key=state) %>% model(ARIMA = ARIMA(New.Cases)) %>% augment() %>% ACF(.resid) %>%
-  autoplot() + guides(color=FALSE) + labs(title="ARIMA ACF for the 50 US States", y="Autocorrelation") + facet_geo(~state, move_axes = FALSE)
+  as_tsibble(index=date, key=state) %>% 
+  model(ARIMA = ARIMA(New.Cases)) %>% 
+  augment() %>% 
+  ACF(.resid) %>%
+  autoplot() + 
+  guides(color=FALSE) + 
+  labs(title="ARIMA ACF for the 50 US States", y="Autocorrelation")+
+  facet_geo(~state, move_axes = FALSE)
 ```
 
 ---
@@ -163,6 +169,16 @@ NYT.COVID %>%
               distinct(), by=c("state" = "name")) %>%
   as_tsibble(index=date, key=state) %>% model(ARIMA = ARIMA(New.Cases)) %>% augment() %>% PACF(.resid) %>%
   autoplot() + guides(color=FALSE) + labs(title="ARIMA PACF for the 50 US States", y="Autocorrelation") + facet_geo(~state, move_axes = FALSE)
+```
+
+---
+### Extracting the Model Details
+
+```{r}
+NYT.COVID %>% as_tibble() %>% left_join(., state_ranks %>% select(state, name)  %>% distinct(), by=c("state" = "name")) %>% as_tsibble(index=date, key=state) %>% 
+  model(ARIMA = ARIMA(New.Cases)) %>% 
+  filter(state=="Oregon") %>% 
+  report()
 ```
 
 

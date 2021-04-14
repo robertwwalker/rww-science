@@ -1,0 +1,126 @@
+---
+title: "Animating COVID-19"
+subtitle: "With flipbookr and xaringan"
+author: "RWW"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: xaringan-themer.css
+    nature:
+      ratio: 16:9
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+
+```{r, include = F}
+# This is the recommended set up for flipbooks
+# you might think about setting cache to TRUE as you gain practice --- building flipbooks from scratch can be time consuming
+knitr::opts_chunk$set(fig.width = 6, message = FALSE, warning = FALSE, comment = "", cache = F)
+library(flipbookr)
+library(tidyverse)
+library(gganimate)
+library(fpp3)
+library(hrbrthemes)
+library(geofacet)
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringan)
+library(xaringanthemer)
+style_mono_accent(base_color = "#43418A", text_font_google   = google_font("Fira Sans", "300", "300i"))
+```
+
+## Packages
+
+```
+library(xaringan)
+library(flipbookr)
+library(tidyverse)
+library(gganimate)
+library(fpp3)
+library(hrbrthemes)
+library(geofacet)
+```
+
+---
+## Get Some Data
+
+```{r DataL}
+NYT.COVIDN <- read.csv(url("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv"))
+# Define a tsibble; the date is imported as character so mutate that first.
+NYT.COVID <- NYT.COVIDN %>% 
+  mutate(date=as.Date(date)) %>% 
+  as_tsibble(index=date, key=state) %>% #<<
+  group_by(state) %>% 
+  mutate(New.Cases = difference(cases), 
+         New.Deaths = difference(deaths)) %>% 
+  filter(!(state %in% c("Guam","Puerto Rico", "Virgin Islands","Northern Mariana Islands"))) %>% 
+  filter(date > as.Date("2020-03-31")) %>%
+  ungroup()
+NYT.COVID %>% head()
+```
+
+---
+
+`r chunk_reveal("Anim", title = "An Animation")`
+
+```{r Anim, include = FALSE}
+NYT.COVID %>% 
+  autoplot(cases) + 
+  scale_y_log10() + 
+  guides(color=FALSE) + 
+  labs(title="COVID-19 Cases in the 50 US States", y="log(COVID-19 Cases)") + 
+  theme_ipsum_rc() + 
+  transition_reveal(date)
+```
+
+---
+
+`r chunk_reveal("GeoF", title = "A GeoFacet")`
+
+```{r GeoF, include = FALSE}
+NYT.COVID %>% 
+  as_tibble() %>% 
+  left_join(., state_ranks %>% 
+              select(state, name) %>% 
+              distinct(), 
+            by=c("state" = "name")) %>% 
+  as_tsibble(index=date, key=state) %>% 
+  autoplot(New.Cases) + 
+  guides(color=FALSE) + 
+  labs(title="New COVID-19 Cases in the 50 US States", y="New COVID-19 Cases", x="") + 
+  facet_geo(~state.y, move_axes = FALSE) + 
+  scale_x_date(date_breaks = "6 months") + 
+  theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=1, size = 6))
+```
+
+
+
+<!-- adjust font size in this css code chunk, currently 80 -->
+
+```{css, eval = TRUE, echo = FALSE}
+.remark-code{line-height: 1.5; font-size: 80%}
+
+@media print {
+  .has-continuation {
+    display: block;
+  }
+}
+
+code.r.hljs.remark-code{
+  position: relative;
+  overflow-x: hidden;
+}
+
+
+code.r.hljs.remark-code:hover{
+  overflow-x:visible;
+  width: 500px;
+  border-style: solid;
+}
+```
+
+
+

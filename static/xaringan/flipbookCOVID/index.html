@@ -1,0 +1,713 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Animating COVID-19</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="RWW" />
+    <script src="libs/header-attrs-2.7/header-attrs.js"></script>
+    <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Animating COVID-19
+## With flipbookr and xaringan
+### RWW
+
+---
+
+
+
+
+
+
+
+## Packages
+
+```
+library(xaringan)
+library(flipbookr)
+library(tidyverse)
+library(gganimate)
+library(fpp3)
+library(hrbrthemes)
+library(geofacet)
+```
+
+---
+## Get Some Data
+
+
+```r
+NYT.COVIDN &lt;- read.csv(url("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv"))
+# Define a tsibble; the date is imported as character so mutate that first.
+NYT.COVID &lt;- NYT.COVIDN %&gt;% 
+  mutate(date=as.Date(date)) %&gt;% 
+* as_tsibble(index=date, key=state) %&gt;%
+  group_by(state) %&gt;% 
+  mutate(New.Cases = difference(cases), 
+         New.Deaths = difference(deaths)) %&gt;% 
+  filter(!(state %in% c("Guam","Puerto Rico", "Virgin Islands","Northern Mariana Islands"))) %&gt;% 
+  filter(date &gt; as.Date("2020-03-31")) %&gt;%
+  ungroup()
+NYT.COVID %&gt;% head()
+```
+
+```
+# A tsibble: 6 x 7 [1D]
+# Key:       state [1]
+  date       state    fips cases deaths New.Cases New.Deaths
+  &lt;date&gt;     &lt;chr&gt;   &lt;int&gt; &lt;int&gt;  &lt;int&gt;     &lt;int&gt;      &lt;int&gt;
+1 2020-04-01 Alabama     1  1108     28       109         14
+2 2020-04-02 Alabama     1  1270     32       162          4
+3 2020-04-03 Alabama     1  1535     38       265          6
+4 2020-04-04 Alabama     1  1632     44        97          6
+5 2020-04-05 Alabama     1  1840     45       208          1
+6 2020-04-06 Alabama     1  2005     53       165          8
+```
+
+---
+
+count: false
+ 
+An Animation
+.panel1-Anim-auto[
+
+```r
+*NYT.COVID
+```
+]
+ 
+.panel2-Anim-auto[
+
+```
+# A tsibble: 19,278 x 7 [1D]
+# Key:       state [51]
+   date       state    fips cases deaths New.Cases New.Deaths
+   &lt;date&gt;     &lt;chr&gt;   &lt;int&gt; &lt;int&gt;  &lt;int&gt;     &lt;int&gt;      &lt;int&gt;
+ 1 2020-04-01 Alabama     1  1108     28       109         14
+ 2 2020-04-02 Alabama     1  1270     32       162          4
+ 3 2020-04-03 Alabama     1  1535     38       265          6
+ 4 2020-04-04 Alabama     1  1632     44        97          6
+ 5 2020-04-05 Alabama     1  1840     45       208          1
+ 6 2020-04-06 Alabama     1  2005     53       165          8
+ 7 2020-04-07 Alabama     1  2197     64       192         11
+ 8 2020-04-08 Alabama     1  2498     67       301          3
+ 9 2020-04-09 Alabama     1  2838     78       340         11
+10 2020-04-10 Alabama     1  3008     80       170          2
+# ... with 19,268 more rows
+```
+]
+
+---
+count: false
+ 
+An Animation
+.panel1-Anim-auto[
+
+```r
+NYT.COVID %&gt;%
+* autoplot(cases)
+```
+]
+ 
+.panel2-Anim-auto[
+![](index_files/figure-html/Anim_auto_02_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+An Animation
+.panel1-Anim-auto[
+
+```r
+NYT.COVID %&gt;%
+  autoplot(cases) +
+* scale_y_log10()
+```
+]
+ 
+.panel2-Anim-auto[
+![](index_files/figure-html/Anim_auto_03_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+An Animation
+.panel1-Anim-auto[
+
+```r
+NYT.COVID %&gt;%
+  autoplot(cases) +
+  scale_y_log10() +
+* guides(color=FALSE)
+```
+]
+ 
+.panel2-Anim-auto[
+![](index_files/figure-html/Anim_auto_04_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+An Animation
+.panel1-Anim-auto[
+
+```r
+NYT.COVID %&gt;%
+  autoplot(cases) +
+  scale_y_log10() +
+  guides(color=FALSE) +
+* labs(title="COVID-19 Cases in the 50 US States", y="log(COVID-19 Cases)")
+```
+]
+ 
+.panel2-Anim-auto[
+![](index_files/figure-html/Anim_auto_05_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+An Animation
+.panel1-Anim-auto[
+
+```r
+NYT.COVID %&gt;%
+  autoplot(cases) +
+  scale_y_log10() +
+  guides(color=FALSE) +
+  labs(title="COVID-19 Cases in the 50 US States", y="log(COVID-19 Cases)") +
+* theme_ipsum_rc()
+```
+]
+ 
+.panel2-Anim-auto[
+![](index_files/figure-html/Anim_auto_06_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+An Animation
+.panel1-Anim-auto[
+
+```r
+NYT.COVID %&gt;%
+  autoplot(cases) +
+  scale_y_log10() +
+  guides(color=FALSE) +
+  labs(title="COVID-19 Cases in the 50 US States", y="log(COVID-19 Cases)") +
+  theme_ipsum_rc() +
+* transition_reveal(date)
+```
+]
+ 
+.panel2-Anim-auto[
+![](index_files/figure-html/Anim_auto_07_output-1.gif)&lt;!-- --&gt;
+]
+
+&lt;style&gt;
+.panel1-Anim-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-Anim-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-Anim-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+---
+
+count: false
+ 
+A GeoFacet
+.panel1-GeoF-auto[
+
+```r
+*NYT.COVID
+```
+]
+ 
+.panel2-GeoF-auto[
+
+```
+# A tsibble: 19,278 x 7 [1D]
+# Key:       state [51]
+   date       state    fips cases deaths New.Cases New.Deaths
+   &lt;date&gt;     &lt;chr&gt;   &lt;int&gt; &lt;int&gt;  &lt;int&gt;     &lt;int&gt;      &lt;int&gt;
+ 1 2020-04-01 Alabama     1  1108     28       109         14
+ 2 2020-04-02 Alabama     1  1270     32       162          4
+ 3 2020-04-03 Alabama     1  1535     38       265          6
+ 4 2020-04-04 Alabama     1  1632     44        97          6
+ 5 2020-04-05 Alabama     1  1840     45       208          1
+ 6 2020-04-06 Alabama     1  2005     53       165          8
+ 7 2020-04-07 Alabama     1  2197     64       192         11
+ 8 2020-04-08 Alabama     1  2498     67       301          3
+ 9 2020-04-09 Alabama     1  2838     78       340         11
+10 2020-04-10 Alabama     1  3008     80       170          2
+# ... with 19,268 more rows
+```
+]
+
+---
+count: false
+ 
+A GeoFacet
+.panel1-GeoF-auto[
+
+```r
+NYT.COVID %&gt;%
+* as_tibble()
+```
+]
+ 
+.panel2-GeoF-auto[
+
+```
+# A tibble: 19,278 x 7
+   date       state    fips cases deaths New.Cases New.Deaths
+   &lt;date&gt;     &lt;chr&gt;   &lt;int&gt; &lt;int&gt;  &lt;int&gt;     &lt;int&gt;      &lt;int&gt;
+ 1 2020-04-01 Alabama     1  1108     28       109         14
+ 2 2020-04-02 Alabama     1  1270     32       162          4
+ 3 2020-04-03 Alabama     1  1535     38       265          6
+ 4 2020-04-04 Alabama     1  1632     44        97          6
+ 5 2020-04-05 Alabama     1  1840     45       208          1
+ 6 2020-04-06 Alabama     1  2005     53       165          8
+ 7 2020-04-07 Alabama     1  2197     64       192         11
+ 8 2020-04-08 Alabama     1  2498     67       301          3
+ 9 2020-04-09 Alabama     1  2838     78       340         11
+10 2020-04-10 Alabama     1  3008     80       170          2
+# ... with 19,268 more rows
+```
+]
+
+---
+count: false
+ 
+A GeoFacet
+.panel1-GeoF-auto[
+
+```r
+NYT.COVID %&gt;%
+  as_tibble() %&gt;%
+* left_join(., state_ranks %&gt;%
+*             select(state, name) %&gt;%
+*             distinct(),
+*           by=c("state" = "name"))
+```
+]
+ 
+.panel2-GeoF-auto[
+
+```
+# A tibble: 19,278 x 8
+   date       state    fips cases deaths New.Cases New.Deaths state.y
+   &lt;date&gt;     &lt;chr&gt;   &lt;int&gt; &lt;int&gt;  &lt;int&gt;     &lt;int&gt;      &lt;int&gt; &lt;chr&gt;  
+ 1 2020-04-01 Alabama     1  1108     28       109         14 AL     
+ 2 2020-04-02 Alabama     1  1270     32       162          4 AL     
+ 3 2020-04-03 Alabama     1  1535     38       265          6 AL     
+ 4 2020-04-04 Alabama     1  1632     44        97          6 AL     
+ 5 2020-04-05 Alabama     1  1840     45       208          1 AL     
+ 6 2020-04-06 Alabama     1  2005     53       165          8 AL     
+ 7 2020-04-07 Alabama     1  2197     64       192         11 AL     
+ 8 2020-04-08 Alabama     1  2498     67       301          3 AL     
+ 9 2020-04-09 Alabama     1  2838     78       340         11 AL     
+10 2020-04-10 Alabama     1  3008     80       170          2 AL     
+# ... with 19,268 more rows
+```
+]
+
+---
+count: false
+ 
+A GeoFacet
+.panel1-GeoF-auto[
+
+```r
+NYT.COVID %&gt;%
+  as_tibble() %&gt;%
+  left_join(., state_ranks %&gt;%
+              select(state, name) %&gt;%
+              distinct(),
+            by=c("state" = "name")) %&gt;%
+* as_tsibble(index=date, key=state)
+```
+]
+ 
+.panel2-GeoF-auto[
+
+```
+# A tsibble: 19,278 x 8 [1D]
+# Key:       state [51]
+   date       state    fips cases deaths New.Cases New.Deaths state.y
+   &lt;date&gt;     &lt;chr&gt;   &lt;int&gt; &lt;int&gt;  &lt;int&gt;     &lt;int&gt;      &lt;int&gt; &lt;chr&gt;  
+ 1 2020-04-01 Alabama     1  1108     28       109         14 AL     
+ 2 2020-04-02 Alabama     1  1270     32       162          4 AL     
+ 3 2020-04-03 Alabama     1  1535     38       265          6 AL     
+ 4 2020-04-04 Alabama     1  1632     44        97          6 AL     
+ 5 2020-04-05 Alabama     1  1840     45       208          1 AL     
+ 6 2020-04-06 Alabama     1  2005     53       165          8 AL     
+ 7 2020-04-07 Alabama     1  2197     64       192         11 AL     
+ 8 2020-04-08 Alabama     1  2498     67       301          3 AL     
+ 9 2020-04-09 Alabama     1  2838     78       340         11 AL     
+10 2020-04-10 Alabama     1  3008     80       170          2 AL     
+# ... with 19,268 more rows
+```
+]
+
+---
+count: false
+ 
+A GeoFacet
+.panel1-GeoF-auto[
+
+```r
+NYT.COVID %&gt;%
+  as_tibble() %&gt;%
+  left_join(., state_ranks %&gt;%
+              select(state, name) %&gt;%
+              distinct(),
+            by=c("state" = "name")) %&gt;%
+  as_tsibble(index=date, key=state) %&gt;%
+* autoplot(New.Cases)
+```
+]
+ 
+.panel2-GeoF-auto[
+![](index_files/figure-html/GeoF_auto_05_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+A GeoFacet
+.panel1-GeoF-auto[
+
+```r
+NYT.COVID %&gt;%
+  as_tibble() %&gt;%
+  left_join(., state_ranks %&gt;%
+              select(state, name) %&gt;%
+              distinct(),
+            by=c("state" = "name")) %&gt;%
+  as_tsibble(index=date, key=state) %&gt;%
+  autoplot(New.Cases) +
+* guides(color=FALSE)
+```
+]
+ 
+.panel2-GeoF-auto[
+![](index_files/figure-html/GeoF_auto_06_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+A GeoFacet
+.panel1-GeoF-auto[
+
+```r
+NYT.COVID %&gt;%
+  as_tibble() %&gt;%
+  left_join(., state_ranks %&gt;%
+              select(state, name) %&gt;%
+              distinct(),
+            by=c("state" = "name")) %&gt;%
+  as_tsibble(index=date, key=state) %&gt;%
+  autoplot(New.Cases) +
+  guides(color=FALSE) +
+* labs(title="New COVID-19 Cases in the 50 US States", y="New COVID-19 Cases", x="")
+```
+]
+ 
+.panel2-GeoF-auto[
+![](index_files/figure-html/GeoF_auto_07_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+A GeoFacet
+.panel1-GeoF-auto[
+
+```r
+NYT.COVID %&gt;%
+  as_tibble() %&gt;%
+  left_join(., state_ranks %&gt;%
+              select(state, name) %&gt;%
+              distinct(),
+            by=c("state" = "name")) %&gt;%
+  as_tsibble(index=date, key=state) %&gt;%
+  autoplot(New.Cases) +
+  guides(color=FALSE) +
+  labs(title="New COVID-19 Cases in the 50 US States", y="New COVID-19 Cases", x="") +
+* facet_geo(~state.y, move_axes = FALSE)
+```
+]
+ 
+.panel2-GeoF-auto[
+![](index_files/figure-html/GeoF_auto_08_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+A GeoFacet
+.panel1-GeoF-auto[
+
+```r
+NYT.COVID %&gt;%
+  as_tibble() %&gt;%
+  left_join(., state_ranks %&gt;%
+              select(state, name) %&gt;%
+              distinct(),
+            by=c("state" = "name")) %&gt;%
+  as_tsibble(index=date, key=state) %&gt;%
+  autoplot(New.Cases) +
+  guides(color=FALSE) +
+  labs(title="New COVID-19 Cases in the 50 US States", y="New COVID-19 Cases", x="") +
+  facet_geo(~state.y, move_axes = FALSE) +
+* scale_x_date(date_breaks = "6 months")
+```
+]
+ 
+.panel2-GeoF-auto[
+![](index_files/figure-html/GeoF_auto_09_output-1.png)&lt;!-- --&gt;
+]
+
+---
+count: false
+ 
+A GeoFacet
+.panel1-GeoF-auto[
+
+```r
+NYT.COVID %&gt;%
+  as_tibble() %&gt;%
+  left_join(., state_ranks %&gt;%
+              select(state, name) %&gt;%
+              distinct(),
+            by=c("state" = "name")) %&gt;%
+  as_tsibble(index=date, key=state) %&gt;%
+  autoplot(New.Cases) +
+  guides(color=FALSE) +
+  labs(title="New COVID-19 Cases in the 50 US States", y="New COVID-19 Cases", x="") +
+  facet_geo(~state.y, move_axes = FALSE) +
+  scale_x_date(date_breaks = "6 months") +
+* theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=1, size = 6))
+```
+]
+ 
+.panel2-GeoF-auto[
+![](index_files/figure-html/GeoF_auto_10_output-1.png)&lt;!-- --&gt;
+]
+
+&lt;style&gt;
+.panel1-GeoF-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-GeoF-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-GeoF-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+
+
+
+&lt;!-- adjust font size in this css code chunk, currently 80 --&gt;
+
+&lt;style type="text/css"&gt;
+.remark-code{line-height: 1.5; font-size: 80%}
+
+@media print {
+  .has-continuation {
+    display: block;
+  }
+}
+
+code.r.hljs.remark-code{
+  position: relative;
+  overflow-x: hidden;
+}
+
+
+code.r.hljs.remark-code:hover{
+  overflow-x:visible;
+  width: 500px;
+  border-style: solid;
+}
+&lt;/style&gt;
+
+
+
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:9",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>
