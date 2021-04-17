@@ -1,0 +1,230 @@
+---
+title: "TBATS for COVID-19 Data"
+author: "RWW"
+date: "4/17/2021"
+output:
+  rmdformats::downcute:
+    self_contained: true
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+library(rmdformats)
+opts_chunk$set(echo=TRUE,
+               prompt=FALSE,
+               tidy=TRUE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(width=75, fig.retina = 2, dev = "png", dev.args = list(type = "cairo-png"))
+options(scipen=7)
+library(tidyverse)
+library(forecast)
+library(fpp3)
+library(hrbrthemes)
+```
+
+### Load the Previous Results for Comparison
+
+Because this project was undertaken over more than one day, the live download of New York Times COVID-19 data will not necessarily match up.  To sidestep this problem, I will load the data that I worked with previously.
+
+```{r DataL}
+load("data/AggForecast.RData")
+```
+
+# New Cases
+
+First, I will manipulate the data to fit the old style of time series needed by TBATS.
+
+```{r DataRev1}
+# To use tbats, I need an old style time series  First, select the data of interest: New.Cases and make it match up with the training set
+NCT <- COVID.Agg.Train %>% filter(is_aggregated(state)) %>% select(New.Cases)
+# Turn it into a time series.  Notice the axis is a mess
+NCTS <- as.ts(NCT, frequency = 7)
+NCTS
+```
+
+## Estimate
+
+```{r TBATSEst}
+# Time for tbats
+FCNCTS <- tbats(NCTS)
+# The tbats result
+FCNCTS
+```
+
+## Compare Models
+
+The following code chunk is not executed but was the basis for the set of results to compare.  Key to this, they are estimated on the same data.
+
+```{r ModelEstC, cache=TRUE}
+COVID.Models <- COVID.Agg.Train %>% model(
+  `K = 2` = ARIMA(New.Cases ~ fourier(K=2)),
+  ARIMA = ARIMA(New.Cases),
+  ETS = ETS(New.Cases),
+  NNET = NNETAR(New.Cases)) %>% 
+  mutate(Combo1 = (`K = 2` + ARIMA + ETS)/3, Combo2 = (`K = 2` + ARIMA + ETS + NNET)/4) %>%
+  reconcile(
+    buARIMA = bottom_up(ARIMA),
+    buK2 = bottom_up(`K = 2`),
+    buETS = bottom_up(ETS),
+    )
+```
+
+How well does the ARIMA fit?
+
+```{r ARIMAC}
+COVID.Models %>% filter(is_aggregated(state)) %>% select(ARIMA) %>% report()
+```
+How about the ETS?
+
+```{r ETSC}
+COVID.Models %>% filter(is_aggregated(state)) %>% select(ETS) %>% report()
+```
+Though the ARIMA model is much better and the ETS model is also slightly better, let me complete the TBATS exercise for this.
+
+## Forecast and Forecast Evaluation
+
+```{r TBATSFC1}
+# For comparison, the ARIMA model has AIC of 8012.8 so this is not an improvement; ; the ETS is 8645
+TBATS.FC <-forecast(FCNCTS, h=13) %>% as_tibble() %>% select(`Point Forecast`) %>% tibble() %>% mutate(fperiod = row_number())
+# Generate the forecast
+COVID.Agg.Test %>% filter(is_aggregated(state)) %>% mutate(fperiod = row_number()) %>% left_join(TBATS.FC) %>% mutate(MAE = mean(abs(New.Cases - `Point Forecast`), na.rm=TRUE)) %>% head()
+# Plot the forecast 
+COVID.Agg.Test %>% filter(is_aggregated(state)) %>% mutate(fperiod = row_number()) %>% left_join(TBATS.FC)  %>% autoplot(New.Cases) + geom_line(aes(x=date, y=`Point Forecast`), color="red") + hrbrthemes::theme_ipsum()
+```
+
+## Full Future Forecast
+
+First, I need to convert the entire original dataset and reestimate the model using all the data.
+
+```{r TBATSFC2}
+NCases <- NYTAgg.COVID %>% filter(is_aggregated(state)) %>% select(New.Cases)
+# Turn it into a time series.  Notice the axis is a mess
+NCasesTS <- as.ts(NCases, frequency = 7)
+NCasesTS
+# Time for tbats
+FFCNCTS <- tbats(NCasesTS, use.box.cox = TRUE, seasonal.periods = 7)
+# The tbats result
+FFCNCTS
+```
+
+## Full Data Estimates
+
+Now let me forecast that.
+
+```{r}
+TBATS.FFC <-forecast(FFCNCTS, h=14) %>% as_tibble() %>%
+  mutate(Forecast = `Point Forecast`, date=as.Date("2021-04-12")+days(0:13)) %>%
+  as_tsibble(index=date)
+autoplot(NYTAgg.COVID %>% filter(is_aggregated(state)) %>% select(New.Cases)) + autolayer(TBATS.FFC %>% select(Forecast), color="red") + labs(title="Future Forecast for US COVID-19 Cases") + theme_ipsum_rc()
+```
+
+# New Deaths
+
+```{r DataRev2}
+# To use tbats, I need an old style time series  First, select the data of interest: New.Cases and make it match up with the training set
+NDT <- COVID.Agg.Train %>% filter(is_aggregated(state)) %>% select(New.Deaths)
+# Turn it into a time series.  Notice the axis is a mess
+NDTS <- as.ts(NDT, frequency = 7)
+NDTS
+```
+
+## Estimate
+
+```{r TBATSEstD}
+# Time for tbats
+FCNDTS <- tbats(NDTS)
+# The tbats result
+FCNDTS
+```
+
+## Compare Models
+
+The following code chunk is not executed but was the basis for the set of results to compare.  Key to this, they are estimated on the same data.
+
+```{r ModelEstD1, cache=TRUE}
+lambdaD <- NYTAgg.COVID %>% filter(is_aggregated(state)) %>%
+  features(New.Deaths, features = guerrero) %>%
+  pull(lambda_guerrero)
+COVID.Models.KD <- COVID.Agg.Train %>% 
+  filter(is_aggregated(state)) %>% 
+  model(
+    `K = 1` = ARIMA(box_cox(New.Deaths, lambdaD) ~ fourier(K=1)),
+    `K = 2` = ARIMA(box_cox(New.Deaths, lambdaD) ~ fourier(K=2)), 
+    `K = 3` = ARIMA(box_cox(New.Deaths, lambdaD) ~ fourier(K=3)),
+    `DK = 1` = ARIMA(New.Deaths ~ fourier(K=1)),
+    `DK = 2` = ARIMA(New.Deaths ~ fourier(K=2)), 
+    `DK = 3` = ARIMA(New.Deaths ~ fourier(K=3))
+    )
+COVID.Models.KD %>% glance()
+```
+
+Estimate the broad set of models.
+
+```{r ModelEstD2, cache=TRUE}
+COVID.Models.D <- COVID.Agg.Train %>% model(
+  `K = 2` = ARIMA(box_cox(New.Deaths, lambdaD) ~ fourier(K=2)),
+  ARIMA = ARIMA(box_cox(New.Deaths, lambdaD)),
+  ETS = ETS(box_cox(New.Deaths, lambdaD)),
+  NNET = NNETAR(box_cox(New.Deaths, lambdaD))) %>% 
+  mutate(Combo1 = (`K = 2` + ARIMA + ETS)/3, 
+         Combo2 = (`K = 2` + ARIMA + ETS + NNET)/4) %>%
+  reconcile(
+    buARIMA = bottom_up(ARIMA),
+    buK2 = bottom_up(`K = 2`),
+    buETS = bottom_up(ETS))
+```
+
+How well does the ARIMA fit?
+
+```{r ARIMAD}
+COVID.Models.D %>% filter(is_aggregated(state)) %>% select(ARIMA) %>% report()
+```
+
+How about the ETS?
+
+```{r ETSD}
+COVID.Models.D %>% filter(is_aggregated(state)) %>% select(ETS) %>% report()
+```
+
+Though the ARIMA model is much better, let me complete the TBATS exercise for this.
+
+## Forecast and Forecast Evaluation
+
+```{r TBATSFD1}
+# For comparison, the ARIMA model has AIC of 8012.8 so this is not an improvement; ; the ETS is 8645
+TBATS.DFC <-forecast(FCNDTS, h=13) %>% as_tibble() %>% select(`Point Forecast`) %>% tibble() %>% mutate(fperiod = row_number())
+# Generate the forecast
+COVID.Agg.Test %>% filter(is_aggregated(state)) %>% mutate(fperiod = row_number()) %>% left_join(TBATS.DFC) %>% mutate(MAE = mean(abs(New.Deaths - `Point Forecast`), na.rm=TRUE)) %>% head()
+# Plot the forecast 
+COVID.Agg.Test %>% filter(is_aggregated(state)) %>% mutate(fperiod = row_number()) %>% left_join(TBATS.DFC)  %>% autoplot(New.Deaths) + geom_line(aes(x=date, y=`Point Forecast`), color="red") + hrbrthemes::theme_ipsum() + labs(title="Forecast New Deaths from COVID-19 and Actuals")
+```
+
+## Full Future Forecast
+
+First, I need to convert the entire original dataset and reestimate the model using all the data.
+
+```{r TBATSFD2}
+NDeaths <- NYTAgg.COVID %>% filter(is_aggregated(state)) %>% select(New.Deaths)
+# Turn it into a time series.  Notice the axis is a mess
+NDeathsTS <- as.ts(NDeaths, frequency = 7)
+NDeathsTS
+# Time for tbats
+FFCNDTS <- tbats(NDeathsTS, use.box.cox = TRUE, seasonal.periods = 7)
+# The tbats result
+FFCNDTS
+```
+
+## Full Data Estimates
+
+Now let me forecast that.
+
+```{r TBATSDFFC}
+TBATS.DFFC <-forecast(FFCNDTS, h=14) %>% as_tibble() %>%
+  mutate(Forecast = `Point Forecast`, date=as.Date("2021-04-12")+days(0:13)) %>%
+  as_tsibble(index=date)
+autoplot(NYTAgg.COVID %>% filter(is_aggregated(state)) %>% select(New.Deaths)) + autolayer(TBATS.DFFC %>% select(Forecast), color="red") + labs(title="Future Forecast for US COVID-19 Deaths") + theme_ipsum_rc()
+```
+
+That looks much better than the recent data.  I hope it is correct.
