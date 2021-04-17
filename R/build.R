@@ -1,1 +1,1 @@
-blogdown::build_dir("/static/presentations/")
+blogdown::build_dir("/static/xaringan/")

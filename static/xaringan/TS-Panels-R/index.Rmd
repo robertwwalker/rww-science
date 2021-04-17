@@ -136,7 +136,7 @@ Cases.Plot + transition_reveal(date)
 ## More Fun
 
 ```{r, echo=FALSE, fig.height=9, fig.width=14}
-NYT.COVID %>% as_tibble() %>% left_join(., state_ranks %>% select(state, name)  %>% distinct(), by=c("state" = "name")) %>% as_tsibble(index=date, key=state) %>% autoplot(New.Cases) + guides(color=FALSE) + labs(title="New COVID-19 Cases in the 50 US States", y="New COVID-19 Cases") + facet_geo(~state.y, move_axes = FALSE) + scale_x_date(date_breaks = "6 months") + theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=1, size = 6))
+NYT.COVID %>% as_tibble() %>% left_join(., state_ranks %>% select(state, name)  %>% distinct(), by=c("state" = "name")) %>% as_tsibble(index=date, key=state) %>% autoplot(cases) + guides(color=FALSE) + labs(title="COVID-19 Cases in the 50 US States", y="New COVID-19 Cases") + facet_geo(~state.y, move_axes = FALSE) + scale_x_date(date_breaks = "6 months") + theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=1, size = 6))
 ```
 
 ---

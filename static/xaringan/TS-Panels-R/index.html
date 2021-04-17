@@ -4,7 +4,7 @@
     <title>Time Series and Panels Data in R</title>
     <meta charset="utf-8" />
     <meta name="author" content="Robert W. Walker" />
-    <meta name="date" content="2021-04-14" />
+    <meta name="date" content="2021-04-15" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
   </head>
@@ -16,7 +16,7 @@ class: center, middle, inverse, title-slide
 ## Guest Presentation for UTD EPS 7371
 ### Robert W. Walker
 ### AGSM-Willamette
-### 2021-04-14
+### 2021-04-15
 
 ---
 
@@ -132,7 +132,7 @@ Cases.Plot &lt;- NYT.COVID %&gt;% autoplot(cases) + scale_y_log10() + guides(col
 Cases.Plot
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-2-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-5-1.png" width="576" /&gt;
 
 ---
 ## Fun
@@ -142,22 +142,22 @@ Cases.Plot
 Cases.Plot + transition_reveal(date)
 ```
 
-![](index_files/figure-html/unnamed-chunk-3-1.gif)&lt;!-- --&gt;
+![](index_files/figure-html/unnamed-chunk-6-1.gif)&lt;!-- --&gt;
 
 ---
 ## More Fun
 
-&lt;img src="index_files/figure-html/unnamed-chunk-4-1.png" width="1008" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-7-1.png" width="1008" /&gt;
 
 ---
 ### Time Series Plots
 
-&lt;img src="index_files/figure-html/unnamed-chunk-5-1.png" width="1008" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-8-1.png" width="1008" /&gt;
 
 ---
 ### Time Series Plots
 
-&lt;img src="index_files/figure-html/unnamed-chunk-6-1.png" width="1008" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-9-1.png" width="1008" /&gt;
 
 ---
 ### Extracting the Model Details
@@ -227,24 +227,24 @@ xtsum(state~., data=data.frame(NYT.COVID))
 ```
 
 ```
-             O.mean     O.sd O.min   O.max          O.SumSQ   O.N   B.mean
-fips         28.961   15.677     1      56          4725288 19227   28.961
-cases        233655   412335   129 3704151 3268807838933908 19227   233655
-deaths     4943.447 8024.073     0   60457    1237880252154 19227 4943.447
-New.Cases  1609.304 3181.565 -7757   64987     194612372550 19227 1609.304
-New.Deaths   28.886   68.246  -598    2559         89545510 19227   28.886
-               B.sd     B.min    B.max B.Units B.t.bar     W.sd     W.min
-fips         15.833         1       56      51     377        0         0
-cases        271049  5368.207  1377354      51     377 313032.6  -1367497
-deaths     6480.508  95.72944 34336.26      51     377 4817.684 -31921.26
-New.Cases  1869.983  55.69761 9802.568      51     377 2587.258 -9493.024
-New.Deaths   34.653 0.5835544 159.8753      51     377   58.993 -647.7931
-              W.max          W.SumSQ Within.Ovr.Ratio
-fips              0                0                0
-cases       2326797 1883943819175495            0.576
-deaths     39562.08     446237072499             0.36
-New.Cases  55184.43     128696974430            0.661
-New.Deaths 2509.207         66909335            0.747
+             O.mean     O.sd O.min   O.max          O.SumSQ   O.N
+fips         28.961   15.677     1      56          4725288 19227
+cases        233655   412335   129 3704151 3268807838933908 19227
+deaths     4943.447 8024.073     0   60457    1237880252154 19227
+New.Cases  1609.304 3181.565 -7757   64987     194612372550 19227
+New.Deaths   28.886   68.246  -598    2559         89545510 19227
+             B.mean     B.sd     B.min    B.max B.Units B.t.bar     W.sd
+fips         28.961   15.833         1       56      51     377        0
+cases        233655   271049  5368.207  1377354      51     377 313032.6
+deaths     4943.447 6480.508  95.72944 34336.26      51     377 4817.684
+New.Cases  1609.304 1869.983  55.69761 9802.568      51     377 2587.258
+New.Deaths   28.886   34.653 0.5835544 159.8753      51     377   58.993
+               W.min    W.max          W.SumSQ Within.Ovr.Ratio
+fips               0        0                0                0
+cases       -1367497  2326797 1883943819175495            0.576
+deaths     -31921.26 39562.08     446237072499             0.36
+New.Cases  -9493.024 55184.43     128696974430            0.661
+New.Deaths -647.7931 2509.207         66909335            0.747
 ```
 
 
@@ -459,7 +459,7 @@ The Mundlak/Bell-Jones approach fits fairly comfortably as a special case of hie
 NYT.COVID %&gt;% features(New.Cases, list(unitroot_ndiffs)) %&gt;% as_tibble() %&gt;% ggplot(aes(x=ndiffs)) + geom_bar()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-9-1.png" width="576" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-12-1.png" width="576" /&gt;
 
 ---
 ## Panel Unit Roots in Stata and R

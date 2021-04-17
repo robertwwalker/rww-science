@@ -5,7 +5,7 @@ author: "Robert W. Walker"
 output:
   xaringan::moon_reader:
     lib_dir: libs
-    css: [default, robot, robot-fonts]
+    css: [xaringan-themer.css]
     nature:
       ratio: 16:10
       highlightStyle: github
@@ -18,9 +18,15 @@ output:
 ```{r, include = F}
 # This is the recommended set up for flipbooks
 # you might think about setting cache to TRUE as you gain practice --- building flipbooks from scratch can be time consuming
-knitr::opts_chunk$set(fig.width = 6, message = FALSE, warning = FALSE, comment = "", cache = F, dev = "svg", fig.ext = "svg")
+knitr::opts_chunk$set(fig.width = 6, message = FALSE, warning = FALSE, comment = "", cache = F, dev = "svg", fig.ext = "svg", fig.retina=2)
 library(flipbookr)
 library(tidyverse)
+```
+
+```{r xaringan-themer, include=FALSE, warning=FALSE}
+library(xaringan)
+library(xaringanthemer)
+style_mono_accent(base_color = "#43418A", text_font_google   = google_font("Fira Sans", "300", "300i"))
 ```
 
 
@@ -38,21 +44,26 @@ library(skimr)
 Bonds <- read.csv(url("https://raw.githubusercontent.com/robertwwalker/DADMStuff/master/BondFunds.csv"))
 ```
 
----
+Bonds:
+1. Type: **Intermediate Government** or **Short-Term Corporate**
+2. Fees: **Yes** or **No**
+3. Risk:  **Above Average**, **Average**, or **Below Average**
+4. Assets: Assets under management (in $ Millions).
+5. Return 2009: The annual returns in 2009.
+6. 3-Year-Return: The average annual return over three years.
+7. 5-Year-Return: The average annual return over five years.
 
+---
 ## A Summary
 
-```{r}
-Bonds %>% skim()
+```{r SummaryT}
+Bonds %>% 
+  skim_without_charts() %>% 
+  kableExtra::kable() %>% 
+  kableExtra::scroll_box(height="400px", width="800px")
 ```
 
-Most data types are represented.  There is no time variable so dates and the visualizations that go with time series are omitted.  `kableExtra` is necessary to render my tables.
-
----
-
-# Playing Along
-
-I work from a template.  [You can access it here.](https://github.com/robertwwalker/DADMStuff/raw/master/GraphingTemplate.Rmd)
+Most data types are represented.  There is no time variable so dates and the visualizations that go with time series are omitted.  `kableExtra` is necessary to render my tables.  You can ignore that.
 
 ---
 
@@ -60,7 +71,9 @@ I work from a template.  [You can access it here.](https://github.com/robertwwal
 
 ```{r, eval=FALSE}
 library(kableExtra)
-Bonds %>% group_by(Risk) %>% skim()
+Bonds %>% 
+  group_by(Risk) %>% 
+  skim()
 ```
 
 ---
@@ -71,6 +84,14 @@ Bonds %>% group_by(Risk) %>% skim() %>% kableExtra::kable(format = "html") %>%
     kable_styling() %>%
     scroll_box(width = "800px", height = "550px")
 ```
+
+
+---
+
+# Playing Along
+
+A basic graphing template is handy to work from.  [You can access it here.](https://github.com/robertwwalker/DADMStuff/raw/master/GraphingTemplate.Rmd)
+
 
 ---
 
@@ -85,7 +106,6 @@ There are two ways to construct a barplot; we can let ggplot handle it on the ra
 ---
 ### Raw Data Bar Plot
 
----
 
 ```{r}
 Bonds %>%  ggplot() + aes(x=Risk) + 
@@ -103,7 +123,6 @@ Bonds %>%
   geom_bar()
 ```
 
----
 
 `r chunk_reveal("Bas1")`
 

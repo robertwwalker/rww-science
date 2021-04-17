@@ -52,14 +52,30 @@ NYT.COVIDN <- read.csv(url("https://raw.githubusercontent.com/nytimes/covid-19-d
 # Define a tsibble; the date is imported as character so mutate that first.
 NYT.COVID <- NYT.COVIDN %>% 
   mutate(date=as.Date(date)) %>% 
-  as_tsibble(index=date, key=state) %>% #<<
+  as_tsibble(index=date, key=state) %>% 
   group_by(state) %>% 
-  mutate(New.Cases = difference(cases), 
-         New.Deaths = difference(deaths)) %>% 
-  filter(!(state %in% c("Guam","Puerto Rico", "Virgin Islands","Northern Mariana Islands"))) %>% 
-  filter(date > as.Date("2020-03-31")) %>%
-  ungroup()
+  mutate(New.Cases = difference(cases), New.Deaths = difference(deaths)) %>% 
+  filter(!(state %in% c("Guam","Puerto Rico", "Virgin Islands","Northern Mariana Islands")))
+NYT.COVID <- NYT.COVID %>% mutate(New.Cases = (New.Cases >= 0)*New.Cases, New.Deaths = (New.Deaths >= 0)*New.Deaths)
+NYTAgg.COVID <- NYT.COVID %>% 
+  aggregate_key(state, New.Cases = sum(New.Cases, na.rm=TRUE), New.Deaths = sum(New.Deaths, na.rm=TRUE)) %>% 
+  filter(date > as.Date("2020-03-31")) %>% 
+  mutate(Day.of.Week = as.factor(wday(date, label = TRUE)))
 NYT.COVID %>% head()
+```
+
+---
+
+```{r}
+lambdaC <- NYTAgg.COVID %>% filter(is_aggregated(state)) %>%
+  features(New.Cases, features = guerrero) %>%
+  pull(lambda_guerrero)
+P1 <- NYTAgg.COVID %>% filter(is_aggregated(state)) %>%
+  autoplot(New.Cases)
+P2 <- NYTAgg.COVID %>% filter(is_aggregated(state)) %>%
+  autoplot(box_cox(New.Cases, lambdaC)) + labs(y="Box-Cox(New.Cases)")
+library(patchwork)
+P1 / P2
 ```
 
 ---
@@ -95,6 +111,11 @@ NYT.COVID %>%
   scale_x_date(date_breaks = "6 months") + 
   theme(axis.text.x = element_text(angle = 45, vjust = 0.5, hjust=1, size = 6))
 ```
+
+---
+# Models
+
+---
 
 
 

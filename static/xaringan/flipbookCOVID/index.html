@@ -44,28 +44,48 @@ NYT.COVIDN &lt;- read.csv(url("https://raw.githubusercontent.com/nytimes/covid-1
 # Define a tsibble; the date is imported as character so mutate that first.
 NYT.COVID &lt;- NYT.COVIDN %&gt;% 
   mutate(date=as.Date(date)) %&gt;% 
-* as_tsibble(index=date, key=state) %&gt;%
+  as_tsibble(index=date, key=state) %&gt;% 
   group_by(state) %&gt;% 
-  mutate(New.Cases = difference(cases), 
-         New.Deaths = difference(deaths)) %&gt;% 
-  filter(!(state %in% c("Guam","Puerto Rico", "Virgin Islands","Northern Mariana Islands"))) %&gt;% 
-  filter(date &gt; as.Date("2020-03-31")) %&gt;%
-  ungroup()
+  mutate(New.Cases = difference(cases), New.Deaths = difference(deaths)) %&gt;% 
+  filter(!(state %in% c("Guam","Puerto Rico", "Virgin Islands","Northern Mariana Islands")))
+NYT.COVID &lt;- NYT.COVID %&gt;% mutate(New.Cases = (New.Cases &gt;= 0)*New.Cases, New.Deaths = (New.Deaths &gt;= 0)*New.Deaths)
+NYTAgg.COVID &lt;- NYT.COVID %&gt;% 
+  aggregate_key(state, New.Cases = sum(New.Cases, na.rm=TRUE), New.Deaths = sum(New.Deaths, na.rm=TRUE)) %&gt;% 
+  filter(date &gt; as.Date("2020-03-31")) %&gt;% 
+  mutate(Day.of.Week = as.factor(wday(date, label = TRUE)))
 NYT.COVID %&gt;% head()
 ```
 
 ```
 # A tsibble: 6 x 7 [1D]
 # Key:       state [1]
+# Groups:    state [1]
   date       state    fips cases deaths New.Cases New.Deaths
   &lt;date&gt;     &lt;chr&gt;   &lt;int&gt; &lt;int&gt;  &lt;int&gt;     &lt;int&gt;      &lt;int&gt;
-1 2020-04-01 Alabama     1  1108     28       109         14
-2 2020-04-02 Alabama     1  1270     32       162          4
-3 2020-04-03 Alabama     1  1535     38       265          6
-4 2020-04-04 Alabama     1  1632     44        97          6
-5 2020-04-05 Alabama     1  1840     45       208          1
-6 2020-04-06 Alabama     1  2005     53       165          8
+1 2020-03-13 Alabama     1     6      0        NA         NA
+2 2020-03-14 Alabama     1    12      0         6          0
+3 2020-03-15 Alabama     1    23      0        11          0
+4 2020-03-16 Alabama     1    29      0         6          0
+5 2020-03-17 Alabama     1    39      0        10          0
+6 2020-03-18 Alabama     1    51      0        12          0
 ```
+
+---
+
+
+```r
+lambdaC &lt;- NYTAgg.COVID %&gt;% filter(is_aggregated(state)) %&gt;%
+  features(New.Cases, features = guerrero) %&gt;%
+  pull(lambda_guerrero)
+P1 &lt;- NYTAgg.COVID %&gt;% filter(is_aggregated(state)) %&gt;%
+  autoplot(New.Cases)
+P2 &lt;- NYTAgg.COVID %&gt;% filter(is_aggregated(state)) %&gt;%
+  autoplot(box_cox(New.Cases, lambdaC)) + labs(y="Box-Cox(New.Cases)")
+library(patchwork)
+P1 / P2
+```
+
+![](index_files/figure-html/unnamed-chunk-2-1.png)&lt;!-- --&gt;
 
 ---
 
@@ -82,21 +102,22 @@ An Animation
 .panel2-Anim-auto[
 
 ```
-# A tsibble: 19,278 x 7 [1D]
+# A tsibble: 20,931 x 7 [1D]
 # Key:       state [51]
+# Groups:    state [51]
    date       state    fips cases deaths New.Cases New.Deaths
    &lt;date&gt;     &lt;chr&gt;   &lt;int&gt; &lt;int&gt;  &lt;int&gt;     &lt;int&gt;      &lt;int&gt;
- 1 2020-04-01 Alabama     1  1108     28       109         14
- 2 2020-04-02 Alabama     1  1270     32       162          4
- 3 2020-04-03 Alabama     1  1535     38       265          6
- 4 2020-04-04 Alabama     1  1632     44        97          6
- 5 2020-04-05 Alabama     1  1840     45       208          1
- 6 2020-04-06 Alabama     1  2005     53       165          8
- 7 2020-04-07 Alabama     1  2197     64       192         11
- 8 2020-04-08 Alabama     1  2498     67       301          3
- 9 2020-04-09 Alabama     1  2838     78       340         11
-10 2020-04-10 Alabama     1  3008     80       170          2
-# ... with 19,268 more rows
+ 1 2020-03-13 Alabama     1     6      0        NA         NA
+ 2 2020-03-14 Alabama     1    12      0         6          0
+ 3 2020-03-15 Alabama     1    23      0        11          0
+ 4 2020-03-16 Alabama     1    29      0         6          0
+ 5 2020-03-17 Alabama     1    39      0        10          0
+ 6 2020-03-18 Alabama     1    51      0        12          0
+ 7 2020-03-19 Alabama     1    78      0        27          0
+ 8 2020-03-20 Alabama     1   106      0        28          0
+ 9 2020-03-21 Alabama     1   131      0        25          0
+10 2020-03-22 Alabama     1   157      0        26          0
+# ... with 20,921 more rows
 ```
 ]
 
@@ -257,21 +278,22 @@ A GeoFacet
 .panel2-GeoF-auto[
 
 ```
-# A tsibble: 19,278 x 7 [1D]
+# A tsibble: 20,931 x 7 [1D]
 # Key:       state [51]
+# Groups:    state [51]
    date       state    fips cases deaths New.Cases New.Deaths
    &lt;date&gt;     &lt;chr&gt;   &lt;int&gt; &lt;int&gt;  &lt;int&gt;     &lt;int&gt;      &lt;int&gt;
- 1 2020-04-01 Alabama     1  1108     28       109         14
- 2 2020-04-02 Alabama     1  1270     32       162          4
- 3 2020-04-03 Alabama     1  1535     38       265          6
- 4 2020-04-04 Alabama     1  1632     44        97          6
- 5 2020-04-05 Alabama     1  1840     45       208          1
- 6 2020-04-06 Alabama     1  2005     53       165          8
- 7 2020-04-07 Alabama     1  2197     64       192         11
- 8 2020-04-08 Alabama     1  2498     67       301          3
- 9 2020-04-09 Alabama     1  2838     78       340         11
-10 2020-04-10 Alabama     1  3008     80       170          2
-# ... with 19,268 more rows
+ 1 2020-03-13 Alabama     1     6      0        NA         NA
+ 2 2020-03-14 Alabama     1    12      0         6          0
+ 3 2020-03-15 Alabama     1    23      0        11          0
+ 4 2020-03-16 Alabama     1    29      0         6          0
+ 5 2020-03-17 Alabama     1    39      0        10          0
+ 6 2020-03-18 Alabama     1    51      0        12          0
+ 7 2020-03-19 Alabama     1    78      0        27          0
+ 8 2020-03-20 Alabama     1   106      0        28          0
+ 9 2020-03-21 Alabama     1   131      0        25          0
+10 2020-03-22 Alabama     1   157      0        26          0
+# ... with 20,921 more rows
 ```
 ]
 
@@ -290,20 +312,20 @@ NYT.COVID %&gt;%
 .panel2-GeoF-auto[
 
 ```
-# A tibble: 19,278 x 7
+# A tibble: 20,931 x 7
    date       state    fips cases deaths New.Cases New.Deaths
    &lt;date&gt;     &lt;chr&gt;   &lt;int&gt; &lt;int&gt;  &lt;int&gt;     &lt;int&gt;      &lt;int&gt;
- 1 2020-04-01 Alabama     1  1108     28       109         14
- 2 2020-04-02 Alabama     1  1270     32       162          4
- 3 2020-04-03 Alabama     1  1535     38       265          6
- 4 2020-04-04 Alabama     1  1632     44        97          6
- 5 2020-04-05 Alabama     1  1840     45       208          1
- 6 2020-04-06 Alabama     1  2005     53       165          8
- 7 2020-04-07 Alabama     1  2197     64       192         11
- 8 2020-04-08 Alabama     1  2498     67       301          3
- 9 2020-04-09 Alabama     1  2838     78       340         11
-10 2020-04-10 Alabama     1  3008     80       170          2
-# ... with 19,268 more rows
+ 1 2020-03-13 Alabama     1     6      0        NA         NA
+ 2 2020-03-14 Alabama     1    12      0         6          0
+ 3 2020-03-15 Alabama     1    23      0        11          0
+ 4 2020-03-16 Alabama     1    29      0         6          0
+ 5 2020-03-17 Alabama     1    39      0        10          0
+ 6 2020-03-18 Alabama     1    51      0        12          0
+ 7 2020-03-19 Alabama     1    78      0        27          0
+ 8 2020-03-20 Alabama     1   106      0        28          0
+ 9 2020-03-21 Alabama     1   131      0        25          0
+10 2020-03-22 Alabama     1   157      0        26          0
+# ... with 20,921 more rows
 ```
 ]
 
@@ -326,20 +348,20 @@ NYT.COVID %&gt;%
 .panel2-GeoF-auto[
 
 ```
-# A tibble: 19,278 x 8
+# A tibble: 20,931 x 8
    date       state    fips cases deaths New.Cases New.Deaths state.y
    &lt;date&gt;     &lt;chr&gt;   &lt;int&gt; &lt;int&gt;  &lt;int&gt;     &lt;int&gt;      &lt;int&gt; &lt;chr&gt;  
- 1 2020-04-01 Alabama     1  1108     28       109         14 AL     
- 2 2020-04-02 Alabama     1  1270     32       162          4 AL     
- 3 2020-04-03 Alabama     1  1535     38       265          6 AL     
- 4 2020-04-04 Alabama     1  1632     44        97          6 AL     
- 5 2020-04-05 Alabama     1  1840     45       208          1 AL     
- 6 2020-04-06 Alabama     1  2005     53       165          8 AL     
- 7 2020-04-07 Alabama     1  2197     64       192         11 AL     
- 8 2020-04-08 Alabama     1  2498     67       301          3 AL     
- 9 2020-04-09 Alabama     1  2838     78       340         11 AL     
-10 2020-04-10 Alabama     1  3008     80       170          2 AL     
-# ... with 19,268 more rows
+ 1 2020-03-13 Alabama     1     6      0        NA         NA AL     
+ 2 2020-03-14 Alabama     1    12      0         6          0 AL     
+ 3 2020-03-15 Alabama     1    23      0        11          0 AL     
+ 4 2020-03-16 Alabama     1    29      0         6          0 AL     
+ 5 2020-03-17 Alabama     1    39      0        10          0 AL     
+ 6 2020-03-18 Alabama     1    51      0        12          0 AL     
+ 7 2020-03-19 Alabama     1    78      0        27          0 AL     
+ 8 2020-03-20 Alabama     1   106      0        28          0 AL     
+ 9 2020-03-21 Alabama     1   131      0        25          0 AL     
+10 2020-03-22 Alabama     1   157      0        26          0 AL     
+# ... with 20,921 more rows
 ```
 ]
 
@@ -363,21 +385,21 @@ NYT.COVID %&gt;%
 .panel2-GeoF-auto[
 
 ```
-# A tsibble: 19,278 x 8 [1D]
+# A tsibble: 20,931 x 8 [1D]
 # Key:       state [51]
    date       state    fips cases deaths New.Cases New.Deaths state.y
    &lt;date&gt;     &lt;chr&gt;   &lt;int&gt; &lt;int&gt;  &lt;int&gt;     &lt;int&gt;      &lt;int&gt; &lt;chr&gt;  
- 1 2020-04-01 Alabama     1  1108     28       109         14 AL     
- 2 2020-04-02 Alabama     1  1270     32       162          4 AL     
- 3 2020-04-03 Alabama     1  1535     38       265          6 AL     
- 4 2020-04-04 Alabama     1  1632     44        97          6 AL     
- 5 2020-04-05 Alabama     1  1840     45       208          1 AL     
- 6 2020-04-06 Alabama     1  2005     53       165          8 AL     
- 7 2020-04-07 Alabama     1  2197     64       192         11 AL     
- 8 2020-04-08 Alabama     1  2498     67       301          3 AL     
- 9 2020-04-09 Alabama     1  2838     78       340         11 AL     
-10 2020-04-10 Alabama     1  3008     80       170          2 AL     
-# ... with 19,268 more rows
+ 1 2020-03-13 Alabama     1     6      0        NA         NA AL     
+ 2 2020-03-14 Alabama     1    12      0         6          0 AL     
+ 3 2020-03-15 Alabama     1    23      0        11          0 AL     
+ 4 2020-03-16 Alabama     1    29      0         6          0 AL     
+ 5 2020-03-17 Alabama     1    39      0        10          0 AL     
+ 6 2020-03-18 Alabama     1    51      0        12          0 AL     
+ 7 2020-03-19 Alabama     1    78      0        27          0 AL     
+ 8 2020-03-20 Alabama     1   106      0        28          0 AL     
+ 9 2020-03-21 Alabama     1   131      0        25          0 AL     
+10 2020-03-22 Alabama     1   157      0        26          0 AL     
+# ... with 20,921 more rows
 ```
 ]
 
@@ -558,6 +580,11 @@ NYT.COVID %&gt;%
 
 
 
+
+---
+# Models
+
+---
 
 
 
