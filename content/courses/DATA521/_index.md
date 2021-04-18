@@ -49,10 +49,11 @@ load(url("https://github.com/robertwwalker/DADMStuff/raw/master/Ch4HA.RData"))
 + [Aggregate Box-Cox Forecasting for COVID-19](https://rww.science/courses/DATA521/aggforeBC/index.html)
 + [Aggregate log Forecasting for COVID-19](https://rww.science/courses/DATA521/aggforelog/index.html)
 
-Some Resources:
+## Some Resources:
 
 + [Basic Time Series](https://rww.science/courses/DATA521/Basic-TS/Basic-TS.html)
 + [Equities](https://rww.science/courses/DATA521/Equities/Equities.html)
 + [FRED](https://rww.science/courses/DATA521/FRED/fred-2.html)
 + [fredr-employment](https://rww.science/courses/DATA521/fredr-employment/fredr-employment.html)
 + [Spurious Regressions](https://rww.science/courses/DATA521/Spurious-Regressions/Spurious.html)
+ 

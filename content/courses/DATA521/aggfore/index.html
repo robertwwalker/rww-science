@@ -1,6 +1,6 @@
 ---
 title: "NYT COVID Forecast Aggregation with Covariates"
-date: "2021-04-17"
+date: "2021-04-18"
 output:
   rmdformats::downcute:
     self_contained: true
@@ -303,4 +303,37 @@ fitD %&gt;%
 5 Oregon ETS      38.6  -1818. 3656. 3657. 3695. &lt;NULL&gt;    &lt;NULL&gt;     37.7
 # … with 2 more variables: AMSE &lt;dbl&gt;, MAE &lt;dbl&gt;</code></pre>
 </div>
+</div>
+<div id="a-bigger-set-of-models-and-reconciliation" class="section level2">
+<h2>A Bigger Set of Models and Reconciliation</h2>
+<pre class="r"><code>NC.Models &lt;- COVID.Agg.Train %&gt;%
+    filter(date &gt; as.Date(&quot;2020-04-01&quot;)) %&gt;%
+    model(`K = 1` = ARIMA(New.CasesP ~ fourier(K = 1)), `K = 2` = ARIMA(New.CasesP ~ 
+        fourier(K = 2)), `K = 3` = ARIMA(New.CasesP ~ fourier(K = 3)), ARIMA = ARIMA(New.CasesP), 
+        ETS = ETS(New.CasesP), NNET = NNETAR(New.CasesP ~ fourier(K = 2, period = &quot;1 week&quot;))) %&gt;%
+    mutate(Combo1 = (`K = 2` + ARIMA + ETS)/3, Combo2 = (`K = 2` + ARIMA + ETS + 
+        NNET)/4) %&gt;%
+    reconcile(buARIMA = bottom_up(ARIMA), buK2 = bottom_up(`K = 2`), buETS = bottom_up(ETS), 
+        buNN = bottom_up(NNET))</code></pre>
+</div>
+<div id="accuracy" class="section level2">
+<h2>Accuracy</h2>
+<pre class="r"><code>FC.Cases &lt;- NC.Models %&gt;%
+    forecast(h = 14)</code></pre>
+<pre class="r"><code>FC.Cases %&gt;%
+    accuracy(COVID.Agg.Test)</code></pre>
+<pre><code># A tibble: 624 x 11
+   .model state            .type      ME   RMSE    MAE     MPE  MAPE  MASE RMSSE
+   &lt;chr&gt;  &lt;chr*&gt;           &lt;chr&gt;   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+ 1 ARIMA  Alabama        … Test    98.9   424.   262.   -28.8   90.0   NaN   NaN
+ 2 ARIMA  Alaska         … Test   -48.7   145.   115.  -Inf    Inf     NaN   NaN
+ 3 ARIMA  Arizona        … Test   -46.7   204.   150.   -15.3   24.7   NaN   NaN
+ 4 ARIMA  Arkansas       … Test    11.4    66.8   57.3  -20.5   49.9   NaN   NaN
+ 5 ARIMA  California     … Test  -389.    660.   548.   -19.0   23.2   NaN   NaN
+ 6 ARIMA  Colorado       … Test    33.9   536.   469.    -9.34  33.8   NaN   NaN
+ 7 ARIMA  Connecticut    … Test  -184.    365.   304.  -Inf    Inf     NaN   NaN
+ 8 ARIMA  Delaware       … Test     5.61   66.5   55.0   -3.72  18.1   NaN   NaN
+ 9 ARIMA  District of Col… Test   -14.3    36.7   31.4  -20.8   30.1   NaN   NaN
+10 ARIMA  Florida        … Test   159.   1433.  1016.   -12.4   27.5   NaN   NaN
+# … with 614 more rows, and 1 more variable: ACF1 &lt;dbl&gt;</code></pre>
 </div>

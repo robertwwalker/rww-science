@@ -197,7 +197,7 @@ Oregon.C19 %>% filter(date > as.Date("2020-04-01")) %>% model(STL(New.Deaths~tre
 
 ## Some Models
 
-```{r}
+```{r CasesPS}
 OC19 <- Oregon.C19 %>% filter(date > as.Date("2020-04-01"))
 fitC <- OC19 %>% filter(date > as.Date("2020-04-01")) %>%  model(`K = 1` = ARIMA(New.CasesP ~ fourier(K=1)),
       `K = 2` = ARIMA(New.CasesP ~ fourier(K=2)),
@@ -224,11 +224,75 @@ fitC %>%
 
 ### Deaths
 
-```{r}
+```{r DeathsPS}
 fitD <- OC19 %>% filter(date > as.Date("2020-04-01")) %>%  model(`K = 1` = ARIMA(New.DeathsP ~ fourier(K=1)),
       `K = 2` = ARIMA(New.DeathsP ~ fourier(K=2)),
       `K = 3` = ARIMA(New.DeathsP ~ fourier(K=3)),
       ARIMA = ARIMA(New.DeathsP),
       ETS = ETS(New.DeathsP))
 fitD %>% glance()
+```
+
+## A Bigger Set of Models and Reconciliation
+
+```{r CasesBModels}
+NC.Models <- COVID.Agg.Train %>% 
+  filter(date > as.Date("2020-04-01")) %>% 
+  model(
+    `K = 1` = ARIMA(New.CasesP ~ fourier(K=1)),
+    `K = 2` = ARIMA(New.CasesP ~ fourier(K=2)),
+    `K = 3` = ARIMA(New.CasesP ~ fourier(K=3)),
+    ARIMA = ARIMA(New.CasesP),
+    ETS = ETS(New.CasesP),
+    NNET = NNETAR(New.CasesP ~ fourier(K=2, period = "1 week"))) %>% 
+  mutate(Combo1 = (`K = 2` + ARIMA + ETS)/3, Combo2 = (`K = 2` + ARIMA + ETS + NNET)/4) %>%
+  reconcile(
+    buARIMA = bottom_up(ARIMA),
+    buK2 = bottom_up(`K = 2`),
+    buETS = bottom_up(ETS),
+    buNN = bottom_up(NNET)
+    )
+```
+
+
+## Accuracy
+
+```{r FCCases, cache=TRUE}
+FC.Cases <- NC.Models %>% forecast(h=14)
+```
+
+```{r FCCA}
+FC.Cases %>% accuracy(COVID.Agg.Test)
+```
+
+# Deaths
+
+```{r DeathsBModels, cache=TRUE}
+ND.Models <- COVID.Agg.Train %>% 
+  filter(date > as.Date("2020-04-01")) %>% 
+  model(
+    `K = 1` = ARIMA(New.DeathsP ~ fourier(K=1)),
+    `K = 2` = ARIMA(New.DeathsP ~ fourier(K=2)),
+    `K = 3` = ARIMA(New.DeathsP ~ fourier(K=3)),
+    ARIMA = ARIMA(New.DeathsP),
+    ETS = ETS(New.DeathsP),
+    NNET = NNETAR(New.DeathsP ~ fourier(K=2, period = "1 week"))) %>% 
+  mutate(Combo1 = (`K = 2` + ARIMA + ETS)/3, Combo2 = (`K = 2` + ARIMA + ETS + NNET)/4) %>%
+  reconcile(
+    buARIMA = bottom_up(ARIMA),
+    buK2 = bottom_up(`K = 2`),
+    buETS = bottom_up(ETS),
+    buNN = bottom_up(NNET)
+    )
+```
+
+
+## Accuracy
+
+```{r FCDeaths1, cache=TRUE}
+FC.Deaths <- ND.Models %>% forecast(h=14)
+```
+
+```{r FCDA}
+FC.Deaths %>% accuracy(COVID.Agg.Test)
 ```
