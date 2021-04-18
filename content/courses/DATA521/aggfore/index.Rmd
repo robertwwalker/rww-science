@@ -1,0 +1,234 @@
+---
+title: "NYT COVID Forecast Aggregation with Covariates"
+date: "`r Sys.Date()`"
+output:
+  rmdformats::downcute:
+    self_contained: true
+---
+
+
+```{r setup, include=FALSE}
+library(knitr)
+library(rmdformats)
+## Global options
+options(max.print="75")
+opts_chunk$set(echo=TRUE,
+               prompt=FALSE,
+               tidy=TRUE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(width=75, fig.retina = 2, dev = "png", dev.args = list(type = "cairo-png"))
+library(tidyverse)
+library(fpp3)
+library(distributional)
+library(hrbrthemes)
+library(magrittr)
+```
+
+## New York Times Data on COVID
+
+I will grab the dataset from the NYT COVID data github.  I will create two variables, New Cases and New Deaths to model.  The final line use aggregation to create the national data.
+
+```{r DataLoad}
+NYT.COVIDN <- read.csv(url("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv"))
+# Define a tsibble; the date is imported as character so mutate that first.
+NYT.COVID <- NYT.COVIDN %>% mutate(date=as.Date(date)) %>% as_tsibble(index=date, key=state) %>% group_by(state) %>% mutate(New.Cases = difference(cases), New.Deaths = difference(deaths)) %>% filter(!(state %in% c("Guam","Puerto Rico", "Virgin Islands","Northern Mariana Islands")))
+NYT.COVID <- NYT.COVID %>% mutate(New.CasesP = as.numeric(New.Cases >= 0)*New.Cases, New.DeathsP = as.numeric(New.Deaths >= 0)*New.Deaths)
+NYTAgg.COVID <- NYT.COVID %>% 
+  aggregate_key(state, New.CasesP = sum(New.CasesP, na.rm=TRUE), New.DeathsP = sum(New.DeathsP, na.rm=TRUE), New.Cases = sum(New.Cases, na.rm=TRUE), New.Deaths = sum(New.Deaths, na.rm=TRUE), cases = sum(cases, na.rm=TRUE), deaths = sum(deaths, na.rm=TRUE)) %>% 
+  filter(date > as.Date("2020-03-31")) %>% 
+  mutate(Day.of.Week = as.factor(wday(date, label = TRUE)))
+```
+
+A basic visual for verification.  First the subseries.
+
+```{r BasePlot}
+library(patchwork)
+plot1 <- NYTAgg.COVID %>% filter(!is_aggregated(state)) %>% autoplot(New.CasesP) + guides(color=FALSE)
+plot2 <- NYTAgg.COVID %>% filter(!is_aggregated(state)) %>% autoplot(New.DeathsP) + guides(color=FALSE)
+plot1 / plot2
+```
+
+Now the aggregates.
+
+```{r BasePlotA}
+plot1 <- NYTAgg.COVID %>% filter(is_aggregated(state)) %>% autoplot(New.CasesP)
+plot2 <- NYTAgg.COVID %>% filter(is_aggregated(state)) %>% autoplot(New.DeathsP)
+plot1 / plot2
+```
+
+Are there day of week effects?
+
+```{r}
+NYTAgg.COVID %>% model(TSLM(New.CasesP ~ Day.of.Week)) %>% glance() %>% filter(p_value < 0.05)
+```
+
+In 12 states, there appear to be and in a few of them, those effects are large.  Modelling this covariate seems useful.  At the same time, this does nothing about the broad trends.
+
+## Training and Testing
+
+That gives me the data that I want; now let me slice it up into training and test sets.  
+
+```{r TestTrain}
+COVID.Agg.Test <- NYTAgg.COVID %>% as_tibble() %>% group_by(state) %>% slice_tail(n=14) %>% ungroup() %>% as_tsibble(index=date, key=state)
+COVID.Agg.Train <- anti_join(NYTAgg.COVID, COVID.Agg.Test)  %>% as_tsibble(index=date, key=state)
+```
+
+## Model Fitting
+
+Fit some models to the data.
+
+```{r ModelEstC}
+COVID.Models <- COVID.Agg.Train %>% model(
+  WDARIMA = ARIMA(New.CasesP ~ Day.of.Week)
+  ) 
+```
+
+Forecast the models.
+
+```{r FCaster}
+COVIDFC <- COVID.Models %>% forecast(new_data=COVID.Agg.Test)
+COVIDFC %>% accuracy(COVID.Agg.Test)
+```
+
+Look at the aggregates.
+
+```{r AggFD}
+COVIDFC %>% filter(is_aggregated(state)) %>% autoplot(NYTAgg.COVID %>% filter(date > as.Date("2021-03-01")))
+```
+
+Look at Oregon.
+
+```{r OreFD}
+COVIDFC %>% filter(state=="Oregon") %>% autoplot(NYTAgg.COVID %>% filter(date > as.Date("2021-03-01")))
+```
+
+Assess the models over the units.
+
+```{r}
+COVIDFC %>% 
+  accuracy(COVID.Agg.Test) %>% 
+  group_by(state) %>% 
+  slice_min(MAE) %>% 
+  janitor::tabyl(.model) %>% 
+  ggplot(aes(x=.model, y=n)) + 
+  geom_col() + 
+  theme_ipsum_rc()
+```
+
+## Prophet
+
+```{r ProphetFC}
+library(prophet)
+ProphMod <- prophet::prophet(NYT.COVID %>% filter(state=="Oregon") %>% select(ds=date, y=cases))
+future <- make_future_dataframe(ProphMod, periods = 30)
+forecast <- predict(ProphMod, future)
+plot(ProphMod, forecast) + labs(x="Date", y="COVID-19 Cases", title="COVID-19 Forecast for Oregon: Using Prophet")
+prophet_plot_components(ProphMod, forecast)
+```
+
+## Oregon
+
+```{r ORAnalysis}
+Oregon.C19 <- NYTAgg.COVID %>% filter(state=="Oregon") 
+Oregon.C19 %>% features(cases, features=list(unitroot_kpss, unitroot_pp, unitroot_ndiffs, unitroot_nsdiffs))
+Oregon.C19 %>% features(deaths, features=list(unitroot_kpss, unitroot_pp, unitroot_ndiffs, unitroot_nsdiffs))
+```
+
+```{r Diffs}
+Oregon.C19 %<>% mutate(New.Cases = difference(cases), New.Deaths = difference(deaths))
+```
+
+```{r}
+# Visualize the differenced series
+Oregon.C19 %>% autoplot(New.Cases)
+Oregon.C19 %>% autoplot(New.Deaths)
+```
+
+```{r}
+# The Features of the Differenced Series
+Oregon.C19 %>% features(New.Cases, features=list(unitroot_kpss, unitroot_pp, unitroot_ndiffs, unitroot_nsdiffs))
+Oregon.C19 %>% features(New.Deaths, features=list(unitroot_kpss, unitroot_pp, unitroot_ndiffs, unitroot_nsdiffs))
+```
+
+
+## Decompositions
+
+```{r}
+# Classical decomposition
+Oregon.C19 %>% filter(date > as.Date("2020-03-01")) %>% model(classical_decomposition(New.Cases, type="additive")) %>% components() %>% autoplot()
+Oregon.C19 %>% filter(date > as.Date("2020-03-01")) %>% model(classical_decomposition(New.Cases, type="multiplicative")) %>% components() %>% autoplot()
+```
+
+### Cases
+
+```{r}
+# Show the seasonally adjusted data
+Oregon.C19 %>% filter(date > as.Date("2020-03-01")) %>% model(classical_decomposition(New.Cases, type="additive")) %>% components() %>% select(season_adjust) %>% autoplot(season_adjust, alpha=0.2) + geom_line(data=Oregon.C19, aes(x=date, y=New.Cases), color="red", alpha=0.2) + theme_ipsum_es() + labs(title="Seasonally Adjusted (Add) New Covid-19 Cases", y="New Covid-19 Cases")
+```
+
+### Deaths
+
+```{r}
+Oregon.C19 %>% filter(date > as.Date("2020-03-01")) %>% model(classical_decomposition(New.Cases, type="multiplicative")) %>% components() %>% select(season_adjust) %>% autoplot(season_adjust, alpha=0.2) + geom_line(data=Oregon.C19, aes(x=date, y=New.Cases), color="red", alpha=0.2) + theme_ipsum_es() + labs(title="Seasonally Adjusted (Mult) New Covid-19 Cases", y="New Covid-19 Cases")
+```
+
+## STL
+
+The STL decomposition is a very useful tool.
+
+### Cases
+
+```{r STL1}
+# STL: Things are actually worse than the Fall....
+Oregon.C19 %>% 
+  filter(date > as.Date("2020-04-01")) %>%
+  model(STL(New.Cases~trend(window=14) + season(period="1 week"))) %>% components() %>% autoplot()
+# The three peaks are interesting and we seem to be headed for a fourth that is already worse than the first.
+```
+
+### Deaths
+
+```{r}
+Oregon.C19 %>% filter(date > as.Date("2020-04-01")) %>% model(STL(New.Deaths~trend(window=14) + season(period="1 week"))) %>% components() %>% autoplot()
+# Deaths are far more rare and the peaks are less noticeable.
+```
+
+## Some Models
+
+```{r}
+OC19 <- Oregon.C19 %>% filter(date > as.Date("2020-04-01"))
+fitC <- OC19 %>% filter(date > as.Date("2020-04-01")) %>%  model(`K = 1` = ARIMA(New.CasesP ~ fourier(K=1)),
+      `K = 2` = ARIMA(New.CasesP ~ fourier(K=2)),
+      `K = 3` = ARIMA(New.CasesP ~ fourier(K=3)),
+      ARIMA = ARIMA(New.CasesP),
+      ETS = ETS(New.CasesP))
+fitC %>% glance()
+```
+
+
+
+```{r}
+# The best fit is K=2
+fitC %>% 
+  select(`K = 2`) %>% 
+  forecast() %>% 
+  autoplot() + 
+  autolayer(Oregon.C19 %>% select(New.CasesP) %>% filter(date > as.Date("2021-02-01"))) + 
+  theme_ipsum_rc() + 
+  labs(title="Harmonic Regression ARIMA Forecast of New COVID-19 Cases in Oregon") + 
+  geom_point(aes(x=as.Date("2021-04-08"), y=678), size=5) + 
+  geom_label(data = data.frame(x = as.Date("2021-03-31"), y = 736.446456504249, label = "Oregon's Case Count for 4/8/2021"), mapping = aes(x = x, y = y, label = label), label.padding = unit(0.25, "lines"), label.r = unit(0.15, "lines"), inherit.aes = FALSE) 
+```
+
+### Deaths
+
+```{r}
+fitD <- OC19 %>% filter(date > as.Date("2020-04-01")) %>%  model(`K = 1` = ARIMA(New.DeathsP ~ fourier(K=1)),
+      `K = 2` = ARIMA(New.DeathsP ~ fourier(K=2)),
+      `K = 3` = ARIMA(New.DeathsP ~ fourier(K=3)),
+      ARIMA = ARIMA(New.DeathsP),
+      ETS = ETS(New.DeathsP))
+fitD %>% glance()
+```
