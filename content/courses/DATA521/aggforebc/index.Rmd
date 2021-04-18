@@ -1,0 +1,271 @@
+---
+title: "NYT COVID Forecast Aggregation (Box-Cox)"
+date: "`r Sys.Date()`"
+output:
+  rmdformats::downcute:
+    self_contained: true
+---
+
+
+```{r setup, include=FALSE}
+library(knitr)
+library(rmdformats)
+## Global options
+options(max.print="75")
+opts_chunk$set(echo=TRUE,
+               prompt=FALSE,
+               tidy=TRUE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(width=75, fig.retina = 2, dev = "png", dev.args = list(type = "cairo-png"))
+library(tidyverse)
+library(fpp3)
+library(distributional)
+library(hrbrthemes)
+```
+
+## New York Times Data on COVID
+
+I will grab the dataset from the NYT COVID data github.  I will create two variables, New Cases and New Deaths to model.  The final line use aggregation to create the national data.
+
+```{r DataLoad}
+NYT.COVIDN <- read.csv(url("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv"))
+# Define a tsibble; the date is imported as character so mutate that first.
+NYT.COVID <- NYT.COVIDN %>% 
+  mutate(date=as.Date(date)) %>% 
+  as_tsibble(index=date, key=state) %>% 
+  group_by(state) %>% 
+  mutate(New.Cases = difference(cases), New.Deaths = difference(deaths)) %>% 
+  filter(!(state %in% c("Guam","Puerto Rico", "Virgin Islands","Northern Mariana Islands")))
+NYT.COVID <- NYT.COVID %>% mutate(New.Cases = (New.Cases >= 0)*New.Cases, New.Deaths = (New.Deaths >= 0)*New.Deaths)
+NYTAgg.COVID <- NYT.COVID %>% 
+  aggregate_key(state, New.Cases = sum(New.Cases, na.rm=TRUE), New.Deaths = sum(New.Deaths, na.rm=TRUE)) %>% 
+  filter(date > as.Date("2020-03-31")) %>% 
+  mutate(Day.of.Week = as.factor(wday(date, label = TRUE)))
+lambdaC <- NYTAgg.COVID %>% filter(is_aggregated(state)) %>%
+  features(New.Cases, features = guerrero) %>%
+  pull(lambda_guerrero)
+P1 <- NYTAgg.COVID %>% filter(is_aggregated(state)) %>%
+  autoplot(New.Cases)
+P2 <- NYTAgg.COVID %>% filter(is_aggregated(state)) %>%
+  autoplot(box_cox(New.Cases, lambdaC)) + labs(y="Box-Cox(New.Cases)")
+library(patchwork)
+P1 / P2
+```
+
+The $\lambda$ for deaths...
+
+```{r DBC}
+lambdaD <- NYTAgg.COVID %>% filter(is_aggregated(state)) %>%
+  features(New.Deaths, features = guerrero) %>%
+  pull(lambda_guerrero)
+P1 <- NYTAgg.COVID %>% filter(is_aggregated(state)) %>%
+  autoplot(New.Deaths)
+P2 <- NYTAgg.COVID %>% filter(is_aggregated(state)) %>%
+  autoplot(box_cox(New.Deaths, lambdaD)) + labs(y="Box-Cox(New.Deaths)")
+library(patchwork)
+P1 / P2
+```
+
+Plot the two aggregates.
+
+```{r BasePlotA}
+plot1 <- NYTAgg.COVID %>% filter(is_aggregated(state))  %>%
+  autoplot(box_cox(New.Cases, lambdaC)) + labs(y="Box-Cox(New.Cases)")
+plot2 <- NYTAgg.COVID %>% filter(is_aggregated(state)) %>%
+  autoplot(box_cox(New.Deaths, lambdaD)) + labs(y="Box-Cox(New.Deaths)")
+plot1 / plot2
+```
+
+Are there day of week effects?
+
+```{r}
+NYTAgg.COVID %>% model(TSLM(box_cox(New.Cases, lambdaC) ~ Day.of.Week)) %>% glance() %>% filter(p_value < 0.05)
+```
+
+In 12 states, there appear to be and in a few of them, those effects are large.  Modelling this covariate seems useful.  At the same time, this does nothing about the broad trends.
+
+```{r}
+NYTAgg.COVID %>% model(TSLM(box_cox(New.Deaths, lambdaD) ~ Day.of.Week)) %>% glance() %>% filter(p_value < 0.05)
+```
+
+## AN STL
+
+```{r}
+NYTAgg.COVID %>% 
+  filter(is_aggregated(state)) %>% 
+  model(STLC = STL(box_cox(New.Cases, lambdaC) ~ trend(window = 14) + season(window = 21), robust = TRUE)) %>%
+  components() %>%
+  autoplot()
+```
+
+```{r}
+NYTAgg.COVID %>% 
+  filter(is_aggregated(state)) %>% 
+  model(STLC = STL(box_cox(New.Deaths, lambdaD) ~ trend(window = 14) + season(window = 21), robust = TRUE)) %>%
+  components() %>%
+  autoplot()
+```
+
+
+## Training and Testing
+
+That gives me the data that I want; now let me slice it up into training and test sets.  
+
+```{r TestTrain}
+COVID.Agg.Test <- NYTAgg.COVID %>% 
+  as_tibble() %>% 
+  group_by(state) %>% 
+  filter(date > as.Date("2021-03-31")) %>% 
+  ungroup() %>% 
+  as_tsibble(index=date, key=state)
+COVID.Agg.Train <- anti_join(NYTAgg.COVID, COVID.Agg.Test)  %>%
+  as_tsibble(index=date, key=state)
+```
+
+## Model Fitting
+
+Fit some models to the data.
+
+```{r ModelEstC}
+COVID.Models <- COVID.Agg.Train %>% filter(is_aggregated(state)) %>% model(
+  `K = 2` = ARIMA(box_cox(New.Cases, lambdaC) ~ fourier(K=2) + PDQ(0,0,0)),
+  ARIMA = ARIMA(box_cox(New.Cases, lambdaC)),
+  ETS = ETS(box_cox(New.Cases, lambdaC)),
+  NNET = NNETAR(box_cox(New.Cases, lambdaC)),
+  NNETX = NNETAR(box_cox(New.Cases, lambdaC)~Day.of.Week),
+  ARIMAX = ARIMA(box_cox(New.Cases, lambdaC)~Day.of.Week),
+  ETSlog = ETS(log(New.Cases+1)),
+  ETSLevel = ETS(New.Cases)
+  ) %>% 
+  mutate(Combo1 = (`K = 2` + ARIMA + ETS)/3, Combo2 = (`K = 2` + ARIMA + ETS + NNET)/4, Combo3 = (NNETX + ARIMAX) / 2, Combo4 = (ARIMAX + ETS) / 2, Combo5 = (ETS + ETSlog + ETSLevel) / 3)
+```
+
+Forecast the models.
+
+```{r FCaster}
+COVIDFC <- COVID.Models %>% filter(is_aggregated(state)) %>%
+  forecast(h=14, new_data=COVID.Agg.Test)
+```
+
+```{r AccFD}
+COVIDFC %>% filter(is_aggregated(state)) %>%
+  accuracy(COVID.Agg.Test %>% filter(is_aggregated(state)))
+```
+
+Look at the aggregates.
+
+```{r AggFD}
+COVIDFC %>% 
+  filter(is_aggregated(state)) %>% 
+  autoplot(NYTAgg.COVID %>% filter(date > as.Date("2021-03-01")), level=NULL)
+```
+
+## Plot the Winner
+
+```{r}
+COVIDFC %>% 
+  filter(is_aggregated(state) & .model=="ETS") %>% 
+  autoplot(NYTAgg.COVID %>% filter(is_aggregated(state) & date > as.Date("2021-03-01")))
+```
+
+## Assess the Winner
+
+```{r}
+COVID.Models %>% select(ETS) %>% augment() %>% ACF(.resid) %>% autoplot()
+```
+
+## The Median Forecast?
+
+```{r}
+COVID.Model.ETS <- COVID.Agg.Train %>% filter(is_aggregated(state)) %>% model(ETS = ETS(New.Cases))
+Med.FC <- COVID.Model.ETS %>% forecast(h=14, point_forecast = list(.median = median), simulate=TRUE, bootstrap = TRUE, times=10000)
+Med.FC %>% accuracy(COVID.Agg.Test)
+```
+
+```{r}
+Med.FC %>% autoplot(NYTAgg.COVID %>% filter(date > as.Date("2021-03-01")))
+```
+
+## What Does the Future Hold?
+
+```{r}
+ETSFA <- NYTAgg.COVID %>% filter(is_aggregated(state)) %>% model(ETS = ETS(New.Cases)) %>% forecast(h=14, point_forecast = list(.median = median), simulate=TRUE, bootstrap = TRUE, times=10000)
+ETSFA %>% autoplot(NYTAgg.COVID %>% filter(date > as.Date("2021-03-01")))
+```
+
+# Deaths
+
+```{r ModelEstD}
+COVID.ModelsD <- COVID.Agg.Train %>% filter(is_aggregated(state)) %>% model(
+  `K = 2` = ARIMA(box_cox(New.Deaths, lambdaD) ~ fourier(K=2) + PDQ(0,0,0)),
+  ARIMA = ARIMA(box_cox(New.Deaths, lambdaD)),
+  ETS = ETS(box_cox(New.Deaths, lambdaD)),
+  NNET = NNETAR(box_cox(New.Deaths, lambdaD)),
+  NNETX = NNETAR(box_cox(New.Deaths, lambdaD)~Day.of.Week),
+  ARIMAX = ARIMA(box_cox(New.Deaths, lambdaD)~Day.of.Week),
+  ETSlog = ETS(log(New.Deaths+1)),
+  ETSLevel = ETS(New.Deaths)
+  ) %>% 
+  mutate(Combo1 = (`K = 2` + ARIMA + ETS)/3, Combo2 = (`K = 2` + ARIMA + ETS + NNET)/4, Combo3 = (NNETX + ARIMAX) / 2, Combo4 = (ARIMAX + ETS) / 2, Combo5 = (ETS + ETSlog + ETSLevel) / 3)
+```
+
+Forecast the models.
+
+```{r FCasterD}
+COVIDFCD <- COVID.ModelsD %>% filter(is_aggregated(state)) %>%
+  forecast(h=14, new_data=COVID.Agg.Test)
+```
+
+
+```{r AccFD1}
+COVIDFCD %>% filter(is_aggregated(state)) %>%
+  accuracy(COVID.Agg.Test %>% filter(is_aggregated(state)))
+```
+
+Look at the aggregates.
+
+```{r AggFD2}
+COVIDFCD %>% 
+  filter(is_aggregated(state)) %>% 
+  autoplot(NYTAgg.COVID %>% filter(date > as.Date("2021-03-01")), level=NULL)
+```
+## Diagnostics
+
+```{r}
+COVID.ModelsD %>% select(ARIMAX) %>% report()
+```
+
+
+```{r}
+COVID.ModelsD %>% select(ARIMAX) %>% augment() %>% gg_tsdisplay(.resid)
+```
+
+
+
+## Plot the Winner
+
+```{r}
+COVIDFCD %>% 
+  filter(is_aggregated(state) & .model=="ARIMAX") %>% 
+  autoplot(NYTAgg.COVID %>% filter(is_aggregated(state) & date > as.Date("2021-03-01")))
+```
+
+## The Median Forecast?
+
+```{r}
+COVID.Model.ARIMAX <- COVID.Agg.Train %>% filter(is_aggregated(state)) %>% model(ARIMAX = ARIMA(box_cox(New.Deaths, lambdaD)~Day.of.Week))
+Med.D.FC <- COVID.Model.ARIMAX %>% forecast(new_data=COVID.Agg.Test, point_forecast = list(.median = median), simulate=TRUE, bootstrap = TRUE, times=10000)
+Med.D.FC %>% accuracy(COVID.Agg.Test)
+```
+
+## The Future
+
+```{r}
+Day.of.Week <- data.frame(date = Sys.Date() + days(0:13)) %>% mutate(Day.of.Week=wday(as.Date(date), label = TRUE)) %>% as_tsibble(., index=date)
+AggD <- NYTAgg.COVID %>% filter(is_aggregated(state)) %>% as_tsibble(., index=date, key=NULL)
+FutureFC <- AggD %>% model(ARIMAX = ARIMA(box_cox(New.Deaths, lambdaD)~Day.of.Week)) %>% forecast(new_data=Day.of.Week, point_forecast = list(.median = median), simulate=TRUE, bootstrap = TRUE, times=10000)
+FutureFC %>% autoplot(AggD)
+```
+

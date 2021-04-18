@@ -1,0 +1,339 @@
+---
+title: "NYT COVID Forecast Aggregation (Box-Cox)"
+date: "2021-04-17"
+output:
+  rmdformats::downcute:
+    self_contained: true
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<div id="new-york-times-data-on-covid" class="section level2">
+<h2>New York Times Data on COVID</h2>
+<p>I will grab the dataset from the NYT COVID data github. I will create two variables, New Cases and New Deaths to model. The final line use aggregation to create the national data.</p>
+<pre class="r"><code>NYT.COVIDN &lt;- read.csv(url(&quot;https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv&quot;))
+# Define a tsibble; the date is imported as character so mutate that first.
+NYT.COVID &lt;- NYT.COVIDN %&gt;%
+    mutate(date = as.Date(date)) %&gt;%
+    as_tsibble(index = date, key = state) %&gt;%
+    group_by(state) %&gt;%
+    mutate(New.Cases = difference(cases), New.Deaths = difference(deaths)) %&gt;%
+    filter(!(state %in% c(&quot;Guam&quot;, &quot;Puerto Rico&quot;, &quot;Virgin Islands&quot;, &quot;Northern Mariana Islands&quot;)))
+NYT.COVID &lt;- NYT.COVID %&gt;%
+    mutate(New.Cases = (New.Cases &gt;= 0) * New.Cases, New.Deaths = (New.Deaths &gt;= 
+        0) * New.Deaths)
+NYTAgg.COVID &lt;- NYT.COVID %&gt;%
+    aggregate_key(state, New.Cases = sum(New.Cases, na.rm = TRUE), New.Deaths = sum(New.Deaths, 
+        na.rm = TRUE)) %&gt;%
+    filter(date &gt; as.Date(&quot;2020-03-31&quot;)) %&gt;%
+    mutate(Day.of.Week = as.factor(wday(date, label = TRUE)))
+lambdaC &lt;- NYTAgg.COVID %&gt;%
+    filter(is_aggregated(state)) %&gt;%
+    features(New.Cases, features = guerrero) %&gt;%
+    pull(lambda_guerrero)
+P1 &lt;- NYTAgg.COVID %&gt;%
+    filter(is_aggregated(state)) %&gt;%
+    autoplot(New.Cases)
+P2 &lt;- NYTAgg.COVID %&gt;%
+    filter(is_aggregated(state)) %&gt;%
+    autoplot(box_cox(New.Cases, lambdaC)) + labs(y = &quot;Box-Cox(New.Cases)&quot;)
+library(patchwork)
+P1/P2</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/DataLoad-1.png" width="672" /></p>
+<p>The <span class="math inline">\(\lambda\)</span> for deaths…</p>
+<pre class="r"><code>lambdaD &lt;- NYTAgg.COVID %&gt;%
+    filter(is_aggregated(state)) %&gt;%
+    features(New.Deaths, features = guerrero) %&gt;%
+    pull(lambda_guerrero)
+P1 &lt;- NYTAgg.COVID %&gt;%
+    filter(is_aggregated(state)) %&gt;%
+    autoplot(New.Deaths)
+P2 &lt;- NYTAgg.COVID %&gt;%
+    filter(is_aggregated(state)) %&gt;%
+    autoplot(box_cox(New.Deaths, lambdaD)) + labs(y = &quot;Box-Cox(New.Deaths)&quot;)
+library(patchwork)
+P1/P2</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/DBC-1.png" width="672" /></p>
+<p>Plot the two aggregates.</p>
+<pre class="r"><code>plot1 &lt;- NYTAgg.COVID %&gt;%
+    filter(is_aggregated(state)) %&gt;%
+    autoplot(box_cox(New.Cases, lambdaC)) + labs(y = &quot;Box-Cox(New.Cases)&quot;)
+plot2 &lt;- NYTAgg.COVID %&gt;%
+    filter(is_aggregated(state)) %&gt;%
+    autoplot(box_cox(New.Deaths, lambdaD)) + labs(y = &quot;Box-Cox(New.Deaths)&quot;)
+plot1/plot2</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/BasePlotA-1.png" width="672" /></p>
+<p>Are there day of week effects?</p>
+<pre class="r"><code>NYTAgg.COVID %&gt;%
+    model(TSLM(box_cox(New.Cases, lambdaC) ~ Day.of.Week)) %&gt;%
+    glance() %&gt;%
+    filter(p_value &lt; 0.05)</code></pre>
+<pre><code># A tibble: 15 x 16
+   state       .model    r_squared adj_r_squared sigma2 statistic  p_value    df
+   &lt;chr*&gt;      &lt;chr&gt;         &lt;dbl&gt;         &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt; &lt;int&gt;
+ 1 Connecticu… TSLM(box…    0.0785        0.0592  0.742      4.06 6.31e- 4     7
+ 2 District o… TSLM(box…    0.0409        0.0255  0.248      2.65 1.57e- 2     7
+ 3 Georgia   … TSLM(box…    0.0409        0.0255  0.235      2.65 1.57e- 2     7
+ 4 Idaho     … TSLM(box…    0.0610        0.0453  0.928      3.88 9.21e- 4     7
+ 5 Iowa      … TSLM(box…    0.0478        0.0325  0.306      3.13 5.26e- 3     7
+ 6 Kansas    … TSLM(box…    0.538         0.530   0.654     67.9  1.01e-55     7
+ 7 Kentucky  … TSLM(box…    0.0417        0.0263  0.669      2.71 1.37e- 2     7
+ 8 Louisiana … TSLM(box…    0.0821        0.0649  0.282      4.78 1.09e- 4     7
+ 9 Michigan  … TSLM(box…    0.320         0.309   0.490     29.3  8.89e-29     7
+10 Mississipp… TSLM(box…    0.0868        0.0719  0.287      5.84 7.75e- 6     7
+11 Nebraska  … TSLM(box…    0.0392        0.0238  0.368      2.54 2.03e- 2     7
+12 Rhode Isla… TSLM(box…    0.0718        0.0513  0.463      3.51 2.33e- 3     7
+13 South Dako… TSLM(box…    0.0672        0.0520  0.540      4.42 2.51e- 4     7
+14 Washington… TSLM(box…    0.124         0.110   0.311      8.83 5.10e- 9     7
+15 Wisconsin … TSLM(box…    0.0364        0.0208  0.427      2.34 3.13e- 2     7
+# … with 8 more variables: log_lik &lt;dbl&gt;, AIC &lt;dbl&gt;, AICc &lt;dbl&gt;, BIC &lt;dbl&gt;,
+#   CV &lt;dbl&gt;, deviance &lt;dbl&gt;, df.residual &lt;int&gt;, rank &lt;int&gt;</code></pre>
+<p>In 12 states, there appear to be and in a few of them, those effects are large. Modelling this covariate seems useful. At the same time, this does nothing about the broad trends.</p>
+<pre class="r"><code>NYTAgg.COVID %&gt;%
+    model(TSLM(box_cox(New.Deaths, lambdaD) ~ Day.of.Week)) %&gt;%
+    glance() %&gt;%
+    filter(p_value &lt; 0.05)</code></pre>
+<pre><code># A tibble: 47 x 16
+   state       .model    r_squared adj_r_squared sigma2 statistic  p_value    df
+   &lt;chr*&gt;      &lt;chr&gt;         &lt;dbl&gt;         &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt; &lt;int&gt;
+ 1 Alabama     TSLM(box…    0.278         0.267   12.4      24.0  4.80e-24     7
+ 2 Alaska      TSLM(box…    0.0711        0.0562  14.6       4.77 1.06e- 4     7
+ 3 Arizona     TSLM(box…    0.461         0.452    6.87     53.2  2.72e-47     7
+ 4 Arkansas    TSLM(box…    0.0454        0.0301   7.54      2.97 7.67e- 3     7
+ 5 California  TSLM(box…    0.187         0.174    2.89     14.3  1.09e-14     7
+ 6 Colorado    TSLM(box…    0.109         0.0948   9.33      7.63 9.59e- 8     7
+ 7 Connecticut TSLM(box…    0.407         0.398   16.3      42.8  1.07e-39     7
+ 8 Delaware    TSLM(box…    0.0470        0.0317  16.5       3.07 6.00e- 3     7
+ 9 Florida     TSLM(box…    0.0749        0.0601   3.49      5.05 5.41e- 5     7
+10 Georgia     TSLM(box…    0.356         0.346    3.35     34.5  3.80e-33     7
+# … with 37 more rows, and 8 more variables: log_lik &lt;dbl&gt;, AIC &lt;dbl&gt;,
+#   AICc &lt;dbl&gt;, BIC &lt;dbl&gt;, CV &lt;dbl&gt;, deviance &lt;dbl&gt;, df.residual &lt;int&gt;,
+#   rank &lt;int&gt;</code></pre>
+</div>
+<div id="an-stl" class="section level2">
+<h2>AN STL</h2>
+<pre class="r"><code>NYTAgg.COVID %&gt;%
+    filter(is_aggregated(state)) %&gt;%
+    model(STLC = STL(box_cox(New.Cases, lambdaC) ~ trend(window = 14) + season(window = 21), 
+        robust = TRUE)) %&gt;%
+    components() %&gt;%
+    autoplot()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<pre class="r"><code>NYTAgg.COVID %&gt;%
+    filter(is_aggregated(state)) %&gt;%
+    model(STLC = STL(box_cox(New.Deaths, lambdaD) ~ trend(window = 14) + season(window = 21), 
+        robust = TRUE)) %&gt;%
+    components() %&gt;%
+    autoplot()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+</div>
+<div id="training-and-testing" class="section level2">
+<h2>Training and Testing</h2>
+<p>That gives me the data that I want; now let me slice it up into training and test sets.</p>
+<pre class="r"><code>COVID.Agg.Test &lt;- NYTAgg.COVID %&gt;%
+    as_tibble() %&gt;%
+    group_by(state) %&gt;%
+    filter(date &gt; as.Date(&quot;2021-03-31&quot;)) %&gt;%
+    ungroup() %&gt;%
+    as_tsibble(index = date, key = state)
+COVID.Agg.Train &lt;- anti_join(NYTAgg.COVID, COVID.Agg.Test) %&gt;%
+    as_tsibble(index = date, key = state)</code></pre>
+</div>
+<div id="model-fitting" class="section level2">
+<h2>Model Fitting</h2>
+<p>Fit some models to the data.</p>
+<pre class="r"><code>COVID.Models &lt;- COVID.Agg.Train %&gt;%
+    filter(is_aggregated(state)) %&gt;%
+    model(`K = 2` = ARIMA(box_cox(New.Cases, lambdaC) ~ fourier(K = 2) + PDQ(0, 0, 
+        0)), ARIMA = ARIMA(box_cox(New.Cases, lambdaC)), ETS = ETS(box_cox(New.Cases, 
+        lambdaC)), NNET = NNETAR(box_cox(New.Cases, lambdaC)), NNETX = NNETAR(box_cox(New.Cases, 
+        lambdaC) ~ Day.of.Week), ARIMAX = ARIMA(box_cox(New.Cases, lambdaC) ~ Day.of.Week), 
+        ETSlog = ETS(log(New.Cases + 1)), ETSLevel = ETS(New.Cases)) %&gt;%
+    mutate(Combo1 = (`K = 2` + ARIMA + ETS)/3, Combo2 = (`K = 2` + ARIMA + ETS + 
+        NNET)/4, Combo3 = (NNETX + ARIMAX)/2, Combo4 = (ARIMAX + ETS)/2, Combo5 = (ETS + 
+        ETSlog + ETSLevel)/3)</code></pre>
+<p>Forecast the models.</p>
+<pre class="r"><code>COVIDFC &lt;- COVID.Models %&gt;%
+    filter(is_aggregated(state)) %&gt;%
+    forecast(h = 14, new_data = COVID.Agg.Test)</code></pre>
+<pre class="r"><code>COVIDFC %&gt;%
+    filter(is_aggregated(state)) %&gt;%
+    accuracy(COVID.Agg.Test %&gt;%
+        filter(is_aggregated(state)))</code></pre>
+<pre><code># A tibble: 13 x 11
+   .model state      .type    ME   RMSE   MAE     MPE   MAPE  MASE RMSSE    ACF1
+   &lt;chr&gt;  &lt;chr*&gt;     &lt;chr&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;
+ 1 ARIMA  &lt;aggregat… Test  2468.  6554. 5297.   1.82    8.32   NaN   NaN -0.0535
+ 2 ARIMAX &lt;aggregat… Test   271.  7164. 6030.  -1.80   10.1    NaN   NaN -0.0579
+ 3 Combo1 &lt;aggregat… Test   947.  6607. 5306.  -0.657   8.83   NaN   NaN -0.186 
+ 4 Combo2 &lt;aggregat… Test  1439.  7411. 6150.  -0.294  10.2    NaN   NaN -0.0978
+ 5 Combo3 &lt;aggregat… Test   NaN    NaN   NaN  NaN     NaN      NaN   NaN NA     
+ 6 Combo4 &lt;aggregat… Test   373.  6094. 4951.  -1.33    8.26   NaN   NaN -0.169 
+ 7 Combo5 &lt;aggregat… Test   291.  5800. 4389.  -1.38    7.42   NaN   NaN -0.216 
+ 8 ETS    &lt;aggregat… Test   475.  5408. 4153.  -0.870   6.85   NaN   NaN -0.264 
+ 9 ETSLe… &lt;aggregat… Test  1051.  6337. 4996.  -0.471   8.31   NaN   NaN -0.124 
+10 ETSlog &lt;aggregat… Test  -653.  5923. 4708.  -2.81    8.03   NaN   NaN -0.234 
+11 K = 2  &lt;aggregat… Test  -102.  8815. 7176.  -2.92   12.3    NaN   NaN -0.211 
+12 NNET   &lt;aggregat… Test  2952. 10648. 9300.   0.850  15.2    NaN   NaN  0.116 
+13 NNETX  &lt;aggregat… Test   NaN    NaN   NaN  NaN     NaN      NaN   NaN NA     </code></pre>
+<p>Look at the aggregates.</p>
+<pre class="r"><code>COVIDFC %&gt;%
+    filter(is_aggregated(state)) %&gt;%
+    autoplot(NYTAgg.COVID %&gt;%
+        filter(date &gt; as.Date(&quot;2021-03-01&quot;)), level = NULL)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/AggFD-1.png" width="672" /></p>
+</div>
+<div id="plot-the-winner" class="section level2">
+<h2>Plot the Winner</h2>
+<pre class="r"><code>COVIDFC %&gt;%
+    filter(is_aggregated(state) &amp; .model == &quot;ETS&quot;) %&gt;%
+    autoplot(NYTAgg.COVID %&gt;%
+        filter(is_aggregated(state) &amp; date &gt; as.Date(&quot;2021-03-01&quot;)))</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+</div>
+<div id="assess-the-winner" class="section level2">
+<h2>Assess the Winner</h2>
+<pre class="r"><code>COVID.Models %&gt;%
+    select(ETS) %&gt;%
+    augment() %&gt;%
+    ACF(.resid) %&gt;%
+    autoplot()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+</div>
+<div id="the-median-forecast" class="section level2">
+<h2>The Median Forecast?</h2>
+<pre class="r"><code>COVID.Model.ETS &lt;- COVID.Agg.Train %&gt;%
+    filter(is_aggregated(state)) %&gt;%
+    model(ETS = ETS(New.Cases))
+Med.FC &lt;- COVID.Model.ETS %&gt;%
+    forecast(h = 14, point_forecast = list(.median = median), simulate = TRUE, bootstrap = TRUE, 
+        times = 10000)
+Med.FC %&gt;%
+    accuracy(COVID.Agg.Test)</code></pre>
+<pre><code># A tibble: 1 x 11
+  .model state        .type    ME  RMSE   MAE    MPE  MAPE  MASE RMSSE   ACF1
+  &lt;chr&gt;  &lt;chr*&gt;       &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+1 ETS    &lt;aggregated&gt; Test  1169. 6803. 5630. -0.568  9.39   NaN   NaN -0.113</code></pre>
+<pre class="r"><code>Med.FC %&gt;%
+    autoplot(NYTAgg.COVID %&gt;%
+        filter(date &gt; as.Date(&quot;2021-03-01&quot;)))</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+</div>
+<div id="what-does-the-future-hold" class="section level2">
+<h2>What Does the Future Hold?</h2>
+<pre class="r"><code>ETSFA &lt;- NYTAgg.COVID %&gt;%
+    filter(is_aggregated(state)) %&gt;%
+    model(ETS = ETS(New.Cases)) %&gt;%
+    forecast(h = 14, point_forecast = list(.median = median), simulate = TRUE, bootstrap = TRUE, 
+        times = 10000)
+ETSFA %&gt;%
+    autoplot(NYTAgg.COVID %&gt;%
+        filter(date &gt; as.Date(&quot;2021-03-01&quot;)))</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+</div>
+<div id="deaths" class="section level1">
+<h1>Deaths</h1>
+<pre class="r"><code>COVID.ModelsD &lt;- COVID.Agg.Train %&gt;%
+    filter(is_aggregated(state)) %&gt;%
+    model(`K = 2` = ARIMA(box_cox(New.Deaths, lambdaD) ~ fourier(K = 2) + PDQ(0, 
+        0, 0)), ARIMA = ARIMA(box_cox(New.Deaths, lambdaD)), ETS = ETS(box_cox(New.Deaths, 
+        lambdaD)), NNET = NNETAR(box_cox(New.Deaths, lambdaD)), NNETX = NNETAR(box_cox(New.Deaths, 
+        lambdaD) ~ Day.of.Week), ARIMAX = ARIMA(box_cox(New.Deaths, lambdaD) ~ Day.of.Week), 
+        ETSlog = ETS(log(New.Deaths + 1)), ETSLevel = ETS(New.Deaths)) %&gt;%
+    mutate(Combo1 = (`K = 2` + ARIMA + ETS)/3, Combo2 = (`K = 2` + ARIMA + ETS + 
+        NNET)/4, Combo3 = (NNETX + ARIMAX)/2, Combo4 = (ARIMAX + ETS)/2, Combo5 = (ETS + 
+        ETSlog + ETSLevel)/3)</code></pre>
+<p>Forecast the models.</p>
+<pre class="r"><code>COVIDFCD &lt;- COVID.ModelsD %&gt;%
+    filter(is_aggregated(state)) %&gt;%
+    forecast(h = 14, new_data = COVID.Agg.Test)</code></pre>
+<pre class="r"><code>COVIDFCD %&gt;%
+    filter(is_aggregated(state)) %&gt;%
+    accuracy(COVID.Agg.Test %&gt;%
+        filter(is_aggregated(state)))</code></pre>
+<pre><code># A tibble: 13 x 11
+   .model  state      .type     ME  RMSE   MAE    MPE  MAPE  MASE RMSSE     ACF1
+   &lt;chr&gt;   &lt;chr*&gt;     &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;
+ 1 ARIMA   &lt;aggregat… Test   -95.8  390.  263. -22.7   29.3   NaN   NaN -4.13e-2
+ 2 ARIMAX  &lt;aggregat… Test   -60.8  375.  231. -19.0   25.7   NaN   NaN -5.67e-2
+ 3 Combo1  &lt;aggregat… Test  -105.   389.  270. -24.0   30.4   NaN   NaN -3.25e-2
+ 4 Combo2  &lt;aggregat… Test   -63.2  396.  242. -18.3   25.3   NaN   NaN -1.42e-1
+ 5 Combo3  &lt;aggregat… Test   NaN    NaN   NaN  NaN    NaN     NaN   NaN NA      
+ 6 Combo4  &lt;aggregat… Test   -86.3  380.  252. -21.3   27.8   NaN   NaN -5.53e-2
+ 7 Combo5  &lt;aggregat… Test  -107.   390.  271. -23.9   30.3   NaN   NaN -4.60e-2
+ 8 ETS     &lt;aggregat… Test  -112.   389.  273. -23.6   29.9   NaN   NaN -4.63e-2
+ 9 ETSLev… &lt;aggregat… Test   -76.2  378.  244. -20.6   27.1   NaN   NaN -8.83e-2
+10 ETSlog  &lt;aggregat… Test  -132.   409.  297. -27.6   34.0   NaN   NaN -3.23e-4
+11 K = 2   &lt;aggregat… Test  -106.   392.  273. -25.6   32.1   NaN   NaN -6.94e-3
+12 NNET    &lt;aggregat… Test    61.0  480.  212.  -1.19  16.2   NaN   NaN -3.96e-1
+13 NNETX   &lt;aggregat… Test   NaN    NaN   NaN  NaN    NaN     NaN   NaN NA      </code></pre>
+<p>Look at the aggregates.</p>
+<pre class="r"><code>COVIDFCD %&gt;%
+    filter(is_aggregated(state)) %&gt;%
+    autoplot(NYTAgg.COVID %&gt;%
+        filter(date &gt; as.Date(&quot;2021-03-01&quot;)), level = NULL)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/AggFD2-1.png" width="672" />
+## Diagnostics</p>
+<pre class="r"><code>COVID.ModelsD %&gt;%
+    select(ARIMAX) %&gt;%
+    report()</code></pre>
+<pre><code>Series: New.Deaths 
+Model: LM w/ ARIMA(1,1,3)(1,0,1)[7] errors 
+Transformation: box_cox(New.Deaths, lambdaD) 
+
+Coefficients:
+         ar1      ma1      ma2      ma3    sar1     sma1  Day.of.Week.L
+      0.0683  -0.5906  -0.1000  -0.0419  0.5341  -0.3426         1.3388
+s.e.  0.4418   0.4385   0.2394   0.0936  0.3471   0.3860         0.1001
+      Day.of.Week.Q  Day.of.Week.C  Day.of.Week^4  Day.of.Week^5  Day.of.Week^6
+            -1.5666        -0.0362         0.3687        -0.4623         0.1221
+s.e.         0.1084         0.0892         0.0831         0.0772         0.0731
+
+sigma^2 estimated as 0.2794:  log likelihood=-278.8
+AIC=583.6   AICc=584.64   BIC=634.26</code></pre>
+<pre class="r"><code>COVID.ModelsD %&gt;%
+    select(ARIMAX) %&gt;%
+    augment() %&gt;%
+    gg_tsdisplay(.resid)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<div id="plot-the-winner-1" class="section level2">
+<h2>Plot the Winner</h2>
+<pre class="r"><code>COVIDFCD %&gt;%
+    filter(is_aggregated(state) &amp; .model == &quot;ARIMAX&quot;) %&gt;%
+    autoplot(NYTAgg.COVID %&gt;%
+        filter(is_aggregated(state) &amp; date &gt; as.Date(&quot;2021-03-01&quot;)))</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+</div>
+<div id="the-median-forecast-1" class="section level2">
+<h2>The Median Forecast?</h2>
+<pre class="r"><code>COVID.Model.ARIMAX &lt;- COVID.Agg.Train %&gt;%
+    filter(is_aggregated(state)) %&gt;%
+    model(ARIMAX = ARIMA(box_cox(New.Deaths, lambdaD) ~ Day.of.Week))
+Med.D.FC &lt;- COVID.Model.ARIMAX %&gt;%
+    forecast(new_data = COVID.Agg.Test, point_forecast = list(.median = median), 
+        simulate = TRUE, bootstrap = TRUE, times = 10000)
+Med.D.FC %&gt;%
+    accuracy(COVID.Agg.Test)</code></pre>
+<pre><code># A tibble: 1 x 11
+  .model state        .type    ME  RMSE   MAE   MPE  MAPE  MASE RMSSE    ACF1
+  &lt;chr&gt;  &lt;chr*&gt;       &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt;
+1 ARIMAX &lt;aggregated&gt; Test  -58.6  374.  228. -18.8  25.4   NaN   NaN -0.0603</code></pre>
+</div>
+<div id="the-future" class="section level2">
+<h2>The Future</h2>
+<pre class="r"><code>Day.of.Week &lt;- data.frame(date = Sys.Date() + days(0:13)) %&gt;%
+    mutate(Day.of.Week = wday(as.Date(date), label = TRUE)) %&gt;%
+    as_tsibble(., index = date)
+AggD &lt;- NYTAgg.COVID %&gt;%
+    filter(is_aggregated(state)) %&gt;%
+    as_tsibble(., index = date, key = NULL)
+FutureFC &lt;- AggD %&gt;%
+    model(ARIMAX = ARIMA(box_cox(New.Deaths, lambdaD) ~ Day.of.Week)) %&gt;%
+    forecast(new_data = Day.of.Week, point_forecast = list(.median = median), simulate = TRUE, 
+        bootstrap = TRUE, times = 10000)
+FutureFC %&gt;%
+    autoplot(AggD)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+</div>
+</div>

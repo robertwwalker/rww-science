@@ -1,0 +1,151 @@
+---
+title: "NYT COVID-19 Aggregates"
+subtitle: "Analysis in logs"
+date: "2021-04-17"
+output:
+  rmdformats::downcute:
+    self_contained: true
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<div id="new-york-times-data-on-covid" class="section level2">
+<h2>New York Times Data on COVID</h2>
+<p>I will grab the dataset from the NYT COVID data github. I will create two variables, New Cases and New Deaths to model. The final line use aggregation to create the national data.</p>
+<pre class="r"><code>NYT.COVIDN &lt;- read.csv(url(&quot;https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv&quot;))
+# Define a tsibble; the date is imported as character so mutate that first.
+NYT.COVID &lt;- NYT.COVIDN %&gt;%
+    mutate(date = as.Date(date)) %&gt;%
+    as_tsibble(index = date, key = state) %&gt;%
+    group_by(state) %&gt;%
+    mutate(New.Cases = difference(cases), New.Deaths = difference(deaths)) %&gt;%
+    filter(!(state %in% c(&quot;Guam&quot;, &quot;Puerto Rico&quot;, &quot;Virgin Islands&quot;, &quot;Northern Mariana Islands&quot;)))
+NYT.COVID &lt;- NYT.COVID %&gt;%
+    mutate(New.CasesP = (New.Cases &gt;= 0) * New.Cases, New.DeathsP = (New.Deaths &gt;= 
+        0) * New.Deaths)
+NYTAgg.COVID &lt;- NYT.COVID %&gt;%
+    aggregate_key(state, New.CasesP = sum(New.CasesP, na.rm = TRUE), New.DeathsP = sum(New.DeathsP, 
+        na.rm = TRUE)) %&gt;%
+    filter(date &gt; as.Date(&quot;2020-03-31&quot;)) %&gt;%
+    mutate(Day.of.Week = as.factor(wday(date, label = TRUE)))</code></pre>
+<p>A basic visual for verification. First the subseries.</p>
+<pre class="r"><code>library(patchwork)
+plot1 &lt;- NYTAgg.COVID %&gt;%
+    filter(!is_aggregated(state)) %&gt;%
+    autoplot(New.CasesP) + guides(color = FALSE)
+plot2 &lt;- NYTAgg.COVID %&gt;%
+    filter(!is_aggregated(state)) %&gt;%
+    autoplot(New.DeathsP) + guides(color = FALSE)
+plot1/plot2</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/BasePlot-1.png" width="672" /></p>
+<p>Now the aggregates.</p>
+<pre class="r"><code>plot1 &lt;- NYTAgg.COVID %&gt;%
+    filter(is_aggregated(state)) %&gt;%
+    autoplot(New.CasesP)
+plot2 &lt;- NYTAgg.COVID %&gt;%
+    filter(is_aggregated(state)) %&gt;%
+    autoplot(New.DeathsP)
+plot1/plot2</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/BasePlotA-1.png" width="672" /></p>
+<p>Are there day of week effects?</p>
+<pre class="r"><code>NYTAgg.COVID %&gt;%
+    model(TSLM(New.CasesP ~ Day.of.Week)) %&gt;%
+    glance() %&gt;%
+    filter(p_value &lt; 0.05)</code></pre>
+<pre><code># A tibble: 12 x 16
+   state        .model   r_squared adj_r_squared sigma2 statistic  p_value    df
+   &lt;chr*&gt;       &lt;chr&gt;        &lt;dbl&gt;         &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt; &lt;int&gt;
+ 1 Arkansas   … TSLM(Ne…    0.0450        0.0297 6.70e5      2.94 8.23e- 3     7
+ 2 Connecticut… TSLM(Ne…    0.259         0.247  1.29e6     21.8  5.72e-22     7
+ 3 District of… TSLM(Ne…    0.0401        0.0247 6.71e3      2.60 1.74e- 2     7
+ 4 Hawaii     … TSLM(Ne…    0.0688        0.0538 4.80e3      4.60 1.59e- 4     7
+ 5 Idaho      … TSLM(Ne…    0.0773        0.0625 2.10e5      5.22 3.55e- 5     7
+ 6 Kansas     … TSLM(Ne…    0.302         0.291  1.48e6     27.0  9.67e-27     7
+ 7 Louisiana  … TSLM(Ne…    0.143         0.129  1.38e6     10.4  1.12e-10     7
+ 8 Michigan   … TSLM(Ne…    0.0975        0.0830 6.84e6      6.73 8.74e- 7     7
+ 9 Mississippi… TSLM(Ne…    0.0562        0.0411 4.29e5      3.71 1.34e- 3     7
+10 Rhode Islan… TSLM(Ne…    0.213         0.201  2.84e5     16.9  2.72e-17     7
+11 Texas      … TSLM(Ne…    0.0332        0.0177 4.61e7      2.14 4.81e- 2     7
+12 Washington … TSLM(Ne…    0.0665        0.0516 8.82e5      4.44 2.34e- 4     7
+# … with 8 more variables: log_lik &lt;dbl&gt;, AIC &lt;dbl&gt;, AICc &lt;dbl&gt;, BIC &lt;dbl&gt;,
+#   CV &lt;dbl&gt;, deviance &lt;dbl&gt;, df.residual &lt;int&gt;, rank &lt;int&gt;</code></pre>
+<p>In 12 states, there appear to be and in a few of them, those effects are large. Modelling this covariate seems useful. At the same time, this does nothing about the broad trends.</p>
+<pre class="r"><code>NYTAgg.COVID %&gt;%
+    model(TSLM(New.DeathsP ~ Day.of.Week)) %&gt;%
+    glance() %&gt;%
+    filter(p_value &lt; 0.05)</code></pre>
+<pre><code># A tibble: 43 x 16
+   state       .model    r_squared adj_r_squared sigma2 statistic  p_value    df
+   &lt;chr*&gt;      &lt;chr&gt;         &lt;dbl&gt;         &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt; &lt;int&gt;
+ 1 Alabama     TSLM(New…    0.129         0.115  1.80e3      9.22 1.99e- 9     7
+ 2 Arizona     TSLM(New…    0.164         0.150  3.00e3     12.2  1.50e-12     7
+ 3 California  TSLM(New…    0.0867        0.0721 2.63e4      5.92 6.40e- 6     7
+ 4 Colorado    TSLM(New…    0.0662        0.0512 4.35e2      4.42 2.49e- 4     7
+ 5 Connecticut TSLM(New…    0.0905        0.0759 8.32e2      6.20 3.19e- 6     7
+ 6 Delaware    TSLM(New…    0.0408        0.0254 4.31e1      2.65 1.57e- 2     7
+ 7 Florida     TSLM(New…    0.127         0.113  3.10e3      9.06 2.96e- 9     7
+ 8 Georgia     TSLM(New…    0.163         0.149  2.04e3     12.1  1.94e-12     7
+ 9 Idaho       TSLM(New…    0.150         0.137  4.01e1     11.0  2.52e-11     7
+10 Illinois    TSLM(New…    0.0820        0.0672 2.71e3      5.56 1.53e- 5     7
+# … with 33 more rows, and 8 more variables: log_lik &lt;dbl&gt;, AIC &lt;dbl&gt;,
+#   AICc &lt;dbl&gt;, BIC &lt;dbl&gt;, CV &lt;dbl&gt;, deviance &lt;dbl&gt;, df.residual &lt;int&gt;,
+#   rank &lt;int&gt;</code></pre>
+</div>
+<div id="training-and-testing" class="section level2">
+<h2>Training and Testing</h2>
+<p>That gives me the data that I want; now let me slice it up into training and test sets.</p>
+<pre class="r"><code>COVID.Agg.Test &lt;- NYTAgg.COVID %&gt;%
+    as_tibble() %&gt;%
+    group_by(state) %&gt;%
+    slice_tail(n = 14) %&gt;%
+    ungroup() %&gt;%
+    as_tsibble(index = date, key = state)
+COVID.Agg.Train &lt;- anti_join(NYTAgg.COVID, COVID.Agg.Test) %&gt;%
+    as_tsibble(index = date, key = state)</code></pre>
+</div>
+<div id="model-fitting" class="section level2">
+<h2>Model Fitting</h2>
+<p>Fit some models to the data.</p>
+<pre class="r"><code>COVID.Models &lt;- COVID.Agg.Train %&gt;%
+    model(`K = 2` = ARIMA(log(New.CasesP) ~ fourier(K = 2) + PDQ(0, 0, 0)), ARIMA = ARIMA(log(New.CasesP)), 
+        ETS = ETS(log(New.CasesP)), NNET = NNETAR(log(New.CasesP))) %&gt;%
+    mutate(Combo1 = (`K = 2` + ARIMA + ETS)/3, Combo2 = (`K = 2` + ARIMA + ETS + 
+        NNET)/4) %&gt;%
+    reconcile(buARIMA = bottom_up(ARIMA), buK2 = bottom_up(`K = 2`), buETS = bottom_up(ETS), 
+        buC2 = bottom_up(Combo2))</code></pre>
+<p>Forecast the models.</p>
+<pre class="r"><code>COVIDFC &lt;- COVID.Models %&gt;%
+    forecast(h = 14, new_data = COVID.Agg.Test)</code></pre>
+<pre class="r"><code>COVIDFC %&gt;%
+    accuracy(COVID.Agg.Test)</code></pre>
+<pre><code># A tibble: 520 x 11
+   .model state          .type    ME  RMSE   MAE    MPE  MAPE  MASE RMSSE   ACF1
+   &lt;chr&gt;  &lt;chr*&gt;         &lt;chr&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+ 1 ARIMA  Alabama      … Test  NaN    NaN   NaN  NaN    NaN     NaN   NaN NA    
+ 2 ARIMA  Alaska       … Test  NaN    NaN   NaN  NaN    NaN     NaN   NaN NA    
+ 3 ARIMA  Arizona      … Test  NaN    NaN   NaN  NaN    NaN     NaN   NaN NA    
+ 4 ARIMA  Arkansas     … Test  NaN    NaN   NaN  NaN    NaN     NaN   NaN NA    
+ 5 ARIMA  California   … Test   43.5  559.  442.  -2.48  16.2   NaN   NaN  0.343
+ 6 ARIMA  Colorado     … Test  -43.8  524.  451. -14.7   33.5   NaN   NaN -0.292
+ 7 ARIMA  Connecticut  … Test  NaN    NaN   NaN  NaN    NaN     NaN   NaN NA    
+ 8 ARIMA  Delaware     … Test  NaN    NaN   NaN  NaN    NaN     NaN   NaN NA    
+ 9 ARIMA  District of C… Test  NaN    NaN   NaN  NaN    NaN     NaN   NaN NA    
+10 ARIMA  Florida      … Test  NaN    NaN   NaN  NaN    NaN     NaN   NaN NA    
+# … with 510 more rows</code></pre>
+<p>Look at the aggregates.</p>
+<pre class="r"><code>COVIDFC %&gt;%
+    filter(is_aggregated(state)) %&gt;%
+    autoplot(NYTAgg.COVID %&gt;%
+        filter(date &gt; as.Date(&quot;2021-03-01&quot;)), level = NULL)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/AggFD-1.png" width="672" /></p>
+<p>Assess the models over the units.</p>
+<pre class="r"><code>COVIDFC %&gt;%
+    accuracy(COVID.Agg.Test) %&gt;%
+    group_by(state) %&gt;%
+    slice_min(MAE) %&gt;%
+    janitor::tabyl(.model) %&gt;%
+    ggplot(aes(x = .model, y = n)) + geom_col() + theme_ipsum_rc()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<pre class="r"><code>save.image(&quot;logAggFC.RData&quot;)</code></pre>
+</div>

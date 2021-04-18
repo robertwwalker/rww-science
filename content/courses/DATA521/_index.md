@@ -30,7 +30,7 @@ complete week 4 data for week 5:
 load(url("https://github.com/robertwwalker/DADMStuff/raw/master/Ch4HA.RData"))
 ```
 
-+ [Slides for Week 11](https://rww.science/xaringan/CH13HA/index.html) 
++ [Slides for Week 12](https://rww.science/xaringan/CH13HA/index.html) 
 + [Slides for Week 11](https://rww.science/xaringan/CH11HA/index.html) 
 + [Slides for Week 10](https://rww.science/xaringan/CH10HA/index.html) 
 + [Slides for Week 9](https://rww.science/xaringan/CH9HA/index.html) 
@@ -42,6 +42,12 @@ load(url("https://github.com/robertwwalker/DADMStuff/raw/master/Ch4HA.RData"))
 + [Slides for Week 3](https://rww.science/xaringan/CH3HA/index.html)  
 + [Partial slides for Week 1](https://rww.science/xaringan/tidyDS/tidy.html)  
 
+## COVID-19 Forecasting
+
++ [tbats for COVID-19](https://rww.science/courses/DATA521/tbats/index.html)
++ [Aggregate Forecasting for COVID-19](https://rww.science/courses/DATA521/aggfore/index.html)
++ [Aggregate Box-Cox Forecasting for COVID-19](https://rww.science/courses/DATA521/aggforeBC/index.html)
++ [Aggregate log Forecasting for COVID-19](https://rww.science/courses/DATA521/aggforelog/index.html)
 
 Some Resources:
 

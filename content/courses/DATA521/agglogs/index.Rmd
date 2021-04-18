@@ -1,0 +1,199 @@
+---
+title: "NYT COVID-19 Aggregates"
+subtitle: "Analysis in logs"
+date: "`r Sys.Date()`"
+output:
+  rmdformats::downcute:
+    self_contained: true
+---
+
+
+```{r setup, include=FALSE}
+library(knitr)
+library(rmdformats)
+## Global options
+options(max.print="75")
+opts_chunk$set(echo=TRUE,
+	             cache=TRUE,
+               prompt=FALSE,
+               tidy=TRUE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(width=75, fig.retina = 2, dev = "png", dev.args = list(type = "cairo-png"))
+library(tidyverse)
+library(fpp3)
+library(distributional)
+library(hrbrthemes)
+```
+
+## New York Times Data on COVID
+
+I will grab the dataset from the NYT COVID data github.  I will create two variables, New Cases and New Deaths to model.  The final line use aggregation to create the national data.
+
+```{r DataLoad}
+NYT.COVIDN <- read.csv(url("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv"))
+# Define a tsibble; the date is imported as character so mutate that first.
+NYT.COVID <- NYT.COVIDN %>% 
+  mutate(date=as.Date(date)) %>% 
+  as_tsibble(index=date, key=state) %>% 
+  group_by(state) %>% 
+  mutate(New.Cases = difference(cases), New.Deaths = difference(deaths)) %>% 
+  filter(!(state %in% c("Guam","Puerto Rico", "Virgin Islands","Northern Mariana Islands")))
+NYT.COVID <- NYT.COVID %>% mutate(New.CasesP = (New.Cases >= 0)*New.Cases, New.DeathsP = (New.Deaths >= 0)*New.Deaths)
+NYTAgg.COVID <- NYT.COVID %>% 
+  aggregate_key(state, New.CasesP = sum(New.CasesP, na.rm=TRUE), New.DeathsP = sum(New.DeathsP, na.rm=TRUE)) %>% 
+  filter(date > as.Date("2020-03-31")) %>% 
+  mutate(Day.of.Week = as.factor(wday(date, label = TRUE)))
+```
+
+A basic visual for verification.  First the subseries.
+
+```{r BasePlot}
+library(patchwork)
+plot1 <- NYTAgg.COVID %>% filter(!is_aggregated(state)) %>% autoplot(New.CasesP) + guides(color=FALSE)
+plot2 <- NYTAgg.COVID %>% filter(!is_aggregated(state)) %>% autoplot(New.DeathsP) + guides(color=FALSE)
+plot1 / plot2
+```
+
+Now the aggregates.
+
+```{r BasePlotA}
+plot1 <- NYTAgg.COVID %>% filter(is_aggregated(state)) %>% autoplot(New.CasesP)
+plot2 <- NYTAgg.COVID %>% filter(is_aggregated(state)) %>% autoplot(New.DeathsP)
+plot1 / plot2
+```
+
+Are there day of week effects?
+
+```{r}
+NYTAgg.COVID %>% model(TSLM(New.CasesP ~ Day.of.Week)) %>% glance() %>% filter(p_value < 0.05)
+```
+In 12 states, there appear to be and in a few of them, those effects are large.  Modelling this covariate seems useful.  At the same time, this does nothing about the broad trends.
+
+```{r}
+NYTAgg.COVID %>% model(TSLM(New.DeathsP ~ Day.of.Week)) %>% glance() %>% filter(p_value < 0.05)
+```
+
+
+## Training and Testing
+
+That gives me the data that I want; now let me slice it up into training and test sets.  
+
+```{r TestTrain}
+COVID.Agg.Test <- NYTAgg.COVID %>% 
+  as_tibble() %>% 
+  group_by(state) %>% 
+  slice_tail(n=14) %>% 
+  ungroup() %>% 
+  as_tsibble(index=date, key=state)
+COVID.Agg.Train <- anti_join(NYTAgg.COVID, COVID.Agg.Test)  %>%
+  as_tsibble(index=date, key=state)
+```
+
+## Model Fitting
+
+Fit some models to the data.
+
+```{r ModelEstC}
+COVID.Models <- COVID.Agg.Train %>% model(
+  `K = 2` = ARIMA(log(New.CasesP) ~ fourier(K=2) + PDQ(0,0,0)),
+    `K = 2S` = ARIMA(log(New.CasesP) ~ fourier(K=2)),
+  ARIMA = ARIMA(log(New.CasesP)),
+  ETS = ETS(log(New.CasesP)),
+  NNET = NNETAR(log(New.CasesP))) %>% 
+  mutate(Combo1 = (`K = 2` + ARIMA + ETS)/3, Combo2 = (`K = 2` + ARIMA + ETS + NNET)/4) %>%
+  reconcile(
+    buARIMA = bottom_up(ARIMA),
+    buK2 = bottom_up(`K = 2`),
+    buETS = bottom_up(ETS),
+    buC2 = bottom_up(Combo2)
+    )
+```
+
+
+## Forecast the models.
+
+```{r FCaster}
+COVIDFC <- COVID.Models %>% 
+  forecast(h=14, new_data=COVID.Agg.Test)
+```
+
+```{r AccFD}
+COVIDFC %>% 
+  accuracy(COVID.Agg.Test)
+```
+
+Look at the aggregates.
+
+```{r AggFD}
+COVIDFC %>% 
+  filter(is_aggregated(state)) %>% 
+  autoplot(NYTAgg.COVID %>% select(New.DeathsP) %>% filter(date > as.Date("2021-03-01")), level=NULL)
+```
+
+Assess the models over the units.
+
+```{r}
+COVIDFC %>% 
+  accuracy(COVID.Agg.Test) %>% 
+  group_by(state) %>% 
+  slice_min(MAE) %>% 
+  janitor::tabyl(.model) %>% 
+  ggplot(aes(x=.model, y=n)) + 
+  geom_col() + 
+  theme_ipsum_rc()
+```
+
+## Model Fitting
+
+Fit some models to the data.
+
+```{r ModelEstD}
+COVID.ModelsD <- COVID.Agg.Train %>% model(
+  `K = 2` = ARIMA(log(New.DeathsP) ~ fourier(K=2) + PDQ(0,0,0)),
+    `K = 2S` = ARIMA(log(New.DeathsP) ~ fourier(K=2)),
+  ARIMA = ARIMA(log(New.DeathsP)),
+  ETS = ETS(log(New.DeathsP)),
+  NNET = NNETAR(log(New.DeathsP))) %>% 
+  mutate(Combo1 = (`K = 2` + ARIMA + ETS)/3, Combo2 = (`K = 2` + ARIMA + ETS + NNET)/4) %>%
+  reconcile(
+    buARIMA = bottom_up(ARIMA),
+    buK2 = bottom_up(`K = 2`),
+    buETS = bottom_up(ETS),
+    buC2 = bottom_up(Combo2)
+    )
+```
+
+Forecast the models.
+
+```{r FCaster3}
+COVIDFCD <- COVID.ModelsD %>% 
+  forecast(h=14, new_data=COVID.Agg.Test)
+```
+
+```{r AccFD4}
+COVIDFCD %>% 
+  accuracy(COVID.Agg.Test)
+```
+
+Look at the aggregates.
+
+```{r AggFDD}
+COVIDFCD %>% 
+  filter(is_aggregated(state)) %>% 
+  autoplot(NYTAgg.COVID %>% filter(date > as.Date("2021-03-01")), level=NULL)
+```
+
+Assess the models over the units.
+
+```{r D6}
+COVIDFCD %>% 
+  accuracy(COVID.Agg.Test) %>% 
+  group_by(state) %>% 
+  slice_min(MAE) %>% 
+  janitor::tabyl(.model) %>% 
+  ggplot(aes(x=.model, y=n)) + 
+  geom_col() + 
+  theme_ipsum_rc()
+```
