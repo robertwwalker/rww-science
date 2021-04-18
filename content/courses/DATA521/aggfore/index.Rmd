@@ -28,7 +28,9 @@ library(magrittr)
 
 ## New York Times Data on COVID
 
-I will grab the dataset from the NYT COVID data github.  I will create two variables, New Cases and New Deaths to model.  The final line use aggregation to create the national data.
+I will grab the dataset from the NYT COVID data github.  I will create two variables, New Cases and New Deaths to model.  The final line uses aggregation to create the national data.
+
+NB: This file takes a really long time to run; it begins at `r Sys.time()`.  The time of completion is at the end.
 
 ```{r DataLoad}
 NYT.COVIDN <- read.csv(url("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv"))
@@ -296,3 +298,5 @@ FC.Deaths <- ND.Models %>% forecast(h=14)
 ```{r FCDA}
 FC.Deaths %>% accuracy(COVID.Agg.Test)
 ```
+
+Compiling this file includes a cached forecast chunk that would roughly double the amount of processing time.  Nevertheless, this finished at `r Sys.time()`.
