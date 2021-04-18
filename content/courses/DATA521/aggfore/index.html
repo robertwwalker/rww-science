@@ -1,5 +1,5 @@
 ---
-title: "NYT COVID Forecast Aggregation with Covariates"
+title: "NYT COVID Forecast Aggregation"
 date: "2021-04-18"
 output:
   rmdformats::downcute:
@@ -12,7 +12,7 @@ output:
 <div id="new-york-times-data-on-covid" class="section level2">
 <h2>New York Times Data on COVID</h2>
 <p>I will grab the dataset from the NYT COVID data github. I will create two variables, New Cases and New Deaths to model. The final line uses aggregation to create the national data.</p>
-<p>NB: This file takes a really long time to run; it begins at 2021-04-18 10:21:07. The time of completion is at the end.</p>
+<p>NB: This file takes a really long time to run; forecasting deaths took just under six hours.</p>
 <pre class="r"><code>NYT.COVIDN &lt;- read.csv(url(&quot;https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv&quot;))
 # Define a tsibble; the date is imported as character so mutate that first.
 NYT.COVID &lt;- NYT.COVIDN %&gt;%
@@ -57,18 +57,18 @@ plot1/plot2</code></pre>
 <pre><code># A tibble: 12 x 16
    state        .model   r_squared adj_r_squared sigma2 statistic  p_value    df
    &lt;chr*&gt;       &lt;chr&gt;        &lt;dbl&gt;         &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt; &lt;int&gt;
- 1 Arkansas   … TSLM(Ne…    0.0450        0.0297 6.70e5      2.94 8.23e- 3     7
- 2 Connecticut… TSLM(Ne…    0.259         0.247  1.29e6     21.8  5.72e-22     7
- 3 District of… TSLM(Ne…    0.0401        0.0247 6.71e3      2.60 1.74e- 2     7
- 4 Hawaii     … TSLM(Ne…    0.0688        0.0538 4.80e3      4.60 1.59e- 4     7
- 5 Idaho      … TSLM(Ne…    0.0773        0.0625 2.10e5      5.22 3.55e- 5     7
- 6 Kansas     … TSLM(Ne…    0.302         0.291  1.48e6     27.0  9.67e-27     7
- 7 Louisiana  … TSLM(Ne…    0.143         0.129  1.38e6     10.4  1.12e-10     7
- 8 Michigan   … TSLM(Ne…    0.0975        0.0830 6.84e6      6.73 8.74e- 7     7
- 9 Mississippi… TSLM(Ne…    0.0562        0.0411 4.29e5      3.71 1.34e- 3     7
-10 Rhode Islan… TSLM(Ne…    0.213         0.201  2.84e5     16.9  2.72e-17     7
-11 Texas      … TSLM(Ne…    0.0332        0.0177 4.61e7      2.14 4.81e- 2     7
-12 Washington … TSLM(Ne…    0.0665        0.0516 8.82e5      4.44 2.34e- 4     7
+ 1 Arkansas   … TSLM(Ne…    0.0449        0.0296 6.70e5      2.94 8.19e- 3     7
+ 2 Connecticut… TSLM(Ne…    0.260         0.248  1.28e6     21.9  4.09e-22     7
+ 3 District of… TSLM(Ne…    0.0401        0.0247 6.69e3      2.61 1.72e- 2     7
+ 4 Hawaii     … TSLM(Ne…    0.0689        0.0540 4.79e3      4.62 1.51e- 4     7
+ 5 Idaho      … TSLM(Ne…    0.0784        0.0636 2.10e5      5.31 2.81e- 5     7
+ 6 Kansas     … TSLM(Ne…    0.303         0.292  1.47e6     27.2  6.99e-27     7
+ 7 Louisiana  … TSLM(Ne…    0.145         0.131  1.38e6     10.6  7.03e-11     7
+ 8 Michigan   … TSLM(Ne…    0.0974        0.0829 6.85e6      6.74 8.51e- 7     7
+ 9 Mississippi… TSLM(Ne…    0.0556        0.0405 4.29e5      3.68 1.45e- 3     7
+10 Rhode Islan… TSLM(Ne…    0.214         0.202  2.83e5     17.0  2.01e-17     7
+11 Texas      … TSLM(Ne…    0.0340        0.0185 4.60e7      2.20 4.24e- 2     7
+12 Washington … TSLM(Ne…    0.0657        0.0507 8.82e5      4.39 2.63e- 4     7
 # … with 8 more variables: log_lik &lt;dbl&gt;, AIC &lt;dbl&gt;, AICc &lt;dbl&gt;, BIC &lt;dbl&gt;,
 #   CV &lt;dbl&gt;, deviance &lt;dbl&gt;, df.residual &lt;int&gt;, rank &lt;int&gt;</code></pre>
 <p>In 12 states, there appear to be and in a few of them, those effects are large. Modelling this covariate seems useful. At the same time, this does nothing about the broad trends.</p>
@@ -96,18 +96,18 @@ COVID.Agg.Train &lt;- anti_join(NYTAgg.COVID, COVID.Agg.Test) %&gt;%
 COVIDFC %&gt;%
     accuracy(COVID.Agg.Test)</code></pre>
 <pre><code># A tibble: 52 x 11
-   .model  state           .type       ME   RMSE   MAE     MPE  MAPE  MASE RMSSE
-   &lt;chr&gt;   &lt;chr*&gt;          &lt;chr&gt;    &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
- 1 WDARIMA Alabama       … Test   118.     396.  228.    -6.63  69.9   NaN   NaN
- 2 WDARIMA Alaska        … Test   -47.6    145.  115.  -Inf    Inf     NaN   NaN
- 3 WDARIMA Arizona       … Test    70.6    341.  297.     8.83  48.4   NaN   NaN
- 4 WDARIMA Arkansas      … Test   121.     141.  121.   114.   114.    NaN   NaN
- 5 WDARIMA California    … Test  -209.     709.  578.   -11.2   21.1   NaN   NaN
- 6 WDARIMA Colorado      … Test    94.2    486.  426.    -3.78  29.1   NaN   NaN
- 7 WDARIMA Connecticut   … Test  -447.     544.  476.  -Inf    Inf     NaN   NaN
- 8 WDARIMA Delaware      … Test    -0.742   62.3  50.1   -5.32  17.1   NaN   NaN
- 9 WDARIMA District of Co… Test   -19.0     37.7  33.6  -23.9   31.8   NaN   NaN
-10 WDARIMA Florida       … Test   268.    1340.  908.    -7.84  22.8   NaN   NaN
+   .model  state            .type      ME   RMSE   MAE     MPE  MAPE  MASE RMSSE
+   &lt;chr&gt;   &lt;chr*&gt;           &lt;chr&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+ 1 WDARIMA Alabama        … Test   116.    398.  237.   -10.3   71.8   NaN   NaN
+ 2 WDARIMA Alaska         … Test   -17.6   138.  104.  -Inf    Inf     NaN   NaN
+ 3 WDARIMA Arizona        … Test    94.2   354.  312.    11.3   51.8   NaN   NaN
+ 4 WDARIMA Arkansas       … Test    95.5   121.   99.2   93.0   94.9   NaN   NaN
+ 5 WDARIMA California     … Test  -108.    737.  569.    -8.18  20.7   NaN   NaN
+ 6 WDARIMA Colorado       … Test   308.    579.  480.    10.8   28.6   NaN   NaN
+ 7 WDARIMA Connecticut    … Test  -332.    456.  400.  -Inf    Inf     NaN   NaN
+ 8 WDARIMA Delaware       … Test   -39.4    64.5  48.6  -16.8   19.1   NaN   NaN
+ 9 WDARIMA District of Col… Test    -8.87   33.1  26.0  -14.8   24.1   NaN   NaN
+10 WDARIMA Florida        … Test   352.   1367.  963.    -6.17  23.2   NaN   NaN
 # … with 42 more rows, and 1 more variable: ACF1 &lt;dbl&gt;</code></pre>
 <p>Look at the aggregates.</p>
 <pre class="r"><code>COVIDFC %&gt;%
@@ -121,14 +121,6 @@ COVIDFC %&gt;%
     autoplot(NYTAgg.COVID %&gt;%
         filter(date &gt; as.Date(&quot;2021-03-01&quot;)))</code></pre>
 <p><img src="{{< blogdown/postref >}}index_files/figure-html/OreFD-1.png" width="672" /></p>
-<p>Assess the models over the units.</p>
-<pre class="r"><code>COVIDFC %&gt;%
-    accuracy(COVID.Agg.Test) %&gt;%
-    group_by(state) %&gt;%
-    slice_min(MAE) %&gt;%
-    janitor::tabyl(.model) %&gt;%
-    ggplot(aes(x = .model, y = n)) + geom_col() + theme_ipsum_rc()</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
 </div>
 <div id="prophet" class="section level2">
 <h2>Prophet</h2>
@@ -153,23 +145,23 @@ Oregon.C19 %&gt;%
 <pre><code># A tibble: 1 x 7
   state  kpss_stat kpss_pvalue pp_stat pp_pvalue ndiffs nsdiffs
   &lt;chr*&gt;     &lt;dbl&gt;       &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;  &lt;int&gt;   &lt;int&gt;
-1 Oregon      6.06        0.01    3.96       0.1      2       0</code></pre>
+1 Oregon      6.08        0.01    3.99       0.1      2       0</code></pre>
 <pre class="r"><code>Oregon.C19 %&gt;%
     features(deaths, features = list(unitroot_kpss, unitroot_pp, unitroot_ndiffs, 
         unitroot_nsdiffs))</code></pre>
 <pre><code># A tibble: 1 x 7
   state  kpss_stat kpss_pvalue pp_stat pp_pvalue ndiffs nsdiffs
   &lt;chr*&gt;     &lt;dbl&gt;       &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;  &lt;int&gt;   &lt;int&gt;
-1 Oregon      5.96        0.01    3.66       0.1      2       0</code></pre>
+1 Oregon      5.98        0.01    3.59       0.1      2       0</code></pre>
 <pre class="r"><code>Oregon.C19 %&lt;&gt;%
     mutate(New.Cases = difference(cases), New.Deaths = difference(deaths))</code></pre>
 <pre class="r"><code># Visualize the differenced series
 Oregon.C19 %&gt;%
     autoplot(New.Cases)</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
 <pre class="r"><code>Oregon.C19 %&gt;%
     autoplot(New.Deaths)</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-3-2.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-2.png" width="672" /></p>
 <pre class="r"><code># The Features of the Differenced Series
 Oregon.C19 %&gt;%
     features(New.Cases, features = list(unitroot_kpss, unitroot_pp, unitroot_ndiffs, 
@@ -177,14 +169,14 @@ Oregon.C19 %&gt;%
 <pre><code># A tibble: 1 x 7
   state  kpss_stat kpss_pvalue pp_stat pp_pvalue ndiffs nsdiffs
   &lt;chr*&gt;     &lt;dbl&gt;       &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;  &lt;int&gt;   &lt;int&gt;
-1 Oregon      2.72        0.01   -3.38    0.0145      1       0</code></pre>
+1 Oregon      2.73        0.01   -3.38    0.0147      1       0</code></pre>
 <pre class="r"><code>Oregon.C19 %&gt;%
     features(New.Deaths, features = list(unitroot_kpss, unitroot_pp, unitroot_ndiffs, 
         unitroot_nsdiffs))</code></pre>
 <pre><code># A tibble: 1 x 7
   state  kpss_stat kpss_pvalue pp_stat pp_pvalue ndiffs nsdiffs
   &lt;chr*&gt;     &lt;dbl&gt;       &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;  &lt;int&gt;   &lt;int&gt;
-1 Oregon      2.23        0.01   -10.8      0.01      1       0</code></pre>
+1 Oregon      2.21        0.01   -10.8      0.01      1       0</code></pre>
 </div>
 <div id="decompositions" class="section level2">
 <h2>Decompositions</h2>
@@ -194,13 +186,13 @@ Oregon.C19 %&gt;%
     model(classical_decomposition(New.Cases, type = &quot;additive&quot;)) %&gt;%
     components() %&gt;%
     autoplot()</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 <pre class="r"><code>Oregon.C19 %&gt;%
     filter(date &gt; as.Date(&quot;2020-03-01&quot;)) %&gt;%
     model(classical_decomposition(New.Cases, type = &quot;multiplicative&quot;)) %&gt;%
     components() %&gt;%
     autoplot()</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-5-2.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-4-2.png" width="672" /></p>
 <div id="cases" class="section level3">
 <h3>Cases</h3>
 <pre class="r"><code># Show the seasonally adjusted data
@@ -212,7 +204,7 @@ Oregon.C19 %&gt;%
     autoplot(season_adjust, alpha = 0.2) + geom_line(data = Oregon.C19, aes(x = date, 
     y = New.Cases), color = &quot;red&quot;, alpha = 0.2) + theme_ipsum_es() + labs(title = &quot;Seasonally Adjusted (Add) New Covid-19 Cases&quot;, 
     y = &quot;New Covid-19 Cases&quot;)</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 </div>
 <div id="deaths" class="section level3">
 <h3>Deaths</h3>
@@ -224,7 +216,7 @@ Oregon.C19 %&gt;%
     autoplot(season_adjust, alpha = 0.2) + geom_line(data = Oregon.C19, aes(x = date, 
     y = New.Cases), color = &quot;red&quot;, alpha = 0.2) + theme_ipsum_es() + labs(title = &quot;Seasonally Adjusted (Mult) New Covid-19 Cases&quot;, 
     y = &quot;New Covid-19 Cases&quot;)</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 </div>
 </div>
 <div id="stl" class="section level2">
@@ -249,8 +241,9 @@ Oregon.C19 %&gt;%
     model(STL(New.Deaths ~ trend(window = 14) + season(period = &quot;1 week&quot;))) %&gt;%
     components() %&gt;%
     autoplot()</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <pre class="r"><code># Deaths are far more rare and the peaks are less noticeable.</code></pre>
+<p>What follows works off of the data with the zeroes removed.</p>
 </div>
 </div>
 <div id="some-models" class="section level2">
@@ -267,11 +260,11 @@ fitC %&gt;%
 <pre><code># A tibble: 5 x 12
   state  .model sigma2 log_lik   AIC  AICc   BIC ar_roots  ma_roots      MSE
   &lt;chr*&gt; &lt;chr&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;list&gt;    &lt;list&gt;      &lt;dbl&gt;
-1 Oregon K = 1  22733.  -2437. 4885. 4886. 4909. &lt;cpl [0]&gt; &lt;cpl [15]&gt;    NA 
-2 Oregon K = 2  22680.  -2435. 4886. 4887. 4918. &lt;cpl [0]&gt; &lt;cpl [15]&gt;    NA 
-3 Oregon K = 3  22774.  -2435. 4890. 4891. 4929. &lt;cpl [0]&gt; &lt;cpl [15]&gt;    NA 
-4 Oregon ARIMA  24648.  -2453. 4914. 4914. 4930. &lt;cpl [0]&gt; &lt;cpl [15]&gt;    NA 
-5 Oregon ETS    22818.  -3029. 6084. 6085. 6136. &lt;NULL&gt;    &lt;NULL&gt;     22097.
+1 Oregon K = 1  22694.  -2443. 4898. 4898. 4921. &lt;cpl [0]&gt; &lt;cpl [15]&gt;    NA 
+2 Oregon K = 2  22637.  -2441. 4899. 4899. 4930. &lt;cpl [0]&gt; &lt;cpl [15]&gt;    NA 
+3 Oregon K = 3  22731.  -2441. 4902. 4903. 4941. &lt;cpl [0]&gt; &lt;cpl [15]&gt;    NA 
+4 Oregon ARIMA  24605.  -2459. 4927. 4927. 4942. &lt;cpl [0]&gt; &lt;cpl [15]&gt;    NA 
+5 Oregon ETS    22934.  -3040. 6100. 6101. 6140. &lt;NULL&gt;    &lt;NULL&gt;     22392.
 # … with 2 more variables: AMSE &lt;dbl&gt;, MAE &lt;dbl&gt;</code></pre>
 <pre class="r"><code># The best fit is K=2
 fitC %&gt;%
@@ -284,7 +277,7 @@ fitC %&gt;%
     y = 736.446456504249, label = &quot;Oregon&#39;s Case Count for 4/8/2021&quot;), mapping = aes(x = x, 
     y = y, label = label), label.padding = unit(0.25, &quot;lines&quot;), label.r = unit(0.15, 
     &quot;lines&quot;), inherit.aes = FALSE)</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 <div id="deaths-2" class="section level3">
 <h3>Deaths</h3>
 <pre class="r"><code>fitD &lt;- OC19 %&gt;%
@@ -297,11 +290,11 @@ fitD %&gt;%
 <pre><code># A tibble: 5 x 12
   state  .model sigma2 log_lik   AIC  AICc   BIC ar_roots  ma_roots    MSE
   &lt;chr*&gt; &lt;chr&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;list&gt;    &lt;list&gt;    &lt;dbl&gt;
-1 Oregon K = 1    35.1  -1210. 2435. 2435. 2462. &lt;cpl [8]&gt; &lt;cpl [8]&gt;  NA  
-2 Oregon K = 2    34.7  -1207. 2432. 2432. 2467. &lt;cpl [8]&gt; &lt;cpl [8]&gt;  NA  
-3 Oregon K = 3    34.8  -1206. 2435. 2436. 2478. &lt;cpl [8]&gt; &lt;cpl [8]&gt;  NA  
-4 Oregon ARIMA    35.3  -1213. 2436. 2436. 2455. &lt;cpl [8]&gt; &lt;cpl [8]&gt;  NA  
-5 Oregon ETS      38.6  -1818. 3656. 3657. 3695. &lt;NULL&gt;    &lt;NULL&gt;     37.7
+1 Oregon K = 1    35.0  -1213. 2440. 2441. 2468. &lt;cpl [8]&gt; &lt;cpl [8]&gt;  NA  
+2 Oregon K = 2    34.6  -1210. 2437. 2438. 2472. &lt;cpl [8]&gt; &lt;cpl [8]&gt;  NA  
+3 Oregon K = 3    34.7  -1209. 2440. 2441. 2484. &lt;cpl [8]&gt; &lt;cpl [8]&gt;  NA  
+4 Oregon ARIMA    35.2  -1216. 2441. 2441. 2461. &lt;cpl [8]&gt; &lt;cpl [8]&gt;  NA  
+5 Oregon ETS      38.6  -1824. 3667. 3668. 3707. &lt;NULL&gt;    &lt;NULL&gt;     37.7
 # … with 2 more variables: AMSE &lt;dbl&gt;, MAE &lt;dbl&gt;</code></pre>
 </div>
 </div>
@@ -326,17 +319,25 @@ fitD %&gt;%
 <pre><code># A tibble: 624 x 11
    .model state            .type      ME   RMSE    MAE     MPE  MAPE  MASE RMSSE
    &lt;chr&gt;  &lt;chr*&gt;           &lt;chr&gt;   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
- 1 ARIMA  Alabama        … Test    98.9   424.   262.   -28.8   90.0   NaN   NaN
- 2 ARIMA  Alaska         … Test   -48.7   145.   115.  -Inf    Inf     NaN   NaN
- 3 ARIMA  Arizona        … Test   -46.7   204.   150.   -15.3   24.7   NaN   NaN
- 4 ARIMA  Arkansas       … Test    11.4    66.8   57.3  -20.5   49.9   NaN   NaN
- 5 ARIMA  California     … Test  -389.    660.   548.   -19.0   23.2   NaN   NaN
- 6 ARIMA  Colorado       … Test    33.9   536.   469.    -9.34  33.8   NaN   NaN
- 7 ARIMA  Connecticut    … Test  -184.    365.   304.  -Inf    Inf     NaN   NaN
- 8 ARIMA  Delaware       … Test     5.61   66.5   55.0   -3.72  18.1   NaN   NaN
- 9 ARIMA  District of Col… Test   -14.3    36.7   31.4  -20.8   30.1   NaN   NaN
-10 ARIMA  Florida        … Test   159.   1433.  1016.   -12.4   27.5   NaN   NaN
+ 1 ARIMA  Alabama        … Test   101.    439.   277.   -32.5   95.4   NaN   NaN
+ 2 ARIMA  Alaska         … Test   -43.0   147.   115.  -Inf    Inf     NaN   NaN
+ 3 ARIMA  Arizona        … Test   -51.6   212.   160.   -16.7   26.4   NaN   NaN
+ 4 ARIMA  Arkansas       … Test     8.19   67.8   57.7  -24.0   51.8   NaN   NaN
+ 5 ARIMA  California     … Test  -415.    685.   586.   -20.3   24.8   NaN   NaN
+ 6 ARIMA  Colorado       … Test    83.8   529.   458.    -5.56  31.9   NaN   NaN
+ 7 ARIMA  Connecticut    … Test  -176.    370.   305.  -Inf    Inf     NaN   NaN
+ 8 ARIMA  Delaware       … Test    -5.35   55.4   47.8   -6.35  17.2   NaN   NaN
+ 9 ARIMA  District of Col… Test   -13.2    37.3   31.6  -20.6   30.6   NaN   NaN
+10 ARIMA  Florida        … Test   145.   1484.  1069.   -13.8   29.2   NaN   NaN
 # … with 614 more rows, and 1 more variable: ACF1 &lt;dbl&gt;</code></pre>
+<p>Assess the models over the units.</p>
+<pre class="r"><code>FC.Cases %&gt;%
+    accuracy(COVID.Agg.Test) %&gt;%
+    group_by(state) %&gt;%
+    slice_min(MAE) %&gt;%
+    janitor::tabyl(.model) %&gt;%
+    ggplot(aes(x = .model, y = n)) + geom_col() + theme_ipsum_rc()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 </div>
 <div id="deaths-3" class="section level1">
 <h1>Deaths</h1>
@@ -356,19 +357,26 @@ fitD %&gt;%
 <pre class="r"><code>FC.Deaths %&gt;%
     accuracy(COVID.Agg.Test)</code></pre>
 <pre><code># A tibble: 624 x 11
-   .model state             .type      ME   RMSE    MAE    MPE  MAPE  MASE RMSSE
-   &lt;chr&gt;  &lt;chr*&gt;            &lt;chr&gt;   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
- 1 ARIMA  Alabama         … Test    3.21  13.4   11.5    NaN   Inf     NaN   NaN
- 2 ARIMA  Alaska          … Test    0.784  4.69   1.77  -Inf   Inf     NaN   NaN
- 3 ARIMA  Arizona         … Test    8.89  16.6   14.4    Inf   Inf     NaN   NaN
- 4 ARIMA  Arkansas        … Test   -4.98   5.64   4.98  -Inf   Inf     NaN   NaN
- 5 ARIMA  California      … Test  -11.3   43.8   28.9    -18.2  33.0   NaN   NaN
- 6 ARIMA  Colorado        … Test    7.36  25.2    8.64  -Inf   Inf     NaN   NaN
- 7 ARIMA  Connecticut     … Test    2.29   5.44   3.98   NaN   Inf     NaN   NaN
- 8 ARIMA  Delaware        … Test   -1.81   2.68   2.23  -Inf   Inf     NaN   NaN
- 9 ARIMA  District of Colu… Test   -0.416  0.955  0.722 -Inf   Inf     NaN   NaN
-10 ARIMA  Florida         … Test  -10.3   18.6   15.7    -59.8  66.9   NaN   NaN
+   .model state            .type      ME   RMSE    MAE     MPE  MAPE  MASE RMSSE
+   &lt;chr&gt;  &lt;chr*&gt;           &lt;chr&gt;   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+ 1 ARIMA  Alabama        … Test    1.74  12.4   10.7    NaN    Inf     NaN   NaN
+ 2 ARIMA  Alaska         … Test    0.888  4.86   1.86  -Inf    Inf     NaN   NaN
+ 3 ARIMA  Arizona        … Test   10.1   17.1   14.9    Inf    Inf     NaN   NaN
+ 4 ARIMA  Arkansas       … Test   -4.84   5.55   4.84  -Inf    Inf     NaN   NaN
+ 5 ARIMA  California     … Test   -3.21  31.8   22.2     -7.51  23.4   NaN   NaN
+ 6 ARIMA  Colorado       … Test    7.81  26.1    9.19  -Inf    Inf     NaN   NaN
+ 7 ARIMA  Connecticut    … Test    2.64   5.61   4.11   NaN    Inf     NaN   NaN
+ 8 ARIMA  Delaware       … Test   -1.64   2.55   2.10  -Inf    Inf     NaN   NaN
+ 9 ARIMA  District of Col… Test   -0.368  0.947  0.697 -Inf    Inf     NaN   NaN
+10 ARIMA  Florida        … Test  -12.3   18.9   15.8    -66.1   70.2   NaN   NaN
 # … with 614 more rows, and 1 more variable: ACF1 &lt;dbl&gt;</code></pre>
-<p>Compiling this file includes a cached forecast chunk that would roughly double the amount of processing time. Nevertheless, this finished at 2021-04-18 14:10:49.</p>
+<p>Assess the models over the units.</p>
+<pre class="r"><code>FC.Deaths %&gt;%
+    accuracy(COVID.Agg.Test) %&gt;%
+    group_by(state) %&gt;%
+    slice_min(MAE) %&gt;%
+    janitor::tabyl(.model) %&gt;%
+    ggplot(aes(x = .model, y = n)) + geom_col() + theme_ipsum_rc()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 </div>
 </div>

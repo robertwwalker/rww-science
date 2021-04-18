@@ -1,5 +1,5 @@
 ---
-title: "NYT COVID Forecast Aggregation with Covariates"
+title: "NYT COVID Forecast Aggregation"
 date: "`r Sys.Date()`"
 output:
   rmdformats::downcute:
@@ -30,7 +30,7 @@ library(magrittr)
 
 I will grab the dataset from the NYT COVID data github.  I will create two variables, New Cases and New Deaths to model.  The final line uses aggregation to create the national data.
 
-NB: This file takes a really long time to run; it begins at `r Sys.time()`.  The time of completion is at the end.
+NB: This file takes a really long time to run; forecasting deaths took just under six hours.
 
 ```{r DataLoad}
 NYT.COVIDN <- read.csv(url("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv"))
@@ -106,18 +106,6 @@ Look at Oregon.
 COVIDFC %>% filter(state=="Oregon") %>% autoplot(NYTAgg.COVID %>% filter(date > as.Date("2021-03-01")))
 ```
 
-Assess the models over the units.
-
-```{r}
-COVIDFC %>% 
-  accuracy(COVID.Agg.Test) %>% 
-  group_by(state) %>% 
-  slice_min(MAE) %>% 
-  janitor::tabyl(.model) %>% 
-  ggplot(aes(x=.model, y=n)) + 
-  geom_col() + 
-  theme_ipsum_rc()
-```
 
 ## Prophet
 
@@ -197,6 +185,8 @@ Oregon.C19 %>% filter(date > as.Date("2020-04-01")) %>% model(STL(New.Deaths~tre
 # Deaths are far more rare and the peaks are less noticeable.
 ```
 
+What follows works off of the data with the zeroes removed.
+
 ## Some Models
 
 ```{r CasesPS}
@@ -267,6 +257,19 @@ FC.Cases <- NC.Models %>% forecast(h=14)
 FC.Cases %>% accuracy(COVID.Agg.Test)
 ```
 
+Assess the models over the units.
+
+```{r}
+FC.Cases %>% 
+  accuracy(COVID.Agg.Test) %>% 
+  group_by(state) %>% 
+  slice_min(MAE) %>% 
+  janitor::tabyl(.model) %>% 
+  ggplot(aes(x=.model, y=n)) + 
+  geom_col() + 
+  theme_ipsum_rc()
+```
+
 # Deaths
 
 ```{r DeathsBModels, cache=TRUE}
@@ -299,4 +302,15 @@ FC.Deaths <- ND.Models %>% forecast(h=14)
 FC.Deaths %>% accuracy(COVID.Agg.Test)
 ```
 
-Compiling this file includes a cached forecast chunk that would roughly double the amount of processing time.  Nevertheless, this finished at `r Sys.time()`.
+Assess the models over the units.
+
+```{r}
+FC.Deaths %>% 
+  accuracy(COVID.Agg.Test) %>% 
+  group_by(state) %>% 
+  slice_min(MAE) %>% 
+  janitor::tabyl(.model) %>% 
+  ggplot(aes(x=.model, y=n)) + 
+  geom_col() + 
+  theme_ipsum_rc()
+```
