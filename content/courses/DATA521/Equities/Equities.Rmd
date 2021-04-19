@@ -1,5 +1,6 @@
 ---
-title: "A Basic and Common Time Series Reshaping"
+title: "Working with Equities"
+subtitle: "An Extended Take"
 author: "RWW"
 date: "1/22/2021"
 ---
@@ -37,6 +38,86 @@ library(patchwork)
 FPT + FCT
 ```
 
+## Element of the Problem
+
+Let's look at what we have
+
+```{r}
+FC %>% head()
+```
+
+1, 5, and 6 January are missing.  The markets were not open.  This presents an interesting problem.  One way of solving it is simply to pretend that this problem does not exist.  We can create a complete set of trading days counting from 1 to whatever the maximum date is.  We should be mindful that this is a bit more complicated with multiple equities because we need day 1 to begin as 1 for the longest series.  To keep some fidelity to time trading days, the same movements should happen on the same days, especially were this to apply from the bottom up.  Conceptually and logically, the days have to match up.  To be blunt, there is no defensible reason why the day [or time in general measured via a calendar] should depend on the stock/unit under study.
+
+To code this first, let me get two examples.
+
+```{r}
+# Apologies for the right assignment, it how I check pipes and assign exactly what I want.  Putting the arrow at the end and looking at each piece along the way is how I solve problems.
+Stocks <- c("AMZN","AAPL") %>% 
+    tq_get() %>% 
+    filter(date > as.Date("2018-01-01")) %>%
+  filter(!(symbol=="AAPL" & date < as.Date("2019-01-01"))) %>% as_tsibble(index=date, key=symbol)
+```
+
+So I grab Amazon and Apple, turn it into a tsibble, cut them both to 2018 or later and then shave a year off of Apple.  I want to create a complete set of trading days.  So I need to count time from when Amazon starts and then match up that counter for Apple.  The easiest way that I can think to do it is to generate it from Amazon and join it back.
+
+```{r}
+# This is right assigned.
+Stocks %>% as_tibble() %>%
+  filter(symbol=="AMZN" & date > as.Date("2018-01-01")) %>% mutate(trading_day = row_number()) %>% select(date, trading_day) -> AMZNdays
+AMZNdays %>% head()
+```
+
+`AMZNdays` is the master list of trading days as it corresponds to dates.  I can then join it back to the original stocks.
+
+```{r}
+Fixed.Stocks <- Stocks %>% left_join(., AMZNdays, by = c("date" = "date"))
+Fixed.Stocks %>% 
+  index_by(trading_day) %>% 
+  ggplot() + 
+  aes(x=trading_day, y=volume, color=symbol) + 
+  geom_line() + 
+  theme_tq()
+```
+
+
+This was worth automating.  My test case has three stocks and the S and P.  I will keep the S&P since 2018 and the rest since 2019.
+
+```{r}
+BigStocks <- c("AAPL","AMZN","FB","^GSPC") %>% 
+  tq_get() %>% 
+  filter(date > "2018-01-01") %>%
+  filter(!(date < "2019-01-01" & (symbol %in% c("FB", "AAPL","AMZN")))) %>%
+  group_by(symbol) %>%
+  tq_mutate(., selected = adjusted, mutate_fun = periodReturn,
+              period = "daily") %>%
+  tq_mutate_xy(x = close, y = volume, mutate_fun = EVWMA,
+                 col_rename = "EVWMA")
+BigStocks %>% as_tsibble(index=date, key=symbol) %>% autoplot(EVWMA)
+```
+
+Here is the function.
+
+```{r}
+Trading.Day.Creator <- function(RawStocks) {
+  Biggie <- RawStocks %>% 
+    as_tibble() %>%
+    group_by(symbol) %>%
+    summarise(N = n()) %>%
+    slice_max(., order_by = N, n = 1) %>%
+    select(symbol)
+  Max.List <- RawStocks %>% as_tibble() %>% 
+  filter(symbol==Biggie$symbol) %>% 
+    mutate(trading_day = row_number()) %>% 
+    select(date, trading_day)
+  Stocks.to.Return <- RawStocks %>% as_tibble() %>% left_join(., Max.List) %>% as_tsibble(index=trading_day, key=symbol, regular = TRUE)
+  return(Stocks.to.Return)
+}
+Fixed.BigStocks <- Trading.Day.Creator(BigStocks)
+Fixed.BigStocks %>% autoplot(EVWMA)
+```
+
+
+
 ## Monthly Returns are the Easiest to Work with
 
 Daily and weekly returns are messy because there is an inconsistent mapping between days and years, or months, or whatever.  The same is true of weeks.  The easiest thing to work with that has the finest granularity is monthly [the fact that February has a changing number of days can be handled easily when aggregating to the month].
@@ -49,7 +130,7 @@ FordM <- tq_get("F", from="2015-01-01")
 FordM %>% as_tsibble(index=date) %>% autoplot(adjusted)
 ```
 
-That's the data I need to start.  Now let me turn it into monthly returns; we can either use the argument in `tq_transmute` called `col_rename` to change the name or work with the default name which will be, in this case, `monthly.returns`.  There is one additional trick; the data still have daily dates.  Early in the term, we had to extract the `yearmonth` from those to be able to use them as monthly data.  I will do that here by creating `Month` as the time index before creating the tsibble with `index=Month`.
+That's the data I need to start.  Now let me turn it into monthly returns; we can either use the argument in `tq_transmute` called `col_rename` to change the name or work with the default name which will be, in this case, `monthly.returns`.  There is one additional trick; the data still have daily dates.  Early in the term, we had to extract the `yearmonth` from those to be able to use them as monthly data.  I will do that here by creating `Month` as the time index before creating the tsibble with `index=Month`.  `tq_transmute` is required whenever we want something that is not daily.
 
 ```{r}
 Ford.Returns <- FordM %>% 
@@ -61,6 +142,6 @@ Ford.Returns %>% autoplot(monthly.returns)
 
 Sweet.  No missing data and a proper format.  For proof of concept on deploying a model, let me use a decomposition method.
 
-```{r}
+```{r CDecomp}
 Ford.Returns %>% model(classical_decomposition(monthly.returns, type="additive"))  %>% components() %>% autoplot()
 ```

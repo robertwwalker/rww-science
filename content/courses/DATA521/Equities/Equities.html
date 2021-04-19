@@ -1,5 +1,6 @@
 ---
-title: "A Basic and Common Time Series Reshaping"
+title: "Working with Equities"
+subtitle: "An Extended Take"
 author: "RWW"
 date: "1/22/2021"
 ---
@@ -24,6 +25,85 @@ FCT &lt;- FC %&gt;% as_tsibble(., index=date) %&gt;% autoplot(daily.returns)</co
 FPT + FCT</code></pre>
 <p><img src="/courses/DATA521/Equities/Equities_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 </div>
+<div id="element-of-the-problem" class="section level2">
+<h2>Element of the Problem</h2>
+<p>Let’s look at what we have</p>
+<pre class="r"><code>FC %&gt;% head()</code></pre>
+<pre><code>## # A tibble: 6 x 2
+##   date       daily.returns
+##   &lt;date&gt;             &lt;dbl&gt;
+## 1 2019-01-02       0      
+## 2 2019-01-03      -0.0152 
+## 3 2019-01-04       0.0386 
+## 4 2019-01-07       0.0260 
+## 5 2019-01-08       0.00965
+## 6 2019-01-09       0.0418</code></pre>
+<p>1, 5, and 6 January are missing. The markets were not open. This presents an interesting problem. One way of solving it is simply to pretend that this problem does not exist. We can create a complete set of trading days counting from 1 to whatever the maximum date is. We should be mindful that this is a bit more complicated with multiple equities because we need day 1 to begin as 1 for the longest series. To keep some fidelity to time trading days, the same movements should happen on the same days, especially were this to apply from the bottom up. Conceptually and logically, the days have to match up. To be blunt, there is no defensible reason why the day [or time in general measured via a calendar] should depend on the stock/unit under study.</p>
+<p>To code this first, let me get two examples.</p>
+<pre class="r"><code># Apologies for the right assignment, it how I check pipes and assign exactly what I want.  Putting the arrow at the end and looking at each piece along the way is how I solve problems.
+Stocks &lt;- c(&quot;AMZN&quot;,&quot;AAPL&quot;) %&gt;% 
+    tq_get() %&gt;% 
+    filter(date &gt; as.Date(&quot;2018-01-01&quot;)) %&gt;%
+  filter(!(symbol==&quot;AAPL&quot; &amp; date &lt; as.Date(&quot;2019-01-01&quot;))) %&gt;% as_tsibble(index=date, key=symbol)</code></pre>
+<p>So I grab Amazon and Apple, turn it into a tsibble, cut them both to 2018 or later and then shave a year off of Apple. I want to create a complete set of trading days. So I need to count time from when Amazon starts and then match up that counter for Apple. The easiest way that I can think to do it is to generate it from Amazon and join it back.</p>
+<pre class="r"><code># This is right assigned.
+Stocks %&gt;% as_tibble() %&gt;%
+  filter(symbol==&quot;AMZN&quot; &amp; date &gt; as.Date(&quot;2018-01-01&quot;)) %&gt;% mutate(trading_day = row_number()) %&gt;% select(date, trading_day) -&gt; AMZNdays
+AMZNdays %&gt;% head()</code></pre>
+<pre><code>## # A tibble: 6 x 2
+##   date       trading_day
+##   &lt;date&gt;           &lt;int&gt;
+## 1 2018-01-02           1
+## 2 2018-01-03           2
+## 3 2018-01-04           3
+## 4 2018-01-05           4
+## 5 2018-01-08           5
+## 6 2018-01-09           6</code></pre>
+<p><code>AMZNdays</code> is the master list of trading days as it corresponds to dates. I can then join it back to the original stocks.</p>
+<pre class="r"><code>Fixed.Stocks &lt;- Stocks %&gt;% left_join(., AMZNdays, by = c(&quot;date&quot; = &quot;date&quot;))
+Fixed.Stocks %&gt;% 
+  index_by(trading_day) %&gt;% 
+  ggplot() + 
+  aes(x=trading_day, y=volume, color=symbol) + 
+  geom_line() + 
+  theme_tq()</code></pre>
+<p><img src="/courses/DATA521/Equities/Equities_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p>This was worth automating. My test case has three stocks and the S and P. I will keep the S&amp;P since 2018 and the rest since 2019.</p>
+<pre class="r"><code>BigStocks &lt;- c(&quot;AAPL&quot;,&quot;AMZN&quot;,&quot;FB&quot;,&quot;^GSPC&quot;) %&gt;% 
+  tq_get() %&gt;% 
+  filter(date &gt; &quot;2018-01-01&quot;) %&gt;%
+  filter(!(date &lt; &quot;2019-01-01&quot; &amp; (symbol %in% c(&quot;FB&quot;, &quot;AAPL&quot;,&quot;AMZN&quot;)))) %&gt;%
+  group_by(symbol) %&gt;%
+  tq_mutate(., selected = adjusted, mutate_fun = periodReturn,
+              period = &quot;daily&quot;) %&gt;%
+  tq_mutate_xy(x = close, y = volume, mutate_fun = EVWMA,
+                 col_rename = &quot;EVWMA&quot;)
+BigStocks %&gt;% as_tsibble(index=date, key=symbol) %&gt;% autoplot(EVWMA)</code></pre>
+<pre><code>## `mutate_if()` ignored the following grouping variables:
+## Column `symbol`</code></pre>
+<pre><code>## Warning: Removed 36 row(s) containing missing values (geom_path).</code></pre>
+<p><img src="/courses/DATA521/Equities/Equities_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p>Here is the function.</p>
+<pre class="r"><code>Trading.Day.Creator &lt;- function(RawStocks) {
+  Biggie &lt;- RawStocks %&gt;% 
+    as_tibble() %&gt;%
+    group_by(symbol) %&gt;%
+    summarise(N = n()) %&gt;%
+    slice_max(., order_by = N, n = 1) %&gt;%
+    select(symbol)
+  Max.List &lt;- RawStocks %&gt;% as_tibble() %&gt;% 
+  filter(symbol==Biggie$symbol) %&gt;% 
+    mutate(trading_day = row_number()) %&gt;% 
+    select(date, trading_day)
+  Stocks.to.Return &lt;- RawStocks %&gt;% as_tibble() %&gt;% left_join(., Max.List) %&gt;% as_tsibble(index=trading_day, key=symbol, regular = TRUE)
+  return(Stocks.to.Return)
+}
+Fixed.BigStocks &lt;- Trading.Day.Creator(BigStocks)</code></pre>
+<pre><code>## Joining, by = &quot;date&quot;</code></pre>
+<pre class="r"><code>Fixed.BigStocks %&gt;% autoplot(EVWMA)</code></pre>
+<pre><code>## Warning: Removed 36 row(s) containing missing values (geom_path).</code></pre>
+<p><img src="/courses/DATA521/Equities/Equities_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+</div>
 <div id="monthly-returns-are-the-easiest-to-work-with" class="section level2">
 <h2>Monthly Returns are the Easiest to Work with</h2>
 <p>Daily and weekly returns are messy because there is an inconsistent mapping between days and years, or months, or whatever. The same is true of weeks. The easiest thing to work with that has the finest granularity is monthly [the fact that February has a changing number of days can be handled easily when aggregating to the month].</p>
@@ -31,16 +111,16 @@ FPT + FCT</code></pre>
 <pre class="r"><code># Grab Ford stock prices starting in 2015
 FordM &lt;- tq_get(&quot;F&quot;, from=&quot;2015-01-01&quot;)
 FordM %&gt;% as_tsibble(index=date) %&gt;% autoplot(adjusted)</code></pre>
-<p><img src="/courses/DATA521/Equities/Equities_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
-<p>That’s the data I need to start. Now let me turn it into monthly returns; we can either use the argument in <code>tq_transmute</code> called <code>col_rename</code> to change the name or work with the default name which will be, in this case, <code>monthly.returns</code>. There is one additional trick; the data still have daily dates. Early in the term, we had to extract the <code>yearmonth</code> from those to be able to use them as monthly data. I will do that here by creating <code>Month</code> as the time index before creating the tsibble with <code>index=Month</code>.</p>
+<p><img src="/courses/DATA521/Equities/Equities_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p>That’s the data I need to start. Now let me turn it into monthly returns; we can either use the argument in <code>tq_transmute</code> called <code>col_rename</code> to change the name or work with the default name which will be, in this case, <code>monthly.returns</code>. There is one additional trick; the data still have daily dates. Early in the term, we had to extract the <code>yearmonth</code> from those to be able to use them as monthly data. I will do that here by creating <code>Month</code> as the time index before creating the tsibble with <code>index=Month</code>. <code>tq_transmute</code> is required whenever we want something that is not daily.</p>
 <pre class="r"><code>Ford.Returns &lt;- FordM %&gt;% 
   tq_transmute(adjusted, mutate_fun = periodReturn, period = &quot;monthly&quot;) %&gt;% 
   mutate(Month = yearmonth(date)) %&gt;% 
   as_tsibble(index=Month)
 Ford.Returns %&gt;% autoplot(monthly.returns)</code></pre>
-<p><img src="/courses/DATA521/Equities/Equities_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="/courses/DATA521/Equities/Equities_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 <p>Sweet. No missing data and a proper format. For proof of concept on deploying a model, let me use a decomposition method.</p>
 <pre class="r"><code>Ford.Returns %&gt;% model(classical_decomposition(monthly.returns, type=&quot;additive&quot;))  %&gt;% components() %&gt;% autoplot()</code></pre>
 <pre><code>## Warning: Removed 6 row(s) containing missing values (geom_path).</code></pre>
-<p><img src="/courses/DATA521/Equities/Equities_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="/courses/DATA521/Equities/Equities_files/figure-html/CDecomp-1.png" width="672" /></p>
 </div>
