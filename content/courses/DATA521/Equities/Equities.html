@@ -24,3 +24,23 @@ FCT &lt;- FC %&gt;% as_tsibble(., index=date) %&gt;% autoplot(daily.returns)</co
 FPT + FCT</code></pre>
 <p><img src="/courses/DATA521/Equities/Equities_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 </div>
+<div id="monthly-returns-are-the-easiest-to-work-with" class="section level2">
+<h2>Monthly Returns are the Easiest to Work with</h2>
+<p>Daily and weekly returns are messy because there is an inconsistent mapping between days and years, or months, or whatever. The same is true of weeks. The easiest thing to work with that has the finest granularity is monthly [the fact that February has a changing number of days can be handled easily when aggregating to the month].</p>
+<p>For this example, let me show that.</p>
+<pre class="r"><code># Grab Ford stock prices starting in 2015
+FordM &lt;- tq_get(&quot;F&quot;, from=&quot;2015-01-01&quot;)
+FordM %&gt;% as_tsibble(index=date) %&gt;% autoplot(adjusted)</code></pre>
+<p><img src="/courses/DATA521/Equities/Equities_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p>That’s the data I need to start. Now let me turn it into monthly returns; we can either use the argument in <code>tq_transmute</code> called <code>col_rename</code> to change the name or work with the default name which will be, in this case, <code>monthly.returns</code>. There is one additional trick; the data still have daily dates. Early in the term, we had to extract the <code>yearmonth</code> from those to be able to use them as monthly data. I will do that here by creating <code>Month</code> as the time index before creating the tsibble with <code>index=Month</code>.</p>
+<pre class="r"><code>Ford.Returns &lt;- FordM %&gt;% 
+  tq_transmute(adjusted, mutate_fun = periodReturn, period = &quot;monthly&quot;) %&gt;% 
+  mutate(Month = yearmonth(date)) %&gt;% 
+  as_tsibble(index=Month)
+Ford.Returns %&gt;% autoplot(monthly.returns)</code></pre>
+<p><img src="/courses/DATA521/Equities/Equities_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p>Sweet. No missing data and a proper format. For proof of concept on deploying a model, let me use a decomposition method.</p>
+<pre class="r"><code>Ford.Returns %&gt;% model(classical_decomposition(monthly.returns, type=&quot;additive&quot;))  %&gt;% components() %&gt;% autoplot()</code></pre>
+<pre><code>## Warning: Removed 6 row(s) containing missing values (geom_path).</code></pre>
+<p><img src="/courses/DATA521/Equities/Equities_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+</div>

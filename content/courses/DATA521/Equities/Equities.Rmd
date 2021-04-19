@@ -37,3 +37,30 @@ library(patchwork)
 FPT + FCT
 ```
 
+## Monthly Returns are the Easiest to Work with
+
+Daily and weekly returns are messy because there is an inconsistent mapping between days and years, or months, or whatever.  The same is true of weeks.  The easiest thing to work with that has the finest granularity is monthly [the fact that February has a changing number of days can be handled easily when aggregating to the month].
+
+For this example, let me show that.
+
+```{r}
+# Grab Ford stock prices starting in 2015
+FordM <- tq_get("F", from="2015-01-01")
+FordM %>% as_tsibble(index=date) %>% autoplot(adjusted)
+```
+
+That's the data I need to start.  Now let me turn it into monthly returns; we can either use the argument in `tq_transmute` called `col_rename` to change the name or work with the default name which will be, in this case, `monthly.returns`.  There is one additional trick; the data still have daily dates.  Early in the term, we had to extract the `yearmonth` from those to be able to use them as monthly data.  I will do that here by creating `Month` as the time index before creating the tsibble with `index=Month`.
+
+```{r}
+Ford.Returns <- FordM %>% 
+  tq_transmute(adjusted, mutate_fun = periodReturn, period = "monthly") %>% 
+  mutate(Month = yearmonth(date)) %>% 
+  as_tsibble(index=Month)
+Ford.Returns %>% autoplot(monthly.returns)
+```
+
+Sweet.  No missing data and a proper format.  For proof of concept on deploying a model, let me use a decomposition method.
+
+```{r}
+Ford.Returns %>% model(classical_decomposition(monthly.returns, type="additive"))  %>% components() %>% autoplot()
+```
