@@ -6,10 +6,24 @@ date: "1/22/2021"
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+library(knitr)
 library(tidyverse)
 library(tidyquant)
 library(fpp3)
+library(hrbrthemes)
+library(kableExtra)
+```
+
+I loaded the following quietly.
+
+```
+library(knitr)
+library(tidyverse)
+library(tidyquant)
+library(fpp3)
+library(hrbrthemes)
+library(kableExtra)
 ```
 
 ## A bit on equities
@@ -51,7 +65,6 @@ FC %>% head()
 To code this first, let me get two examples.
 
 ```{r}
-# Apologies for the right assignment, it how I check pipes and assign exactly what I want.  Putting the arrow at the end and looking at each piece along the way is how I solve problems.
 Stocks <- c("AMZN","AAPL") %>% 
     tq_get() %>% 
     filter(date > as.Date("2018-01-01")) %>%
@@ -63,11 +76,13 @@ So I grab Amazon and Apple, turn it into a tsibble, cut them both to 2018 or lat
 ```{r}
 # This is right assigned.
 Stocks %>% as_tibble() %>%
-  filter(symbol=="AMZN" & date > as.Date("2018-01-01")) %>% mutate(trading_day = row_number()) %>% select(date, trading_day) -> AMZNdays
+  filter(symbol=="AMZN" & date > as.Date("2018-01-01")) %>%
+  mutate(trading_day = row_number()) %>% 
+  select(date, trading_day) -> AMZNdays
 AMZNdays %>% head()
 ```
 
-`AMZNdays` is the master list of trading days as it corresponds to dates.  I can then join it back to the original stocks.
+`AMZNdays` is the master list of trading days as it corresponds to dates.  I can then join it back to the original stocks.  I am going to show the daily trading volume on a log scale so that they can both be seen.  Volume is always positive.
 
 ```{r}
 Fixed.Stocks <- Stocks %>% left_join(., AMZNdays, by = c("date" = "date"))
@@ -76,9 +91,9 @@ Fixed.Stocks %>%
   ggplot() + 
   aes(x=trading_day, y=volume, color=symbol) + 
   geom_line() + 
+  scale_y_log10() +
   theme_tq()
 ```
-
 
 This was worth automating.  My test case has three stocks and the S and P.  I will keep the S&P since 2018 and the rest since 2019.
 
@@ -116,9 +131,16 @@ Fixed.BigStocks <- Trading.Day.Creator(BigStocks)
 Fixed.BigStocks %>% autoplot(EVWMA)
 ```
 
+## A Model
+
+```{r}
+Fixed.BigStocks %>% 
+  model(ARIMA(daily.returns)) %>% 
+  report()
+```
 
 
-## Monthly Returns are the Easiest to Work with
+# Monthly Returns are the Easiest to Work with
 
 Daily and weekly returns are messy because there is an inconsistent mapping between days and years, or months, or whatever.  The same is true of weeks.  The easiest thing to work with that has the finest granularity is monthly [the fact that February has a changing number of days can be handled easily when aggregating to the month].
 
@@ -130,6 +152,8 @@ FordM <- tq_get("F", from="2015-01-01")
 FordM %>% as_tsibble(index=date) %>% autoplot(adjusted)
 ```
 
+## Creating Returns
+
 That's the data I need to start.  Now let me turn it into monthly returns; we can either use the argument in `tq_transmute` called `col_rename` to change the name or work with the default name which will be, in this case, `monthly.returns`.  There is one additional trick; the data still have daily dates.  Early in the term, we had to extract the `yearmonth` from those to be able to use them as monthly data.  I will do that here by creating `Month` as the time index before creating the tsibble with `index=Month`.  `tq_transmute` is required whenever we want something that is not daily.
 
 ```{r}
@@ -140,8 +164,195 @@ Ford.Returns <- FordM %>%
 Ford.Returns %>% autoplot(monthly.returns)
 ```
 
+### Testing It Out
+
 Sweet.  No missing data and a proper format.  For proof of concept on deploying a model, let me use a decomposition method.
 
 ```{r CDecomp}
 Ford.Returns %>% model(classical_decomposition(monthly.returns, type="additive"))  %>% components() %>% autoplot()
 ```
+
+## An Extension
+
+First, let me get the S and P 500.
+
+```{r}
+library(viridis)
+SP500 <- tq_index("SP500") 
+SP500 %>% kable() %>%
+  kable_styling() %>%
+  scroll_box(width="80%", height="40%")
+```
+
+### A Graphical Breakdown by Sector
+
+I want to pick a sector.  One possible application would be to set this up in a knit with parameters to generate sectoral reports.
+
+```{r}
+SP500 %>% 
+  janitor::tabyl(sector) %>% 
+  select(sector, n) %>% 
+  ggplot(aes(x=fct_reorder(sector, n), y=n, color=sector, fill=sector, label=n)) + 
+  geom_col(aes(alpha=0.1)) + 
+  geom_text(aes(color="black", alpha=0.1, size=3)) + 
+  coord_flip() + 
+  scale_color_viridis_d() + 
+  scale_fill_viridis_d() + 
+  guides(fill=FALSE, color=FALSE, size=FALSE, alpha=FALSE) + 
+  labs(title="The Makeup of the S&P 500 by Sector", x="", y="Count") + 
+  theme_ipsum()
+```
+
+This gives me a choice about the sector to analyse.
+
+## Let me play with Industrials.
+
+First, let me get the data.  I want a really long time series to play with.  I will start in 2001.  Some of these are relatively new and my desire for long series restricts what I want.  The four tickers I exclude are relatively short.
+
+```{r StocksGrabB, cache=TRUE}
+Ind.Stocks <- SP500 %>% 
+  filter(sector=="Industrials") %>%
+  filter(!(symbol%in%c("CARR","OTIS","IR","FTV"))) %>% 
+  select(symbol) %>% 
+  tq_get(., from="2000-09-01")
+```
+
+Calculate some returns at the monthly level to work with.
+
+```{r MRetCreate, cache=TRUE}
+Ind.Returns <-   Ind.Stocks %>% 
+  group_by(symbol) %>% 
+  mutate(count = n()) %>% 
+  filter(count > 5000) %>% select(-count) %>%
+  tq_transmute(adjusted, mutate_fun = periodReturn, period = "monthly") %>% 
+  filter(date >= as.Date("2001-01-01")) %>%
+  mutate(Month = yearmonth(date)) %>% 
+  ungroup() %>%
+  as_tsibble(index=Month, key=symbol)
+```
+
+### Visualizing Monthly Returns
+
+Let's visualize what we have.
+
+```{r IndRetPlot}
+Ind.Returns %>% autoplot(monthly.returns, alpha=0.05) + 
+  guides(color=FALSE) + 
+  labs(y="Monthly Returns", 
+       title="Monthly Returns for S&P 500 Industrials") + 
+  theme_ipsum_rc()
+```
+
+### Aggregation
+
+Let me aggregate them.
+
+```{r}
+Ind.Returns <- Ind.Returns %>% 
+  aggregate_key(symbol, 
+                monthly.returns = mean(monthly.returns, na.rm=TRUE))
+```
+
+### Features for Industrials
+
+Some features for all of this data.  I will load `kableExtra` to render this as a scrollable html table.
+
+```{r}
+Ind.Features <- Ind.Returns %>% 
+  features(monthly.returns, 
+           feature_set(pkgs = "feasts")) 
+Ind.Features %>% 
+  kable() %>%
+  kable_styling() %>%
+  scroll_box(width="80%", height="40%")
+```
+
+## Split into training and test
+
+```{r}
+Ind.Returns.Test <- Ind.Returns %>% slice_max(., order_by=Month, n=12)
+Ind.Returns.Train <- Ind.Returns %>% anti_join(., Ind.Returns.Test)
+```
+
+## Estimate some models.
+
+```{r Models, cache=TRUE, warning=FALSE, message=FALSE}
+library(fable.prophet)
+Ind.Models <- Ind.Returns.Train %>% 
+  model(ARIMA = ARIMA(monthly.returns),
+        ETS = ETS(monthly.returns),
+        DH = ARIMA(monthly.returns ~ fourier(K=2)),
+        DH1 = ARIMA(monthly.returns ~ fourier(K=2) + PDQ(0,0,0)),
+        NNET = NNETAR(monthly.returns),
+        LM = TSLM(monthly.returns ~ trend() + season()),
+        P1 = prophet(monthly.returns~ season(period="month", order=2, type="additive")),
+        P2 = prophet(monthly.returns~ season(period="month", order=2, type="multiplicative"))
+) %>%
+  reconcile(ARIMA = bottom_up(ARIMA),
+            ETS = bottom_up(ETS),
+            DH = bottom_up(DH),
+            NNET = bottom_up(NNET))
+```
+
+```{r FCer, cache=TRUE}
+MRIFC <- Ind.Models %>% forecast(h=12)
+```
+
+Let's look at the forecasts.
+
+```{r}
+MRIFC %>% 
+  filter(is_aggregated(symbol)) %>% 
+  accuracy(Ind.Returns.Test)
+```
+
+Let me explore the models a little bit.
+
+Some relevant comments are:  
+
+1. This could be made more robust in a few ways.  The first is to consider using time-series cross-validation tools, with this much data, to ask about **how consistently** a model forecasts well.  This is something like a **better sleep at night** quantity.  
+2. This is completely driven by automagic fitting.  This is very different from forecasting at smaller scales where paying very close attention to each element is key.  *Data are not immutable for principled reasons.  We can make anomalies missing in efforts to minimize their contribution to model fit.*
+3. This is also very different than integrating theory and method in forecasting.  Biological theories and processes, physical theories, economic theory, among a host of others may suggest particular models that are the standards in dialogs centered around data of the form.
+4.Model criticism should always be undertaken.  There are enough models that this is a massive exercise.  I want to look at a few pieces.
+
+## Model Criticism
+
+```{r}
+Ind.Models %>% filter(symbol=="ALK") %>% glance()
+Ind.Models %>% filter(symbol=="ALK") %>% select(DH1) %>% gg_tsresiduals()
+```
+
+So my model has two pretty large outliers but otherwise generically checks out.    There are a ton of these.  Here is another example.
+
+```{r IMEx}
+Ind.Models %>% filter(symbol=="BA") %>% select(DH1) %>% gg_tsresiduals()
+```
+
+One way to attack this is to examine the Ljung-Box statistic for all of them.
+
+```{r}
+LBQ.Stat <- function(x) {
+  x %>%
+    augment() %>% 
+    features(.innov, ljung_box, lag = 24) -> Feat
+  return(Feat)
+}
+Symbol.Table <- Ind.Returns.Train %>% filter(!is_aggregated(symbol)) %>% janitor::tabyl(symbol) %>% select(symbol)
+Symbol.Table
+```
+
+```{r}
+DH1.Models <- Ind.Models %>% filter(!is_aggregated(symbol)) %>% select(DH1)
+LBQ.Res <- Symbol.Table %>% map(function(x) { DH1.Models %>% filter(symbol==x) %>% LBQ.Stat(.)})
+LBQ.Res
+```
+```{r}
+DH1.Models %>% filter(symbol=="CMI")
+```
+
+Is one example of a model that fails.  There is a large negative correlation at 6 months and something of a pattern though not outside the bounds.  There are a few.
+
+```{r}
+save.image("MyEquities.RData")
+```
+
