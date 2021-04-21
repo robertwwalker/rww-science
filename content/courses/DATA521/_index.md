@@ -44,10 +44,12 @@ load(url("https://github.com/robertwwalker/DADMStuff/raw/master/Ch4HA.RData"))
 
 ## COVID-19 Forecasting
 
-+ [tbats for COVID-19](https://rww.science/courses/DATA521/tbats/index.html)
-+ [Aggregate Forecasting for COVID-19](https://rww.science/courses/DATA521/aggfore/index.html)
-+ [Aggregate Box-Cox Forecasting for COVID-19](https://rww.science/courses/DATA521/aggforeBC/index.html)
-+ [Aggregate log Forecasting for COVID-19](https://rww.science/courses/DATA521/aggforelog/index.html)
+The [summary page]((https://rww.science/courses/DATA521/forecasting/index.html)
+
++ [tbats for COVID-19](https://rww.science/courses/DATA521/forecasting/tbats/index.html)
++ [Aggregate Forecasting for COVID-19](https://rww.science/courses/DATA521/forecasting/aggfore/index.html)
++ [Aggregate Box-Cox Forecasting for COVID-19](https://rww.science/courses/DATA521/forecasting/aggforeBC/index.html)
++ [Aggregate log Forecasting for COVID-19](https://rww.science/courses/DATA521/forecasting/aggforelog/index.html)
 
 ## Some Resources:
 

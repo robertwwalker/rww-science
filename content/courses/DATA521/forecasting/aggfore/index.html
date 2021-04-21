@@ -1,6 +1,6 @@
 ---
 title: "NYT COVID Forecast Aggregation"
-date: "2021-04-18"
+date: "2021-04-21"
 output:
   rmdformats::downcute:
     self_contained: true
@@ -54,21 +54,23 @@ plot1/plot2</code></pre>
     model(TSLM(New.CasesP ~ Day.of.Week)) %&gt;%
     glance() %&gt;%
     filter(p_value &lt; 0.05)</code></pre>
-<pre><code># A tibble: 12 x 16
+<pre><code># A tibble: 14 x 16
    state        .model   r_squared adj_r_squared sigma2 statistic  p_value    df
    &lt;chr*&gt;       &lt;chr&gt;        &lt;dbl&gt;         &lt;dbl&gt;  &lt;dbl&gt;     &lt;dbl&gt;    &lt;dbl&gt; &lt;int&gt;
- 1 Arkansas   … TSLM(Ne…    0.0449        0.0296 6.70e5      2.94 8.19e- 3     7
- 2 Connecticut… TSLM(Ne…    0.260         0.248  1.28e6     21.9  4.09e-22     7
- 3 District of… TSLM(Ne…    0.0401        0.0247 6.69e3      2.61 1.72e- 2     7
- 4 Hawaii     … TSLM(Ne…    0.0689        0.0540 4.79e3      4.62 1.51e- 4     7
- 5 Idaho      … TSLM(Ne…    0.0784        0.0636 2.10e5      5.31 2.81e- 5     7
- 6 Kansas     … TSLM(Ne…    0.303         0.292  1.47e6     27.2  6.99e-27     7
- 7 Louisiana  … TSLM(Ne…    0.145         0.131  1.38e6     10.6  7.03e-11     7
- 8 Michigan   … TSLM(Ne…    0.0974        0.0829 6.85e6      6.74 8.51e- 7     7
- 9 Mississippi… TSLM(Ne…    0.0556        0.0405 4.29e5      3.68 1.45e- 3     7
-10 Rhode Islan… TSLM(Ne…    0.214         0.202  2.83e5     17.0  2.01e-17     7
-11 Texas      … TSLM(Ne…    0.0340        0.0185 4.60e7      2.20 4.24e- 2     7
-12 Washington … TSLM(Ne…    0.0657        0.0507 8.82e5      4.39 2.63e- 4     7
+ 1 Arkansas   … TSLM(Ne…    0.0471        0.0320 6.67e5      3.12 5.42e- 3     7
+ 2 Connecticut… TSLM(Ne…    0.263         0.251  1.27e6     22.5  1.16e-22     7
+ 3 District of… TSLM(Ne…    0.0406        0.0254 6.64e3      2.67 1.51e- 2     7
+ 4 Hawaii     … TSLM(Ne…    0.0696        0.0548 4.76e3      4.71 1.22e- 4     7
+ 5 Idaho      … TSLM(Ne…    0.0792        0.0646 2.09e5      5.42 2.17e- 5     7
+ 6 Iowa       … TSLM(Ne…    0.0330        0.0176 9.05e5      2.15 4.74e- 2     7
+ 7 Kansas     … TSLM(Ne…    0.302         0.291  1.47e6     27.2  5.76e-27     7
+ 8 Louisiana  … TSLM(Ne…    0.141         0.127  1.38e6     10.3  1.30e-10     7
+ 9 Michigan   … TSLM(Ne…    0.101         0.0871 6.94e6      7.11 3.44e- 7     7
+10 Mississippi… TSLM(Ne…    0.0586        0.0437 4.27e5      3.93 8.08e- 4     7
+11 Rhode Islan… TSLM(Ne…    0.216         0.204  2.81e5     17.4  9.29e-18     7
+12 South Dakot… TSLM(Ne…    0.0330        0.0177 1.35e5      2.15 4.69e- 2     7
+13 Texas      … TSLM(Ne…    0.0341        0.0188 4.58e7      2.22 4.02e- 2     7
+14 Washington … TSLM(Ne…    0.0675        0.0527 8.77e5      4.56 1.74e- 4     7
 # … with 8 more variables: log_lik &lt;dbl&gt;, AIC &lt;dbl&gt;, AICc &lt;dbl&gt;, BIC &lt;dbl&gt;,
 #   CV &lt;dbl&gt;, deviance &lt;dbl&gt;, df.residual &lt;int&gt;, rank &lt;int&gt;</code></pre>
 <p>In 12 states, there appear to be and in a few of them, those effects are large. Modelling this covariate seems useful. At the same time, this does nothing about the broad trends.</p>
@@ -96,18 +98,18 @@ COVID.Agg.Train &lt;- anti_join(NYTAgg.COVID, COVID.Agg.Test) %&gt;%
 COVIDFC %&gt;%
     accuracy(COVID.Agg.Test)</code></pre>
 <pre><code># A tibble: 52 x 11
-   .model  state            .type      ME   RMSE   MAE     MPE  MAPE  MASE RMSSE
-   &lt;chr&gt;   &lt;chr*&gt;           &lt;chr&gt;   &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
- 1 WDARIMA Alabama        … Test   116.    398.  237.   -10.3   71.8   NaN   NaN
- 2 WDARIMA Alaska         … Test   -17.6   138.  104.  -Inf    Inf     NaN   NaN
- 3 WDARIMA Arizona        … Test    94.2   354.  312.    11.3   51.8   NaN   NaN
- 4 WDARIMA Arkansas       … Test    95.5   121.   99.2   93.0   94.9   NaN   NaN
- 5 WDARIMA California     … Test  -108.    737.  569.    -8.18  20.7   NaN   NaN
- 6 WDARIMA Colorado       … Test   308.    579.  480.    10.8   28.6   NaN   NaN
- 7 WDARIMA Connecticut    … Test  -332.    456.  400.  -Inf    Inf     NaN   NaN
- 8 WDARIMA Delaware       … Test   -39.4    64.5  48.6  -16.8   19.1   NaN   NaN
- 9 WDARIMA District of Col… Test    -8.87   33.1  26.0  -14.8   24.1   NaN   NaN
-10 WDARIMA Florida        … Test   352.   1367.  963.    -6.17  23.2   NaN   NaN
+   .model  state           .type      ME   RMSE    MAE     MPE  MAPE  MASE RMSSE
+   &lt;chr&gt;   &lt;chr*&gt;          &lt;chr&gt;   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+ 1 WDARIMA Alabama       … Test  302.     547.   329.    46.2   55.3   NaN   NaN
+ 2 WDARIMA Alaska        … Test  -13.4     82.3   66.0 -Inf    Inf     NaN   NaN
+ 3 WDARIMA Arizona       … Test   54.6    355.   317.     3.33  49.3   NaN   NaN
+ 4 WDARIMA Arkansas      … Test   72.6    104.    85.7   78.0   84.8   NaN   NaN
+ 5 WDARIMA California    … Test    9.47   726.   465.    -3.28  15.8   NaN   NaN
+ 6 WDARIMA Colorado      … Test  261.     553.   492.     6.21  30.6   NaN   NaN
+ 7 WDARIMA Connecticut   … Test  -65.3    336.   246.   NaN    Inf     NaN   NaN
+ 8 WDARIMA Delaware      … Test   41.6     70.2   63.5    7.32  19.6   NaN   NaN
+ 9 WDARIMA District of Co… Test    0.615   32.6   21.3   -6.40  18.8   NaN   NaN
+10 WDARIMA Florida       … Test  919.    1550.  1238.     5.11  24.9   NaN   NaN
 # … with 42 more rows, and 1 more variable: ACF1 &lt;dbl&gt;</code></pre>
 <p>Look at the aggregates.</p>
 <pre class="r"><code>COVIDFC %&gt;%
@@ -145,14 +147,14 @@ Oregon.C19 %&gt;%
 <pre><code># A tibble: 1 x 7
   state  kpss_stat kpss_pvalue pp_stat pp_pvalue ndiffs nsdiffs
   &lt;chr*&gt;     &lt;dbl&gt;       &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;  &lt;int&gt;   &lt;int&gt;
-1 Oregon      6.08        0.01    3.99       0.1      2       0</code></pre>
+1 Oregon      6.15        0.01    3.98       0.1      2       0</code></pre>
 <pre class="r"><code>Oregon.C19 %&gt;%
     features(deaths, features = list(unitroot_kpss, unitroot_pp, unitroot_ndiffs, 
         unitroot_nsdiffs))</code></pre>
 <pre><code># A tibble: 1 x 7
   state  kpss_stat kpss_pvalue pp_stat pp_pvalue ndiffs nsdiffs
   &lt;chr*&gt;     &lt;dbl&gt;       &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;  &lt;int&gt;   &lt;int&gt;
-1 Oregon      5.98        0.01    3.59       0.1      2       0</code></pre>
+1 Oregon      6.05        0.01    3.39       0.1      2       0</code></pre>
 <pre class="r"><code>Oregon.C19 %&lt;&gt;%
     mutate(New.Cases = difference(cases), New.Deaths = difference(deaths))</code></pre>
 <pre class="r"><code># Visualize the differenced series
@@ -169,14 +171,14 @@ Oregon.C19 %&gt;%
 <pre><code># A tibble: 1 x 7
   state  kpss_stat kpss_pvalue pp_stat pp_pvalue ndiffs nsdiffs
   &lt;chr*&gt;     &lt;dbl&gt;       &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;  &lt;int&gt;   &lt;int&gt;
-1 Oregon      2.73        0.01   -3.38    0.0147      1       0</code></pre>
+1 Oregon      2.72        0.01   -3.46      0.01      1       0</code></pre>
 <pre class="r"><code>Oregon.C19 %&gt;%
     features(New.Deaths, features = list(unitroot_kpss, unitroot_pp, unitroot_ndiffs, 
         unitroot_nsdiffs))</code></pre>
 <pre><code># A tibble: 1 x 7
   state  kpss_stat kpss_pvalue pp_stat pp_pvalue ndiffs nsdiffs
   &lt;chr*&gt;     &lt;dbl&gt;       &lt;dbl&gt;   &lt;dbl&gt;     &lt;dbl&gt;  &lt;int&gt;   &lt;int&gt;
-1 Oregon      2.21        0.01   -10.8      0.01      1       0</code></pre>
+1 Oregon      2.12        0.01   -10.9      0.01      1       0</code></pre>
 </div>
 <div id="decompositions" class="section level2">
 <h2>Decompositions</h2>
@@ -260,11 +262,11 @@ fitC %&gt;%
 <pre><code># A tibble: 5 x 12
   state  .model sigma2 log_lik   AIC  AICc   BIC ar_roots  ma_roots      MSE
   &lt;chr*&gt; &lt;chr&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;list&gt;    &lt;list&gt;      &lt;dbl&gt;
-1 Oregon K = 1  22694.  -2443. 4898. 4898. 4921. &lt;cpl [0]&gt; &lt;cpl [15]&gt;    NA 
-2 Oregon K = 2  22637.  -2441. 4899. 4899. 4930. &lt;cpl [0]&gt; &lt;cpl [15]&gt;    NA 
-3 Oregon K = 3  22731.  -2441. 4902. 4903. 4941. &lt;cpl [0]&gt; &lt;cpl [15]&gt;    NA 
-4 Oregon ARIMA  24605.  -2459. 4927. 4927. 4942. &lt;cpl [0]&gt; &lt;cpl [15]&gt;    NA 
-5 Oregon ETS    22934.  -3040. 6100. 6101. 6140. &lt;NULL&gt;    &lt;NULL&gt;     22392.
+1 Oregon K = 1  22558.  -2461. 4934. 4934. 4958. &lt;cpl [0]&gt; &lt;cpl [15]&gt;    NA 
+2 Oregon K = 2  22511.  -2460. 4935. 4935. 4967. &lt;cpl [0]&gt; &lt;cpl [15]&gt;    NA 
+3 Oregon K = 3  22608.  -2459. 4939. 4939. 4978. &lt;cpl [0]&gt; &lt;cpl [15]&gt;    NA 
+4 Oregon ARIMA  24506.  -2478. 4964. 4964. 4980. &lt;cpl [0]&gt; &lt;cpl [15]&gt;    NA 
+5 Oregon ETS    22833.  -3065. 6150. 6150. 6189. &lt;NULL&gt;    &lt;NULL&gt;     22298.
 # … with 2 more variables: AMSE &lt;dbl&gt;, MAE &lt;dbl&gt;</code></pre>
 <pre class="r"><code># The best fit is K=2
 fitC %&gt;%
@@ -290,11 +292,11 @@ fitD %&gt;%
 <pre><code># A tibble: 5 x 12
   state  .model sigma2 log_lik   AIC  AICc   BIC ar_roots  ma_roots    MSE
   &lt;chr*&gt; &lt;chr&gt;   &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;list&gt;    &lt;list&gt;    &lt;dbl&gt;
-1 Oregon K = 1    35.0  -1213. 2440. 2441. 2468. &lt;cpl [8]&gt; &lt;cpl [8]&gt;  NA  
-2 Oregon K = 2    34.6  -1210. 2437. 2438. 2472. &lt;cpl [8]&gt; &lt;cpl [8]&gt;  NA  
-3 Oregon K = 3    34.7  -1209. 2440. 2441. 2484. &lt;cpl [8]&gt; &lt;cpl [8]&gt;  NA  
-4 Oregon ARIMA    35.2  -1216. 2441. 2441. 2461. &lt;cpl [8]&gt; &lt;cpl [8]&gt;  NA  
-5 Oregon ETS      38.6  -1824. 3667. 3668. 3707. &lt;NULL&gt;    &lt;NULL&gt;     37.7
+1 Oregon K = 1    34.8  -1222. 2457. 2458. 2485. &lt;cpl [8]&gt; &lt;cpl [8]&gt;  NA  
+2 Oregon K = 2    34.4  -1218. 2454. 2455. 2490. &lt;cpl [8]&gt; &lt;cpl [8]&gt;  NA  
+3 Oregon K = 3    34.5  -1218. 2457. 2458. 2501. &lt;cpl [8]&gt; &lt;cpl [8]&gt;  NA  
+4 Oregon ARIMA    35.0  -1224. 2458. 2458. 2478. &lt;cpl [8]&gt; &lt;cpl [8]&gt;  NA  
+5 Oregon ETS      38.3  -1838. 3695. 3696. 3735. &lt;NULL&gt;    &lt;NULL&gt;     37.4
 # … with 2 more variables: AMSE &lt;dbl&gt;, MAE &lt;dbl&gt;</code></pre>
 </div>
 </div>
@@ -317,18 +319,18 @@ fitD %&gt;%
 <pre class="r"><code>FC.Cases %&gt;%
     accuracy(COVID.Agg.Test)</code></pre>
 <pre><code># A tibble: 624 x 11
-   .model state            .type      ME   RMSE    MAE     MPE  MAPE  MASE RMSSE
-   &lt;chr&gt;  &lt;chr*&gt;           &lt;chr&gt;   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
- 1 ARIMA  Alabama        … Test   101.    439.   277.   -32.5   95.4   NaN   NaN
- 2 ARIMA  Alaska         … Test   -43.0   147.   115.  -Inf    Inf     NaN   NaN
- 3 ARIMA  Arizona        … Test   -51.6   212.   160.   -16.7   26.4   NaN   NaN
- 4 ARIMA  Arkansas       … Test     8.19   67.8   57.7  -24.0   51.8   NaN   NaN
- 5 ARIMA  California     … Test  -415.    685.   586.   -20.3   24.8   NaN   NaN
- 6 ARIMA  Colorado       … Test    83.8   529.   458.    -5.56  31.9   NaN   NaN
- 7 ARIMA  Connecticut    … Test  -176.    370.   305.  -Inf    Inf     NaN   NaN
- 8 ARIMA  Delaware       … Test    -5.35   55.4   47.8   -6.35  17.2   NaN   NaN
- 9 ARIMA  District of Col… Test   -13.2    37.3   31.6  -20.6   30.6   NaN   NaN
-10 ARIMA  Florida        … Test   145.   1484.  1069.   -13.8   29.2   NaN   NaN
+   .model state           .type      ME   RMSE    MAE      MPE  MAPE  MASE RMSSE
+   &lt;chr&gt;  &lt;chr*&gt;          &lt;chr&gt;   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;    &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+ 1 ARIMA  Alabama       … Test   187.    457.   287.    12.5    60.3   NaN   NaN
+ 2 ARIMA  Alaska        … Test   -44.5   107.    82.0 -Inf     Inf     NaN   NaN
+ 3 ARIMA  Arizona       … Test   -23.9   227.   165.   -13.4    26.0   NaN   NaN
+ 4 ARIMA  Arkansas      … Test    28.9    65.4   56.4    0.434  35.5   NaN   NaN
+ 5 ARIMA  California    … Test  -318.    589.   540.   -14.1    20.0   NaN   NaN
+ 6 ARIMA  Colorado      … Test   108.    557.   484.    -4.91   32.6   NaN   NaN
+ 7 ARIMA  Connecticut   … Test  -155.    396.   323.  -Inf     Inf     NaN   NaN
+ 8 ARIMA  Delaware      … Test    12.7    48.0   42.5    0.506  13.6   NaN   NaN
+ 9 ARIMA  District of Co… Test    -9.02   39.2   32.9  -17.6    30.6   NaN   NaN
+10 ARIMA  Florida       … Test   408.   1630.  1170.   -12.5    32.5   NaN   NaN
 # … with 614 more rows, and 1 more variable: ACF1 &lt;dbl&gt;</code></pre>
 <p>Assess the models over the units.</p>
 <pre class="r"><code>FC.Cases %&gt;%
@@ -359,16 +361,16 @@ fitD %&gt;%
 <pre><code># A tibble: 624 x 11
    .model state            .type      ME   RMSE    MAE     MPE  MAPE  MASE RMSSE
    &lt;chr&gt;  &lt;chr*&gt;           &lt;chr&gt;   &lt;dbl&gt;  &lt;dbl&gt;  &lt;dbl&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
- 1 ARIMA  Alabama        … Test    1.74  12.4   10.7    NaN    Inf     NaN   NaN
- 2 ARIMA  Alaska         … Test    0.888  4.86   1.86  -Inf    Inf     NaN   NaN
- 3 ARIMA  Arizona        … Test   10.1   17.1   14.9    Inf    Inf     NaN   NaN
- 4 ARIMA  Arkansas       … Test   -4.84   5.55   4.84  -Inf    Inf     NaN   NaN
- 5 ARIMA  California     … Test   -3.21  31.8   22.2     -7.51  23.4   NaN   NaN
- 6 ARIMA  Colorado       … Test    7.81  26.1    9.19  -Inf    Inf     NaN   NaN
- 7 ARIMA  Connecticut    … Test    2.64   5.61   4.11   NaN    Inf     NaN   NaN
- 8 ARIMA  Delaware       … Test   -1.64   2.55   2.10  -Inf    Inf     NaN   NaN
- 9 ARIMA  District of Col… Test   -0.368  0.947  0.697 -Inf    Inf     NaN   NaN
-10 ARIMA  Florida        … Test  -12.3   18.9   15.8    -66.1   70.2   NaN   NaN
+ 1 ARIMA  Alabama        … Test    0.750 13.8   12.3    NaN    Inf     NaN   NaN
+ 2 ARIMA  Alaska         … Test    1.33   5.54   2.24  -Inf    Inf     NaN   NaN
+ 3 ARIMA  Arizona        … Test   10.1   16.7   14.1    Inf    Inf     NaN   NaN
+ 4 ARIMA  Arkansas       … Test   -4.83   5.69   4.83  -Inf    Inf     NaN   NaN
+ 5 ARIMA  California     … Test   -3.25  36.2   27.9     -8.28  28.9   NaN   NaN
+ 6 ARIMA  Colorado       … Test   10.0   29.8   11.5   -Inf    Inf     NaN   NaN
+ 7 ARIMA  Connecticut    … Test    2.12   5.59   4.03  -Inf    Inf     NaN   NaN
+ 8 ARIMA  Delaware       … Test   -1.13   2.23   1.72  -Inf    Inf     NaN   NaN
+ 9 ARIMA  District of Col… Test   -0.269  0.887  0.697 -Inf    Inf     NaN   NaN
+10 ARIMA  Florida        … Test  -11.1   18.9   15.6    -69.3   74.6   NaN   NaN
 # … with 614 more rows, and 1 more variable: ACF1 &lt;dbl&gt;</code></pre>
 <p>Assess the models over the units.</p>
 <pre class="r"><code>FC.Deaths %&gt;%
