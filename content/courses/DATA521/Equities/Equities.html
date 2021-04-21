@@ -22341,12 +22341,9 @@ LBQ.Res</code></pre>
 ##  9 CSX    DH1      35.2     0.0653
 ## 10 CTAS   DH1      42.0     0.0129
 ## # … with 47 more rows</code></pre>
-<pre class="r"><code>DH1.Models %&gt;% filter(symbol==&quot;CMI&quot;)</code></pre>
-<pre><code>## # A mable: 1 x 2
-## # Key:     symbol [1]
-##   symbol                         DH1
-##   &lt;chr*&gt;                     &lt;model&gt;
-## 1 CMI    &lt;LM w/ ARIMA(0,0,0) errors&gt;</code></pre>
+<p>An example.</p>
+<pre class="r"><code>DH1.Models %&gt;% filter(symbol==&quot;CMI&quot;) %&gt;% gg_tsresiduals()</code></pre>
+<p><img src="/courses/DATA521/Equities/Equities_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
 <p>Is one example of a model that fails. There is a large negative correlation at 6 months and something of a pattern though not outside the bounds. There are a few.</p>
 <pre class="r"><code>save.image(&quot;MyEquities.RData&quot;)</code></pre>
 </div>

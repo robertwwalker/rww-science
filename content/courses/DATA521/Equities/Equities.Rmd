@@ -6,7 +6,7 @@ date: "1/22/2021"
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE, cache=TRUE)
 library(knitr)
 library(tidyverse)
 library(tidyquant)
@@ -346,13 +346,16 @@ DH1.Models <- Ind.Models %>% filter(!is_aggregated(symbol)) %>% select(DH1)
 LBQ.Res <- Symbol.Table %>% map(function(x) { DH1.Models %>% filter(symbol==x) %>% LBQ.Stat(.)})
 LBQ.Res
 ```
+
+An example.
+
 ```{r}
-DH1.Models %>% filter(symbol=="CMI")
+DH1.Models %>% filter(symbol=="CMI") %>% gg_tsresiduals()
 ```
 
 Is one example of a model that fails.  There is a large negative correlation at 6 months and something of a pattern though not outside the bounds.  There are a few.
 
-```{r}
+```{r, eval=FALSE}
 save.image("MyEquities.RData")
 ```
 
