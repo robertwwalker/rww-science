@@ -344,7 +344,15 @@ Symbol.Table
 ```{r}
 DH1.Models <- Ind.Models %>% filter(!is_aggregated(symbol)) %>% select(DH1)
 LBQ.Res <- Symbol.Table %>% map(function(x) { DH1.Models %>% filter(symbol==x) %>% LBQ.Stat(.)})
-LBQ.Res
+LBQ.Result <- LBQ.Res$symbol
+LBQ.Res$symbol
+```
+
+Now I have a table to inspect and to try to use to figure out what is wrong, in sample.
+
+```{r LBQAnalysis}
+LBQ.Misfits <- LBQ.Result %>% filter(lb_pvalue < 0.05)
+LBQ.Misfits
 ```
 
 An example.

@@ -22325,9 +22325,9 @@ Symbol.Table</code></pre>
 ##      WM</code></pre>
 <pre class="r"><code>DH1.Models &lt;- Ind.Models %&gt;% filter(!is_aggregated(symbol)) %&gt;% select(DH1)
 LBQ.Res &lt;- Symbol.Table %&gt;% map(function(x) { DH1.Models %&gt;% filter(symbol==x) %&gt;% LBQ.Stat(.)})
-LBQ.Res</code></pre>
-<pre><code>## $symbol
-## # A tibble: 57 x 4
+LBQ.Result &lt;- LBQ.Res$symbol
+LBQ.Res$symbol</code></pre>
+<pre><code>## # A tibble: 57 x 4
 ##    symbol .model lb_stat lb_pvalue
 ##    &lt;chr*&gt; &lt;chr&gt;    &lt;dbl&gt;     &lt;dbl&gt;
 ##  1 ALK    DH1      15.4     0.908 
@@ -22341,6 +22341,14 @@ LBQ.Res</code></pre>
 ##  9 CSX    DH1      35.2     0.0653
 ## 10 CTAS   DH1      42.0     0.0129
 ## # … with 47 more rows</code></pre>
+<p>Now I have a table to inspect and to try to use to figure out what is wrong, in sample.</p>
+<pre class="r"><code>LBQ.Misfits &lt;- LBQ.Result %&gt;% filter(lb_pvalue &lt; 0.05)
+LBQ.Misfits</code></pre>
+<pre><code>## # A tibble: 2 x 4
+##   symbol .model lb_stat lb_pvalue
+##   &lt;chr*&gt; &lt;chr&gt;    &lt;dbl&gt;     &lt;dbl&gt;
+## 1 CMI    DH1       42.9    0.0103
+## 2 CTAS   DH1       42.0    0.0129</code></pre>
 <p>An example.</p>
 <pre class="r"><code>DH1.Models %&gt;% filter(symbol==&quot;CMI&quot;) %&gt;% gg_tsresiduals()</code></pre>
 <p><img src="/courses/DATA521/Equities/Equities_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
