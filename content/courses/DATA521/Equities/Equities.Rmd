@@ -179,9 +179,9 @@ First, let me get the S and P 500.
 ```{r}
 library(viridis)
 SP500 <- tq_index("SP500") 
-SP500 %>% kable() %>%
+SP500 %>% kable("html") %>%
   kable_styling() %>%
-  scroll_box(width="80%", height="40%")
+  scroll_box(width="800px", height="400px")
 ```
 
 ### A Graphical Breakdown by Sector
