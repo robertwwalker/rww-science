@@ -124,7 +124,7 @@ Trading.Day.Creator <- function(RawStocks) {
   filter(symbol==Biggie$symbol) %>% 
     mutate(trading_day = row_number()) %>% 
     select(date, trading_day)
-  Stocks.to.Return <- RawStocks %>% as_tibble() %>% left_join(., Max.List) %>% as_tsibble(index=trading_day, key=symbol, regular = TRUE)
+  Stocks.to.Return <- RawStocks %>% as_tibble() %>% left_join(., Max.List) %>% as_tsibble(index=trading_day, key=symbol, regular=TRUE)
   return(Stocks.to.Return)
 }
 Fixed.BigStocks <- Trading.Day.Creator(BigStocks)
@@ -138,7 +138,6 @@ Fixed.BigStocks %>%
   model(ARIMA(daily.returns)) %>% 
   report()
 ```
-
 
 # Monthly Returns are the Easiest to Work with
 

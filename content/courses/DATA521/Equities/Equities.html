@@ -103,7 +103,7 @@ BigStocks %&gt;% as_tsibble(index=date, key=symbol) %&gt;% autoplot(EVWMA)</code
   filter(symbol==Biggie$symbol) %&gt;% 
     mutate(trading_day = row_number()) %&gt;% 
     select(date, trading_day)
-  Stocks.to.Return &lt;- RawStocks %&gt;% as_tibble() %&gt;% left_join(., Max.List) %&gt;% as_tsibble(index=trading_day, key=symbol, regular = TRUE)
+  Stocks.to.Return &lt;- RawStocks %&gt;% as_tibble() %&gt;% left_join(., Max.List) %&gt;% as_tsibble(index=trading_day, key=symbol, regular=TRUE)
   return(Stocks.to.Return)
 }
 Fixed.BigStocks &lt;- Trading.Day.Creator(BigStocks)
