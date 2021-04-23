@@ -124,6 +124,7 @@ NWS.Monthly.Test &lt;- NWS.Monthly.Sum %&gt;%
 </div>
 <div id="model-fitting" class="section level2">
 <h2>Model Fitting</h2>
+<p>Exploring a <code>prophet</code>.</p>
 </div>
 <div id="prophet" class="section level2">
 <h2>Prophet</h2>
@@ -132,6 +133,7 @@ ProphMod &lt;- NWS.Monthly.Train %&gt;%
     model(prophet = prophet(MaxAvg ~ growth() + season(&quot;year&quot;, 12)))
 PMF &lt;- ProphMod %&gt;%
     forecast(h = 12)</code></pre>
+<p>What does it look like?</p>
 </div>
 <div id="plot-it" class="section level2">
 <h2>Plot it</h2>
@@ -143,7 +145,6 @@ PMF &lt;- ProphMod %&gt;%
     select(Month, MaxAvg), aes(x = Month, y = MaxAvg), alpha = 0.2) + labs(x = &quot;Date&quot;, 
     y = &quot;Monthly Max Temp.&quot;, title = &quot;Temp Forecast Using Prophet&quot;)</code></pre>
 <p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
-<p>Now I need to find the actual data.</p>
 </div>
 <div id="some-models" class="section level2">
 <h2>Some Models</h2>
@@ -198,12 +199,19 @@ Min.Model</code></pre>
 </div>
 <div id="automagics" class="section level2">
 <h2>Automagics</h2>
-<p>I want to write a magic function. It takes three inputs: train, test, Outcome, and DateVar. The first two are data; split into train and test. The final inputs are <code>Outcome</code>, the outcome without quotation marks, and the Date variable [the index of the tsibble], also unquoted.</p>
-<pre class="r"><code>Accuse.Usual.Suspect &lt;- function(train, test, Outcome, DateVar, H.Horizon = 12) {
+<p>I want to write a magic function. It takes four inputs: data, Outcome, DateVar, and H.Horizon [defaults to 12]. The first one is the data. The next two inputs are <code>Outcome</code>, the outcome without quotation marks, and <code>DateVar</code> – the Date variable [the index of the tsibble], also unquoted. The final argument sets the forecast horizon [the plots will have two times this before them in real data from the <code>test</code> set]. I have tried to be copious in commenting this.</p>
+<div id="a-monthly-forecast-function" class="section level3">
+<h3>A Monthly Forecast Function</h3>
+<pre class="r"><code>Accuse.Usual.Suspect &lt;- function(data, Outcome, DateVar, H.Horizon = 12) {
     # Turn the symbols -- names that will make sense in their environments when
-    # called -- that the user supplies into symbolics.
+    # called -- that the user supplies into symbolics.  This is the role of ensym.
     Outcome &lt;- ensym(Outcome)
     DateVar &lt;- ensym(DateVar)
+    # Create test using H.Horizon
+    test &lt;- data %&gt;%
+        slice_max(., order_by = !!DateVar, n = H.Horizon)  # Create train
+    train &lt;- data %&gt;%
+        anti_join(., test)
     # Estimate some models and store them as fits.  !! calls the variable name in the
     # given environment
     fits &lt;- train %&gt;%
@@ -211,67 +219,112 @@ Min.Model</code></pre>
     # Forecast the models
     FC &lt;- fits %&gt;%
         forecast(h = H.Horizon)
-    # Compare train and test
+    # Compare train and test using accuracy
     Accuracy.Table &lt;- FC %&gt;%
         accuracy(test)
+    # Show the best fit
     Min.Model &lt;- Accuracy.Table %&gt;%
         slice_min(., order_by = MAE, n = 1)
+    # Report on the best fitting model
     Min.Report &lt;- fits %&gt;%
         select(Min.Model$.model) %&gt;%
         report()
+    # Create a plot of the time series residuals for the best fit
     Min.Res.Plot &lt;- fits %&gt;%
         select(Min.Model$.model) %&gt;%
         gg_tsresiduals()
+    # Create a forecast plot for the best fitting model.
     Min.ForeCPlot &lt;- FC %&gt;%
         filter(.model == Min.Model$.model) %&gt;%
         autoplot() + autolayer(test %&gt;%
-        select(!!Outcome)) + autolayer(train %&gt;%
-        slice_max(., order_by = !!DateVar, n = H.Horizon * 2) %&gt;%
+        select(!!Outcome)) + autolayer(data %&gt;%
+        slice_max(., order_by = !!DateVar, n = H.Horizon * 3) %&gt;%
         select(!!Outcome)) + theme_ipsum_rc() + labs(title = &quot;Winner Forecast&quot;)
+    # Return a named list with all the stuff we calculated along the way.
     fit.list &lt;- list(Model.Fits = fits, Model.Forecasts = FC, Accuracy.Table = Accuracy.Table, 
         Min.Model = Min.Model, Min.Report = Min.Report, Min.Res.Plot = Min.Res.Plot, 
         Min.Forecast.Plot = Min.ForeCPlot)
     return(fit.list)
 }</code></pre>
+</div>
+</div>
+<div id="minimum-average-temperature" class="section level2">
+<h2>Minimum Average Temperature</h2>
 <p>Try out the big function.</p>
-<pre class="r"><code>MinAvg.Res &lt;- Accuse.Usual.Suspect(train = NWS.Monthly.Train, test = NWS.Monthly.Test, 
-    Outcome = MinAvg, DateVar = Month)</code></pre>
+<pre class="r"><code>MinAvg.Res &lt;- MinAvg.Res &lt;- NWS.Monthly.Sum %&gt;%
+    Accuse.Usual.Suspect(., Outcome = MinAvg, DateVar = Month, H.Horizon = 14)</code></pre>
 <pre><code>Series: MinAvg 
 Model: LM w/ ARIMA(2,1,2)(0,0,1)[12] errors 
 
 Coefficients:
          ar1      ar2      ma1     ma2    sma1  fourier(K = 1)C1_12
-      0.5850  -0.1603  -1.3061  0.3201  0.1452             -11.1736
-s.e.  0.1731   0.0503   0.1724  0.1695  0.0317               0.1578
+      0.5867  -0.1604  -1.3077  0.3216  0.1457             -11.1766
+s.e.  0.1736   0.0503   0.1729  0.1701  0.0317               0.1583
       fourier(K = 1)S1_12
-                  -1.6574
-s.e.               0.1576
+                  -1.6573
+s.e.               0.1581
 
-sigma^2 estimated as 5.986:  log likelihood=-2168.2
-AIC=4352.41   AICc=4352.56   BIC=4391.16</code></pre>
+sigma^2 estimated as 5.996:  log likelihood=-2164.31
+AIC=4344.62   AICc=4344.77   BIC=4383.35</code></pre>
 <p><img src="{{< blogdown/postref >}}index_files/figure-html/MinWins-1.png" width="672" /></p>
 <p>Try out a result.</p>
 <pre class="r"><code>MinAvg.Res$Min.Forecast.Plot</code></pre>
-<pre><code>NULL</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+</div>
+<div id="precipitation" class="section level2">
+<h2>Precipitation</h2>
 <p>Try it with precipitation.</p>
-<pre class="r"><code>Precip.Res &lt;- Accuse.Usual.Suspect(train = NWS.Monthly.Train, test = NWS.Monthly.Test, 
-    Outcome = Precip, DateVar = Month)</code></pre>
+<pre class="r"><code>Precip.Res &lt;- Accuse.Usual.Suspect(data = NWS.Monthly.Train, Outcome = Precip, DateVar = Month, 
+    H.Horizon = 12)</code></pre>
 <pre><code>Series: Precip 
-Model: LM w/ ARIMA(0,0,1)(0,0,2)[12] errors 
+Model: LM w/ ARIMA(0,0,1) errors 
 
 Coefficients:
-         ma1    sma1    sma2  fourier(K = 1)C1_12  fourier(K = 1)S1_12
-      0.1712  0.0373  0.0457               2.3138              -0.3738
-s.e.  0.0318  0.0333  0.0307               0.1048               0.1047
-      intercept
-         3.0833
-s.e.     0.0754
+         ma1  fourier(K = 2)C1_12  fourier(K = 2)S1_12  fourier(K = 2)C2_12
+      0.1396               2.3157              -0.3704              -0.0789
+s.e.  0.0319               0.0924               0.0923               0.0885
+      fourier(K = 2)S2_12  intercept
+                  -0.7328     3.0929
+s.e.               0.0885     0.0663
 
-sigma^2 estimated as 3.347:  log likelihood=-1896.61
-AIC=3807.22   AICc=3807.34   BIC=3841.13</code></pre>
+sigma^2 estimated as 3.155:  log likelihood=-1844.89
+AIC=3703.78   AICc=3703.9   BIC=3737.6</code></pre>
 <p><img src="{{< blogdown/postref >}}index_files/figure-html/PrecWin-1.png" width="672" /></p>
 <p>Forecast me.</p>
 <pre class="r"><code>Precip.Res$Min.Forecast.Plot</code></pre>
-<pre><code>NULL</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+</div>
+<div id="snow-1" class="section level2">
+<h2>Snow</h2>
+<pre class="r"><code>Snow.Res &lt;- NWS.Monthly.Sum %&gt;%
+    Accuse.Usual.Suspect(., Outcome = MinAvg, DateVar = Month, H.Horizon = 18)</code></pre>
+<pre><code>Series: MinAvg 
+Model: LM w/ ARIMA(3,1,2) errors 
+
+Coefficients:
+         ar1      ar2     ar3      ma1     ma2  fourier(K = 2)C1_12
+      0.9924  -0.1268  0.0006  -1.7788  0.7825             -11.1720
+s.e.  0.0961   0.0493  0.0342   0.0903  0.0892               0.1218
+      fourier(K = 2)S1_12  fourier(K = 2)C2_12  fourier(K = 2)S2_12
+                  -1.6619               0.8254               1.1861
+s.e.               0.1217               0.1110               0.1110
+
+sigma^2 estimated as 5.331:  log likelihood=-2099.14
+AIC=4218.27   AICc=4218.51   BIC=4266.65</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/SnowRes-1.png" width="672" /></p>
+<p>THat should give me a monthly forecast for everything.</p>
+<p>Now, what if I want to forecast that model into the future? If I wanted to include this in the original function, it would require estimating models that I do not need. So instead, here I know what model I need, say, for Precipitation, that would be:</p>
+<pre class="r"><code>Precip.Res$Min.Model</code></pre>
+<pre><code># A tibble: 1 x 10
+  .model .type     ME  RMSE   MAE   MPE  MAPE  MASE RMSSE   ACF1
+  &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+1 K = 2  Test  -0.790  1.24 0.941 -486.  489.   NaN   NaN -0.394</code></pre>
+<p>So estimate that model on the entire data and plot the forecast from it.</p>
+<pre class="r"><code>NWS.Monthly.Sum %&gt;%
+    model(K1 = ARIMA(Precip ~ fourier(K = 1) + PDQ(0, 0, 0))) %&gt;%
+    forecast(h = 12) %&gt;%
+    autoplot() + autolayer(NWS.Monthly.Sum %&gt;%
+    slice_max(., order_by = Month, n = 24)) + theme_ipsum_rc()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
 </div>
 </div>

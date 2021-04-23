@@ -161,6 +161,8 @@ NWS.Monthly.Test <- NWS.Monthly.Sum %>% anti_join(., NWS.Monthly.Train)
 
 ## Model Fitting
 
+Exploring a `prophet`.
+
 ## Prophet
 
 ```{r ProphetFC}
@@ -168,6 +170,8 @@ library(fable.prophet)
 ProphMod <- NWS.Monthly.Train %>% model(prophet = prophet(MaxAvg ~ growth() + season("year", 12)))
 PMF <- ProphMod %>% forecast(h=12)
 ```
+
+What does it look like?
 
 ## Plot it
 
@@ -184,9 +188,6 @@ PMF %>% autoplot(alpha=0.2) +
             alpha=0.2)  + 
   labs(x="Date", y="Monthly Max Temp.", title="Temp Forecast Using Prophet")
 ```
-
-Now I need to find the actual data.
-
 
 ## Some Models
 
@@ -248,39 +249,50 @@ MaxAFC %>% filter(.model==Min.Model$.model) %>%
 
 ## Automagics
 
-I want to write a magic function.  It takes three inputs: train, test, Outcome, and DateVar.  The first two are data; split into train and test.  The final inputs are `Outcome`, the outcome without quotation marks, and the Date variable [the index of the tsibble], also unquoted.
+I want to write a magic function.  It takes four inputs: data, Outcome, DateVar, and H.Horizon [defaults to 12].  The first one is the data.  The next two inputs are `Outcome`, the outcome without quotation marks, and `DateVar` -- the Date variable [the index of the tsibble], also unquoted.  The final argument sets the forecast horizon [the plots will have two times this before them in real data from the `test` set].  I have tried to be copious in commenting this.
+
+### A Monthly Forecast Function
 
 ```{r AccuseR}
-Accuse.Usual.Suspect <- function(train, test, Outcome, DateVar, H.Horizon=12) {
-  # Turn the symbols -- names that will make sense in their environments when called -- that the user supplies into symbolics.
+Accuse.Usual.Suspect <- function(data, Outcome, DateVar, H.Horizon=12) {
+  # Turn the symbols -- names that will make sense in their environments when called -- that the user supplies into symbolics.  This is the role of ensym.
   Outcome <- ensym(Outcome)
   DateVar <- ensym(DateVar)
+# Create test using H.Horizon
+test <- data %>% slice_max(., order_by=!!DateVar, n=H.Horizon) # Create train
+train <- data %>% anti_join(., test)
 # Estimate some models and store them as fits.  
 # !! calls the variable name in the given environment
 fits <- train %>%  Usual.Suspects(., !!Outcome)
 # Forecast the models
 FC <- fits %>% forecast(h=H.Horizon)
-# Compare train and test
+# Compare train and test using accuracy
 Accuracy.Table <- FC %>% accuracy(test)
+# Show the best fit
 Min.Model <- Accuracy.Table %>% slice_min(., order_by=MAE, n=1)
+# Report on the best fitting model
 Min.Report <- fits %>% select(Min.Model$.model) %>% report()
+# Create a plot of the time series residuals for the best fit
 Min.Res.Plot <- fits %>% select(Min.Model$.model) %>% gg_tsresiduals()
+# Create a forecast plot for the best fitting model.
 Min.ForeCPlot <- FC %>% filter(.model==Min.Model$.model) %>%
   autoplot() + 
     autolayer(test %>% select(!!Outcome))  + 
-  autolayer(train %>% slice_max(., order_by=!!DateVar, n=H.Horizon*2) %>% select(!!Outcome)) +
+  autolayer(data %>% slice_max(., order_by=!!DateVar, n=H.Horizon*3) %>% select(!!Outcome)) +
   theme_ipsum_rc() + 
   labs(title="Winner Forecast")
+# Return a named list with all the stuff we calculated along the way.
 fit.list <- list(Model.Fits = fits, Model.Forecasts = FC, Accuracy.Table=Accuracy.Table, Min.Model = Min.Model, Min.Report = Min.Report, Min.Res.Plot = Min.Res.Plot, Min.Forecast.Plot = Min.ForeCPlot)
 return(fit.list)
 }
 ```
 
+## Minimum Average Temperature
 
 Try out the big function.
 
 ```{r MinWins, cache=TRUE}
-MinAvg.Res <- Accuse.Usual.Suspect(train=NWS.Monthly.Train, test=NWS.Monthly.Test, Outcome=MinAvg, DateVar=Month)
+MinAvg.Res <- MinAvg.Res <- NWS.Monthly.Sum %>% Accuse.Usual.Suspect(., Outcome=MinAvg, DateVar=Month, H.Horizon=14)
 ```
 
 Try out a result.
@@ -289,15 +301,38 @@ Try out a result.
 MinAvg.Res$Min.Forecast.Plot
 ```
 
+## Precipitation
+
 Try it with precipitation.
 
 ```{r PrecWin, cache=TRUE}
-Precip.Res <- Accuse.Usual.Suspect(train=NWS.Monthly.Train, test=NWS.Monthly.Test, Outcome=Precip, DateVar=Month)
+Precip.Res <- Accuse.Usual.Suspect(data=NWS.Monthly.Train, Outcome=Precip, DateVar=Month, H.Horizon=12)
 ```
 
 Forecast me.
 
 ```{r}
 Precip.Res$Min.Forecast.Plot
+```
+
+## Snow
+
+```{r SnowRes, cache=TRUE}
+Snow.Res <- NWS.Monthly.Sum %>% Accuse.Usual.Suspect(., Outcome=MinAvg, DateVar=Month, H.Horizon=18)
+```
+
+THat should give me a monthly forecast for everything.
+
+Now, what if I want to forecast that model into the future?  If I wanted to include this in the original function, it would require estimating models that I do not need.  So instead, here I know what model I need, say, for Precipitation, that would be:
+
+
+```{r AccuseRF}
+Precip.Res$Min.Model
+```
+
+So estimate that model on the entire data and plot the forecast from it.
+
+```{r}
+NWS.Monthly.Sum %>% model(K1 = ARIMA(Precip~fourier(K=1)+PDQ(0,0,0))) %>% forecast(h=12) %>% autoplot() + autolayer(NWS.Monthly.Sum %>% slice_max(., order_by=Month, n=24)) + theme_ipsum_rc()
 ```
 
