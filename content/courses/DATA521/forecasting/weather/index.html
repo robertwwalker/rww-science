@@ -4,6 +4,7 @@ date: "2021-04-22"
 output:
   rmdformats::downcute:
     self_contained: true
+    toc: true
 ---
 
 <script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
@@ -250,8 +251,8 @@ sigma^2 estimated as 5.986:  log likelihood=-2168.2
 AIC=4352.41   AICc=4352.56   BIC=4391.16</code></pre>
 <p><img src="{{< blogdown/postref >}}index_files/figure-html/MinWins-1.png" width="672" /></p>
 <p>Try out a result.</p>
-<pre class="r"><code>MinAvg.Res[[5]]</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<pre class="r"><code>MinAvg.Res$Min.Forecast.Plot</code></pre>
+<pre><code>NULL</code></pre>
 <p>Try it with precipitation.</p>
 <pre class="r"><code>Precip.Res &lt;- Accuse.Usual.Suspect(train = NWS.Monthly.Train, test = NWS.Monthly.Test, 
     Outcome = Precip, DateVar = Month)</code></pre>
@@ -270,7 +271,7 @@ sigma^2 estimated as 3.347:  log likelihood=-1896.61
 AIC=3807.22   AICc=3807.34   BIC=3841.13</code></pre>
 <p><img src="{{< blogdown/postref >}}index_files/figure-html/PrecWin-1.png" width="672" /></p>
 <p>Forecast me.</p>
-<pre class="r"><code>Precip.Res[[5]]</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<pre class="r"><code>Precip.Res$Min.Forecast.Plot</code></pre>
+<pre><code>NULL</code></pre>
 </div>
 </div>

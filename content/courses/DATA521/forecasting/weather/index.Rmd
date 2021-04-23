@@ -4,6 +4,7 @@ date: "`r Sys.Date()`"
 output:
   rmdformats::downcute:
     self_contained: true
+    toc: true
 ---
 
 
@@ -285,7 +286,7 @@ MinAvg.Res <- Accuse.Usual.Suspect(train=NWS.Monthly.Train, test=NWS.Monthly.Tes
 Try out a result.
 
 ```{r}
-MinAvg.Res[[5]]
+MinAvg.Res$Min.Forecast.Plot
 ```
 
 Try it with precipitation.
@@ -297,6 +298,6 @@ Precip.Res <- Accuse.Usual.Suspect(train=NWS.Monthly.Train, test=NWS.Monthly.Tes
 Forecast me.
 
 ```{r}
-Precip.Res[[5]]
+Precip.Res$Min.Forecast.Plot
 ```
 
