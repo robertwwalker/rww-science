@@ -1,0 +1,177 @@
+---
+title: "Forecasting the Weather: Daily"
+date: "`r Sys.Date()`"
+output:
+  rmdformats::downcute:
+    self_contained: true
+    toc: true
+---
+
+
+```{r setup, include=FALSE}
+library(knitr)
+library(rmdformats)
+## Global options
+options(max.print="75")
+opts_chunk$set(echo=TRUE,
+               prompt=FALSE,
+               tidy=TRUE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(width=75, fig.retina = 2, dev = "png", dev.args = list(type = "cairo-png"))
+library(distributional)
+library(tidyverse)
+library(lubridate)
+library(hrbrthemes)
+library(fpp3)
+library(magrittr)
+```
+
+## Loading NWS Data
+
+Load the data.
+
+```{r cars}
+# There is one blank variable name and some garbage at the top.  Skip the first six rows and label M and - as missing.
+NWS <- read.csv(url("https://www.weather.gov/source/pqr/climate/webdata/Portland_dailyclimatedata.csv"), skip=6, na.strings = c("M","-")) %>% 
+  rename(Variable = X)
+```
+
+One thing that will prove troublesome is that `/A` appears in a few places. I want to remove it. I will ask R to find all of the character columns and remove `/A`.
+
+```{r}
+NWS <- NWS %>% mutate(across(where(is.character), ~str_remove(.x, "/A")))
+```
+
+Let me produce the daily data.
+
+```{r}
+NWS.Daily <- NWS %>% select(-AVG.or.Total)
+names(NWS.Daily) <- c("YR","MO","Variable",paste0("Day.",1:31))
+NWS.Daily <- NWS.Daily %>% 
+  pivot_longer(., cols=starts_with("Day."), names_to = "Day", values_to = "value") %>% 
+  mutate(Day = str_remove(Day, "Day.")) %>%  
+  pivot_wider(., names_from = "Variable", values_from = "value") %>% 
+  mutate(PR = recode(PR, T = "O.005"), SN = recode(SN, T = "O.005")) %>% 
+  mutate(TX = as.numeric(TX), TN = as.numeric(TN), PR = as.numeric(PR), SN = as.numeric(SN), 
+         date = as.Date(paste(MO,Day,YR,sep="-"), format="%m-%d-%Y")
+         )
+NWS.Daily.Clean <- NWS.Daily %>% filter(!(is.na(date))) %>% filter(!is.na(TX)) %>% as_tsibble(index=date)
+```
+
+## Daily Decompositions
+
+```{r}
+Decompose.Me <- function(data, var, trendW = 5, seasonW = 5) {
+  var <- ensym(var)
+  model <- data %>% 
+  model(STL(!! var ~ trend(window=trendW) + season(window=seasonW, period=7))) 
+  cmp <- model %>% components()
+  plot <- cmp %>% autoplot()
+  return(list(model=model, cmp=cmp, plot=plot))
+}
+MaxAvg.Result <- NWS.Daily.Clean %>% filter(YR > 1999) %>% Decompose.Me(., TX, trendW = 5) 
+MaxAvg.Result %>% .$plot
+```
+
+To work with the STL seasonally adjusted data, we can isolate `season_adjust`.  This is the core component in STL+...
+
+Let me decompose one such series.  Suppose that I wanted to seasonally adjust this.  I already have it there.  `season_7` is what I add to turn the `season_adjust` to the original.
+
+```{r}
+MaxAvg.Result %>% .$cmp %>% head(10) %>% select(-.model)
+```
+So let me run with that.  Borrowing from an earlier post...
+
+```{r MonthlyMT}
+Usual.Suspects <- function(data, Outcome) {
+  Outcome <- ensym(Outcome)
+fits <- data %>%  model(`K = 1` = ARIMA(!!Outcome ~ fourier(K=1)+PDQ(0,0,0)),
+      `K = 2` = ARIMA(!!Outcome ~ fourier(K=2)+PDQ(0,0,0)),
+      `K = 3` = ARIMA(!!Outcome ~ fourier(K=3)+PDQ(0,0,0)),
+      ARIMA = ARIMA(!!Outcome),
+      ETS = ETS(!!Outcome),
+      NNET = NNETAR(!!Outcome ~ fourier(K=2)),
+      prophet = prophet(!!Outcome ~ growth() + season("year", 12))
+      ) %>% 
+  mutate(
+    Combo1 = (`K = 2` + ARIMA + ETS)/3, 
+    Combo2 = (`K = 2` + ARIMA + ETS + NNET)/4)
+return(fits)
+}
+```
+
+## Automagics
+
+I want to write a magic function.  It takes four inputs: data, Outcome, DateVar, and H.Horizon [defaults to 14].  The first one is the data.  The next two inputs are `Outcome`, the outcome without quotation marks, and `DateVar` -- the Date variable [the index of the tsibble], also unquoted.  The final argument sets the forecast horizon [the plots will have two times this before them in real data from the `test` set].  I have tried to be copious in commenting this.
+
+### A Monthly Forecast Function
+
+```{r AccuseR}
+Accuse.Usual.Suspect <- function(data, Outcome, DateVar, H.Horizon=14) {
+  # Turn the symbols -- names that will make sense in their environments when called -- that the user supplies into symbolics.  This is the role of ensym.
+  Outcome <- ensym(Outcome)
+  DateVar <- ensym(DateVar)
+# Create test using H.Horizon
+test <- data %>% slice_max(., order_by=!!DateVar, n=H.Horizon) # Create train
+train <- data %>% anti_join(., test)
+# Estimate some models and store them as fits.  
+# !! calls the variable name in the given environment
+fits <- train %>%  Usual.Suspects(., !!Outcome)
+# Forecast the models
+FC <- fits %>% forecast(h=H.Horizon)
+# Compare train and test using accuracy
+Accuracy.Table <- FC %>% accuracy(test)
+# Show the best fit
+Min.Model <- Accuracy.Table %>% slice_min(., order_by=MAE, n=1)
+# Report on the best fitting model
+Min.Report <- fits %>% select(Min.Model$.model) %>% report()
+# Create a plot of the time series residuals for the best fit
+Min.Res.Plot <- fits %>% select(Min.Model$.model) %>% gg_tsresiduals()
+# Create a forecast plot for the best fitting model.
+Min.ForeCPlot <- FC %>% filter(.model==Min.Model$.model) %>%
+  autoplot() + 
+    autolayer(test %>% select(!!Outcome))  + 
+  autolayer(data %>% slice_max(., order_by=!!DateVar, n=H.Horizon*3) %>% select(!!Outcome)) +
+  theme_ipsum_rc() + 
+  labs(title="Winner Forecast")
+# Return a named list with all the stuff we calculated along the way.
+fit.list <- list(test=test, train=train, Model.Fits = fits, Model.Forecasts = FC, Accuracy.Table=Accuracy.Table, Min.Model = Min.Model, Min.Report = Min.Report, Min.Res.Plot = Min.Res.Plot, Min.Forecast.Plot = Min.ForeCPlot)
+return(fit.list)
+}
+```
+
+## Maximum Average Temperature
+
+Try out the big function.  Using all the data will be slow.  Let's try everything this century.
+
+```{r MaxWins, cache=TRUE}
+SAData <- MaxAvg.Result %>% .$cmp %>% select(-.model) %>% as_tsibble(index=date)
+MaxAvg.Res <- SAData  %>% Accuse.Usual.Suspect(., Outcome=season_adjust, DateVar=date, H.Horizon=14)
+```
+What Won?
+
+```{r}
+MaxAvg.Res$Min.Model
+```
+
+All the models on a 14 day horizon?
+
+```{r}
+MaxAvg.Res$Accuracy.Table
+```
+
+Residuals?
+
+```{r}
+MaxAvg.Res$Min.Res.Plot
+```
+
+
+Try out a result.
+
+```{r}
+MaxAvg.Res$Min.Forecast.Plot
+```
+
