@@ -1,0 +1,296 @@
+---
+title: "Forecasting the Weather"
+date: "`r Sys.Date()`"
+output:
+  rmdformats::downcute:
+    self_contained: true
+---
+
+
+```{r setup, include=FALSE}
+library(knitr)
+library(rmdformats)
+## Global options
+options(max.print="75")
+opts_chunk$set(echo=TRUE,
+               prompt=FALSE,
+               tidy=TRUE,
+               comment=NA,
+               message=FALSE,
+               warning=FALSE)
+opts_knit$set(width=75, fig.retina = 2, dev = "png", dev.args = list(type = "cairo-png"))
+library(distributional)
+library(tidyverse)
+library(lubridate)
+library(hrbrthemes)
+library(fpp3)
+library(magrittr)
+```
+
+## Loading NWS Data
+
+Load the data.
+
+```{r cars}
+# There is one blank variable name and some garbage at the top.  Skip the first six rows and label M and - as missing.
+NWS <- read.csv(url("https://www.weather.gov/source/pqr/climate/webdata/Portland_dailyclimatedata.csv"), skip=6, na.strings = c("M","-")) %>% 
+  rename(Variable = X)
+```
+
+One thing that will prove troublesome is that `/A` appears in a few places. I want to remove it. I will ask R to find all of the character columns and remove `/A`.
+
+```{r}
+NWS <- NWS %>% mutate(across(where(is.character), ~str_remove(.x, "/A")))
+```
+
+First, let's work on a monthly time series. Because the sum or average is already a column, I do not need to create it; I only need select it.
+
+```{r}
+# Now to create a Monthly time series.
+NWS.Monthly.Base <- NWS %>% 
+  select(YR, MO, Variable, AVG.or.Total)
+```
+
+Let me first fix the character values. There is only two character values remaining; there is 1 blank and some T values. From there, I will use `pivot_wider` to move variables to columns; create the time index, and turn the variables into numeric types.
+
+```{r}
+NWS.Monthly.Tidy <- NWS.Monthly.Base %>% filter(!(MO==1 & YR==2020)) %>%
+  filter(!(MO==10 & YR==1940)) %>%
+  mutate(AVG.or.Total = recode(AVG.or.Total, T = "O.005")) %>%
+  pivot_wider(., names_from = "Variable", values_from = "AVG.or.Total") %>% 
+  mutate(Month.Yr = yearmonth(paste(YR,MO, sep="-"))) %>%
+  mutate(TX = as.numeric(TX), 
+         TN = as.numeric(TN), 
+         PR = as.numeric(PR), 
+         SN = as.numeric(SN)
+         )
+str(NWS.Monthly.Tidy)
+head(NWS.Monthly.Tidy)
+```
+
+Well, that's annoying. Some of the missingness here is a characteristic of the columns. Let's see if we can do better at the end of the creation of the daily data.
+
+```{r}
+NWS.Daily <- NWS %>% select(-AVG.or.Total)
+names(NWS.Daily) <- c("YR","MO","Variable",paste0("Day.",1:31))
+NWS.Daily <- NWS.Daily %>% 
+  pivot_longer(., cols=starts_with("Day."), names_to = "Day", values_to = "value") %>% 
+  mutate(Day = str_remove(Day, "Day.")) %>%  
+  pivot_wider(., names_from = "Variable", values_from = "value") %>% 
+  mutate(PR = recode(PR, T = "O.005"), SN = recode(SN, T = "O.005")) %>% 
+  mutate(TX = as.numeric(TX), TN = as.numeric(TN), PR = as.numeric(PR), SN = as.numeric(SN), 
+         date = as.Date(paste(MO,Day,YR,sep="-"), format="%m-%d-%Y")
+         )
+NWS.Daily.Clean <- NWS.Daily %>% filter(!(is.na(date)))
+```
+
+# A Backward Approach to the Monthly
+
+```{r}
+NWS.Monthly.Sum <- NWS.Daily.Clean %>% 
+  group_by(MO,YR) %>% 
+  summarise(
+    MaxAvg = mean(TX, na.rm=TRUE), 
+    MinAvg = mean(TN, na.rm=TRUE), 
+    Precip = sum(PR, na.rm=TRUE), 
+    Snow = sum(SN, na.rm=TRUE)) %>% 
+  ungroup() %>% 
+  mutate(Month = yearmonth(paste(YR,MO,sep="-"))) %>% 
+  as_tsibble(., index = Month) %>%
+  filter(year(Month) < 2020)
+```
+
+## Plot the Monthly
+
+```{r}
+NWS.Monthly.Sum %>% 
+  pivot_longer(cols=c(MaxAvg,MinAvg,Precip,Snow), names_to = "Type") %>%
+  ggplot() + 
+  aes(x=Month, y=value) + 
+  geom_line() + 
+  facet_wrap(vars(Type), scales = "free_y")
+```
+
+
+## Monthly Decompositions
+
+```{r}
+Decompose.Me <- function(data, var, trendW = 5, seasonW = 5) {
+  var <- ensym(var)
+  data %>% 
+  model(STL(!! var ~ trend(window=trendW) + season(window=seasonW))) %>% 
+  components() %>% 
+  autoplot()
+}
+Decompose.Me(NWS.Monthly.Sum, MaxAvg, trendW = 12)
+```
+
+To work with the STL seasonally adjusted data, we can isolate `season_adjust`.  This is the core component in STL+...
+
+Let me decompose each series.
+
+```{r}
+Decompose.Me(NWS.Monthly.Sum, MinAvg, trendW = 12)
+```
+```{r}
+NWS.Monthly.Sum %>% model(STL(MaxAvg ~ trend() + season())) %>% components() -> Cmp 
+Cmp %>% ggplot(.) + aes(x=Month, y=season_adjust) + geom_line(alpha=0.2) + geom_point(aes(y=MaxAvg), color="red", alpha=0.1)
+```
+### Precipitation
+
+```{r}
+Decompose.Me(NWS.Monthly.Sum, Precip, trendW = 12)
+```
+
+### Snow
+
+```{r}
+Decompose.Me(NWS.Monthly.Sum, Snow, trendW = 12)
+```
+
+## Training and Testing
+
+That gives me the data that I want; now let me slice it up into training and test sets.  
+
+```{r}
+NWS.Monthly.Train <-  NWS.Monthly.Sum %>% filter(YR < 2019)
+NWS.Monthly.Test <- NWS.Monthly.Sum %>% anti_join(., NWS.Monthly.Train)
+```
+
+
+## Model Fitting
+
+## Prophet
+
+```{r ProphetFC}
+library(fable.prophet)
+ProphMod <- NWS.Monthly.Train %>% model(prophet = prophet(MaxAvg ~ growth() + season("year", 12)))
+PMF <- ProphMod %>% forecast(h=12)
+```
+
+## Plot it
+
+```{r}
+PMF %>% autoplot(alpha=0.2) + 
+  geom_point(data=NWS.Monthly.Sum %>% 
+               filter(YR > 2016) %>% 
+               select(Month, MaxAvg), 
+             aes(x=Month, y=MaxAvg)) + 
+  geom_line(data=NWS.Monthly.Sum %>% 
+              filter(YR > 2016) %>% 
+              select(Month, MaxAvg), 
+            aes(x=Month, y=MaxAvg), 
+            alpha=0.2)  + 
+  labs(x="Date", y="Monthly Max Temp.", title="Temp Forecast Using Prophet")
+```
+
+Now I need to find the actual data.
+
+
+## Some Models
+
+I am going to define a little function that takes two inputs and analyses the set of models that I will want for each of them.  The first input is the data.  The second input is the name of the variable.  There is a little programming trick here to allow us to pass that unquoted using `ensym()`.  As an example, if I ask for `Usual.Suspects(data=NWS.Monthly.Sum, MaxAvg)` I would get all of these models applied to `MaxAvg` as a column in that dataset.
+
+
+```{r MonthlyMT}
+Usual.Suspects <- function(data, Outcome) {
+  Outcome <- ensym(Outcome)
+fits <- data %>%  model(`K = 1` = ARIMA(!!Outcome ~ fourier(K=1)),
+      `K = 2` = ARIMA(!!Outcome ~ fourier(K=2)),
+      `K = 3` = ARIMA(!!Outcome ~ fourier(K=3)),
+      ARIMA = ARIMA(!!Outcome),
+      ETS = ETS(!!Outcome),
+      NNET = NNETAR(!!Outcome ~ fourier(K=2))) %>% 
+  mutate(Combo1 = (`K = 2` + ARIMA + ETS)/3, Combo2 = (`K = 2` + ARIMA + ETS + NNET)/4)
+return(fits)
+}
+```
+
+Execute it using pipes for the data.
+
+```{r ExecMe, cache=TRUE}
+MaxAvg <- NWS.Monthly.Train %>% Usual.Suspects(., Outcome=MaxAvg)
+```
+
+Actually forecasting it takes some time.  I will only want to do that once so let me store it as an object.
+
+```{r ForecastMe, cache=TRUE}
+MaxAFC <- MaxAvg %>% forecast(h=12)
+```
+
+Assess the accuracy of the forecast, here over 12 periods.
+
+```{r}
+MaxAFC %>% accuracy(NWS.Monthly.Test)
+```
+
+Pick and store the minimum.
+
+```{r MinModPick}
+Min.Model <- MaxAFC %>% accuracy(NWS.Monthly.Test) %>% slice_min(., order_by=MAE, n=1)
+```
+
+Show the forecast for it.
+
+```{r}
+MaxAFC %>% filter(.model==Min.Model$.model) %>%
+  autoplot() + 
+    autolayer(NWS.Monthly.Sum %>% slice_max(., order_by=Month, n=24) %>% select(MaxAvg))  + 
+  theme_ipsum_rc() + 
+  labs(title="Winner Forecast of Max Avg. Temp. in Oregon")
+```
+
+## Automagics
+
+```{r AccuseR}
+Accuse.Usual.Suspect <- function(train, test, Outcome, DateVar) {
+  Outcome <- ensym(Outcome)
+  DateVar <- ensym(DateVar)
+fits <- train %>%  model(`K = 1` = ARIMA(!!Outcome ~ fourier(K=1)),
+      `K = 2` = ARIMA(!!Outcome ~ fourier(K=2)),
+      `K = 3` = ARIMA(!!Outcome ~ fourier(K=3)),
+      ARIMA = ARIMA(!!Outcome),
+      ETS = ETS(!!Outcome),
+      NNET = NNETAR(!!Outcome ~ fourier(K=2))) %>% 
+  mutate(Combo1 = (`K = 2` + ARIMA + ETS)/3, Combo2 = (`K = 2` + ARIMA + ETS + NNET)/4)
+FC <- fits %>% forecast(h=12)
+Accuracy.Table <- FC %>% accuracy(test)
+Min.Model <- Accuracy.Table %>% slice_min(., order_by=MAE, n=1)
+Min.Report <- fits %>% select(Min.Model$.model) %>% report()
+Min.Res.Plot <- fits %>% select(Min.Model$.model) %>% gg_tsresiduals()
+Min.ForeCPlot <- FC %>% filter(.model==Min.Model$.model) %>%
+  autoplot() + 
+    autolayer(test %>% select(!!Outcome))  + 
+  autolayer(train %>% slice_max(., order_by=!!DateVar, n=24) %>% select(!!Outcome)) +
+  theme_ipsum_rc() + 
+  labs(title="Winner Forecast")
+fit.list <- list(Accuracy.Table, Min.Model, Min.Report, Min.Res.Plot, Min.ForeCPlot)
+return(fit.list)
+}
+```
+
+
+Try out the big function.
+
+```{r}
+MinAvg.Res <- Accuse.Usual.Suspect(train=NWS.Monthly.Train, test=NWS.Monthly.Test, Outcome=MinAvg, DateVar=Month)
+```
+
+Try out a result.
+
+```{r}
+MinAvg.Res[[5]]
+```
+
+Try it with precipitation.
+
+```{r}
+Precip.Res <- Accuse.Usual.Suspect(train=NWS.Monthly.Train, test=NWS.Monthly.Test, Outcome=Precip, DateVar=Month)
+```
+
+Forecast me.
+
+```{r}
+Precip.Res[[5]]
+```
+

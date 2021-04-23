@@ -264,7 +264,7 @@ Ind.Features <- Ind.Returns %>%
 Ind.Features %>% 
   kable() %>%
   kable_styling() %>%
-  scroll_box(width="80%", height="40%")
+  scroll_box(width="800px", height="600px")
 ```
 
 ## Split into training and test

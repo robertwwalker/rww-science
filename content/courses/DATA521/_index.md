@@ -58,8 +58,10 @@ The [summary page](https://rww.science/courses/DATA521/forecasting/index.html)
 + [Aggregate Forecasting for COVID-19](https://rww.science/courses/DATA521/forecasting/aggfore/index.html)
 + [Aggregate Box-Cox Forecasting for COVID-19](https://rww.science/courses/DATA521/forecasting/aggforeBC/index.html)
 + [Aggregate log Forecasting for COVID-19](https://rww.science/courses/DATA521/forecasting/aggforelog/index.html)
++ [weather](https://rww.science/courses/DATA521/forecasting/weather/index.html)
 
 ## Some Resources:
+
 
 + [Basic Time Series](https://rww.science/courses/DATA521/Basic-TS/Basic-TS.html)
 + [Equities](https://rww.science/courses/DATA521/Equities/Equities.html)

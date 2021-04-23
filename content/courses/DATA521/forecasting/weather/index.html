@@ -1,0 +1,265 @@
+---
+title: "Forecasting the Weather"
+date: "2021-04-22"
+output:
+  rmdformats::downcute:
+    self_contained: true
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<div id="loading-nws-data" class="section level2">
+<h2>Loading NWS Data</h2>
+<p>Load the data.</p>
+<pre class="r"><code># There is one blank variable name and some garbage at the top.  Skip the first
+# six rows and label M and - as missing.
+NWS &lt;- read.csv(url(&quot;https://www.weather.gov/source/pqr/climate/webdata/Portland_dailyclimatedata.csv&quot;), 
+    skip = 6, na.strings = c(&quot;M&quot;, &quot;-&quot;)) %&gt;%
+    rename(Variable = X)</code></pre>
+<p>One thing that will prove troublesome is that <code>/A</code> appears in a few places. I want to remove it. I will ask R to find all of the character columns and remove <code>/A</code>.</p>
+<pre class="r"><code>NWS &lt;- NWS %&gt;%
+    mutate(across(where(is.character), ~str_remove(.x, &quot;/A&quot;)))</code></pre>
+<p>First, let’s work on a monthly time series. Because the sum or average is already a column, I do not need to create it; I only need select it.</p>
+<pre class="r"><code># Now to create a Monthly time series.
+NWS.Monthly.Base &lt;- NWS %&gt;%
+    select(YR, MO, Variable, AVG.or.Total)</code></pre>
+<p>Let me first fix the character values. There is only two character values remaining; there is 1 blank and some T values. From there, I will use <code>pivot_wider</code> to move variables to columns; create the time index, and turn the variables into numeric types.</p>
+<pre class="r"><code>NWS.Monthly.Tidy &lt;- NWS.Monthly.Base %&gt;%
+    filter(!(MO == 1 &amp; YR == 2020)) %&gt;%
+    filter(!(MO == 10 &amp; YR == 1940)) %&gt;%
+    mutate(AVG.or.Total = recode(AVG.or.Total, T = &quot;O.005&quot;)) %&gt;%
+    pivot_wider(., names_from = &quot;Variable&quot;, values_from = &quot;AVG.or.Total&quot;) %&gt;%
+    mutate(Month.Yr = yearmonth(paste(YR, MO, sep = &quot;-&quot;))) %&gt;%
+    mutate(TX = as.numeric(TX), TN = as.numeric(TN), PR = as.numeric(PR), SN = as.numeric(SN))
+str(NWS.Monthly.Tidy)</code></pre>
+<pre><code>tibble[,7] [950 × 7] (S3: tbl_df/tbl/data.frame)
+ $ YR      : int [1:950] 1940 1940 1941 1941 1941 1941 1941 1941 1941 1941 ...
+ $ MO      : int [1:950] 11 12 1 2 3 4 5 6 7 8 ...
+ $ TX      : num [1:950] 49.1 48.5 47.4 55.1 63.5 65.8 67.1 71.6 84.5 77.6 ...
+ $ TN      : num [1:950] 35.9 36 35.2 37.1 40.6 43.1 48.1 52.6 58.3 58 ...
+ $ PR      : num [1:950] 4.53 4.85 5.27 1.59 1.74 1.66 4.27 0.81 0.03 1.45 ...
+ $ SN      : num [1:950] 0 0 0 0 0 0 0 0 0 0 ...
+ $ Month.Yr: mth [1:950] 1940 Nov, 1940 Dec, 1941 Jan, 1941 Feb, 1941 Mar, 1941 Apr...</code></pre>
+<pre class="r"><code>head(NWS.Monthly.Tidy)</code></pre>
+<pre><code># A tibble: 6 x 7
+     YR    MO    TX    TN    PR    SN Month.Yr
+  &lt;int&gt; &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;mth&gt;
+1  1940    11  49.1  35.9  4.53     0 1940 Nov
+2  1940    12  48.5  36    4.85     0 1940 Dec
+3  1941     1  47.4  35.2  5.27     0 1941 Jan
+4  1941     2  55.1  37.1  1.59     0 1941 Feb
+5  1941     3  63.5  40.6  1.74     0 1941 Mar
+6  1941     4  65.8  43.1  1.66     0 1941 Apr</code></pre>
+<p>Well, that’s annoying. Some of the missingness here is a characteristic of the columns. Let’s see if we can do better at the end of the creation of the daily data.</p>
+<pre class="r"><code>NWS.Daily &lt;- NWS %&gt;%
+    select(-AVG.or.Total)
+names(NWS.Daily) &lt;- c(&quot;YR&quot;, &quot;MO&quot;, &quot;Variable&quot;, paste0(&quot;Day.&quot;, 1:31))
+NWS.Daily &lt;- NWS.Daily %&gt;%
+    pivot_longer(., cols = starts_with(&quot;Day.&quot;), names_to = &quot;Day&quot;, values_to = &quot;value&quot;) %&gt;%
+    mutate(Day = str_remove(Day, &quot;Day.&quot;)) %&gt;%
+    pivot_wider(., names_from = &quot;Variable&quot;, values_from = &quot;value&quot;) %&gt;%
+    mutate(PR = recode(PR, T = &quot;O.005&quot;), SN = recode(SN, T = &quot;O.005&quot;)) %&gt;%
+    mutate(TX = as.numeric(TX), TN = as.numeric(TN), PR = as.numeric(PR), SN = as.numeric(SN), 
+        date = as.Date(paste(MO, Day, YR, sep = &quot;-&quot;), format = &quot;%m-%d-%Y&quot;))
+NWS.Daily.Clean &lt;- NWS.Daily %&gt;%
+    filter(!(is.na(date)))</code></pre>
+</div>
+<div id="a-backward-approach-to-the-monthly" class="section level1">
+<h1>A Backward Approach to the Monthly</h1>
+<pre class="r"><code>NWS.Monthly.Sum &lt;- NWS.Daily.Clean %&gt;%
+    group_by(MO, YR) %&gt;%
+    summarise(MaxAvg = mean(TX, na.rm = TRUE), MinAvg = mean(TN, na.rm = TRUE), Precip = sum(PR, 
+        na.rm = TRUE), Snow = sum(SN, na.rm = TRUE)) %&gt;%
+    ungroup() %&gt;%
+    mutate(Month = yearmonth(paste(YR, MO, sep = &quot;-&quot;))) %&gt;%
+    as_tsibble(., index = Month) %&gt;%
+    filter(year(Month) &lt; 2020)</code></pre>
+<div id="plot-the-monthly" class="section level2">
+<h2>Plot the Monthly</h2>
+<pre class="r"><code>NWS.Monthly.Sum %&gt;%
+    pivot_longer(cols = c(MaxAvg, MinAvg, Precip, Snow), names_to = &quot;Type&quot;) %&gt;%
+    ggplot() + aes(x = Month, y = value) + geom_line() + facet_wrap(vars(Type), scales = &quot;free_y&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+</div>
+<div id="monthly-decompositions" class="section level2">
+<h2>Monthly Decompositions</h2>
+<pre class="r"><code>Decompose.Me &lt;- function(data, var, trendW = 5, seasonW = 5) {
+    var &lt;- ensym(var)
+    data %&gt;%
+        model(STL(!!var ~ trend(window = trendW) + season(window = seasonW))) %&gt;%
+        components() %&gt;%
+        autoplot()
+}
+Decompose.Me(NWS.Monthly.Sum, MaxAvg, trendW = 12)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p>To work with the STL seasonally adjusted data, we can isolate <code>season_adjust</code>. This is the core component in STL+…</p>
+<p>Let me decompose each series.</p>
+<pre class="r"><code>Decompose.Me(NWS.Monthly.Sum, MinAvg, trendW = 12)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<pre class="r"><code>Cmp &lt;- NWS.Monthly.Sum %&gt;%
+    model(STL(MaxAvg ~ trend() + season())) %&gt;%
+    components()
+Cmp %&gt;%
+    ggplot(.) + aes(x = Month, y = season_adjust) + geom_line(alpha = 0.2) + geom_point(aes(y = MaxAvg), 
+    color = &quot;red&quot;, alpha = 0.1)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-9-1.png" width="672" />
+### Precipitation</p>
+<pre class="r"><code>Decompose.Me(NWS.Monthly.Sum, Precip, trendW = 12)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<div id="snow" class="section level3">
+<h3>Snow</h3>
+<pre class="r"><code>Decompose.Me(NWS.Monthly.Sum, Snow, trendW = 12)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+</div>
+</div>
+<div id="training-and-testing" class="section level2">
+<h2>Training and Testing</h2>
+<p>That gives me the data that I want; now let me slice it up into training and test sets.</p>
+<pre class="r"><code>NWS.Monthly.Train &lt;- NWS.Monthly.Sum %&gt;%
+    filter(YR &lt; 2019)
+NWS.Monthly.Test &lt;- NWS.Monthly.Sum %&gt;%
+    anti_join(., NWS.Monthly.Train)</code></pre>
+</div>
+<div id="model-fitting" class="section level2">
+<h2>Model Fitting</h2>
+</div>
+<div id="prophet" class="section level2">
+<h2>Prophet</h2>
+<pre class="r"><code>library(fable.prophet)
+ProphMod &lt;- NWS.Monthly.Train %&gt;%
+    model(prophet = prophet(MaxAvg ~ growth() + season(&quot;year&quot;, 12)))
+PMF &lt;- ProphMod %&gt;%
+    forecast(h = 12)</code></pre>
+</div>
+<div id="plot-it" class="section level2">
+<h2>Plot it</h2>
+<pre class="r"><code>PMF %&gt;%
+    autoplot(alpha = 0.2) + geom_point(data = NWS.Monthly.Sum %&gt;%
+    filter(YR &gt; 2016) %&gt;%
+    select(Month, MaxAvg), aes(x = Month, y = MaxAvg)) + geom_line(data = NWS.Monthly.Sum %&gt;%
+    filter(YR &gt; 2016) %&gt;%
+    select(Month, MaxAvg), aes(x = Month, y = MaxAvg), alpha = 0.2) + labs(x = &quot;Date&quot;, 
+    y = &quot;Monthly Max Temp.&quot;, title = &quot;Temp Forecast Using Prophet&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<p>Now I need to find the actual data.</p>
+</div>
+<div id="some-models" class="section level2">
+<h2>Some Models</h2>
+<p>I am going to define a little function that takes two inputs and analyses the set of models that I will want for each of them. The first input is the data. The second input is the name of the variable. There is a little programming trick here to allow us to pass that unquoted using <code>ensym()</code>. As an example, if I ask for <code>Usual.Suspects(data=NWS.Monthly.Sum, MaxAvg)</code> I would get all of these models applied to <code>MaxAvg</code> as a column in that dataset.</p>
+<pre class="r"><code>Usual.Suspects &lt;- function(data, Outcome) {
+    Outcome &lt;- ensym(Outcome)
+    fits &lt;- data %&gt;%
+        model(`K = 1` = ARIMA(!!Outcome ~ fourier(K = 1)), `K = 2` = ARIMA(!!Outcome ~ 
+            fourier(K = 2)), `K = 3` = ARIMA(!!Outcome ~ fourier(K = 3)), ARIMA = ARIMA(!!Outcome), 
+            ETS = ETS(!!Outcome), NNET = NNETAR(!!Outcome ~ fourier(K = 2))) %&gt;%
+        mutate(Combo1 = (`K = 2` + ARIMA + ETS)/3, Combo2 = (`K = 2` + ARIMA + ETS + 
+            NNET)/4)
+    return(fits)
+}</code></pre>
+<p>Execute it using pipes for the data.</p>
+<pre class="r"><code>MaxAvg &lt;- NWS.Monthly.Train %&gt;%
+    Usual.Suspects(., Outcome = MaxAvg)</code></pre>
+<p>Actually forecasting it takes some time. I will only want to do that once so let me store it as an object.</p>
+<pre class="r"><code>MaxAFC &lt;- MaxAvg %&gt;%
+    forecast(h = 12)</code></pre>
+<p>Assess the accuracy of the forecast, here over 12 periods.</p>
+<pre class="r"><code>MaxAFC %&gt;%
+    accuracy(NWS.Monthly.Test)</code></pre>
+<pre><code># A tibble: 8 x 10
+  .model .type     ME  RMSE   MAE   MPE  MAPE  MASE RMSSE     ACF1
+  &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;
+1 ARIMA  Test  -1.17   3.12  2.55 -1.78  4.21   NaN   NaN  0.0456 
+2 Combo1 Test  -1.25   3.24  2.26 -2.31  3.95   NaN   NaN -0.0820 
+3 Combo2 Test  -1.06   3.17  2.23 -2.06  3.95   NaN   NaN -0.0881 
+4 ETS    Test  -1.64   3.79  2.56 -3.15  4.56   NaN   NaN -0.0868 
+5 K = 1  Test  -0.377  2.65  2.17 -1.03  3.84   NaN   NaN -0.234  
+6 K = 2  Test  -0.944  3.32  2.23 -2.00  3.98   NaN   NaN -0.00881
+7 K = 3  Test  -0.945  3.35  2.25 -2.00  4.01   NaN   NaN -0.00952
+8 NNET   Test  -0.507  3.31  2.26 -1.35  4.14   NaN   NaN  0.0190 </code></pre>
+<p>Pick and store the minimum.</p>
+<pre class="r"><code>Min.Model &lt;- MaxAFC %&gt;%
+    accuracy(NWS.Monthly.Test) %&gt;%
+    slice_min(., order_by = MAE, n = 1)</code></pre>
+<p>Show the forecast for it.</p>
+<pre class="r"><code>MaxAFC %&gt;%
+    filter(.model == Min.Model$.model) %&gt;%
+    autoplot() + autolayer(NWS.Monthly.Sum %&gt;%
+    slice_max(., order_by = Month, n = 24) %&gt;%
+    select(MaxAvg)) + theme_ipsum_rc() + labs(title = &quot;Winner Forecast of Max Avg. Temp. in Oregon&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+</div>
+<div id="automagics" class="section level2">
+<h2>Automagics</h2>
+<pre class="r"><code>Accuse.Usual.Suspect &lt;- function(train, test, Outcome, DateVar) {
+    Outcome &lt;- ensym(Outcome)
+    DateVar &lt;- ensym(DateVar)
+    fits &lt;- train %&gt;%
+        model(`K = 1` = ARIMA(!!Outcome ~ fourier(K = 1)), `K = 2` = ARIMA(!!Outcome ~ 
+            fourier(K = 2)), `K = 3` = ARIMA(!!Outcome ~ fourier(K = 3)), ARIMA = ARIMA(!!Outcome), 
+            ETS = ETS(!!Outcome), NNET = NNETAR(!!Outcome ~ fourier(K = 2))) %&gt;%
+        mutate(Combo1 = (`K = 2` + ARIMA + ETS)/3, Combo2 = (`K = 2` + ARIMA + ETS + 
+            NNET)/4)
+    FC &lt;- fits %&gt;%
+        forecast(h = 12)
+    Accuracy.Table &lt;- FC %&gt;%
+        accuracy(test)
+    Min.Model &lt;- Accuracy.Table %&gt;%
+        slice_min(., order_by = MAE, n = 1)
+    Min.Report &lt;- fits %&gt;%
+        select(Min.Model$.model) %&gt;%
+        report()
+    Min.Res.Plot &lt;- fits %&gt;%
+        select(Min.Model$.model) %&gt;%
+        gg_tsresiduals()
+    Min.ForeCPlot &lt;- FC %&gt;%
+        filter(.model == Min.Model$.model) %&gt;%
+        autoplot() + autolayer(test %&gt;%
+        select(!!Outcome)) + autolayer(train %&gt;%
+        slice_max(., order_by = !!DateVar, n = 24) %&gt;%
+        select(!!Outcome)) + theme_ipsum_rc() + labs(title = &quot;Winner Forecast&quot;)
+    fit.list &lt;- list(Accuracy.Table, Min.Model, Min.Report, Min.Res.Plot, Min.ForeCPlot)
+    return(fit.list)
+}</code></pre>
+<p>Try out the big function.</p>
+<pre class="r"><code>MinAvg.Res &lt;- Accuse.Usual.Suspect(train = NWS.Monthly.Train, test = NWS.Monthly.Test, 
+    Outcome = MinAvg, DateVar = Month)</code></pre>
+<pre><code>Series: MinAvg 
+Model: LM w/ ARIMA(2,1,2)(0,0,1)[12] errors 
+
+Coefficients:
+         ar1      ar2      ma1     ma2    sma1  fourier(K = 1)C1_12
+      0.5850  -0.1603  -1.3061  0.3201  0.1452             -11.1736
+s.e.  0.1731   0.0503   0.1724  0.1695  0.0317               0.1578
+      fourier(K = 1)S1_12
+                  -1.6574
+s.e.               0.1576
+
+sigma^2 estimated as 5.986:  log likelihood=-2168.2
+AIC=4352.41   AICc=4352.56   BIC=4391.16</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<p>Try out a result.</p>
+<pre class="r"><code>MinAvg.Res[[5]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<p>Try it with precipitation.</p>
+<pre class="r"><code>Precip.Res &lt;- Accuse.Usual.Suspect(train = NWS.Monthly.Train, test = NWS.Monthly.Test, 
+    Outcome = Precip, DateVar = Month)</code></pre>
+<pre><code>Series: Precip 
+Model: LM w/ ARIMA(0,0,1)(0,0,2)[12] errors 
+
+Coefficients:
+         ma1    sma1    sma2  fourier(K = 1)C1_12  fourier(K = 1)S1_12
+      0.1712  0.0373  0.0457               2.3138              -0.3738
+s.e.  0.0318  0.0333  0.0307               0.1048               0.1047
+      intercept
+         3.0833
+s.e.     0.0754
+
+sigma^2 estimated as 3.347:  log likelihood=-1896.61
+AIC=3807.22   AICc=3807.34   BIC=3841.13</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<p>Forecast me.</p>
+<pre class="r"><code>Precip.Res[[5]]</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+</div>
+</div>
