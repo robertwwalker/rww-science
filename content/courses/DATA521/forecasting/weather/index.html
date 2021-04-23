@@ -152,7 +152,8 @@ PMF &lt;- ProphMod %&gt;%
     fits &lt;- data %&gt;%
         model(`K = 1` = ARIMA(!!Outcome ~ fourier(K = 1)), `K = 2` = ARIMA(!!Outcome ~ 
             fourier(K = 2)), `K = 3` = ARIMA(!!Outcome ~ fourier(K = 3)), ARIMA = ARIMA(!!Outcome), 
-            ETS = ETS(!!Outcome), NNET = NNETAR(!!Outcome ~ fourier(K = 2))) %&gt;%
+            ETS = ETS(!!Outcome), NNET = NNETAR(!!Outcome ~ fourier(K = 2)), prophet = prophet(!!Outcome ~ 
+                growth() + season(&quot;year&quot;, 12))) %&gt;%
         mutate(Combo1 = (`K = 2` + ARIMA + ETS)/3, Combo2 = (`K = 2` + ARIMA + ETS + 
             NNET)/4)
     return(fits)
@@ -180,7 +181,12 @@ PMF &lt;- ProphMod %&gt;%
 <p>Pick and store the minimum.</p>
 <pre class="r"><code>Min.Model &lt;- MaxAFC %&gt;%
     accuracy(NWS.Monthly.Test) %&gt;%
-    slice_min(., order_by = MAE, n = 1)</code></pre>
+    slice_min(., order_by = MAE, n = 1)
+Min.Model</code></pre>
+<pre><code># A tibble: 1 x 10
+  .model .type     ME  RMSE   MAE   MPE  MAPE  MASE RMSSE   ACF1
+  &lt;chr&gt;  &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+1 K = 1  Test  -0.377  2.65  2.17 -1.03  3.84   NaN   NaN -0.234</code></pre>
 <p>Show the forecast for it.</p>
 <pre class="r"><code>MaxAFC %&gt;%
     filter(.model == Min.Model$.model) %&gt;%
@@ -191,17 +197,20 @@ PMF &lt;- ProphMod %&gt;%
 </div>
 <div id="automagics" class="section level2">
 <h2>Automagics</h2>
-<pre class="r"><code>Accuse.Usual.Suspect &lt;- function(train, test, Outcome, DateVar) {
+<p>I want to write a magic function. It takes three inputs: train, test, Outcome, and DateVar. The first two are data; split into train and test. The final inputs are <code>Outcome</code>, the outcome without quotation marks, and the Date variable [the index of the tsibble], also unquoted.</p>
+<pre class="r"><code>Accuse.Usual.Suspect &lt;- function(train, test, Outcome, DateVar, H.Horizon = 12) {
+    # Turn the symbols -- names that will make sense in their environments when
+    # called -- that the user supplies into symbolics.
     Outcome &lt;- ensym(Outcome)
     DateVar &lt;- ensym(DateVar)
+    # Estimate some models and store them as fits.  !! calls the variable name in the
+    # given environment
     fits &lt;- train %&gt;%
-        model(`K = 1` = ARIMA(!!Outcome ~ fourier(K = 1)), `K = 2` = ARIMA(!!Outcome ~ 
-            fourier(K = 2)), `K = 3` = ARIMA(!!Outcome ~ fourier(K = 3)), ARIMA = ARIMA(!!Outcome), 
-            ETS = ETS(!!Outcome), NNET = NNETAR(!!Outcome ~ fourier(K = 2))) %&gt;%
-        mutate(Combo1 = (`K = 2` + ARIMA + ETS)/3, Combo2 = (`K = 2` + ARIMA + ETS + 
-            NNET)/4)
+        Usual.Suspects(., !!Outcome)
+    # Forecast the models
     FC &lt;- fits %&gt;%
-        forecast(h = 12)
+        forecast(h = H.Horizon)
+    # Compare train and test
     Accuracy.Table &lt;- FC %&gt;%
         accuracy(test)
     Min.Model &lt;- Accuracy.Table %&gt;%
@@ -216,9 +225,11 @@ PMF &lt;- ProphMod %&gt;%
         filter(.model == Min.Model$.model) %&gt;%
         autoplot() + autolayer(test %&gt;%
         select(!!Outcome)) + autolayer(train %&gt;%
-        slice_max(., order_by = !!DateVar, n = 24) %&gt;%
+        slice_max(., order_by = !!DateVar, n = H.Horizon * 2) %&gt;%
         select(!!Outcome)) + theme_ipsum_rc() + labs(title = &quot;Winner Forecast&quot;)
-    fit.list &lt;- list(Accuracy.Table, Min.Model, Min.Report, Min.Res.Plot, Min.ForeCPlot)
+    fit.list &lt;- list(Model.Fits = fits, Model.Forecasts = FC, Accuracy.Table = Accuracy.Table, 
+        Min.Model = Min.Model, Min.Report = Min.Report, Min.Res.Plot = Min.Res.Plot, 
+        Min.Forecast.Plot = Min.ForeCPlot)
     return(fit.list)
 }</code></pre>
 <p>Try out the big function.</p>
@@ -237,10 +248,10 @@ s.e.               0.1576
 
 sigma^2 estimated as 5.986:  log likelihood=-2168.2
 AIC=4352.41   AICc=4352.56   BIC=4391.16</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/MinWins-1.png" width="672" /></p>
 <p>Try out a result.</p>
 <pre class="r"><code>MinAvg.Res[[5]]</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
 <p>Try it with precipitation.</p>
 <pre class="r"><code>Precip.Res &lt;- Accuse.Usual.Suspect(train = NWS.Monthly.Train, test = NWS.Monthly.Test, 
     Outcome = Precip, DateVar = Month)</code></pre>
@@ -257,9 +268,9 @@ s.e.     0.0754
 
 sigma^2 estimated as 3.347:  log likelihood=-1896.61
 AIC=3807.22   AICc=3807.34   BIC=3841.13</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/PrecWin-1.png" width="672" /></p>
 <p>Forecast me.</p>
 <pre class="r"><code>Precip.Res[[5]]</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
 </div>
 </div>

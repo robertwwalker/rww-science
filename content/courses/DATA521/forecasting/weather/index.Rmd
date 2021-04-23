@@ -200,8 +200,12 @@ fits <- data %>%  model(`K = 1` = ARIMA(!!Outcome ~ fourier(K=1)),
       `K = 3` = ARIMA(!!Outcome ~ fourier(K=3)),
       ARIMA = ARIMA(!!Outcome),
       ETS = ETS(!!Outcome),
-      NNET = NNETAR(!!Outcome ~ fourier(K=2))) %>% 
-  mutate(Combo1 = (`K = 2` + ARIMA + ETS)/3, Combo2 = (`K = 2` + ARIMA + ETS + NNET)/4)
+      NNET = NNETAR(!!Outcome ~ fourier(K=2)),
+      prophet = prophet(!!Outcome ~ growth() + season("year", 12))
+      ) %>% 
+  mutate(
+    Combo1 = (`K = 2` + ARIMA + ETS)/3, 
+    Combo2 = (`K = 2` + ARIMA + ETS + NNET)/4)
 return(fits)
 }
 ```
@@ -228,6 +232,7 @@ Pick and store the minimum.
 
 ```{r MinModPick}
 Min.Model <- MaxAFC %>% accuracy(NWS.Monthly.Test) %>% slice_min(., order_by=MAE, n=1)
+Min.Model
 ```
 
 Show the forecast for it.
@@ -242,18 +247,19 @@ MaxAFC %>% filter(.model==Min.Model$.model) %>%
 
 ## Automagics
 
+I want to write a magic function.  It takes three inputs: train, test, Outcome, and DateVar.  The first two are data; split into train and test.  The final inputs are `Outcome`, the outcome without quotation marks, and the Date variable [the index of the tsibble], also unquoted.
+
 ```{r AccuseR}
-Accuse.Usual.Suspect <- function(train, test, Outcome, DateVar) {
+Accuse.Usual.Suspect <- function(train, test, Outcome, DateVar, H.Horizon=12) {
+  # Turn the symbols -- names that will make sense in their environments when called -- that the user supplies into symbolics.
   Outcome <- ensym(Outcome)
   DateVar <- ensym(DateVar)
-fits <- train %>%  model(`K = 1` = ARIMA(!!Outcome ~ fourier(K=1)),
-      `K = 2` = ARIMA(!!Outcome ~ fourier(K=2)),
-      `K = 3` = ARIMA(!!Outcome ~ fourier(K=3)),
-      ARIMA = ARIMA(!!Outcome),
-      ETS = ETS(!!Outcome),
-      NNET = NNETAR(!!Outcome ~ fourier(K=2))) %>% 
-  mutate(Combo1 = (`K = 2` + ARIMA + ETS)/3, Combo2 = (`K = 2` + ARIMA + ETS + NNET)/4)
-FC <- fits %>% forecast(h=12)
+# Estimate some models and store them as fits.  
+# !! calls the variable name in the given environment
+fits <- train %>%  Usual.Suspects(., !!Outcome)
+# Forecast the models
+FC <- fits %>% forecast(h=H.Horizon)
+# Compare train and test
 Accuracy.Table <- FC %>% accuracy(test)
 Min.Model <- Accuracy.Table %>% slice_min(., order_by=MAE, n=1)
 Min.Report <- fits %>% select(Min.Model$.model) %>% report()
@@ -261,10 +267,10 @@ Min.Res.Plot <- fits %>% select(Min.Model$.model) %>% gg_tsresiduals()
 Min.ForeCPlot <- FC %>% filter(.model==Min.Model$.model) %>%
   autoplot() + 
     autolayer(test %>% select(!!Outcome))  + 
-  autolayer(train %>% slice_max(., order_by=!!DateVar, n=24) %>% select(!!Outcome)) +
+  autolayer(train %>% slice_max(., order_by=!!DateVar, n=H.Horizon*2) %>% select(!!Outcome)) +
   theme_ipsum_rc() + 
   labs(title="Winner Forecast")
-fit.list <- list(Accuracy.Table, Min.Model, Min.Report, Min.Res.Plot, Min.ForeCPlot)
+fit.list <- list(Model.Fits = fits, Model.Forecasts = FC, Accuracy.Table=Accuracy.Table, Min.Model = Min.Model, Min.Report = Min.Report, Min.Res.Plot = Min.Res.Plot, Min.Forecast.Plot = Min.ForeCPlot)
 return(fit.list)
 }
 ```
@@ -272,7 +278,7 @@ return(fit.list)
 
 Try out the big function.
 
-```{r}
+```{r MinWins, cache=TRUE}
 MinAvg.Res <- Accuse.Usual.Suspect(train=NWS.Monthly.Train, test=NWS.Monthly.Test, Outcome=MinAvg, DateVar=Month)
 ```
 
@@ -284,7 +290,7 @@ MinAvg.Res[[5]]
 
 Try it with precipitation.
 
-```{r}
+```{r PrecWin, cache=TRUE}
 Precip.Res <- Accuse.Usual.Suspect(train=NWS.Monthly.Train, test=NWS.Monthly.Test, Outcome=Precip, DateVar=Month)
 ```
 
