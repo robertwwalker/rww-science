@@ -16,3 +16,4 @@ This is the summary forecasting page.  This contains a few examples that are mor
 The course textbook:
 
 + [Forecasting Policy and Practice, 3rd Edition](https://otexts.com/fpp3/)
+

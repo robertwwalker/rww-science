@@ -1,5 +1,5 @@
 ---
-title: "Forecasting the Weather: Daily"
+title: "Daily Weather Forecasting"
 date: "`r Sys.Date()`"
 output:
   rmdformats::downcute:
@@ -20,6 +20,14 @@ opts_chunk$set(echo=TRUE,
                message=FALSE,
                warning=FALSE)
 opts_knit$set(width=75, fig.retina = 2, dev = "png", dev.args = list(type = "cairo-png"))
+```
+
+## Preliminary Steps
+
+Load some libraries.
+
+```{r}
+library(kableExtra)
 library(distributional)
 library(tidyverse)
 library(lubridate)
@@ -54,24 +62,43 @@ NWS.Daily <- NWS.Daily %>%
   mutate(Day = str_remove(Day, "Day.")) %>%  
   pivot_wider(., names_from = "Variable", values_from = "value") %>% 
   mutate(PR = recode(PR, T = "O.005"), SN = recode(SN, T = "O.005")) %>% 
-  mutate(TX = as.numeric(TX), TN = as.numeric(TN), PR = as.numeric(PR), SN = as.numeric(SN), 
+  mutate(Temp.Max = as.numeric(TX), Temp.Min = as.numeric(TN), Precip = as.numeric(PR), Snow = as.numeric(SN), 
          date = as.Date(paste(MO,Day,YR,sep="-"), format="%m-%d-%Y")
          )
 NWS.Daily.Clean <- NWS.Daily %>% filter(!(is.na(date))) %>% filter(!is.na(TX)) %>% as_tsibble(index=date)
 ```
 
+## Data Evaluation
+
+That nearly works.  There are still a few missing values.
+
+```{r}
+NWS.Daily.Clean <- NWS.Daily.Clean %>%
+  filter(!is.na(Temp.Max))
+NWS.Daily.Clean %>% tibble() %>% skimr::skim() %>% kable("html") %>% scroll_box(width="800px", height="600px")
+```
+
+Snow and precipitation have missing values.
+
 ## Daily Decompositions
+
+I want to write a little function to decompose these data.  It will take data and a variable of interest and decompose it.  The trend and season windows are `trendW` and `seasonW` respectively.
 
 ```{r}
 Decompose.Me <- function(data, var, trendW = 5, seasonW = 5) {
   var <- ensym(var)
   model <- data %>% 
-  model(STL(!! var ~ trend(window=trendW) + season(window=seasonW, period=7))) 
+  model(STL(!!var ~ trend(window=trendW) + season("week")+ season("year"))) 
   cmp <- model %>% components()
   plot <- cmp %>% autoplot()
   return(list(model=model, cmp=cmp, plot=plot))
 }
-MaxAvg.Result <- NWS.Daily.Clean %>% filter(YR > 1999) %>% Decompose.Me(., TX, trendW = 5) 
+```
+
+Let me look at Maximum Temperature.
+
+```{r MAvgRes1}
+MaxAvg.Result <- NWS.Daily.Clean %>% filter(YR > 1999) %>% Decompose.Me(., Temp.Max, trendW = 5) 
 MaxAvg.Result %>% .$plot
 ```
 
@@ -82,7 +109,8 @@ Let me decompose one such series.  Suppose that I wanted to seasonally adjust th
 ```{r}
 MaxAvg.Result %>% .$cmp %>% head(10) %>% select(-.model)
 ```
-So let me run with that.  Borrowing from an earlier post...
+
+So let me run with that.  Borrowing from an earlier post, I want a function to estimate models given `data` and an `Outcome`.  It will have a few ARIMA with fourier terms and ARIMA, ETS, prophet.
 
 ```{r MonthlyMT}
 Usual.Suspects <- function(data, Outcome) {
@@ -93,7 +121,7 @@ fits <- data %>%  model(`K = 1` = ARIMA(!!Outcome ~ fourier(K=1)+PDQ(0,0,0)),
       ARIMA = ARIMA(!!Outcome),
       ETS = ETS(!!Outcome),
       NNET = NNETAR(!!Outcome ~ fourier(K=2)),
-      prophet = prophet(!!Outcome ~ growth() + season("year", 12))
+      prophet = prophet(!!Outcome ~ growth() + season(name="annual"))
       ) %>% 
   mutate(
     Combo1 = (`K = 2` + ARIMA + ETS)/3, 
