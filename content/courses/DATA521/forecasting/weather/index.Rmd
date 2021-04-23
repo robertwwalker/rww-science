@@ -282,7 +282,7 @@ Min.ForeCPlot <- FC %>% filter(.model==Min.Model$.model) %>%
   theme_ipsum_rc() + 
   labs(title="Winner Forecast")
 # Return a named list with all the stuff we calculated along the way.
-fit.list <- list(Model.Fits = fits, Model.Forecasts = FC, Accuracy.Table=Accuracy.Table, Min.Model = Min.Model, Min.Report = Min.Report, Min.Res.Plot = Min.Res.Plot, Min.Forecast.Plot = Min.ForeCPlot)
+fit.list <- list(test=test, train=train, Model.Fits = fits, Model.Forecasts = FC, Accuracy.Table=Accuracy.Table, Min.Model = Min.Model, Min.Report = Min.Report, Min.Res.Plot = Min.Res.Plot, Min.Forecast.Plot = Min.ForeCPlot)
 return(fit.list)
 }
 ```
