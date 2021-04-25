@@ -207,6 +207,17 @@ StocksW <- StocksW %>%
 StocksW %>% autoplot(weekly.returns)
 ```
 
+## Model it
+
+```{r}
+StocksW %>% 
+  model(ARIMA(weekly.returns)) %>% 
+  forecast(h=6) %>% 
+  autoplot() + 
+  autolayer(StocksW %>% select(weekly.returns)) + guides(fill=FALSE, color=FALSE, alpha=FALSE)
+```
+
+
 
 # Monthly Returns are the Easiest to Work with
 

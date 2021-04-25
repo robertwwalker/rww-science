@@ -189,6 +189,15 @@ StocksW &lt;- StocksW %&gt;%
 StocksW %&gt;% autoplot(weekly.returns)</code></pre>
 <p><img src="/courses/DATA521/Equities/Equities_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 </div>
+<div id="model-it" class="section level2">
+<h2>Model it</h2>
+<pre class="r"><code>StocksW %&gt;% 
+  model(ARIMA(weekly.returns)) %&gt;% 
+  forecast(h=6) %&gt;% 
+  autoplot() + 
+  autolayer(StocksW %&gt;% select(weekly.returns)) + guides(fill=FALSE, color=FALSE, alpha=FALSE)</code></pre>
+<p><img src="/courses/DATA521/Equities/Equities_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+</div>
 <div id="monthly-returns-are-the-easiest-to-work-with" class="section level1">
 <h1>Monthly Returns are the Easiest to Work with</h1>
 <p>Daily and weekly returns are messy because there is an inconsistent mapping between days and years, or months, or whatever. The same is true of weeks. The easiest thing to work with that has the finest granularity is monthly [the fact that February has a changing number of days can be handled easily when aggregating to the month].</p>
@@ -196,7 +205,7 @@ StocksW %&gt;% autoplot(weekly.returns)</code></pre>
 <pre class="r"><code># Grab Ford stock prices starting in 2015
 FordM &lt;- tq_get(&quot;F&quot;, from=&quot;2015-01-01&quot;)
 FordM %&gt;% as_tsibble(index=date) %&gt;% autoplot(adjusted)</code></pre>
-<p><img src="/courses/DATA521/Equities/Equities_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<p><img src="/courses/DATA521/Equities/Equities_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
 <div id="creating-returns" class="section level2">
 <h2>Creating Returns</h2>
 <p>That’s the data I need to start. Now let me turn it into monthly returns; we can either use the argument in <code>tq_transmute</code> called <code>col_rename</code> to change the name or work with the default name which will be, in this case, <code>monthly.returns</code>. There is one additional trick; the data still have daily dates. Early in the term, we had to extract the <code>yearmonth</code> from those to be able to use them as monthly data. I will do that here by creating <code>Month</code> as the time index before creating the tsibble with <code>index=Month</code>. <code>tq_transmute</code> is required whenever we want something that is not daily.</p>
@@ -205,7 +214,7 @@ FordM %&gt;% as_tsibble(index=date) %&gt;% autoplot(adjusted)</code></pre>
   mutate(Month = yearmonth(date)) %&gt;% 
   as_tsibble(index=Month)
 Ford.Returns %&gt;% autoplot(monthly.returns)</code></pre>
-<p><img src="/courses/DATA521/Equities/Equities_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<p><img src="/courses/DATA521/Equities/Equities_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
 <div id="testing-it-out" class="section level3">
 <h3>Testing It Out</h3>
 <p>Sweet. No missing data and a proper format. For proof of concept on deploying a model, let me use a decomposition method.</p>
@@ -13400,7 +13409,7 @@ USD
   guides(fill=FALSE, color=FALSE, size=FALSE, alpha=FALSE) + 
   labs(title=&quot;The Makeup of the S&amp;P 500 by Sector&quot;, x=&quot;&quot;, y=&quot;Count&quot;) + 
   theme_ipsum()</code></pre>
-<p><img src="/courses/DATA521/Equities/Equities_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<p><img src="/courses/DATA521/Equities/Equities_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
 <p>This gives me a choice about the sector to analyse.</p>
 </div>
 </div>
@@ -22318,7 +22327,7 @@ Ind.Models &lt;- Ind.Returns.Train %&gt;%
 ## #   deviance &lt;dbl&gt;, df.residual &lt;int&gt;, rank &lt;int&gt;, sigma &lt;dbl&gt;,
 ## #   changepoints &lt;list&gt;</code></pre>
 <pre class="r"><code>Ind.Models %&gt;% filter(symbol==&quot;ALK&quot;) %&gt;% select(DH1) %&gt;% gg_tsresiduals()</code></pre>
-<p><img src="/courses/DATA521/Equities/Equities_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+<p><img src="/courses/DATA521/Equities/Equities_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
 <p>So my model has two pretty large outliers but otherwise generically checks out. There are a ton of these. Here is another example.</p>
 <pre class="r"><code>Ind.Models %&gt;% filter(symbol==&quot;BA&quot;) %&gt;% select(DH1) %&gt;% gg_tsresiduals()</code></pre>
 <p><img src="/courses/DATA521/Equities/Equities_files/figure-html/IMEx-1.png" width="672" /></p>
@@ -22417,7 +22426,7 @@ LBQ.Misfits</code></pre>
 ## 2 CTAS   DH1       42.0    0.0129</code></pre>
 <p>An example.</p>
 <pre class="r"><code>DH1.Models %&gt;% filter(symbol==&quot;CMI&quot;) %&gt;% gg_tsresiduals()</code></pre>
-<p><img src="/courses/DATA521/Equities/Equities_files/figure-html/unnamed-chunk-26-1.png" width="672" /></p>
+<p><img src="/courses/DATA521/Equities/Equities_files/figure-html/unnamed-chunk-27-1.png" width="672" /></p>
 <p>Is one example of a model that fails. There is a large negative correlation at 6 months and something of a pattern though not outside the bounds. There are a few.</p>
 <pre class="r"><code>save.image(&quot;MyEquities.RData&quot;)</code></pre>
 </div>
