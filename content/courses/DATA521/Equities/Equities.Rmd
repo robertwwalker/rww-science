@@ -46,9 +46,14 @@ FPT <- FordT %>% autoplot(adjusted)
 
 I want to show this as both the time series and as the returns -- the far more common method for analysing them.  There are two main functions in data transformation with tidyquant.  `tq_mutate` which keeps the original data structure and `tq_transmute` which alters the data structure [usually by summarizing over some time interval].  The returns here will be daily, so `tq_mutate` is indicated.
 
+A second point, `tq` work with the `tibble`.  `fpp3` and the like work with `tsibble`.  We have to change the type back and forth if we want to use them together.  Ford is as it was originally downloaded -- a tibble.  I can `tq_mutate` that.  But to use `tsibble` tools like the autoplot for them, I need to change the type.
+
 ```{r}
-FC <- Ford %>% tq_mutate(adjusted, mutate_fun = periodReturn, period = "daily")
-FCT <- FC %>% as_tsibble(., index=date) %>% autoplot(daily.returns)
+FC <- Ford %>% 
+  tq_mutate(adjusted, mutate_fun = periodReturn, period = "daily")
+FCT <- FC %>% 
+  as_tsibble(., index=date) %>% 
+  autoplot(daily.returns)
 ```
 
 In both cases, the time index is date and **date is missing values for weekends and holidays**.  This is something to keep in the back of our minds.  What do they look like together?
@@ -201,7 +206,6 @@ StocksW <- StocksW %>%
   as_tsibble(index=trading_week, key=symbol)
 StocksW %>% autoplot(weekly.returns)
 ```
-
 
 
 # Monthly Returns are the Easiest to Work with

@@ -43,8 +43,12 @@ FPT &lt;- FordT %&gt;% autoplot(adjusted)</code></pre>
 <div id="a-transformation" class="section level2">
 <h2>A Transformation</h2>
 <p>I want to show this as both the time series and as the returns – the far more common method for analysing them. There are two main functions in data transformation with tidyquant. <code>tq_mutate</code> which keeps the original data structure and <code>tq_transmute</code> which alters the data structure [usually by summarizing over some time interval]. The returns here will be daily, so <code>tq_mutate</code> is indicated.</p>
-<pre class="r"><code>FC &lt;- Ford %&gt;% tq_mutate(adjusted, mutate_fun = periodReturn, period = &quot;daily&quot;)
-FCT &lt;- FC %&gt;% as_tsibble(., index=date) %&gt;% autoplot(daily.returns)</code></pre>
+<p>A second point, <code>tq</code> work with the <code>tibble</code>. <code>fpp3</code> and the like work with <code>tsibble</code>. We have to change the type back and forth if we want to use them together. Ford is as it was originally downloaded – a tibble. I can <code>tq_mutate</code> that. But to use <code>tsibble</code> tools like the autoplot for them, I need to change the type.</p>
+<pre class="r"><code>FC &lt;- Ford %&gt;% 
+  tq_mutate(adjusted, mutate_fun = periodReturn, period = &quot;daily&quot;)
+FCT &lt;- FC %&gt;% 
+  as_tsibble(., index=date) %&gt;% 
+  autoplot(daily.returns)</code></pre>
 <p>In both cases, the time index is date and <strong>date is missing values for weekends and holidays</strong>. This is something to keep in the back of our minds. What do they look like together?</p>
 <pre class="r"><code>library(patchwork)
 FPT + FCT</code></pre>
