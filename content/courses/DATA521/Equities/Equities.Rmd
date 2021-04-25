@@ -28,24 +28,30 @@ library(kableExtra)
 
 ## A bit on equities
 
-Some equities data is available from tidyquant.
+`tidyquant` is a very handy source for equities data.  The data are returned as a `tibble`.
 
 ```{r}
 Ford <- tq_get("F", from="2019-01-01")
+Ford
+```
+
+If I want to work with the irregular data as they come; I could declare this to be a `tsibble` and move on.
+
+```{r TSib1}
 FordT <- Ford %>% as_tsibble(index=date)
 FPT <- FordT %>% autoplot(adjusted)
 ```
 
 ## A Transformation
 
-I want to show this as both the time series and as the returns -- the far more common method for analysing them.
+I want to show this as both the time series and as the returns -- the far more common method for analysing them.  There are two main functions in data transformation with tidyquant.  `tq_mutate` which keeps the original data structure and `tq_transmute` which alters the data structure [usually by summarizing over some time interval].  The returns here will be daily, so `tq_mutate` is indicated.
 
 ```{r}
-FC <- Ford %>% tq_transmute(adjusted, mutate_fun = periodReturn, period = "daily")
+FC <- Ford %>% tq_mutate(adjusted, mutate_fun = periodReturn, period = "daily")
 FCT <- FC %>% as_tsibble(., index=date) %>% autoplot(daily.returns)
 ```
 
-What do they look like together?
+In both cases, the time index is date and **date is missing values for weekends and holidays**.  This is something to keep in the back of our minds.  What do they look like together?
 
 ```{r}
 library(patchwork)
@@ -60,7 +66,28 @@ Let's look at what we have
 FC %>% head()
 ```
 
-1, 5, and 6 January are missing.  The markets were not open.  This presents an interesting problem.  One way of solving it is simply to pretend that this problem does not exist.  We can create a complete set of trading days counting from 1 to whatever the maximum date is.  We should be mindful that this is a bit more complicated with multiple equities because we need day 1 to begin as 1 for the longest series.  To keep some fidelity to time trading days, the same movements should happen on the same days, especially were this to apply from the bottom up.  Conceptually and logically, the days have to match up.  To be blunt, there is no defensible reason why the day [or time in general measured via a calendar] should depend on the stock/unit under study.
+1, 5, and 6 January are missing.  The markets were not open.  This presents an interesting problem.  Let's fix it by creating a new index for time that counts by trading days and uses that as the index.
+
+```{r}
+FCR <- FC %>% 
+  mutate(trading_day = row_number()) %>% 
+  as_tsibble(index=trading_day)
+FCR %>% autoplot(daily.returns, alpha=0.2) + labs(title="Ford's Daily Returns by Trading Day")
+```
+
+I still have the dates.
+
+```{r}
+FCR %>% ggplot() + aes(x=date, y=daily.returns) + geom_line(alpha=0.2)
+```
+
+Now I want to explore a related problem.  What do we do if we have multiple stocks of different lengths?
+
+## A Solution for Multiple Stocks with Different Lengths
+
+One way of solving it is simply to pretend that this problem does not exist.  We can create a complete set of trading days counting from 1 to whatever the maximum date is.  
+
+**We should be mindful that this is a bit more complicated with multiple equities because we need day 1 to begin as 1 for the longest series.**  To keep some fidelity to time trading days, the same movements should happen on the same days, especially were this to apply from the bottom up.  Conceptually and logically, the days have to match up.  To be blunt, there is no defensible reason why the day [or time in general measured via a calendar] should depend on the stock/unit under study.
 
 To code this first, let me get two examples.
 
@@ -70,6 +97,14 @@ Stocks <- c("AMZN","AAPL") %>%
     filter(date > as.Date("2018-01-01")) %>%
   filter(!(symbol=="AAPL" & date < as.Date("2019-01-01"))) %>% as_tsibble(index=date, key=symbol)
 ```
+
+### A Visual
+
+```{r}
+Stocks %>% autoplot(adjusted)
+```
+
+## Data Manipulation
 
 So I grab Amazon and Apple, turn it into a tsibble, cut them both to 2018 or later and then shave a year off of Apple.  I want to create a complete set of trading days.  So I need to count time from when Amazon starts and then match up that counter for Apple.  The easiest way that I can think to do it is to generate it from Amazon and join it back.
 
@@ -110,7 +145,9 @@ BigStocks <- c("AAPL","AMZN","FB","^GSPC") %>%
 BigStocks %>% as_tsibble(index=date, key=symbol) %>% autoplot(EVWMA)
 ```
 
-Here is the function.
+That's what `BigStocks` looks like.  Now I want to develop a function.  
+
+`RawStocks` is the input; that is a collection of stock data organized in OHLC format as come naturally from `tidyquant`.  It can contain other variables created by `tq_mutate` also.
 
 ```{r}
 Trading.Day.Creator <- function(RawStocks) {
@@ -120,8 +157,9 @@ Trading.Day.Creator <- function(RawStocks) {
     summarise(N = n()) %>%
     slice_max(., order_by = N, n = 1) %>%
     select(symbol)
-  Max.List <- RawStocks %>% as_tibble() %>% 
-  filter(symbol==Biggie$symbol) %>% 
+  Max.List <- RawStocks %>% 
+    as_tibble() %>% 
+    filter(symbol==Biggie$symbol) %>% 
     mutate(trading_day = row_number()) %>% 
     select(date, trading_day)
   Stocks.to.Return <- RawStocks %>% as_tibble() %>% left_join(., Max.List) %>% as_tsibble(index=trading_day, key=symbol, regular=TRUE)
@@ -129,15 +167,42 @@ Trading.Day.Creator <- function(RawStocks) {
 }
 Fixed.BigStocks <- Trading.Day.Creator(BigStocks)
 Fixed.BigStocks %>% autoplot(EVWMA)
+# To do it with FANG, 
+# FANG %>% 
+#     mutate(daily.returns = (close - open)/open) %>% 
+#     Trading.Day.Creator(.) -> FANG.TD
+# FANG.TD
 ```
 
 ## A Model
+
+Let me model them.
 
 ```{r}
 Fixed.BigStocks %>% 
   model(ARIMA(daily.returns)) %>% 
   report()
 ```
+
+## Working with Weeks
+
+I need to take Stocks, turn them into a tibble so that `tq_transmute` can work with them, group it by the symbol, create returns, sort by the dates, and create `trading_day` just like before; now the day is actually a week; mutate that and drop the day.  Finally, let me plot it.
+
+```{r}
+StocksW <- Stocks %>% 
+  as_tibble() %>% 
+  group_by(symbol) %>%
+  tq_transmute(adjusted, mutate_fun = periodReturn, period="weekly") %>%
+  arrange(date) %>%
+  Trading.Day.Creator(.)
+StocksW <- StocksW %>% 
+  mutate(trading_week = trading_day) %>% 
+  select(-trading_day) %>%  
+  as_tsibble(index=trading_week, key=symbol)
+StocksW %>% autoplot(weekly.returns)
+```
+
+
 
 # Monthly Returns are the Easiest to Work with
 
