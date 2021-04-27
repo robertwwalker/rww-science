@@ -10,10 +10,10 @@ knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE, fig.retina = 2)
 
 ## Data
 
-I will use the data from the New York Times on COVID.
+I will use the data from the New York Times on COVID.  I want to illustrate the use of `slider` for the creation of moving averages on `tsibble` structures.  To render some context for the data, let me import it, transform it a bit to make it more sensible [removing negative values], and turn it into a `tsibble`.
 
 ```{r}
-library(tidyverse); library(fpp3)
+library(tidyverse); library(fpp3); library(hrbrthemes)
 NYT.COVIDN <- read.csv(url("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv"))
 # Define a tsibble; the date is imported as character so mutate that first.
 NYT.COVID <- NYT.COVIDN %>% 
@@ -38,6 +38,12 @@ NYTAgg.COVID <- NYT.COVID %>%
   mutate(Day.of.Week = as.factor(wday(date, label = TRUE)))
 ```
 
+The `aggregate_key` generates national sums as a result of each individual unit.  This can be very handy in bottom up forecasting.  I will focus on the aggregates.
+
+# Forecasting the US
+
+I want to focus on the US data.
+
 ## A Basic Plot
 
 Let me start with a plot of `New.Cases`.
@@ -47,6 +53,28 @@ library(hrbrthemes)
 options(scipen=6)
 NYTAgg.COVID %>% filter(is_aggregated(state)) %>% autoplot(New.Cases) + theme_ipsum_rc() + labs(title="New COVID-19 Cases in the US")
 ```
+
+## Some Summary Information
+
+```{r}
+NYTAgg.COVID %>% filter(is_aggregated(state)) %>% features(New.Cases, list(mean, sd, quantile))
+```
+
+```{r}
+NYTAgg.COVID %>% filter(is_aggregated(state)) %>% features(New.Deaths, list(mean, sd, quantile))
+```
+
+## STL Characteristics
+
+```{r}
+NYTAgg.COVID %>% filter(is_aggregated(state)) %>% features(New.Deaths, feat_stl)
+```
+
+```{r}
+NYTAgg.COVID %>% filter(is_aggregated(state)) %>% model(STL(New.Cases)) %>% components() %>% autoplot()
+```
+
+
 
 ## Moving Averages using `slider::`
 
@@ -63,12 +91,14 @@ NYTAG %>%
   autolayer(NYTAgg.COVID %>% 
               filter(is_aggregated(state)) %>% 
               select(New.Cases), alpha=0.2) + 
-  labs(y="New COVID-19 Cases", title="New COVID-19 Cases in the US", subtitle="7 day moving average in red")
+  labs(y="New COVID-19 Cases", title="New COVID-19 Cases in the US", subtitle="7 day moving average in red") + theme_ipsum_rc()
 ```
 
 ## Deaths: Moving Averages using `slider::`
 
-```{r}
+Now I want a 14 day trailing average.  That's 13 before and 0 after.  What do new COVID-19 deaths in the US look like when measured in that way?
+
+```{r D14TA}
 NYTAgg.COVID %>% 
   filter(is_aggregated(state)) %>%
   mutate(`14-TA` = slider::slide_dbl(New.Deaths, mean, .before=13, .after=0, .complete=TRUE)) %>% 
@@ -76,6 +106,15 @@ NYTAgg.COVID %>%
   autolayer(NYTAgg.COVID %>% 
               filter(is_aggregated(state)) %>% 
               select(New.Deaths), alpha=0.2) + 
-  labs(y="New COVID-19 Deaths", title="New COVID-19 Deaths in the US", subtitle="14 day trailing average in red")
+  labs(y="New COVID-19 Deaths", title="New COVID-19 Deaths in the US", subtitle="14 day trailing average in red") + theme_ipsum_rc()
 ```
-All the magic in slider comes from the `.before` and `.after` arguments; how many data points before and after to average.  If all are before, it is a **trailing average**; if some before and after, then a moving average.
+# A Better Plot
+
+My personal favorite plot.
+
+```{r}
+NYTAG %>% 
+  autoplot(`7-TA`, color="blue") + 
+  geom_point(aes(x=date, y=New.Cases), alpha=0.2, color="red") + labs(title="New COVID-19 Cases in the US", subtitle="7 Day trailing average in blue", y="New COVID-19 Cases")
+```
+

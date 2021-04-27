@@ -9,8 +9,8 @@ date: "2021-04-26"
 
 <div id="data" class="section level2">
 <h2>Data</h2>
-<p>I will use the data from the New York Times on COVID.</p>
-<pre class="r"><code>library(tidyverse); library(fpp3)
+<p>I will use the data from the New York Times on COVID. I want to illustrate the use of <code>slider</code> for the creation of moving averages on <code>tsibble</code> structures. To render some context for the data, let me import it, transform it a bit to make it more sensible [removing negative values], and turn it into a <code>tsibble</code>.</p>
+<pre class="r"><code>library(tidyverse); library(fpp3); library(hrbrthemes)
 NYT.COVIDN &lt;- read.csv(url(&quot;https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv&quot;))
 # Define a tsibble; the date is imported as character so mutate that first.
 NYT.COVID &lt;- NYT.COVIDN %&gt;% 
@@ -33,7 +33,11 @@ NYTAgg.COVID &lt;- NYT.COVID %&gt;%
                 New.Deaths = sum(New.Deaths, na.rm=TRUE)) %&gt;% 
   filter(date &gt; as.Date(&quot;2020-03-31&quot;)) %&gt;% 
   mutate(Day.of.Week = as.factor(wday(date, label = TRUE)))</code></pre>
+<p>The <code>aggregate_key</code> generates national sums as a result of each individual unit. This can be very handy in bottom up forecasting. I will focus on the aggregates.</p>
 </div>
+<div id="forecasting-the-us" class="section level1">
+<h1>Forecasting the US</h1>
+<p>I want to focus on the US data.</p>
 <div id="a-basic-plot" class="section level2">
 <h2>A Basic Plot</h2>
 <p>Let me start with a plot of <code>New.Cases</code>.</p>
@@ -41,6 +45,31 @@ NYTAgg.COVID &lt;- NYT.COVID %&gt;%
 options(scipen=6)
 NYTAgg.COVID %&gt;% filter(is_aggregated(state)) %&gt;% autoplot(New.Cases) + theme_ipsum_rc() + labs(title=&quot;New COVID-19 Cases in the US&quot;)</code></pre>
 <p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+</div>
+<div id="some-summary-information" class="section level2">
+<h2>Some Summary Information</h2>
+<pre class="r"><code>NYTAgg.COVID %&gt;% filter(is_aggregated(state)) %&gt;% features(New.Cases, list(mean, sd, quantile))</code></pre>
+<pre><code>## # A tibble: 1 x 8
+##   state          ...1   ...2  `0%` `25%`  `50%` `75%` `100%`
+##   &lt;chr*&gt;        &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+## 1 &lt;aggregated&gt; 81430. 64544. 17560 36418 58310. 98183 298487</code></pre>
+<pre class="r"><code>NYTAgg.COVID %&gt;% filter(is_aggregated(state)) %&gt;% features(New.Deaths, list(mean, sd, quantile))</code></pre>
+<pre><code>## # A tibble: 1 x 8
+##   state         ...1  ...2  `0%` `25%` `50%` `75%` `100%`
+##   &lt;chr*&gt;       &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;
+## 1 &lt;aggregated&gt; 1453.  978.   224   789  1158 1889.   5458</code></pre>
+</div>
+<div id="stl-characteristics" class="section level2">
+<h2>STL Characteristics</h2>
+<pre class="r"><code>NYTAgg.COVID %&gt;% filter(is_aggregated(state)) %&gt;% features(New.Deaths, feat_stl)</code></pre>
+<pre><code>## # A tibble: 1 x 10
+##   state       trend_strength seasonal_strengt… seasonal_peak_w… seasonal_trough…
+##   &lt;chr*&gt;               &lt;dbl&gt;             &lt;dbl&gt;            &lt;dbl&gt;            &lt;dbl&gt;
+## 1 &lt;aggregate…          0.918             0.799                1                5
+## # … with 5 more variables: spikiness &lt;dbl&gt;, linearity &lt;dbl&gt;, curvature &lt;dbl&gt;,
+## #   stl_e_acf1 &lt;dbl&gt;, stl_e_acf10 &lt;dbl&gt;</code></pre>
+<pre class="r"><code>NYTAgg.COVID %&gt;% filter(is_aggregated(state)) %&gt;% model(STL(New.Cases)) %&gt;% components() %&gt;% autoplot()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 </div>
 <div id="moving-averages-using-slider" class="section level2">
 <h2>Moving Averages using <code>slider::</code></h2>
@@ -55,11 +84,12 @@ NYTAG %&gt;%
   autolayer(NYTAgg.COVID %&gt;% 
               filter(is_aggregated(state)) %&gt;% 
               select(New.Cases), alpha=0.2) + 
-  labs(y=&quot;New COVID-19 Cases&quot;, title=&quot;New COVID-19 Cases in the US&quot;, subtitle=&quot;7 day moving average in red&quot;)</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+  labs(y=&quot;New COVID-19 Cases&quot;, title=&quot;New COVID-19 Cases in the US&quot;, subtitle=&quot;7 day moving average in red&quot;) + theme_ipsum_rc()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 </div>
 <div id="deaths-moving-averages-using-slider" class="section level2">
 <h2>Deaths: Moving Averages using <code>slider::</code></h2>
+<p>Now I want a 14 day trailing average. That’s 13 before and 0 after. What do new COVID-19 deaths in the US look like when measured in that way?</p>
 <pre class="r"><code>NYTAgg.COVID %&gt;% 
   filter(is_aggregated(state)) %&gt;%
   mutate(`14-TA` = slider::slide_dbl(New.Deaths, mean, .before=13, .after=0, .complete=TRUE)) %&gt;% 
@@ -67,7 +97,13 @@ NYTAG %&gt;%
   autolayer(NYTAgg.COVID %&gt;% 
               filter(is_aggregated(state)) %&gt;% 
               select(New.Deaths), alpha=0.2) + 
-  labs(y=&quot;New COVID-19 Deaths&quot;, title=&quot;New COVID-19 Deaths in the US&quot;, subtitle=&quot;14 day trailing average in red&quot;)</code></pre>
-<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-4-1.png" width="672" />
-All the magic in slider comes from the <code>.before</code> and <code>.after</code> arguments; how many data points before and after to average. If all are before, it is a <strong>trailing average</strong>; if some before and after, then a moving average.</p>
+  labs(y=&quot;New COVID-19 Deaths&quot;, title=&quot;New COVID-19 Deaths in the US&quot;, subtitle=&quot;14 day trailing average in red&quot;) + theme_ipsum_rc()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/D14TA-1.png" width="672" />
+# A Better Plot</p>
+<p>My personal favorite plot.</p>
+<pre class="r"><code>NYTAG %&gt;% 
+  autoplot(`7-TA`, color=&quot;blue&quot;) + 
+  geom_point(aes(x=date, y=New.Cases), alpha=0.2, color=&quot;red&quot;) + labs(title=&quot;New COVID-19 Cases in the US&quot;, subtitle=&quot;7 Day trailing average in blue&quot;, y=&quot;New COVID-19 Cases&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+</div>
 </div>
