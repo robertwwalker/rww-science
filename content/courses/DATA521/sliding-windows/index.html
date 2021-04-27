@@ -1,0 +1,73 @@
+---
+title: "Sliding Windows with Slider"
+author: "RWW"
+date: "2021-04-26"
+---
+
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
+
+
+<div id="data" class="section level2">
+<h2>Data</h2>
+<p>I will use the data from the New York Times on COVID.</p>
+<pre class="r"><code>library(tidyverse); library(fpp3)
+NYT.COVIDN &lt;- read.csv(url(&quot;https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv&quot;))
+# Define a tsibble; the date is imported as character so mutate that first.
+NYT.COVID &lt;- NYT.COVIDN %&gt;% 
+  mutate(date=as.Date(date)) %&gt;% 
+  as_tsibble(index=date, key=state) %&gt;% 
+  group_by(state) %&gt;% 
+  mutate(New.Cases = difference(cases), New.Deaths = difference(deaths)) %&gt;% 
+  filter(!(state %in% c(&quot;Guam&quot;,&quot;Puerto Rico&quot;, &quot;Virgin Islands&quot;,&quot;Northern Mariana Islands&quot;)))
+NYT.COVID &lt;- NYT.COVID %&gt;% 
+  mutate(
+    New.Cases = (New.Cases &gt;= 0)*New.Cases, 
+    New.Deaths = (New.Deaths &gt;= 0)*New.Deaths,
+    cases = cases,
+    deaths = deaths)
+NYTAgg.COVID &lt;- NYT.COVID %&gt;% 
+  aggregate_key(state, 
+                cases = sum(cases, na.rm=TRUE),
+                deaths = sum(deaths, na.rm=TRUE), 
+                New.Cases = sum(New.Cases, na.rm=TRUE),
+                New.Deaths = sum(New.Deaths, na.rm=TRUE)) %&gt;% 
+  filter(date &gt; as.Date(&quot;2020-03-31&quot;)) %&gt;% 
+  mutate(Day.of.Week = as.factor(wday(date, label = TRUE)))</code></pre>
+</div>
+<div id="a-basic-plot" class="section level2">
+<h2>A Basic Plot</h2>
+<p>Let me start with a plot of <code>New.Cases</code>.</p>
+<pre class="r"><code>library(hrbrthemes)
+options(scipen=6)
+NYTAgg.COVID %&gt;% filter(is_aggregated(state)) %&gt;% autoplot(New.Cases) + theme_ipsum_rc() + labs(title=&quot;New COVID-19 Cases in the US&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-2-1.png" width="672" /></p>
+</div>
+<div id="moving-averages-using-slider" class="section level2">
+<h2>Moving Averages using <code>slider::</code></h2>
+<p>The <code>slider</code> packages makes this very straightforward. The <code>mutate</code> line contains all the action. If I want the moving average (mean) of 3 .before, 3 .after, and the current datum with a complete set, the following code defining <code>7-MA</code> will suffice. <code>7-TA</code> defines a mean from the current and six prior observations.</p>
+<pre class="r"><code>NYTAG &lt;- NYTAgg.COVID %&gt;% 
+  filter(is_aggregated(state)) %&gt;%
+  mutate(`7-MA` = slider::slide_dbl(New.Cases, mean, .before=3, .after=3, .complete=TRUE)) %&gt;% 
+  mutate(`7-TA` = slider::slide_dbl(New.Cases, mean, .before=6, .after=0, .complete=TRUE))
+NYTAG %&gt;%
+  autoplot(`7-MA`, color=&quot;red&quot;, alpha=0.2) + 
+  autolayer(NYTAG %&gt;% select(`7-TA`), color=&quot;blue&quot;, alpha=0.2) +
+  autolayer(NYTAgg.COVID %&gt;% 
+              filter(is_aggregated(state)) %&gt;% 
+              select(New.Cases), alpha=0.2) + 
+  labs(y=&quot;New COVID-19 Cases&quot;, title=&quot;New COVID-19 Cases in the US&quot;, subtitle=&quot;7 day moving average in red&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+</div>
+<div id="deaths-moving-averages-using-slider" class="section level2">
+<h2>Deaths: Moving Averages using <code>slider::</code></h2>
+<pre class="r"><code>NYTAgg.COVID %&gt;% 
+  filter(is_aggregated(state)) %&gt;%
+  mutate(`14-TA` = slider::slide_dbl(New.Deaths, mean, .before=13, .after=0, .complete=TRUE)) %&gt;% 
+  autoplot(`14-TA`, color=&quot;red&quot;) + 
+  autolayer(NYTAgg.COVID %&gt;% 
+              filter(is_aggregated(state)) %&gt;% 
+              select(New.Deaths), alpha=0.2) + 
+  labs(y=&quot;New COVID-19 Deaths&quot;, title=&quot;New COVID-19 Deaths in the US&quot;, subtitle=&quot;14 day trailing average in red&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-4-1.png" width="672" />
+All the magic in slider comes from the <code>.before</code> and <code>.after</code> arguments; how many data points before and after to average. If all are before, it is a <strong>trailing average</strong>; if some before and after, then a moving average.</p>
+</div>

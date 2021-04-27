@@ -1,0 +1,81 @@
+---
+title: "Sliding Windows with Slider"
+author: "RWW"
+date: "2021-04-26"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE, fig.retina = 2)
+```
+
+## Data
+
+I will use the data from the New York Times on COVID.
+
+```{r}
+library(tidyverse); library(fpp3)
+NYT.COVIDN <- read.csv(url("https://raw.githubusercontent.com/nytimes/covid-19-data/master/us-states.csv"))
+# Define a tsibble; the date is imported as character so mutate that first.
+NYT.COVID <- NYT.COVIDN %>% 
+  mutate(date=as.Date(date)) %>% 
+  as_tsibble(index=date, key=state) %>% 
+  group_by(state) %>% 
+  mutate(New.Cases = difference(cases), New.Deaths = difference(deaths)) %>% 
+  filter(!(state %in% c("Guam","Puerto Rico", "Virgin Islands","Northern Mariana Islands")))
+NYT.COVID <- NYT.COVID %>% 
+  mutate(
+    New.Cases = (New.Cases >= 0)*New.Cases, 
+    New.Deaths = (New.Deaths >= 0)*New.Deaths,
+    cases = cases,
+    deaths = deaths)
+NYTAgg.COVID <- NYT.COVID %>% 
+  aggregate_key(state, 
+                cases = sum(cases, na.rm=TRUE),
+                deaths = sum(deaths, na.rm=TRUE), 
+                New.Cases = sum(New.Cases, na.rm=TRUE),
+                New.Deaths = sum(New.Deaths, na.rm=TRUE)) %>% 
+  filter(date > as.Date("2020-03-31")) %>% 
+  mutate(Day.of.Week = as.factor(wday(date, label = TRUE)))
+```
+
+## A Basic Plot
+
+Let me start with a plot of `New.Cases`.
+
+```{r}
+library(hrbrthemes)
+options(scipen=6)
+NYTAgg.COVID %>% filter(is_aggregated(state)) %>% autoplot(New.Cases) + theme_ipsum_rc() + labs(title="New COVID-19 Cases in the US")
+```
+
+## Moving Averages using `slider::`
+
+The `slider` packages makes this very straightforward.  The `mutate` line contains all the action.  If I want the moving average (mean) of 3 .before, 3 .after, and the current datum with a complete set, the following code defining `7-MA` will suffice.  `7-TA` defines a mean from the current and six prior observations.
+
+```{r}
+NYTAG <- NYTAgg.COVID %>% 
+  filter(is_aggregated(state)) %>%
+  mutate(`7-MA` = slider::slide_dbl(New.Cases, mean, .before=3, .after=3, .complete=TRUE)) %>% 
+  mutate(`7-TA` = slider::slide_dbl(New.Cases, mean, .before=6, .after=0, .complete=TRUE))
+NYTAG %>%
+  autoplot(`7-MA`, color="red", alpha=0.2) + 
+  autolayer(NYTAG %>% select(`7-TA`), color="blue", alpha=0.2) +
+  autolayer(NYTAgg.COVID %>% 
+              filter(is_aggregated(state)) %>% 
+              select(New.Cases), alpha=0.2) + 
+  labs(y="New COVID-19 Cases", title="New COVID-19 Cases in the US", subtitle="7 day moving average in red")
+```
+
+## Deaths: Moving Averages using `slider::`
+
+```{r}
+NYTAgg.COVID %>% 
+  filter(is_aggregated(state)) %>%
+  mutate(`14-TA` = slider::slide_dbl(New.Deaths, mean, .before=13, .after=0, .complete=TRUE)) %>% 
+  autoplot(`14-TA`, color="red") + 
+  autolayer(NYTAgg.COVID %>% 
+              filter(is_aggregated(state)) %>% 
+              select(New.Deaths), alpha=0.2) + 
+  labs(y="New COVID-19 Deaths", title="New COVID-19 Deaths in the US", subtitle="14 day trailing average in red")
+```
+All the magic in slider comes from the `.before` and `.after` arguments; how many data points before and after to average.  If all are before, it is a **trailing average**; if some before and after, then a moving average.

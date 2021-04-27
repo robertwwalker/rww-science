@@ -1,7 +1,7 @@
 ---
 title: "TBATS for COVID-19 Data"
 author: "RWW"
-date: "4/17/2021"
+date: "2021-04-17"
 output:
   rmdformats::downcute:
     self_contained: true
