@@ -19,7 +19,7 @@ class: center
 
 ```{r setup, include=FALSE}
 options(htmltools.dir.version = FALSE, knitr.table.format = "html")
-knitr::opts_chunk$set(warning=FALSE, message=FALSE, fig.showtext = TRUE, fig.height=8, fig.width=12, fig.retina=3, dev="CairoJPEG")
+knitr::opts_chunk$set(warning=FALSE, message=FALSE, fig.showtext = TRUE, fig.height=6, fig.retina=3, dev="CairoJPEG")
 library(tidyverse)
 library(xaringan)
 library(magrittr)
@@ -232,7 +232,7 @@ Bonds %>% group_by(Type,Risk) %>% skim(Assets)
 
 ## First Graphs
 
-```{r Fig1, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE, results='hide'}
+```{r Fig1, eval=FALSE, message=FALSE, warning=FALSE, display_type="output", include=FALSE, results='hide'}
 Bonds %>% ggplot(., aes(x=`Return 2009`, fill=Type)) + 
   geom_density(alpha = 0.3) + 
   scale_xaringan_fill_discrete() + 
@@ -241,12 +241,12 @@ Bonds %>% ggplot(., aes(x=`Return 2009`, fill=Type)) +
   labs(title="2009 Returns by Risk and Type", x="Returns in 2009")
 ```
 
-`r chunk_reveal("Fig1", display_type="output")`
+`r chunk_reveal("Fig1")`
 
 ---
 # We Can Graph Exactly That
 
-```{r Box1, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE, results='hide'}
+```{r Box1, eval=FALSE, message=FALSE, warning=FALSE, display_type="output", include=FALSE, results='hide'}
 Bonds %>% ggplot(., aes(y=`Return 2009`, x=Type, color=Type)) + 
   geom_boxplot(alpha = 0.3) + 
   guides(color=FALSE) + 
@@ -257,11 +257,11 @@ Bonds %>% ggplot(., aes(y=`Return 2009`, x=Type, color=Type)) +
   theme(axis.text.x = element_text(angle = 45, size=12))
 ```
 
-`r chunk_reveal("Box1", display_type="output")`
+`r chunk_reveal("Box1")`
 
 ---
 
-```{r RTC, eval=FALSE, message=FALSE, warning=FALSE, include=FALSE, results='hide'}
+```{r RTC, eval=FALSE, message=FALSE, warning=FALSE, display_type="output", include=FALSE, results='hide'}
 Bonds %>% 
   group_by(Type,Risk) %>% 
   summarise(Count = n()) %>% 
@@ -273,7 +273,7 @@ Bonds %>%
   theme(axis.text.x = element_text(angle = 45, size=12))
 ```
 
-`r chunk_reveal("RTC", display_type="output")`
+`r chunk_reveal("RTC")`
 
 ---
 # R Makes Data Understanding Easier
