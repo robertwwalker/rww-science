@@ -1,5 +1,5 @@
 +++
-date = 2021-08-30T10:30:00  # Schedule page publish date.
+date = 2021-08-31T18:00:00  # Schedule page publish date.
 
 title = "DADM Kickoff: Salem MBAP"
 time_start = 2021-08-31T18:00:00
@@ -38,4 +38,4 @@ caption = ":smile:"
 
 +++
 
-Slides in [xaringan](https://rww.science/xaringan/DADMKO/DADMKO.html)
+Slides in [xaringan](https://rww.science/xaringan/s21ko/S21KO.html)
