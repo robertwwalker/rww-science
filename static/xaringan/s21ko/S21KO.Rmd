@@ -42,9 +42,14 @@ style_mono_light(base_color = "#7d07f8",
 
 <iframe src="https://prezi.com/embed/qry669vrmpok/" id="iframe_container" frameborder="0" webkitallowfullscreen="" mozallowfullscreen="" allowfullscreen="" allow="autoplay; fullscreen" height="600" width="800"></iframe>
 
----
 
-# First Day Details
+---
+# A syllabus
+
+[Let's walk through that.](https://wise.willamette.edu/access/content/group/GSMPR-622-S2-21_FA/Syllabus/Syllabus-FA21-S1-622.pdf)
+
+---
+# First Day Work
 
 ## Some Quick R and Excel Tools
 
@@ -157,7 +162,11 @@ NB: The average is technically known as the *arithmetic mean*; it is sometimes s
 
 ## Cell Referencing
 
-We may not want that.  Suppose that I want to create a column showing the difference of calories and average calories.  The `$` holds an index constant [F4].  We have two.  In our case, we can hold both the rows and the column constant for the average.  Because we are only copying down, the `$5` would have sufficed.
+We may not want that.  Suppose that I want to create a column showing the difference of assets and average assets.  In essence, we have *rescaled* assets such that 0 is the average and we are measuring above or below that average [and by how much].  The `$` holds an index constant [F4].  We have two.  In our case, we can hold both the rows and the column constant for the average.
+
+--
+
+Because we are only copying down, the `$5` would have sufficed.
 
 ```
 =C2 - $J$5
@@ -191,7 +200,20 @@ Are really cool; they are a very simple and quick way to slice and data and to g
 
 They have the added virtue of being drag and drop.
 
-All of the action comes in the calculations shown in the pivot table.  Unfortunately, it is extraordinarily limited.  What if I want the first and third quartiles?
+All of the action comes in the calculations shown in the pivot table.  Unfortunately, it is extraordinarily limited.  
+
+--
+
++ What if I want the median?  
+
+--
+
++ How about the first and third quartiles?
+
+---
+# Cautionary Tale
+
+[Excel has probably killed people...  recently](https://www.bbc.com/news/technology-54423988)
 
 ---
 
@@ -243,12 +265,24 @@ Bonds %>% ggplot(., aes(x=`Return 2009`, fill=Type)) +
 `r chunk_reveal("Fig1", widths=c(30,70))`
 
 ---
+
+```{r Fig1A, eval=TRUE, echo=FALSE, fig.width=12, fig.height=8, message=FALSE, warning=FALSE}
+Bonds %>% ggplot(., aes(x=`Return 2009`, fill=Type)) + 
+  geom_density(alpha = 0.3) + 
+  scale_xaringan_fill_discrete() + 
+  theme_xaringan() + 
+  facet_wrap(vars(Risk)) + 
+  labs(title="2009 Returns by Risk and Type", x="Returns in 2009")
+```
+
+
+---
 # We Can Graph Exactly That
 
 ```{r Box1, eval=FALSE, message=FALSE, warning=FALSE, display_type="both", include=FALSE, results='hide'}
 Bonds %>% ggplot(., aes(y=`Return 2009`, x=Type, color=Type)) + 
   geom_boxplot(alpha = 0.3) + 
-  guides(color=FALSE) + 
+  guides(color="none") + 
   scale_color_viridis_d() + 
   theme_xaringan() + 
   facet_wrap(vars(Risk)) + 
@@ -257,6 +291,19 @@ Bonds %>% ggplot(., aes(y=`Return 2009`, x=Type, color=Type)) +
 ```
 
 `r chunk_reveal("Box1", widths=c(30,70))`
+
+---
+
+```{r Box1A, eval=TRUE, echo=FALSE, message=FALSE, warning=FALSE, fig.width=12, fig.height=8}
+Bonds %>% ggplot(., aes(y=`Return 2009`, x=Type, color=Type)) + 
+  geom_boxplot(alpha = 0.3) + 
+  guides(color="none") + 
+  scale_color_viridis_d() + 
+  theme_xaringan() + 
+  facet_wrap(vars(Risk)) + 
+  labs(title="2009 Returns by Risk and Type", y="Returns in 2009") +   
+  theme(axis.text.x = element_text(angle = 45, size=12))
+```
 
 ---
 
@@ -275,6 +322,20 @@ Bonds %>%
 `r chunk_reveal("RTC", widths=c(30,70))`
 
 ---
+
+```{r RTC1, eval=TRUE, echo=FALSE, message=FALSE, warning=FALSE, fig.width=12, fig.height=8}
+Bonds %>% 
+  group_by(Type,Risk) %>% 
+  summarise(Count = n()) %>% 
+  ggplot(., aes(x=Type, y=Risk, fill=Count)) + 
+  geom_tile() + 
+  labs(title="Funds by Risk and Type", y="Risk", x="Type")+ 
+  scale_xaringan_fill_continuous() +
+  theme_xaringan() 
+```
+
+
+---
 # R Makes Data Understanding Easier
 
 
@@ -286,7 +347,7 @@ R works by packages that add functionality.  The process is two parts: install a
 R can handle installation for you.  In general, unless you know what it means, avoid compiling from source; binary packages are preferred.
 
 ```{r eval=FALSE, tidy=FALSE}
-install.packages(c("tidyverse","skimr","magrittr","swirl","hrbrthemes","ggthemes"))
+install.packages(c("tidyverse","skimr","magrittr","hrbrthemes","ggthemes"))
 ```
 
 For your homework assignment, you will need
@@ -298,7 +359,7 @@ install.packages(c("swirl"))
 For a brief foray into R Graphics,
 
 ```{r eval=FALSE, tidy=FALSE}
-install.packages(c("esquisser"))
+install.packages(c("esquisse"))
 ```
 
 --
@@ -311,10 +372,13 @@ The [RStudio IDE](https://www.rstudio.com/products/rstudio/), is highly recommen
 **That's where swirl and learnr come in.**
 
 ```{r eval=FALSE, tidy=FALSE}
+install.packages("swirl")
+library(swirl)
+install_course_github("swirldev", "R_Programming_E")
 swirl()
 ```
 
-This is set up to email completions.  Or you can screenshot them.  It helps you learn how $R$ thinks.
+This is set up to email completions.  Or you can screenshot them.  It helps you learn how $R$ thinks.  In the end, it is for your benefit.
 
 ---
 # Takeaways
@@ -331,7 +395,7 @@ This is set up to email completions.  Or you can screenshot them.  It helps you 
 4. R with Markdown make automated report writing and other literate uses of data, graphics, and text easy to do.  
 --
 
-5. The assignment for this week involves practicing this.  
+5. The assignment for this week involves practicing this and getting acquainted with R via *swirl*.  
 --
 
-6. There is a worked example in `Resources > R Documents > HOWTOExcel` to work with.
+6. As a first task, we need to get data from Excel to R.  There is a worked example in `Resources > R Documents > Import Data from Excel into R` to work with.
