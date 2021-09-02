@@ -15,6 +15,7 @@ output:
 
 ```{r setup, include=FALSE}
 options(htmltools.dir.version = FALSE); library(tidyverse); library(dplyr)
+knitr::opts_chunk$set(fig.retina=3, fig.height=6, fig.width=9)
 ```
 
 ```{r xaringan-themer, include=FALSE}
@@ -630,40 +631,35 @@ FastFood %>%
 ---
 # A More Elaborate Table: Counts
 
-```{r}
-( Rest.Chicken.Table <- FastFood %>% group_by(restaurant,Chicken) %>% summarise(Count = n()) )
+```{r, message=FALSE}
+( Rest.Chicken.Table <- FastFood %>% group_by(restaurant, Chicken) %>% summarise(Count = n()) )
 ```
 
 
 ---
-# A First Data Visualisation [Chained]
+### A First Data Visualisation
 
 ```{r}
-FastFood %>% 
-  group_by(restaurant) %>% 
-  summarise(Count = n()) %>%
-  ggplot() + aes(x=restaurant, y=Count) + geom_col()
+FastFood %>% group_by(restaurant) %>% summarise(Count = n()) %>% ggplot() + aes(x=restaurant, y=Count) + geom_col()
 ```
 
 ---
-# Adding in Chicken
+### Adding in Chicken
 
-```{r}
-FastFood %>% 
-    group_by(restaurant, Chicken) %>% #<<
-    summarise(Count = n()) %>%
+```{r, message=FALSE}
+FastFood %>%  group_by(restaurant, Chicken) %>% summarise(Count = n()) %>%
     ggplot() + aes(x=restaurant, y=Count, fill=Chicken) + geom_col() #<<
 ```
 
 ---
-# More Chaining [`fct_reorder()`]
+### More Chaining [`fct_reorder()`]
 
 ```{r}
 FastFood %>% group_by(restaurant) %>% summarise(Count = n()) %>% ggplot() + aes(x=fct_reorder(restaurant, Count), y=Count) + geom_col() + labs(x="Chain", y="Count") + coord_flip() 
 ```
 
 ---
-# Even More Chaining
+### Even More Chaining
 
 ```{r, fig.height=6}
 FastFood %>% group_by(restaurant) %>% summarise(Count = n()) %>% ggplot() + aes(x=fct_reorder(restaurant, desc(Count)), y=Count) + geom_col() + labs(x="Chain", y="Count") + coord_flip() 
