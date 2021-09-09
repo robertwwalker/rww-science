@@ -21,6 +21,16 @@ output:
 knitr::opts_chunk$set(fig.width = 6, message = FALSE, warning = FALSE, comment = "", cache = F, dev = "svg", fig.ext = "svg", fig.retina=2)
 library(flipbookr)
 library(tidyverse)
+library(ggmap)
+library(ggrepel)
+library(haven)
+library(tidyverse)
+library(osmdata)
+library(sf)
+library(ggmap)
+library(emojifont)
+library(kableExtra)
+library(OpenStreetMap)
 ```
 
 ```{r xaringan-themer, include=FALSE, warning=FALSE}
@@ -29,7 +39,152 @@ library(xaringanthemer)
 style_mono_accent(base_color = "#43418A", text_font_google   = google_font("Fira Sans", "300", "300i"))
 ```
 
+---
 
+# A Grammar of Graphics
+
+--
+- data
+
+--
+- a mapping from data to aesthetics
+
+--
+- a geometry for representing the aesthetic
+
+
+---
+class: inverse
+
+# My Primitive: A canvas
+
+--
+### Data as coordinates in 1 or 2-d with aesthetics and geometries
+
+--
+Graphics are generically flat; they are (at most) **two dimensional**.
+
+That is caused by the screen.
+
+--
+
+*Our visuals must respect these limitations but we can add colors, shapes, and sizes,*
+--
+ or even emojis.  `r emo::ji("fire")`
+
+![](https://media.giphy.com/media/10pQQtsBUKz0Nq/giphy.gif)
+
+---
+class:inverse, center, middle, bounceIn, bounceOut
+
+# The canvas: Every graphic fits here
+
+```{r, echo=FALSE, fig.height = 5, fig.width = 7, fig.align = "center", dev="svg"}
+plot(x=rnorm(100),y=rnorm(100), pch="", bty="n", xlab="x", ylab="y", xlim=c(-2,2), ylim=c(-2,2), axes=FALSE)
+```
+
+
+---
+class: inverse, tada
+# One Important Caveat
+
+There is one notable and widely seen exception to this charaterization.  
+Size is total tenure.<sup>1<sup>
+
+```{r, eval=FALSE, echo=FALSE}
+# wordcloud code; not run
+Archigos <- Archigos %>% mutate(tenure = startdate %--% enddate)
+Archigos <- Archigos %>% mutate(tenureY = year(enddate) - year(startdate))
+WCdata <- Archigos %>% group_by(leader) %>% summarise(TenC = sum(tenureY)) %>% arrange(desc(TenC)
+WCdata %>% mutate(word=leader, freq=TenC) %>% wordcloud2(data=., color="random-dark", rotateRatio = 1, size=0.4)
+```
+
+.footnote[
+
+[1] The install script for the packages used is in the talk directory as `source(url("http://rww.science/talk/ggsc/PackagesUsed.R"))`.  The interested reader can issue `source(url("https://rww.science/talk/ggsc/XSCSetup.R"))`.
+
+]
+
+---
+class: inverse,heartBeat
+
+## The Illustration
+
+What determines x and y?    **Nothing.**    
+Coordinates are arbitrary.
+
+![](img/WordCloudLeaders.jpeg)
+
+
+
+
+---
+class: inverse, center, middle
+
+# A Simple Example to Cement our Thinking
+
+--
+
+[Where am I?](https://where-am-i.net)
+
+
+---
+# I am in Oregon
+## Let's Start There
+
+Get the map of Oregon and then use `ggmap` to map it.
+
+```{r, warning=FALSE, message=FALSE, eval=TRUE}
+OR_map <- get_map(getbb("Oregon"))
+# ggmap(OR_map) 
+```
+
+
+---
+class: inverse, wobble
+
+## The Result
+
+```{r, fig.height=5, fig.width=8, echo=FALSE, results='hide', warning=FALSE, message=FALSE}
+ggmap(OR_map)
+```
+
+
+---
+class: inverse
+
+# Me as Data
+
+For now, just my GPS coordinates.
+
+```{r}
+Me <- data.frame(lat=44.924943, lon=-123.043461)
+```
+
+![](https://media.giphy.com/media/tFV89pJJz3MoU/giphy.gif)
+
+---
+# Mapping Me...
+
+- Put my data on the earlier map.  
+- My data is a set of coordinates that are already defined on the map.  
+- Let's locate me on the map.
+
+```{r, eval=FALSE}
+Me <- data.frame(lat=44.924943, lon=-123.043461)
+ggmap(OR_map) +
+geom_emoji(data=Me, aes(y=lat, x=lon), emoji="1f4aa", size=0.125) + theme_nothing()
+```
+
+---
+class: inverse
+# Me on the Map
+
+```{r, echo=FALSE, fig.width=8, fig.height=5}
+ggmap(OR_map) + geom_emoji(data=Me, aes(y=lat, x=lon), emoji="1f4aa", size=0.1) + theme_nothing()
+```
+
+---
 # Bonds
 
 A dataset for illustrating the various available visualizations needs a certain degree of richness with manageable size.  The dataset on *Bonds* contains three categorical and a few quantitative indicators sufficient to show what we might wish.
@@ -56,11 +211,16 @@ Bonds:
 ---
 ## A Summary
 
-```{r SummaryT}
+```{r SummaryT2, echo=FALSE}
 Bonds %>% 
   skim_without_charts() %>% 
   kableExtra::kable() %>% 
   kableExtra::scroll_box(height="400px", width="800px")
+```
+
+```{r SummaryT, eval=FALSE}
+Bonds %>% 
+  skim_without_charts()
 ```
 
 Most data types are represented.  There is no time variable so dates and the visualizations that go with time series are omitted.  `kableExtra` is necessary to render my tables.  You can ignore that.
