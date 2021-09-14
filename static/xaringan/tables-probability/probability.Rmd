@@ -30,8 +30,8 @@ class: inverse, center
 # Probability
 
 ```{r, echo=FALSE}
-library(png)
-Prob.Def <- readPNG("~/Desktop/ETJ-Probability.png")
+library(png); library(here)
+Prob.Def <- readPNG(here("probtabSMBAP21/data","ETJ-Probability.png"))
 grid::grid.raster(Prob.Def)
 ```
 
