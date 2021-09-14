@@ -6,7 +6,7 @@ institute: "Atkinson Graduate School of Management"
 date: "2020/02/01 (updated: `r Sys.Date()`)"
 output:
   xaringan::moon_reader:
-    css: ["default", "metropolis", "metropolis-fonts"]
+    css: xaringan-themer.css
     lib_dir: libs
     nature:
       highlightStyle: github
@@ -21,6 +21,13 @@ knitr::opts_chunk$set(message=FALSE, warning=FALSE)
 options(htmltools.dir.version = FALSE)
 library(tidyverse)
 library(kableExtra)
+library(xaringanthemer)
+style_solarized_dark(
+#  base_color = "#1c5253",
+  header_font_google = google_font("Josefin Sans"),
+  text_font_google   = google_font("Montserrat", "300", "300i"),
+  code_font_google   = google_font("Fira Mono")
+)
 ```
 
 
@@ -465,6 +472,8 @@ class: inverse
 - `arrange()` and `desc()`  
 ]
 
+---
+class: inverse, center
 
 # Probability and Tables
 
