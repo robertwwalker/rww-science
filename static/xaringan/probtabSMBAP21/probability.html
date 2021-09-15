@@ -3958,7 +3958,7 @@ ggplot(FastFood) +
 
 ---
 
-![](probability_files/figure-html/unnamed-chunk-18-1.png)&lt;!-- --&gt;
+![](probability_files/figure-html/unnamed-chunk-19-1.png)&lt;!-- --&gt;
 
 
 
@@ -7671,7 +7671,7 @@ FastFood %&gt;%
 FastFood %&gt;% group_by(restaurant) %&gt;% summarise(Count = n()) %&gt;% ggplot() + aes(x=restaurant, y=Count) + geom_col()
 ```
 
-![](probability_files/figure-html/unnamed-chunk-28-1.png)&lt;!-- --&gt;
+![](probability_files/figure-html/unnamed-chunk-29-1.png)&lt;!-- --&gt;
 
 ---
 # Adding in Chicken
@@ -7682,7 +7682,7 @@ FastFood %&gt;%  group_by(restaurant, Chicken) %&gt;% summarise(Count = n()) %&g
 *   ggplot() + aes(x=restaurant, y=Count, fill=Chicken) + geom_col()
 ```
 
-![](probability_files/figure-html/unnamed-chunk-29-1.png)&lt;!-- --&gt;
+![](probability_files/figure-html/unnamed-chunk-30-1.png)&lt;!-- --&gt;
 
 ---
 # More Chaining [`fct_reorder()`]
@@ -7692,7 +7692,7 @@ FastFood %&gt;%  group_by(restaurant, Chicken) %&gt;% summarise(Count = n()) %&g
 FastFood %&gt;% group_by(restaurant) %&gt;% summarise(Count = n()) %&gt;% ggplot() + aes(x=fct_reorder(restaurant, Count), y=Count) + geom_col() + labs(x="Chain", y="Count") + coord_flip() 
 ```
 
-![](probability_files/figure-html/unnamed-chunk-30-1.png)&lt;!-- --&gt;
+![](probability_files/figure-html/unnamed-chunk-31-1.png)&lt;!-- --&gt;
 
 ---
 # Even More Chaining
@@ -7702,7 +7702,7 @@ FastFood %&gt;% group_by(restaurant) %&gt;% summarise(Count = n()) %&gt;% ggplot
 FastFood %&gt;% group_by(restaurant) %&gt;% summarise(Count = n()) %&gt;% ggplot() + aes(x=fct_reorder(restaurant, desc(Count)), y=Count) + geom_col() + labs(x="Chain", y="Count") + coord_flip() 
 ```
 
-![](probability_files/figure-html/unnamed-chunk-31-1.png)&lt;!-- --&gt;
+![](probability_files/figure-html/unnamed-chunk-32-1.png)&lt;!-- --&gt;
 
 ---
 class: inverse
@@ -7767,7 +7767,7 @@ class: inverse, center
 
 # Probability
 
-![](probability_files/figure-html/unnamed-chunk-33-1.png)&lt;!-- --&gt;
+![](probability_files/figure-html/unnamed-chunk-34-1.png)&lt;!-- --&gt;
 
 
 ---
@@ -8001,7 +8001,7 @@ countdown_fullscreen(
 )
 ```
 
-<div class="countdown" id="timer_6140f02d" style="top:0;right:0;bottom:0;left:0;margin:5%;padding:0;font-size:8em;" data-warnwhen="0">
+<div class="countdown" id="timer_61413b07" style="top:0;right:0;bottom:0;left:0;margin:5%;padding:0;font-size:8em;" data-warnwhen="0">
 <code class="countdown-time"><span class="countdown-digits minutes">05</span><span class="countdown-digits colon">:</span><span class="countdown-digits seconds">00</span></code>
 </div>
 
@@ -8188,7 +8188,7 @@ ggplot(UCBAdmit) + aes(x=M.F, fill=Admit) + geom_bar() + scale_fill_viridis_d()
 ]
 
 .pull-right[
-![](probability_files/figure-html/unnamed-chunk-43-1.png)&lt;!-- --&gt;
+![](probability_files/figure-html/unnamed-chunk-44-1.png)&lt;!-- --&gt;
 ]
 
 
@@ -8213,7 +8213,7 @@ ggplot(UCBAdmit) +
 ]
 
 .pull-right[
-![](probability_files/figure-html/unnamed-chunk-45-1.png)&lt;!-- --&gt;
+![](probability_files/figure-html/unnamed-chunk-46-1.png)&lt;!-- --&gt;
 
 ]
 
