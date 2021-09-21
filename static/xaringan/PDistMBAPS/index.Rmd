@@ -28,7 +28,7 @@ extra_css <- list(
   ".small" = list("font-size" = "90%"),
   ".scroll-output" = list("font-size" = "90%", "height" = "75%", "overflow-y" = "scroll")
   )
-style_mono_light(base_color = "#7d07f8",
+style_mono_light(base_color = "#301934",
           text_font_google   = google_font("EB Garamond"), 
           code_font_google   = google_font("Fira Mono"),
           extra_css = extra_css)
@@ -51,6 +51,13 @@ Jaynes presents a few core ideas and requirements for his rational system.  Prob
 
 - that sum to one for all events
 - are greater than or equal to zero for any given event
+
+---
+# Some Language
+
+*Sensitivity* refers to the ability of a test to designate an individual with a disease as positive.  *Specificity* refers to the ability of a test to designate an individual without a disease as negative.
+
+*False positives* are then the complement/opposite of specificity and *false negatives* are the complement/opposite of sensitivity.
 
 ---
 # Random Variables
@@ -602,6 +609,18 @@ Buyers <- rbinom(1000, size=Customers, prob = 0.85)
 Data <- data.frame(Buyers, Customers)
 Data$Revenue <- sapply(Data$Buyers, function(x) {sum(rnorm(x, 600, 150))})
 ```
+
+---
+# Simulation Results
+
+```{r Plot1, echo=FALSE}
+library(patchwork)
+p1 <- ggplot(Data) + aes(x=Customers) + geom_histogram(binwidth = 1) + theme_minimal()
+p2 <- ggplot(Data) + aes(x=Buyers) + geom_histogram(binwidth=1) + theme_minimal()
+p3 <- ggplot(Data) + aes(x=Revenue) + geom_density() + theme_minimal()
+(p1 + p2) / p3
+```
+
 
 ---
 # A Summary
