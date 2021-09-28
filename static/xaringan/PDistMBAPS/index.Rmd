@@ -604,10 +604,11 @@ You convert customers to buyers at a rate of 85%.
 Buyers spend, on average 600 dollars with a standard deviation of 150 dollars.
 
 ```{r}
+Sim <- 1:1000
 Customers <- rpois(1000, 7)
 Buyers <- rbinom(1000, size=Customers, prob = 0.85)
-Data <- data.frame(Buyers, Customers)
-Data$Revenue <- sapply(Data$Buyers, function(x) {sum(rnorm(x, 600, 150))})
+Data <- data.frame(Sim, Buyers, Customers)
+Data <- Data %>% group_by(Sim) %>% mutate(Revenue = sum(rnorm(Buyers, 600, 150))) %>% ungroup()
 ```
 
 ---
