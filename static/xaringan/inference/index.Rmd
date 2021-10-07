@@ -21,7 +21,7 @@ output:
 library(gganimate)
 options(htmltools.dir.version = FALSE)
 options(servr.daemon = TRUE)
-knitr::opts_chunk$set(warning=FALSE, message=FALSE, fig.showtext = TRUE, fig.height=6, fig.retina=3, dev="CairoJPEG")
+knitr::opts_chunk$set(warning=FALSE, message=FALSE, fig.showtext = TRUE, fig.height=5, fig.retina=3)
 library(DT)
 library(here)
 library(svglite)
@@ -558,7 +558,7 @@ class: inverse
 
 ```{r Yellow, message=FALSE, warning=FALSE, fig.width=9, fig.height=5, fig.align='center'}
 UCB.Pi <- bind_rows(UCBTF.Pi, UCBTM.Pi)
-UCB.Pi %>% ggplot(., aes(x=Gender, y=Pi.Admit, fill=Gender)) + geom_violin() + geom_label(aes(x=1.5, y=0.375), label="Too small to be male \n Too large to be female?", size=14, fill="black", color="white", inherit.aes = FALSE) + guides(size=FALSE) + theme_xaringan_inverse() + labs(x="")
+UCB.Pi %>% ggplot(., aes(x=Gender, y=Pi.Admit, fill=Gender)) + geom_violin() + geom_label(aes(x=1.5, y=0.375), label="Too small to be male \n Too large to be female?", size=14, fill="black", color="white", inherit.aes = FALSE) + guides(size="none") + theme_xaringan_inverse() + labs(x="")
 ```
 
 ---

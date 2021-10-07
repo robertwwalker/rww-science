@@ -835,6 +835,11 @@ Expenditure.Difference %>% ggplot(., aes(x=Diff)) + geom_density() + theme_minim
 
 For independent samples, the *Behrens-Fisher* problem dictates that comparisons of means have implications for the variance that must be reconciled.  In short, we must assume that the variance and standard deviation of the samples are either the same [t] or different [Welch -- the default].
 
+In Welch's case, the standard error is given by:
+
+$$s_{\overline{x_{1}} - \overline{x_{2}}} = \sqrt{\frac{s^{2}_{1}}{n_{1}} + \frac{s^{2}_{2}}{n_{2}}}$$
+though the degrees of freedom follow a formula that involves the `kurtosis` of the samples [$s^{4}$].
+
 ---
 
 ```{r}
@@ -852,7 +857,11 @@ Discrimination %>% filter(Ethnicity %in% c("White not Hispanic","Hispanic")) %>%
 
 Twinsberg.
 
-The paired t-test is a single sample average applied to the measured difference.  The key is knowing who is matched with whom and believing that there is at least some variation in both outcomes that depends on the unit in question.  Take the example of *Concrete*.
+The paired t-test is a single sample average applied to the measured difference.  The key is knowing who is matched with whom and believing that there is at least some variation in both outcomes that depends on the unit in question.  
+
+There is a linguistic distinction; this is an average difference instead of the previous difference in averages.  The language describes the order of operation.  For the paired comparison, I must know what to subtract from what.
+
+Take the example of *Concrete*.
 
 ---
 
@@ -902,3 +911,5 @@ With 95% confidence, the additive increases the average break-weight of the conc
 With proportions: If we claim a value of $\pi$, then use it for the standard error.  If not, use the data.
 
 With quantities: If comparing them, are samples independent or dependent?  All the relevant quantities are known [or assumed] functions of the data.
+
+For differences, the `magic number` is nearly always zero -- no difference.
