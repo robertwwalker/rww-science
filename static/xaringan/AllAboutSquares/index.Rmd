@@ -58,7 +58,8 @@ black.box.maker.NT <- function(mod1) {
             plot(x=NA, y=NA, xlim=c(0,rt1), ylim=c(0,rt1), main="", xlab="", ylab="", bty="n", cex=0.5)
             polygon(x=c(0,0,rt1,rt1), y=c(0,rt1,rt1,0), col="black")
             polygon(x=c(0,0,rt2,rt2), y=c(0,rt2,rt2,0), col="green")
-            }
+}
+library(xaringanExtra)
 ```
 
 
@@ -79,10 +80,6 @@ pre {
 .green { 
   color: green; 
 }
-```
-
-```{r broadcast, echo=FALSE}
-xaringanExtra::use_broadcast()
 ```
 
 ![Black Box Technology](img/bbox.png)
@@ -179,7 +176,14 @@ OregonSalaries %>%
 ## Visualising Independent Samples
 
 ```{r}
-ggplot(OregonSalaries) + aes(x=Gender, y=Salary) + geom_boxplot()
+ggplot(OregonSalaries) + aes(x=Gender, y=Salary) + geom_boxplot() + theme_xaringan()
+```
+
+---
+## Visualising Independent Samples
+
+```{r}
+ggplot(OregonSalaries) + aes(x=Gender, y=Salary, fill=Gender) + geom_violin() + theme_xaringan()
 ```
 
 
