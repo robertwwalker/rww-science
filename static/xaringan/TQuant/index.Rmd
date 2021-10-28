@@ -20,6 +20,7 @@ output:
 options(htmltools.dir.version = FALSE)
 knitr::opts_chunk$set(warning=FALSE, message=FALSE, comment=NA, prompt=FALSE, fig.height=6, fig.width=6.5, fig.retina = 3, dev = 'svg', dev.args = list(bg = "transparent"))
 library(xaringanthemer); library(kableExtra); library(tidyverse); library(skimr)
+library(flipbookr)
 # style_mono_accent(
 style_duo_accent(
 #style_solarized_light(
@@ -59,6 +60,12 @@ black.box.maker.NT <- function(mod1) {
 
 
 ```{css, echo = FALSE, include=FALSE}
+.remark-code{line-height: 1.5; font-size: 80%}
+@media print {
+  .has-continuation {
+    display: block;
+  }
+}
 .remark-slide-content p, il, ol, li {
   font-size: 32px;
   padding: 8px 16px 8px 16px;
@@ -75,10 +82,6 @@ pre {
 .green { 
   color: green; 
 }
-```
-
-```{r broadcast, echo=FALSE}
-xaringanExtra::use_broadcast()
 ```
 
 class: inverse
@@ -106,8 +109,51 @@ Equity market data is defined by tickers -- up to four character representations
 library(tidyquant)
 msft <- tq_get("MSFT", get = "stock.prices", from = "2015-10-01", to="2020-09-30")
 snp <- tq_get("^GSPC", get = "stock.prices", from = "2015-10-01", to="2020-09-30")
+Stocks.Tidy <- c("MSFT","^GSPC") %>% 
+  tq_get(get="stock.prices", from="2016-10-01") 
 ```
 
+---
+### The tidy data are stacked
+
+```{r}
+Stocks.Tidy %>% head()
+Stocks.Tidy %>% tail()
+```
+
+---
+### tidy data are easy to plot [the scales are off]
+
+```{r}
+Stocks.Tidy %>% ggplot() + aes(x=date, y=adjusted, color=symbol) + geom_line() + theme_xaringan()
+```
+
+---
+### `scale` applied to adjusted to match ranges
+
+.left-column[
+```{r, eval=FALSE}
+Stocks.Tidy %>% 
+  group_by(symbol) %>% 
+  mutate(adjusted.Z = scale(adjusted)) %>% 
+  ungroup() %>% 
+  ggplot() + 
+  aes(x=date, y=adjusted.Z, color=symbol) + 
+  geom_line() 
+```
+]
+
+.right-column[
+```{r, echo=FALSE}
+Stocks.Tidy %>% 
+  group_by(symbol) %>% 
+  mutate(adjusted.Z = scale(adjusted)) %>% 
+  ungroup() %>% 
+  ggplot() + 
+  aes(x=date, y=adjusted.Z, color=symbol) + 
+  geom_line() + theme_xaringan()
+```
+]
 ---
 ### The Data are **ohlc**: open, high, low, close
 
@@ -152,6 +198,25 @@ $$Return = \frac{Close_{t} - Open_{t}}{Open_{t}}$$
 
 ---
 ### tidyquant makes that easy
+
+The key is `tq_transmute`.
+
+```{r TRReveal, include=FALSE}
+Stocks.Tidy %>% 
+  group_by(symbol) %>%
+  tq_transmute(select=adjusted, mutate_fun = periodReturn, period = "monthly") %>% 
+  pivot_wider(values_from = monthly.returns, names_from = symbol) -> Tidy.Returns
+Tidy.Returns
+```
+
+---
+### `pivot_*` is wow...
+
+
+`r chunk_reveal("TRReveal", title="### transmute and pivot")`
+
+---
+### `join`
 
 ```{r}
 msft.p <- msft %>% 
@@ -215,7 +280,7 @@ resid.plotter(Model.MSFT)
 
 ```{r}
 c("TGT","^GSPC") %>% 
-  tq_get(., get="stock.prices", from="2015-10-01", to="2020-09-30") %>% 
+  tq_get(., get="stock.prices", from="2016-10-01", to="2021-09-30") %>% 
   group_by(symbol) %>% 
   tq_transmute(select = adjusted, mutate_fun = periodReturn, period = "monthly") %>% pivot_wider(., names_from=symbol, values_from=monthly.returns) %>% lm(TGT ~ `^GSPC`, data=.) %>% summary()
 ```
@@ -223,28 +288,68 @@ c("TGT","^GSPC") %>%
 ---
 # A Little R Magic
 
-```{r}
+.left-column[
+```{r, eval=FALSE}
 Beta.Maker <- function(ticker) {
   form1 <- formula(paste0(ticker," ~ `^GSPC`"))
   c(ticker,"^GSPC") %>% 
-  tq_get(., get="stock.prices", from="2015-10-01", to="2020-09-30") %>% 
-  group_by(symbol) %>% tq_transmute(select = adjusted, mutate_fun = periodReturn, period = "monthly") %>% pivot_wider(., names_from=symbol, values_from=monthly.returns) %>% lm(form1, data=.) %>% summary()
+  tq_get(., get="stock.prices", from="2016-10-01", to="2021-09-30") %>% 
+  group_by(symbol) %>% 
+    tq_transmute(select = adjusted, mutate_fun = periodReturn, period = "monthly") %>%
+    pivot_wider(., names_from=symbol, values_from=monthly.returns) %>% 
+    lm(form1, data=.)
 }
-Beta.Maker("F")
+print(summary(Beta.Maker("F")))
 ```
+]
+
+.right-column[
+```{r, echo=FALSE}
+Beta.Maker <- function(ticker) {
+  form1 <- formula(paste0(ticker," ~ `^GSPC`"))
+  c(ticker,"^GSPC") %>% 
+  tq_get(., get="stock.prices", from="2016-10-01", to="2021-09-30") %>% 
+  group_by(symbol) %>% 
+    tq_transmute(select = adjusted, mutate_fun = periodReturn, period = "monthly") %>%
+    pivot_wider(., names_from=symbol, values_from=monthly.returns) %>% 
+    lm(form1, data=.)
+}
+summary(Beta.Maker("F"))
+```
+]
 
 ---
 ## Even Better
 
 ```{r}
+Summary.Maker <- function(ticker) {
+  form1 <- formula(paste0(ticker," ~ `^GSPC`"))
+  c(ticker,"^GSPC") %>% 
+  tq_get(., get="stock.prices", from="2016-10-01", to="2021-09-30") %>% 
+  group_by(symbol) %>% 
+    tq_transmute(select = adjusted, mutate_fun = periodReturn, period = "monthly") %>%
+    pivot_wider(., names_from=symbol, values_from=monthly.returns) %>% 
+    lm(form1, data=.) %>% 
+    summary()
+}
 tickers <- c("JNJ","PG","TGT","JPM")
-res1 <- tickers %>% map(~Beta.Maker(.))
+res1 <- tickers %>% map(~Summary.Maker(.))
 names(res1) <- tickers
 ```
+
 ---
+# A Result
 
 ```{r}
-res1
+res1["JPM"]
 ```
 
+
+---
+# Residuals
+
+```{r}
+Mod1 <- Beta.Maker("JPM")
+resid.plotter(Mod1)
+```
 

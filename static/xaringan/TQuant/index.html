@@ -4,13 +4,8 @@
     <title>Tidyquant and CAPM</title>
     <meta charset="utf-8" />
     <meta name="author" content="Robert W. Walker" />
-    <meta name="date" content="2020-10-29" />
+    <meta name="date" content="2021-10-28" />
     <script src="libs/header-attrs/header-attrs.js"></script>
-    <script src="libs/js-cookie/js.cookie.js"></script>
-    <script src="libs/peerjs/peerjs.min.js"></script>
-    <script src="libs/tiny.toast/toast.min.js"></script>
-    <link href="libs/xaringanExtra-broadcast/broadcast.css" rel="stylesheet" />
-    <script src="libs/xaringanExtra-broadcast/broadcast.js"></script>
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
   </head>
   <body>
@@ -20,11 +15,9 @@ class: center, middle, inverse, title-slide
 # Tidyquant and CAPM
 ## On beta
 ### Robert W. Walker
-### 2020-10-29
+### 2021-10-28
 
 ---
-
-
 
 
 
@@ -58,8 +51,75 @@ Equity market data is defined by tickers -- up to four character representations
 library(tidyquant)
 msft &lt;- tq_get("MSFT", get = "stock.prices", from = "2015-10-01", to="2020-09-30")
 snp &lt;- tq_get("^GSPC", get = "stock.prices", from = "2015-10-01", to="2020-09-30")
+Stocks.Tidy &lt;- c("MSFT","^GSPC") %&gt;% 
+  tq_get(get="stock.prices", from="2016-10-01") 
 ```
 
+---
+### The tidy data are stacked
+
+
+```r
+Stocks.Tidy %&gt;% head()
+```
+
+```
+# A tibble: 6 × 8
+  symbol date        open  high   low close   volume adjusted
+  &lt;chr&gt;  &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+1 MSFT   2016-10-03  57.4  57.5  57.1  57.4 19189500     53.1
+2 MSFT   2016-10-04  57.3  57.6  57.0  57.2 20085900     53.0
+3 MSFT   2016-10-05  57.3  58.0  57.3  57.6 16726400     53.3
+4 MSFT   2016-10-06  57.7  57.9  57.3  57.7 16212600     53.4
+5 MSFT   2016-10-07  57.8  58.0  57.4  57.8 20089000     53.5
+6 MSFT   2016-10-10  57.9  58.4  57.9  58.0 18196500     53.7
+```
+
+```r
+Stocks.Tidy %&gt;% tail()
+```
+
+```
+# A tibble: 6 × 8
+  symbol date        open  high   low close     volume adjusted
+  &lt;chr&gt;  &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;    &lt;dbl&gt;
+1 ^GSPC  2021-10-20 4524. 4541. 4524. 4536. 2671560000    4536.
+2 ^GSPC  2021-10-21 4532. 4551. 4527. 4550. 3016950000    4550.
+3 ^GSPC  2021-10-22 4546. 4560. 4524  4545. 3062810000    4545.
+4 ^GSPC  2021-10-25 4554. 4573. 4537. 4566. 3250210000    4566.
+5 ^GSPC  2021-10-26 4579. 4599. 4569. 4575. 2866500000    4575.
+6 ^GSPC  2021-10-27 4580. 4585. 4552. 4552. 3259510000    4552.
+```
+
+---
+### tidy data are easy to plot [the scales are off]
+
+
+```r
+Stocks.Tidy %&gt;% ggplot() + aes(x=date, y=adjusted, color=symbol) + geom_line() + theme_xaringan()
+```
+
+&lt;img src="index_files/figure-html/unnamed-chunk-4-1.svg" width="468" /&gt;
+
+---
+### `scale` applied to adjusted to match ranges
+
+.left-column[
+
+```r
+Stocks.Tidy %&gt;% 
+  group_by(symbol) %&gt;% 
+  mutate(adjusted.Z = scale(adjusted)) %&gt;% 
+  ungroup() %&gt;% 
+  ggplot() + 
+  aes(x=date, y=adjusted.Z, color=symbol) + 
+  geom_line() 
+```
+]
+
+.right-column[
+&lt;img src="index_files/figure-html/unnamed-chunk-6-1.svg" width="468" /&gt;
+]
 ---
 ### The Data are **ohlc**: open, high, low, close
 
@@ -69,14 +129,14 @@ head(msft, 5)
 ```
 
 ```
-# A tibble: 5 x 8
+# A tibble: 5 × 8
   symbol date        open  high   low close   volume adjusted
   &lt;chr&gt;  &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
-1 MSFT   2015-10-01  44.8  44.8  43.8  44.6 28657900     40.5
-2 MSFT   2015-10-02  44.3  45.6  43.9  45.6 41839000     41.4
-3 MSFT   2015-10-05  45.8  46.9  45.7  46.6 34369300     42.4
-4 MSFT   2015-10-06  46.3  47.2  46.2  46.8 27017200     42.5
-5 MSFT   2015-10-07  47.1  47.3  46.0  46.8 27711500     42.5
+1 MSFT   2015-10-01  44.8  44.8  43.8  44.6 28657900     40.2
+2 MSFT   2015-10-02  44.3  45.6  43.9  45.6 41839000     41.0
+3 MSFT   2015-10-05  45.8  46.9  45.7  46.6 34369300     42.0
+4 MSFT   2015-10-06  46.3  47.2  46.2  46.8 27017200     42.1
+5 MSFT   2015-10-07  47.1  47.3  46.0  46.8 27711500     42.1
 ```
 
 ```r
@@ -84,7 +144,7 @@ head(snp, 5)
 ```
 
 ```
-# A tibble: 5 x 8
+# A tibble: 5 × 8
   symbol date        open  high   low close     volume adjusted
   &lt;chr&gt;  &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;    &lt;dbl&gt;
 1 ^GSPC  2015-10-01 1920. 1927. 1901. 1924. 3983600000    1924.
@@ -117,7 +177,7 @@ MSFTG + SNPG
 ]
 
 .right-column[
-&lt;img src="index_files/figure-html/unnamed-chunk-4-1.svg" width="468" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-8-1.svg" width="468" /&gt;
 ]
 
 ---
@@ -129,6 +189,196 @@ Stocks vary along a number of dimensions including price, number of shares, clas
 
 ---
 ### tidyquant makes that easy
+
+The key is `tq_transmute`.
+
+
+
+---
+### `pivot_*` is wow...
+
+
+count: false
+ 
+### transmute and pivot
+.panel1-TRReveal-auto[
+
+```r
+*Stocks.Tidy
+```
+]
+ 
+.panel2-TRReveal-auto[
+
+```
+# A tibble: 2,554 × 8
+   symbol date        open  high   low close   volume adjusted
+   &lt;chr&gt;  &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+ 1 MSFT   2016-10-03  57.4  57.5  57.1  57.4 19189500     53.1
+ 2 MSFT   2016-10-04  57.3  57.6  57.0  57.2 20085900     53.0
+ 3 MSFT   2016-10-05  57.3  58.0  57.3  57.6 16726400     53.3
+ 4 MSFT   2016-10-06  57.7  57.9  57.3  57.7 16212600     53.4
+ 5 MSFT   2016-10-07  57.8  58.0  57.4  57.8 20089000     53.5
+ 6 MSFT   2016-10-10  57.9  58.4  57.9  58.0 18196500     53.7
+ 7 MSFT   2016-10-11  57.9  58.0  56.9  57.2 26497400     52.9
+ 8 MSFT   2016-10-12  57.1  57.3  56.4  57.1 22177500     52.8
+ 9 MSFT   2016-10-13  56.7  57.3  56.3  56.9 25313700     52.7
+10 MSFT   2016-10-14  57.1  57.7  57.1  57.4 27402500     53.1
+# … with 2,544 more rows
+```
+]
+
+---
+count: false
+ 
+### transmute and pivot
+.panel1-TRReveal-auto[
+
+```r
+Stocks.Tidy %&gt;%
+* group_by(symbol)
+```
+]
+ 
+.panel2-TRReveal-auto[
+
+```
+# A tibble: 2,554 × 8
+# Groups:   symbol [2]
+   symbol date        open  high   low close   volume adjusted
+   &lt;chr&gt;  &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
+ 1 MSFT   2016-10-03  57.4  57.5  57.1  57.4 19189500     53.1
+ 2 MSFT   2016-10-04  57.3  57.6  57.0  57.2 20085900     53.0
+ 3 MSFT   2016-10-05  57.3  58.0  57.3  57.6 16726400     53.3
+ 4 MSFT   2016-10-06  57.7  57.9  57.3  57.7 16212600     53.4
+ 5 MSFT   2016-10-07  57.8  58.0  57.4  57.8 20089000     53.5
+ 6 MSFT   2016-10-10  57.9  58.4  57.9  58.0 18196500     53.7
+ 7 MSFT   2016-10-11  57.9  58.0  56.9  57.2 26497400     52.9
+ 8 MSFT   2016-10-12  57.1  57.3  56.4  57.1 22177500     52.8
+ 9 MSFT   2016-10-13  56.7  57.3  56.3  56.9 25313700     52.7
+10 MSFT   2016-10-14  57.1  57.7  57.1  57.4 27402500     53.1
+# … with 2,544 more rows
+```
+]
+
+---
+count: false
+ 
+### transmute and pivot
+.panel1-TRReveal-auto[
+
+```r
+Stocks.Tidy %&gt;%
+  group_by(symbol) %&gt;%
+* tq_transmute(select=adjusted, mutate_fun = periodReturn, period = "monthly")
+```
+]
+ 
+.panel2-TRReveal-auto[
+
+```
+# A tibble: 122 × 3
+# Groups:   symbol [2]
+   symbol date       monthly.returns
+   &lt;chr&gt;  &lt;date&gt;               &lt;dbl&gt;
+ 1 MSFT   2016-10-31         0.0435 
+ 2 MSFT   2016-11-30         0.0125 
+ 3 MSFT   2016-12-30         0.0312 
+ 4 MSFT   2017-01-31         0.0404 
+ 5 MSFT   2017-02-28        -0.00436
+ 6 MSFT   2017-03-31         0.0294 
+ 7 MSFT   2017-04-28         0.0395 
+ 8 MSFT   2017-05-31         0.0260 
+ 9 MSFT   2017-06-30        -0.0130 
+10 MSFT   2017-07-31         0.0547 
+# … with 112 more rows
+```
+]
+
+---
+count: false
+ 
+### transmute and pivot
+.panel1-TRReveal-auto[
+
+```r
+Stocks.Tidy %&gt;%
+  group_by(symbol) %&gt;%
+  tq_transmute(select=adjusted, mutate_fun = periodReturn, period = "monthly") %&gt;%
+* pivot_wider(values_from = monthly.returns, names_from = symbol) -&gt; Tidy.Returns
+```
+]
+ 
+.panel2-TRReveal-auto[
+
+]
+
+---
+count: false
+ 
+### transmute and pivot
+.panel1-TRReveal-auto[
+
+```r
+Stocks.Tidy %&gt;%
+  group_by(symbol) %&gt;%
+  tq_transmute(select=adjusted, mutate_fun = periodReturn, period = "monthly") %&gt;%
+  pivot_wider(values_from = monthly.returns, names_from = symbol) -&gt; Tidy.Returns
+*Tidy.Returns
+```
+]
+ 
+.panel2-TRReveal-auto[
+
+```
+# A tibble: 61 × 3
+   date           MSFT   `^GSPC`
+   &lt;date&gt;        &lt;dbl&gt;     &lt;dbl&gt;
+ 1 2016-10-31  0.0435  -0.0162  
+ 2 2016-11-30  0.0125   0.0342  
+ 3 2016-12-30  0.0312   0.0182  
+ 4 2017-01-31  0.0404   0.0179  
+ 5 2017-02-28 -0.00436  0.0372  
+ 6 2017-03-31  0.0294  -0.000389
+ 7 2017-04-28  0.0395   0.00909 
+ 8 2017-05-31  0.0260   0.0116  
+ 9 2017-06-30 -0.0130   0.00481 
+10 2017-07-31  0.0547   0.0193  
+# … with 51 more rows
+```
+]
+
+&lt;style&gt;
+.panel1-TRReveal-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-TRReveal-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-TRReveal-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+---
+### `join`
 
 
 ```r
@@ -148,7 +398,7 @@ head(stocks, 5)
 ```
 
 ```
-# A tibble: 5 x 3
+# A tibble: 5 × 3
   date       sp.returns msft.returns
   &lt;date&gt;          &lt;dbl&gt;        &lt;dbl&gt;
 1 2015-10-30   0.0808        0.180  
@@ -216,7 +466,7 @@ resid.plotter(Model.MSFT)
 ]
 
 .pull-right[
-&lt;img src="index_files/figure-html/unnamed-chunk-7-1.svg" width="468" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-11-1.svg" width="468" /&gt;
 ]
 
 
@@ -226,7 +476,7 @@ resid.plotter(Model.MSFT)
 
 ```r
 c("TGT","^GSPC") %&gt;% 
-  tq_get(., get="stock.prices", from="2015-10-01", to="2020-09-30") %&gt;% 
+  tq_get(., get="stock.prices", from="2016-10-01", to="2021-09-30") %&gt;% 
   group_by(symbol) %&gt;% 
   tq_transmute(select = adjusted, mutate_fun = periodReturn, period = "monthly") %&gt;% pivot_wider(., names_from=symbol, values_from=monthly.returns) %&gt;% lm(TGT ~ `^GSPC`, data=.) %&gt;% summary()
 ```
@@ -238,33 +488,40 @@ lm(formula = TGT ~ `^GSPC`, data = .)
 
 Residuals:
       Min        1Q    Median        3Q       Max 
--0.168436 -0.038314 -0.003875  0.044311  0.254517 
+-0.176182 -0.034569 -0.001517  0.044749  0.252205 
 
 Coefficients:
-            Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept) 0.009029   0.010208   0.884 0.380113    
-`^GSPC`     0.836826   0.232654   3.597 0.000667 ***
+            Estimate Std. Error t value  Pr(&gt;|t|)    
+(Intercept) 0.014075   0.009895   1.422      0.16    
+`^GSPC`     0.988020   0.219734   4.496 0.0000336 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 0.07694 on 58 degrees of freedom
-Multiple R-squared:  0.1824,	Adjusted R-squared:  0.1683 
-F-statistic: 12.94 on 1 and 58 DF,  p-value: 0.0006666
+Residual standard error: 0.07353 on 58 degrees of freedom
+Multiple R-squared:  0.2585,	Adjusted R-squared:  0.2457 
+F-statistic: 20.22 on 1 and 58 DF,  p-value: 0.00003364
 ```
 
 ---
 # A Little R Magic
 
+.left-column[
 
 ```r
 Beta.Maker &lt;- function(ticker) {
   form1 &lt;- formula(paste0(ticker," ~ `^GSPC`"))
   c(ticker,"^GSPC") %&gt;% 
-  tq_get(., get="stock.prices", from="2015-10-01", to="2020-09-30") %&gt;% 
-  group_by(symbol) %&gt;% tq_transmute(select = adjusted, mutate_fun = periodReturn, period = "monthly") %&gt;% pivot_wider(., names_from=symbol, values_from=monthly.returns) %&gt;% lm(form1, data=.) %&gt;% summary()
+  tq_get(., get="stock.prices", from="2016-10-01", to="2021-09-30") %&gt;% 
+  group_by(symbol) %&gt;% 
+    tq_transmute(select = adjusted, mutate_fun = periodReturn, period = "monthly") %&gt;%
+    pivot_wider(., names_from=symbol, values_from=monthly.returns) %&gt;% 
+    lm(form1, data=.)
 }
-Beta.Maker("F")
+print(summary(Beta.Maker("F")))
 ```
+]
+
+.right-column[
 
 ```
 
@@ -273,100 +530,50 @@ lm(formula = form1, data = .)
 
 Residuals:
       Min        1Q    Median        3Q       Max 
--0.168227 -0.026070  0.002404  0.027251  0.174931 
+-0.169171 -0.041671 -0.007837  0.022848  0.255796 
 
 Coefficients:
-            Estimate Std. Error t value      Pr(&gt;|t|)    
-(Intercept) -0.01708    0.00790  -2.163        0.0347 *  
-`^GSPC`      1.30879    0.18004   7.269 0.00000000103 ***
+             Estimate Std. Error t value  Pr(&gt;|t|)    
+(Intercept) -0.002585   0.011351  -0.228     0.821    
+`^GSPC`      1.073203   0.252079   4.257 0.0000766 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 0.05954 on 58 degrees of freedom
-Multiple R-squared:  0.4767,	Adjusted R-squared:  0.4677 
-F-statistic: 52.84 on 1 and 58 DF,  p-value: 0.000000001034
+Residual standard error: 0.08435 on 58 degrees of freedom
+Multiple R-squared:  0.2381,	Adjusted R-squared:  0.225 
+F-statistic: 18.13 on 1 and 58 DF,  p-value: 0.0000766
 ```
+]
 
 ---
 ## Even Better
 
 
 ```r
+Summary.Maker &lt;- function(ticker) {
+  form1 &lt;- formula(paste0(ticker," ~ `^GSPC`"))
+  c(ticker,"^GSPC") %&gt;% 
+  tq_get(., get="stock.prices", from="2016-10-01", to="2021-09-30") %&gt;% 
+  group_by(symbol) %&gt;% 
+    tq_transmute(select = adjusted, mutate_fun = periodReturn, period = "monthly") %&gt;%
+    pivot_wider(., names_from=symbol, values_from=monthly.returns) %&gt;% 
+    lm(form1, data=.) %&gt;% 
+    summary()
+}
 tickers &lt;- c("JNJ","PG","TGT","JPM")
-res1 &lt;- tickers %&gt;% map(~Beta.Maker(.))
+res1 &lt;- tickers %&gt;% map(~Summary.Maker(.))
 names(res1) &lt;- tickers
 ```
+
 ---
+# A Result
 
 
 ```r
-res1
+res1["JPM"]
 ```
 
 ```
-$JNJ
-
-Call:
-lm(formula = form1, data = .)
-
-Residuals:
-     Min       1Q   Median       3Q      Max 
--0.07808 -0.02107  0.00149  0.02145  0.07182 
-
-Coefficients:
-            Estimate Std. Error t value     Pr(&gt;|t|)    
-(Intercept) 0.003950   0.004732   0.835        0.407    
-`^GSPC`     0.691431   0.107851   6.411 0.0000000284 ***
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-Residual standard error: 0.03566 on 58 degrees of freedom
-Multiple R-squared:  0.4147,	Adjusted R-squared:  0.4046 
-F-statistic:  41.1 on 1 and 58 DF,  p-value: 0.00000002838
-
-
-$PG
-
-Call:
-lm(formula = form1, data = .)
-
-Residuals:
-      Min        1Q    Median        3Q       Max 
--0.090195 -0.022796  0.002637  0.018926  0.094946 
-
-Coefficients:
-            Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept) 0.009927   0.005139   1.931 0.058315 .  
-`^GSPC`     0.431926   0.117131   3.688 0.000501 ***
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-Residual standard error: 0.03873 on 58 degrees of freedom
-Multiple R-squared:  0.1899,	Adjusted R-squared:  0.176 
-F-statistic:  13.6 on 1 and 58 DF,  p-value: 0.0005007
-
-
-$TGT
-
-Call:
-lm(formula = form1, data = .)
-
-Residuals:
-      Min        1Q    Median        3Q       Max 
--0.168436 -0.038314 -0.003875  0.044311  0.254517 
-
-Coefficients:
-            Estimate Std. Error t value Pr(&gt;|t|)    
-(Intercept) 0.009029   0.010208   0.884 0.380113    
-`^GSPC`     0.836826   0.232654   3.597 0.000667 ***
----
-Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
-
-Residual standard error: 0.07694 on 58 degrees of freedom
-Multiple R-squared:  0.1824,	Adjusted R-squared:  0.1683 
-F-statistic: 12.94 on 1 and 58 DF,  p-value: 0.0006666
-
-
 $JPM
 
 Call:
@@ -374,20 +581,31 @@ lm(formula = form1, data = .)
 
 Residuals:
      Min       1Q   Median       3Q      Max 
--0.08098 -0.03308 -0.01128  0.02851  0.11778 
+-0.08432 -0.03715 -0.01483  0.03157  0.11218 
 
 Coefficients:
-             Estimate Std. Error t value        Pr(&gt;|t|)    
-(Intercept) 0.0004003  0.0060844   0.066           0.948    
-`^GSPC`     1.1512061  0.1386677   8.302 0.0000000000191 ***
+            Estimate Std. Error t value       Pr(&gt;|t|)    
+(Intercept) 0.005348   0.006779   0.789          0.433    
+`^GSPC`     1.170229   0.150547   7.773 0.000000000147 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 0.04586 on 58 degrees of freedom
-Multiple R-squared:  0.543,	Adjusted R-squared:  0.5351 
-F-statistic: 68.92 on 1 and 58 DF,  p-value: 0.00000000001914
+Residual standard error: 0.05038 on 58 degrees of freedom
+Multiple R-squared:  0.5102,	Adjusted R-squared:  0.5018 
+F-statistic: 60.42 on 1 and 58 DF,  p-value: 0.0000000001471
 ```
 
+
+---
+# Residuals
+
+
+```r
+Mod1 &lt;- Beta.Maker("JPM")
+resid.plotter(Mod1)
+```
+
+&lt;img src="index_files/figure-html/unnamed-chunk-17-1.svg" width="468" /&gt;
 
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
