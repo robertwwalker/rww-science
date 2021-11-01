@@ -4,7 +4,7 @@
     <title>Tidyquant and CAPM</title>
     <meta charset="utf-8" />
     <meta name="author" content="Robert W. Walker" />
-    <meta name="date" content="2021-10-28" />
+    <meta name="date" content="2021-10-31" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <link rel="stylesheet" href="xaringan-themer.css" type="text/css" />
   </head>
@@ -15,7 +15,7 @@ class: center, middle, inverse, title-slide
 # Tidyquant and CAPM
 ## On beta
 ### Robert W. Walker
-### 2021-10-28
+### 2021-10-31
 
 ---
 
@@ -49,8 +49,8 @@ Equity market data is defined by tickers -- up to four character representations
 
 ```r
 library(tidyquant)
-msft &lt;- tq_get("MSFT", get = "stock.prices", from = "2015-10-01", to="2020-09-30")
-snp &lt;- tq_get("^GSPC", get = "stock.prices", from = "2015-10-01", to="2020-09-30")
+msft &lt;- tq_get("MSFT", get = "stock.prices", from = "2016-10-01", to="2021-10-30")
+snp &lt;- tq_get("^GSPC", get = "stock.prices", from = "2016-10-01", to="2021-10-30")
 Stocks.Tidy &lt;- c("MSFT","^GSPC") %&gt;% 
   tq_get(get="stock.prices", from="2016-10-01") 
 ```
@@ -83,12 +83,12 @@ Stocks.Tidy %&gt;% tail()
 # A tibble: 6 × 8
   symbol date        open  high   low close     volume adjusted
   &lt;chr&gt;  &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;    &lt;dbl&gt;
-1 ^GSPC  2021-10-20 4524. 4541. 4524. 4536. 2671560000    4536.
-2 ^GSPC  2021-10-21 4532. 4551. 4527. 4550. 3016950000    4550.
-3 ^GSPC  2021-10-22 4546. 4560. 4524  4545. 3062810000    4545.
-4 ^GSPC  2021-10-25 4554. 4573. 4537. 4566. 3250210000    4566.
-5 ^GSPC  2021-10-26 4579. 4599. 4569. 4575. 2866500000    4575.
-6 ^GSPC  2021-10-27 4580. 4585. 4552. 4552. 3259510000    4552.
+1 ^GSPC  2021-10-22 4546. 4560. 4524  4545. 3062810000    4545.
+2 ^GSPC  2021-10-25 4554. 4573. 4537. 4566. 3250210000    4566.
+3 ^GSPC  2021-10-26 4579. 4599. 4569. 4575. 2866500000    4575.
+4 ^GSPC  2021-10-27 4580. 4585. 4552. 4552. 3259510000    4552.
+5 ^GSPC  2021-10-28 4563. 4598. 4563. 4596. 3197560000    4596.
+6 ^GSPC  2021-10-29 4573. 4608. 4568. 4605. 3632260000    4605.
 ```
 
 ---
@@ -132,11 +132,11 @@ head(msft, 5)
 # A tibble: 5 × 8
   symbol date        open  high   low close   volume adjusted
   &lt;chr&gt;  &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
-1 MSFT   2015-10-01  44.8  44.8  43.8  44.6 28657900     40.2
-2 MSFT   2015-10-02  44.3  45.6  43.9  45.6 41839000     41.0
-3 MSFT   2015-10-05  45.8  46.9  45.7  46.6 34369300     42.0
-4 MSFT   2015-10-06  46.3  47.2  46.2  46.8 27017200     42.1
-5 MSFT   2015-10-07  47.1  47.3  46.0  46.8 27711500     42.1
+1 MSFT   2016-10-03  57.4  57.5  57.1  57.4 19189500     53.1
+2 MSFT   2016-10-04  57.3  57.6  57.0  57.2 20085900     53.0
+3 MSFT   2016-10-05  57.3  58.0  57.3  57.6 16726400     53.3
+4 MSFT   2016-10-06  57.7  57.9  57.3  57.7 16212600     53.4
+5 MSFT   2016-10-07  57.8  58.0  57.4  57.8 20089000     53.5
 ```
 
 ```r
@@ -147,11 +147,11 @@ head(snp, 5)
 # A tibble: 5 × 8
   symbol date        open  high   low close     volume adjusted
   &lt;chr&gt;  &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;      &lt;dbl&gt;    &lt;dbl&gt;
-1 ^GSPC  2015-10-01 1920. 1927. 1901. 1924. 3983600000    1924.
-2 ^GSPC  2015-10-02 1922. 1951. 1894. 1951. 4378570000    1951.
-3 ^GSPC  2015-10-05 1954. 1989. 1954. 1987. 4334490000    1987.
-4 ^GSPC  2015-10-06 1987. 1992. 1972. 1980. 4202400000    1980.
-5 ^GSPC  2015-10-07 1982. 1999. 1976. 1996. 4666470000    1996.
+1 ^GSPC  2016-10-03 2164. 2164. 2155. 2161. 3137550000    2161.
+2 ^GSPC  2016-10-04 2163. 2165. 2144. 2150. 3750890000    2150.
+3 ^GSPC  2016-10-05 2155. 2164. 2155. 2160. 3906550000    2160.
+4 ^GSPC  2016-10-06 2158. 2163. 2150. 2161. 3461550000    2161.
+5 ^GSPC  2016-10-07 2164. 2166. 2145. 2154. 3619890000    2154.
 ```
 
 ---
@@ -195,12 +195,10 @@ The key is `tq_transmute`.
 
 
 ---
-### `pivot_*` is wow...
-
 
 count: false
  
-### transmute and pivot
+
 .panel1-TRReveal-auto[
 
 ```r
@@ -211,7 +209,7 @@ count: false
 .panel2-TRReveal-auto[
 
 ```
-# A tibble: 2,554 × 8
+# A tibble: 2,558 × 8
    symbol date        open  high   low close   volume adjusted
    &lt;chr&gt;  &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
  1 MSFT   2016-10-03  57.4  57.5  57.1  57.4 19189500     53.1
@@ -224,14 +222,14 @@ count: false
  8 MSFT   2016-10-12  57.1  57.3  56.4  57.1 22177500     52.8
  9 MSFT   2016-10-13  56.7  57.3  56.3  56.9 25313700     52.7
 10 MSFT   2016-10-14  57.1  57.7  57.1  57.4 27402500     53.1
-# … with 2,544 more rows
+# … with 2,548 more rows
 ```
 ]
 
 ---
 count: false
  
-### transmute and pivot
+
 .panel1-TRReveal-auto[
 
 ```r
@@ -243,7 +241,7 @@ Stocks.Tidy %&gt;%
 .panel2-TRReveal-auto[
 
 ```
-# A tibble: 2,554 × 8
+# A tibble: 2,558 × 8
 # Groups:   symbol [2]
    symbol date        open  high   low close   volume adjusted
    &lt;chr&gt;  &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;    &lt;dbl&gt;    &lt;dbl&gt;
@@ -257,14 +255,14 @@ Stocks.Tidy %&gt;%
  8 MSFT   2016-10-12  57.1  57.3  56.4  57.1 22177500     52.8
  9 MSFT   2016-10-13  56.7  57.3  56.3  56.9 25313700     52.7
 10 MSFT   2016-10-14  57.1  57.7  57.1  57.4 27402500     53.1
-# … with 2,544 more rows
+# … with 2,548 more rows
 ```
 ]
 
 ---
 count: false
  
-### transmute and pivot
+
 .panel1-TRReveal-auto[
 
 ```r
@@ -298,7 +296,7 @@ Stocks.Tidy %&gt;%
 ---
 count: false
  
-### transmute and pivot
+
 .panel1-TRReveal-auto[
 
 ```r
@@ -316,7 +314,7 @@ Stocks.Tidy %&gt;%
 ---
 count: false
  
-### transmute and pivot
+
 .panel1-TRReveal-auto[
 
 ```r
@@ -401,11 +399,11 @@ head(stocks, 5)
 # A tibble: 5 × 3
   date       sp.returns msft.returns
   &lt;date&gt;          &lt;dbl&gt;        &lt;dbl&gt;
-1 2015-10-30   0.0808        0.180  
-2 2015-11-30   0.000505      0.0394 
-3 2015-12-31  -0.0175        0.0208 
-4 2016-01-29  -0.0507       -0.00703
-5 2016-02-29  -0.00413      -0.0698 
+1 2016-10-31    -0.0162      0.0435 
+2 2016-11-30     0.0342      0.0125 
+3 2016-12-30     0.0182      0.0312 
+4 2017-01-31     0.0179      0.0404 
+5 2017-02-28     0.0372     -0.00436
 ```
 
 ---
@@ -433,18 +431,18 @@ lm(formula = msft.returns ~ sp.returns, data = stocks)
 
 Residuals:
       Min        1Q    Median        3Q       Max 
--0.119255 -0.021597  0.003297  0.018574  0.085639 
+-0.059970 -0.027096  0.003965  0.017168  0.096956 
 
 Coefficients:
-            Estimate Std. Error t value       Pr(&gt;|t|)    
-(Intercept) 0.019714   0.005283   3.731       0.000435 ***
-sp.returns  0.923342   0.120409   7.668 0.000000000221 ***
+            Estimate Std. Error t value        Pr(&gt;|t|)    
+(Intercept) 0.020276   0.004814   4.212 0.0000878443502 ***
+sp.returns  0.854154   0.105338   8.109 0.0000000000358 ***
 ---
 Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
-Residual standard error: 0.03982 on 58 degrees of freedom
-Multiple R-squared:  0.5034,	Adjusted R-squared:  0.4949 
-F-statistic:  58.8 on 1 and 58 DF,  p-value: 0.0000000002206
+Residual standard error: 0.03594 on 59 degrees of freedom
+Multiple R-squared:  0.5271,	Adjusted R-squared:  0.519 
+F-statistic: 65.75 on 1 and 59 DF,  p-value: 0.00000000003584
 ```
 
 ---
@@ -541,7 +539,7 @@ Signif. codes:  0 '***' 0.001 '**' 0.01 '*' 0.05 '.' 0.1 ' ' 1
 
 Residual standard error: 0.08435 on 58 degrees of freedom
 Multiple R-squared:  0.2381,	Adjusted R-squared:  0.225 
-F-statistic: 18.13 on 1 and 58 DF,  p-value: 0.0000766
+F-statistic: 18.13 on 1 and 58 DF,  p-value: 0.00007661
 ```
 ]
 
@@ -607,10 +605,98 @@ resid.plotter(Mod1)
 
 &lt;img src="index_files/figure-html/unnamed-chunk-17-1.svg" width="468" /&gt;
 
+---
+## Two pivots
+
+`pivot_longer` and `pivot_wider` take data from wide to long and long to wide formats.  First, the help is extensive.  `?pivot_wider` or `?pivot_longer` even contain working examples.  The basic idea is to either encode or decode information into the column names.
+
+
+```r
+stocks
+```
+
+```
+# A tibble: 61 × 3
+   date       sp.returns msft.returns
+   &lt;date&gt;          &lt;dbl&gt;        &lt;dbl&gt;
+ 1 2016-10-31  -0.0162        0.0435 
+ 2 2016-11-30   0.0342        0.0125 
+ 3 2016-12-30   0.0182        0.0312 
+ 4 2017-01-31   0.0179        0.0404 
+ 5 2017-02-28   0.0372       -0.00436
+ 6 2017-03-31  -0.000389      0.0294 
+ 7 2017-04-28   0.00909       0.0395 
+ 8 2017-05-31   0.0116        0.0260 
+ 9 2017-06-30   0.00481      -0.0130 
+10 2017-07-31   0.0193        0.0547 
+# … with 51 more rows
+```
+
+---
+## Make them tidy
+
+I want to take `sp.returns` and `msft.returns` and stack them into two columns with one `returns` representing the value of both variables and the other column a `ticker` that contains the source of that data.  The lengthened data are shown below.  The first argument to `pivot_longer` is always a set of variables to "stack".  radiant does this with `gather`.
+
+
+```r
+stocks %&gt;% 
+  pivot_longer(c(sp.returns, msft.returns), 
+               names_to = "ticker", 
+               values_to = "returns")
+```
+
+```
+# A tibble: 122 × 3
+   date       ticker        returns
+   &lt;date&gt;     &lt;chr&gt;           &lt;dbl&gt;
+ 1 2016-10-31 sp.returns   -0.0162 
+ 2 2016-10-31 msft.returns  0.0435 
+ 3 2016-11-30 sp.returns    0.0342 
+ 4 2016-11-30 msft.returns  0.0125 
+ 5 2016-12-30 sp.returns    0.0182 
+ 6 2016-12-30 msft.returns  0.0312 
+ 7 2017-01-31 sp.returns    0.0179 
+ 8 2017-01-31 msft.returns  0.0404 
+ 9 2017-02-28 sp.returns    0.0372 
+10 2017-02-28 msft.returns -0.00436
+# … with 112 more rows
+```
+
+---
+## Untidy/widen the data
+
+To untidy the data, I need to specify any ID variables, in this case the date, and the variables that should provide the names (`ticker`) and values (`returns`).  This will return the original dataset `stocks`.  radiant does this with `spread`.
+
+
+```r
+stocks %&gt;% pivot_longer(c(sp.returns, msft.returns), names_to = "ticker", values_to = "returns") %&gt;% 
+  pivot_wider(id_cols = date, 
+              names_from = ticker, 
+              values_from = returns)
+```
+
+```
+# A tibble: 61 × 3
+   date       sp.returns msft.returns
+   &lt;date&gt;          &lt;dbl&gt;        &lt;dbl&gt;
+ 1 2016-10-31  -0.0162        0.0435 
+ 2 2016-11-30   0.0342        0.0125 
+ 3 2016-12-30   0.0182        0.0312 
+ 4 2017-01-31   0.0179        0.0404 
+ 5 2017-02-28   0.0372       -0.00436
+ 6 2017-03-31  -0.000389      0.0294 
+ 7 2017-04-28   0.00909       0.0395 
+ 8 2017-05-31   0.0116        0.0260 
+ 9 2017-06-30   0.00481      -0.0130 
+10 2017-07-31   0.0193        0.0547 
+# … with 51 more rows
+```
+
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
 <script>var slideshow = remark.create({
+"ratio": "16:10",
 "highlightStyle": "github",
 "highlightLines": true,
 "countIncrementalSlides": false

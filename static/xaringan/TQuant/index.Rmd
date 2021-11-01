@@ -11,16 +11,17 @@ output:
     lib_dir: libs
     css: xaringan-themer.css
     nature:
+      ratio: 16:10
       highlightStyle: github
       highlightLines: true
       countIncrementalSlides: false
 ---
 
 ```{r setup, include=FALSE}
-options(htmltools.dir.version = FALSE)
-knitr::opts_chunk$set(warning=FALSE, message=FALSE, comment=NA, prompt=FALSE, fig.height=6, fig.width=6.5, fig.retina = 3, dev = 'svg', dev.args = list(bg = "transparent"))
 library(xaringanthemer); library(kableExtra); library(tidyverse); library(skimr)
 library(flipbookr)
+options(htmltools.dir.version = FALSE)
+knitr::opts_chunk$set(warning=FALSE, message=FALSE, comment="", cache=FALSE, fig.height=6, fig.width=6.5, fig.retina = 3, dev = 'svg', dev.args = list(bg = "transparent"))
 # style_mono_accent(
 style_duo_accent(
 #style_solarized_light(
@@ -60,7 +61,7 @@ black.box.maker.NT <- function(mod1) {
 
 
 ```{css, echo = FALSE, include=FALSE}
-.remark-code{line-height: 1.5; font-size: 80%}
+.remark-code{line-height: 1; font-size: 80%}
 @media print {
   .has-continuation {
     display: block;
@@ -107,8 +108,8 @@ Equity market data is defined by tickers -- up to four character representations
 
 ```{r, message=FALSE, warning=FALSE}
 library(tidyquant)
-msft <- tq_get("MSFT", get = "stock.prices", from = "2015-10-01", to="2020-09-30")
-snp <- tq_get("^GSPC", get = "stock.prices", from = "2015-10-01", to="2020-09-30")
+msft <- tq_get("MSFT", get = "stock.prices", from = "2016-10-01", to="2021-10-30")
+snp <- tq_get("^GSPC", get = "stock.prices", from = "2016-10-01", to="2021-10-30")
 Stocks.Tidy <- c("MSFT","^GSPC") %>% 
   tq_get(get="stock.prices", from="2016-10-01") 
 ```
@@ -210,10 +211,8 @@ Tidy.Returns
 ```
 
 ---
-### `pivot_*` is wow...
 
-
-`r chunk_reveal("TRReveal", title="### transmute and pivot")`
+`r chunk_reveal("TRReveal")`
 
 ---
 ### `join`
@@ -351,5 +350,38 @@ res1["JPM"]
 ```{r}
 Mod1 <- Beta.Maker("JPM")
 resid.plotter(Mod1)
+```
+
+---
+## Two pivots
+
+`pivot_longer` and `pivot_wider` take data from wide to long and long to wide formats.  First, the help is extensive.  `?pivot_wider` or `?pivot_longer` even contain working examples.  The basic idea is to either encode or decode information into the column names.
+
+```{r}
+stocks
+```
+
+---
+## Make them tidy
+
+I want to take `sp.returns` and `msft.returns` and stack them into two columns with one `returns` representing the value of both variables and the other column a `ticker` that contains the source of that data.  The lengthened data are shown below.  The first argument to `pivot_longer` is always a set of variables to "stack".  radiant does this with `gather`.
+
+```{r}
+stocks %>% 
+  pivot_longer(c(sp.returns, msft.returns), 
+               names_to = "ticker", 
+               values_to = "returns")
+```
+
+---
+## Untidy/widen the data
+
+To untidy the data, I need to specify any ID variables, in this case the date, and the variables that should provide the names (`ticker`) and values (`returns`).  This will return the original dataset `stocks`.  radiant does this with `spread`.
+
+```{r}
+stocks %>% pivot_longer(c(sp.returns, msft.returns), names_to = "ticker", values_to = "returns") %>% 
+  pivot_wider(id_cols = date, 
+              names_from = ticker, 
+              values_from = returns)
 ```
 
