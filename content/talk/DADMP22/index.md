@@ -12,7 +12,7 @@ location = "Portland, OR USA"
 
 # Is this a selected talk? (true/false)
 
-selected = false
+selected = true
 
 # Projects (optional).
 
