@@ -1,5 +1,9 @@
 +++ 
+<<<<<<< HEAD
 date = 2022-01-01T18:00:00 
+=======
+date = 2022-01-13T18:00:00 
+>>>>>>> 4cc602f155fc4b352dd9a66096ca6b54b995e1e1
 title = "DADM Kickoff: Portland MBAP" 
 time_start = 2022-01-13T18:00:00
 time_end = 2021-08-31T22:00:00 
