@@ -1,6 +1,5 @@
 +++
 date = 2020-08-20T10:30:00  # Schedule page publish date.
-
 title = "DADM Kickoff"
 time_start = 2020-08-27T10:30:00
 time_end = 2020-08-27T12:30:00
@@ -32,6 +31,7 @@ highlight = true
 
 # Featured image
 # Place your image in the `static/img/` folder and reference its filename below, e.g. `image = "example.jpg"`.
+
 [header]
 image = "headers/wuagsm.jpg"
 caption = ":smile:"
