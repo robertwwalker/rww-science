@@ -1,6 +1,5 @@
 +++ 
 date = 2022-01-13T18:00:00 
-# Schedule page publish date.
 title = "DADM Kickoff: Portland MBAP" 
 time_start = 2022-01-13T18:00:00
 time_end = 2021-08-31T22:00:00 
