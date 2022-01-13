@@ -399,3 +399,67 @@ This is set up to email completions.  Or you can screenshot them.  It helps you 
 --
 
 6. As a first task, we need to get data from Excel to R.  There is a worked example in `Resources > R Documents > Import Data from Excel into R` to work with.
+
+---
+# A Postscript
+
++ Interacting with the course text.  Note the tab on the left of the course website that links to the course text github.  It leads to this:
+
+![Screenshot](images/CTGH.png)
+
+---
+# Let's Recreate a Textbook Plot
+
+Let's navigate to chapter 2: summarizing data.  Then Figures.  This is `loan_int_rate_dot_plot`.  The code is the .R file.
+
+![Screenshot](images/DPlot.png)
+
+---
+# Code for that
+
+```{r, echo=TRUE, eval=FALSE}
+library(openintro)
+d <- loan50$interest_rate
+xlim <- c(0.9 * min(d), 1.05 * max(d))
+round.to <- 1
+binned <- round.to * round(d / round.to)
+tab <- table(binned)
+M <- mean(d)
+cex    <- 1
+plot(0, type = "n", xlab = "Interest Rate, Rounded to Nearest Percent", ylab = "", axes = FALSE, xlim = xlim, ylim = c(-1, 1.5 * max(tab)))
+for (i in 1:length(tab)) {
+  points(rep(as.numeric(names(tab[i])), tab[i]),
+         1.5 * (1:tab[i]) - 0.4,
+         pch = 19,
+         col = COL[1],
+         cex = 2 * cex)
+}
+abline(h = 0)
+AxisInPercent(1, pretty(c(0, d)))
+polygon(M + c(-1, 1, 0) * 1, c(-1.2, -1.2, -0.1), border = COL[4], col = COL[4])
+```
+
+---
+# It Is [Like Everything] Reproducible
+
+```{r, echo=FALSE, eval=TRUE}
+library(openintro)
+d <- loan50$interest_rate
+xlim <- c(0.9 * min(d), 1.05 * max(d))
+round.to <- 1
+binned <- round.to * round(d / round.to)
+tab <- table(binned)
+M <- mean(d)
+cex    <- 1
+plot(0, type = "n", xlab = "Interest Rate, Rounded to Nearest Percent", ylab = "", axes = FALSE, xlim = xlim, ylim = c(-1, 1.5 * max(tab)))
+for (i in 1:length(tab)) {
+  points(rep(as.numeric(names(tab[i])), tab[i]),
+         1.5 * (1:tab[i]) - 0.4,
+         pch = 19,
+         col = COL[1],
+         cex = 2 * cex)
+}
+abline(h = 0)
+AxisInPercent(1, pretty(c(0, d)))
+polygon(M + c(-1, 1, 0) * 1, c(-1.2, -1.2, -0.1), border = COL[4], col = COL[4])
+```

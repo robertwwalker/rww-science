@@ -1,13 +1,14 @@
 +++ 
-date = 2021-08-31T18:00:00
-title = "DADM Kickoff: Salem MBAP" 
-time_start = 2021-08-31T18:00:00
+date = 2022-01-13T18:00:00 
+# Schedule page publish date.
+title = "DADM Kickoff: Portland MBAP" 
+time_start = 2022-01-13T18:00:00
 time_end = 2021-08-31T22:00:00 
 abstract = "DADM Kicks off"
 abstract_short = "Introducing data...." 
-event = "MBAP Salem" 
+event = "MBAP PDX" 
 event_url = "<https://agsm.willamette.edu>" 
-location = "Salem, OR USA"
+location = "Portland, OR USA"
 
 # Is this a selected talk? (true/false)
 
@@ -17,11 +18,15 @@ selected = false
 
 # Associate this talk with one or more of your projects.
 
+# Simply enter the filename (excluding '.md') of your project file in `content/project/`.
+
+projects = [""]
+
 # Links (optional).
 
 url_pdf = "" 
-url_slides = "<https://rww.science/xaringan/s21ko/S21KO.html>" 
-url_video = ""
+url_slides = "[https://rww.science/xaringan/p22ko/p22ko.html](https://rww.science/xaringan/p22ko/p22ko.html)"
+url_video = "" 
 url_code = ""
 
 # Does the content use math formatting?
@@ -42,4 +47,4 @@ caption = ":smile:"
 
 +++
 
-Slides in [xaringan](https://rww.science/xaringan/s21ko/S21KO.html)
+Slides in [xaringan](https://rww.science/xaringan/p22ko/p22ko.html)
