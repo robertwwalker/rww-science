@@ -56,14 +56,12 @@ Critic <- read_excel(destfile, sheet="critic")
 Items <- read_excel(destfile, sheet="Items")
 Villagers <- read_excel(destfile, sheet="Villagers")
 User_reviews <- read_excel(destfile, sheet="User_reviews")
-# One of your classmates noted that I mixed up the sheets.
-Items <- read_excel(destfile, sheet="Villagers")
-Villagers <- read_excel(destfile, sheet="Items")
 ```
 
 Cool.  The url for the images are in the data so RMarkdown can access them.
 
 ![admiral](`r Villagers$url[1]`)
+
 ![angus](`r Villagers$url[13]`)
 
 ---

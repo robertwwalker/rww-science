@@ -39,7 +39,6 @@ library(xaringanthemer)
 style_mono_accent(base_color = "#43418A", text_font_google   = google_font("Fira Sans", "300", "300i"))
 ```
 
----
 
 # A Grammar of Graphics
 
@@ -173,7 +172,7 @@ Me <- data.frame(lat=44.924943, lon=-123.043461)
 ```{r, eval=FALSE}
 Me <- data.frame(lat=44.924943, lon=-123.043461)
 ggmap(OR_map) +
-geom_emoji(data=Me, aes(y=lat, x=lon), emoji="1f4aa", size=0.125) + theme_nothing()
+ggimage::geom_emoji(data=Me, aes(y=lat, x=lon), image="1f4aa", size=0.125) + theme_nothing()
 ```
 
 ---
@@ -181,7 +180,7 @@ class: inverse
 # Me on the Map
 
 ```{r, echo=FALSE, fig.width=8, fig.height=5}
-ggmap(OR_map) + geom_emoji(data=Me, aes(y=lat, x=lon), emoji="1f4aa", size=0.1) + theme_nothing()
+ggmap(OR_map) + ggimage::geom_emoji(data=Me, aes(y=lat, x=lon), image="1f4aa", size=0.1) + theme_nothing()
 ```
 
 ---

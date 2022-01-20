@@ -46,4 +46,4 @@ caption = ":smile:"
 
 +++
 
-Slides in [xaringan](https://rww.science/xaringan/tidyP22/index.html)
+Slides in xaringan; [tidy slides](https://rww.science/xaringan/tidyP22/index.html) and [Importing Data](https://rww.science/xaringan/ImportingData/imports.html)
