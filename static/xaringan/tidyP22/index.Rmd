@@ -309,20 +309,35 @@ FastFood %>% skim()
 
 ---
 
-```{r}
-library(skimr)
-FastFood %>% group_by(restaurant) %>% skim(calories) %>% kable() %>% kable_styling() %>% scroll_box(width = "800px", height = "500px")
+```{r, eval=FALSE}
+FastFood %>% group_by(restaurant) %>% skim(calories)
+# FastFood %>% group_by(restaurant) %>% skim(calories) %>% arrange(numeric.mean)
+# FastFood %>% group_by(restaurant) %>% skim(calories) %>% arrange(desc(numeric.mean))
+```
+
+```{r, echo=FALSE}
+FastFood %>% group_by(restaurant) %>% skim(calories) %>% kable() %>% kable_styling() %>%
+  scroll_box(width = "800px", height = "500px")
 ```
 
 ---
 
-```{r}
-FastFood %>% group_by(restaurant) %>% skim(protein) %>% kable() %>% kable_styling() %>% scroll_box(width = "800px", height = "500px")
+```{r, eval=FALSE}
+FastFood %>% group_by(restaurant) %>% skim(protein)
+```
+
+```{r, echo=FALSE}
+FastFood %>% group_by(restaurant) %>% skim(protein) %>% kable() %>% kable_styling() %>%
+  scroll_box(width = "800px", height = "500px")
 ```
 
 ---
 
-```{r}
+```{r, eval=FALSE}
+FastFood %>% group_by(restaurant) %>% skim(sodium)
+```
+
+```{r, echo=FALSE}
 FastFood %>% group_by(restaurant) %>% skim(sodium) %>% kable() %>% kable_styling() %>%
   scroll_box(width = "800px", height = "500px")
 ```
