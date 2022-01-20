@@ -1,10 +1,10 @@
 +++ 
 date = 2022-01-10T10:00:00 
-title = "DADM Kickoff: Portland MBAP" 
-time_start = 2022-01-13T18:00:00
-time_end = 2021-08-31T22:00:00 
-abstract = "DADM Kicks off"
-abstract_short = "Introducing data...." 
+title = "DADM Week 2: Portland MBAP" 
+time_start = 2022-01-20T18:00:00
+time_end = 2021-01-20T22:00:00 
+abstract = "DADM tidy data and visuals"
+abstract_short = "tidy data and visualization" 
 event = "MBAP PDX" 
 event_url = "<https://agsm.willamette.edu>" 
 location = "Portland, OR USA"
@@ -24,7 +24,7 @@ projects = [""]
 # Links (optional).
 
 url_pdf = "" 
-url_slides = "<https://rww.science/xaringan/p22ko/p22ko.html>"
+url_slides = "<https://rww.science/xaringan/tidyP22/index.html>"
 url_video = "" 
 url_code = ""
 
@@ -46,4 +46,4 @@ caption = ":smile:"
 
 +++
 
-Slides in [xaringan](https://rww.science/xaringan/p22ko/p22ko.html)
+Slides in [xaringan](https://rww.science/xaringan/tidyP22/index.html)
