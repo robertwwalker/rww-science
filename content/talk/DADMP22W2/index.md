@@ -46,4 +46,7 @@ caption = ":smile:"
 
 +++
 
-Slides in xaringan; [tidy slides](https://rww.science/xaringan/tidyP22/index.html) and [Importing Data](https://rww.science/xaringan/ImportingData/imports.html); visuals with [flipbooks and gg](https://rww.science/xaringan/flipbookgg/index.html)
+Slides in xaringan: 
++ [tidy slides](https://rww.science/xaringan/tidyP22/index.html)   
++ [Importing Data](https://rww.science/xaringan/ImportingData/imports.html)  
++ visuals with [flipbooks and gg](https://rww.science/xaringan/flipbookgg/index.html)
