@@ -15,6 +15,7 @@ header:
   image: ''
 ---
 
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
 
 
 <div id="r-markdown" class="section level1">
@@ -240,7 +241,7 @@ skim(Bond.Funds)</code></pre>
 <pre class="r"><code>library(tidyverse)
 Bond.Funds %&gt;% group_by(Risk) %&gt;% 
   summarise(Avg.Return = mean(`Return 2009`), SD.Return=sd(`Return 2009`), median.Return=median(`Return 2009`), IQR.Return=IQR(`Return 2009`))</code></pre>
-<pre><code>## # A tibble: 3 x 5
+<pre><code>## # A tibble: 3 × 5
 ##   Risk          Avg.Return SD.Return median.Return IQR.Return
 ##   &lt;chr&gt;              &lt;dbl&gt;     &lt;dbl&gt;         &lt;dbl&gt;      &lt;dbl&gt;
 ## 1 Above average       8.31      9.24           7.9      13.0 
@@ -493,9 +494,11 @@ Bond.Funds %&gt;% group_by(Risk) %&gt;%
 <h2>Pivot Plots [Mosaic]</h2>
 <p>Base R Graphics contain a mosaic with the same formula as the cross-tabulation above.</p>
 <pre class="r"><code>mosaicplot(~Risk+Fees, data=Bond.Funds)</code></pre>
-<p><img src="/R/2019-10-09-tables-pivots-bars-and-mosaics/index_files/figure-html/MP1-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/MP1-1.png" width="672" /></p>
 <p>I recently came across a nice plotter for tabular data on <em>github</em>. You can search for it as <em>thatssorandom</em>. We installed it above.</p>
-<p><img src="/R/2019-10-09-tables-pivots-bars-and-mosaics/index_files/figure-html/pMos-1.png" width="672" /></p>
+<pre><code>## Warning: `guides(&lt;scale&gt; = FALSE)` is deprecated. Please use `guides(&lt;scale&gt; =
+## &quot;none&quot;)` instead.</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/pMos-1.png" width="672" /></p>
 <p>Notice it handles an implicit plotting of the set of conditional probabilities along the relevant margin. It is plotting <span class="math inline">\(Pr(Fees|Risk)\)</span> as breaks along the <em>y-axis</em> defined by frequency/empirical probability. This would be the equivalent of taking the <em>column marginal</em> of the table of Fees and Risk that we saw before. Now it has a graphical representation.</p>
 <pre class="r"><code>prop.table(FR.Tab, 2)</code></pre>
 <pre><code>##      Risk
@@ -512,29 +515,31 @@ UCB$Gender[UCB$Gender==&quot;Male&quot;] &lt;- &quot;M&quot;
 UCB$Gender[UCB$Gender==&quot;Female&quot;] &lt;- &quot;F&quot;
 UCB$DeptMF &lt;- paste(UCB$Dept,UCB$Gender, sep=&quot;:&quot;)
 UCB &lt;- UCB %&gt;% select(Admit,DeptMF)
-p1 &lt;- ggmm(UCB, x=DeptMF, y=Admit, add_text = &quot;n&quot;)
-p1 + labs(x=&quot;Dept:M/F&quot;, y=&quot;Admitted&quot;) + theme(axis.text=element_text(size=10))</code></pre>
-<p><img src="/R/2019-10-09-tables-pivots-bars-and-mosaics/index_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+p1 &lt;- ggmm(UCB, x=DeptMF, y=Admit, add_text = &quot;n&quot;)</code></pre>
+<pre><code>## Warning: `guides(&lt;scale&gt; = FALSE)` is deprecated. Please use `guides(&lt;scale&gt; =
+## &quot;none&quot;)` instead.</code></pre>
+<pre class="r"><code>p1 + labs(x=&quot;Dept:M/F&quot;, y=&quot;Admitted&quot;) + theme(axis.text=element_text(size=10))</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
 </div>
 <div id="barplots" class="section level2">
 <h2>Barplots</h2>
 <p>Basic things like barplots can be accomplished in many ways. Using the <em>R4DS</em> approach, we have</p>
 <pre class="r"><code>ggplot(data = Bond.Funds) + 
   stat_count(mapping = aes(x = Risk))</code></pre>
-<p><img src="/R/2019-10-09-tables-pivots-bars-and-mosaics/index_files/figure-html/GGBar-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/GGBar-1.png" width="672" /></p>
 <p>Placed into densities. This is really only helpful with another dimension because the X is categorical so all bars will be height 1.</p>
 <pre class="r"><code>ggplot(data = Bond.Funds, aes(x = Risk, fill=Fees)) + geom_bar(position=&quot;fill&quot;)</code></pre>
-<p><img src="/R/2019-10-09-tables-pivots-bars-and-mosaics/index_files/figure-html/GGBar2-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/GGBar2-1.png" width="672" /></p>
 <p>Or in Base R</p>
 <pre class="r"><code>par(mfrow=c(1,2))
 barplot(table(Bond.Funds$Risk))
 barplot(table(Bond.Funds$Fees,Bond.Funds$Risk))</code></pre>
-<p><img src="/R/2019-10-09-tables-pivots-bars-and-mosaics/index_files/figure-html/BRBar-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/BRBar-1.png" width="672" /></p>
 <p>A legend would help.</p>
 <pre class="r"><code>par(mfrow=c(1,2))
 barplot(table(Bond.Funds$Fees,Bond.Funds$Risk), legend=TRUE)
 barplot(table(Bond.Funds$Fees,Bond.Funds$Risk), legend=TRUE, args.legend=list(bty=&quot;n&quot;))</code></pre>
-<p><img src="/R/2019-10-09-tables-pivots-bars-and-mosaics/index_files/figure-html/BRBar2-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/BRBar2-1.png" width="672" /></p>
 </div>
 <div id="simple-visualization-esquisse" class="section level2">
 <h2>Simple Visualization: <em>esquisse()</em></h2>
@@ -546,7 +551,7 @@ plt1 &lt;- ggplot(data = Bond.Funds) +
   geom_bar() +
   theme_minimal()
 plt1</code></pre>
-<p><img src="/R/2019-10-09-tables-pivots-bars-and-mosaics/index_files/figure-html/GGP1-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/GGP1-1.png" width="672" /></p>
 <p>If you notice, <em>esquisse</em> directly outputs graphics to powerpoint. This feature is quite useful.</p>
 </div>
 </div>
