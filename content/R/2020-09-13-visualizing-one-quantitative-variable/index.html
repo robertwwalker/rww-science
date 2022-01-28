@@ -19,7 +19,7 @@ image:
 projects: []
 ---
 
-<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
 
 
 <div id="bonds" class="section level1">
@@ -32,7 +32,8 @@ projects: []
 <div id="a-summary" class="section level2">
 <h2>A Summary</h2>
 <pre class="r"><code>library(skimr)
-Bonds %&gt;% skim()</code></pre>
+Bonds %&gt;%
+    skim()</code></pre>
 <table>
 <caption><span id="tab:unnamed-chunk-2">Table 1: </span>Data summary</caption>
 <tbody>
@@ -227,32 +228,37 @@ Bonds %&gt;% skim()</code></pre>
 <p>A histogram divides the data into categories and counts the observations per category. The width of the categories [on x] is determined by <code>binwidth=</code> or the binwidth can be calculated as a function of the range and the number of bins <code>bin=</code>. I will define it as <em>Gen.Hist</em>.</p>
 <div id="a-base-histogram" class="section level3">
 <h3>A Base Histogram</h3>
-<pre class="r"><code>Gen.Hist &lt;- Bonds %&gt;% ggplot() + aes(x = Assets) + geom_histogram()
+<pre class="r"><code>Gen.Hist &lt;- Bonds %&gt;%
+    ggplot() + aes(x = Assets) + geom_histogram()
 Gen.Hist</code></pre>
 <pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
-<p><img src="/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 </div>
 <div id="histograms-bins" class="section level3">
 <h3>Histograms [bins]</h3>
 <p>We can choose more bins. 50? That is far more than the default of 30.</p>
-<pre class="r"><code>Bin50.Hist &lt;- Bonds %&gt;% ggplot() + aes(x = Assets) + geom_histogram(bins = 50)
+<pre class="r"><code>Bin50.Hist &lt;- Bonds %&gt;%
+    ggplot() + aes(x = Assets) + geom_histogram(bins = 50)
 Bin50.Hist</code></pre>
-<p><img src="/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 <p>We can also choose fewer bins. I will choose 10.</p>
-<pre class="r"><code>Bin10.Hist &lt;- Bonds %&gt;% ggplot() + aes(x = Assets) + geom_histogram(bins = 10)
+<pre class="r"><code>Bin10.Hist &lt;- Bonds %&gt;%
+    ggplot() + aes(x = Assets) + geom_histogram(bins = 10)
 Bin10.Hist</code></pre>
-<p><img src="/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 </div>
 <div id="histograms-binwidth" class="section level3">
 <h3>Histograms [binwidth]</h3>
 <p>We can also set the width of bins in the metric of <code>x</code>; I will choose 500 (bigger).</p>
-<pre class="r"><code>BinW500.Hist &lt;- Bonds %&gt;% ggplot() + aes(x = Assets) + geom_histogram(binwidth = 500)
+<pre class="r"><code>BinW500.Hist &lt;- Bonds %&gt;%
+    ggplot() + aes(x = Assets) + geom_histogram(binwidth = 500)
 BinW500.Hist</code></pre>
-<p><img src="/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <p>We can also set the width of bins in the metric of <code>x</code>; I will choose 50 (smaller width makes more bins).</p>
-<pre class="r"><code>BinW50.Hist &lt;- Bonds %&gt;% ggplot() + aes(x = Assets) + geom_histogram(binwidth = 50)
+<pre class="r"><code>BinW50.Hist &lt;- Bonds %&gt;%
+    ggplot() + aes(x = Assets) + geom_histogram(binwidth = 50)
 BinW50.Hist</code></pre>
-<p><img src="/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 </div>
 </div>
 <div id="geom_dotplot" class="section level2">
@@ -260,36 +266,42 @@ BinW50.Hist</code></pre>
 <p><code>geom_dotplot()</code> places a dot for every observation in the relevant bin. We can control the size of the bins [in the original metric] with <code>binwidth=</code>.</p>
 <div id="small-binwidth" class="section level3">
 <h3>Small binwidth</h3>
-<pre class="r"><code>Bonds %&gt;% ggplot() + aes(x = Assets) + geom_dotplot(binwidth = 10)</code></pre>
-<p><img src="/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<pre class="r"><code>Bonds %&gt;%
+    ggplot() + aes(x = Assets) + geom_dotplot(binwidth = 10)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 </div>
 <div id="large-binwidth" class="section level3">
 <h3>Large binwidth</h3>
-<pre class="r"><code>Bonds %&gt;% ggplot() + aes(x = Assets) + geom_dotplot(binwidth = 1000)</code></pre>
-<p><img src="/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<pre class="r"><code>Bonds %&gt;%
+    ggplot() + aes(x = Assets) + geom_dotplot(binwidth = 1000)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 </div>
 <div id="an-optimal-binwidth" class="section level3">
 <h3>An ?optimal? binwidth</h3>
 <p>Each dot represents a datum with bins of size 100.</p>
-<pre class="r"><code>Bonds %&gt;% ggplot() + aes(x = Assets) + geom_dotplot(binwidth = 100) + labs(y = &quot;&quot;)</code></pre>
-<p><img src="/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<pre class="r"><code>Bonds %&gt;%
+    ggplot() + aes(x = Assets) + geom_dotplot(binwidth = 100) + labs(y = &quot;&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 </div>
 </div>
 <div id="geom_freqpoly" class="section level2">
 <h2><code>geom_freqpoly()</code></h2>
 <p><code>geom_freqpoly()</code> is the line equivalent of a histogram. The arguments are similar, the output doesn’t include the bars as it does in the histogram.</p>
-<pre class="r"><code>Bonds %&gt;% ggplot(., aes(x = Assets)) + geom_freqpoly()</code></pre>
+<pre class="r"><code>Bonds %&gt;%
+    ggplot(., aes(x = Assets)) + geom_freqpoly()</code></pre>
 <pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
-<p><img src="/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 <div id="more-bins" class="section level3">
 <h3>More bins</h3>
-<pre class="r"><code>Bonds %&gt;% ggplot(., aes(x = Assets)) + geom_freqpoly(bins = 50)</code></pre>
-<p><img src="/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<pre class="r"><code>Bonds %&gt;%
+    ggplot(., aes(x = Assets)) + geom_freqpoly(bins = 50)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 </div>
 <div id="fewer-bins" class="section level3">
 <h3>Fewer bins</h3>
-<pre class="r"><code>Bonds %&gt;% ggplot(., aes(x = Assets)) + geom_freqpoly(bins = 10)</code></pre>
-<p><img src="/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<pre class="r"><code>Bonds %&gt;%
+    ggplot(., aes(x = Assets)) + geom_freqpoly(bins = 10)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 </div>
 </div>
 <div id="geom_area" class="section level2">
@@ -297,16 +309,18 @@ BinW50.Hist</code></pre>
 <p>Is a relative of the histogram with lines connecting the midpoints of the bins and an associated fill from zero.</p>
 <div id="defaults-to-30-bins" class="section level3">
 <h3>Defaults to 30 bins</h3>
-<pre class="r"><code>Bonds %&gt;% ggplot(., aes(x = Assets)) + geom_area(stat = &quot;bin&quot;)</code></pre>
+<pre class="r"><code>Bonds %&gt;%
+    ggplot(., aes(x = Assets)) + geom_area(stat = &quot;bin&quot;)</code></pre>
 <pre><code>## `stat_bin()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
-<p><img src="/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 </div>
 <div id="small-binwidth-with-a-large-number-of-bins" class="section level3">
 <h3>Small binwidth with a large number of bins</h3>
 <p>I will color in the area with magenta and clean up the theme.</p>
-<pre class="r"><code>Bonds %&gt;% ggplot(., aes(x = Assets)) + geom_area(stat = &quot;bin&quot;, bins = 100, fill = &quot;magenta&quot;) + 
+<pre class="r"><code>Bonds %&gt;%
+    ggplot(., aes(x = Assets)) + geom_area(stat = &quot;bin&quot;, bins = 100, fill = &quot;magenta&quot;) +
     theme_minimal()</code></pre>
-<p><img src="/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 </div>
 </div>
 <div id="geom_density" class="section level2">
@@ -314,67 +328,79 @@ BinW50.Hist</code></pre>
 <p>A relative of the histogram and the area plots above, the density plot smooths out the blocks of a histogram with a moving window [known as the bandwidth].</p>
 <div id="geom_density-outlines" class="section level3">
 <h3><code>geom_density()</code> outlines</h3>
-<pre class="r"><code>Bonds %&gt;% ggplot(., aes(x = Assets)) + geom_density(outline.type = &quot;upper&quot;)</code></pre>
-<p><img src="/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
-<pre class="r"><code>Bonds %&gt;% ggplot(., aes(x = Assets)) + geom_density(outline.type = &quot;lower&quot;)</code></pre>
-<p><img src="/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-16-2.png" width="672" /></p>
-<pre class="r"><code>Bonds %&gt;% ggplot(., aes(x = Assets)) + geom_density(outline.type = &quot;full&quot;)</code></pre>
-<p><img src="/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-16-3.png" width="672" /></p>
+<pre class="r"><code>Bonds %&gt;%
+    ggplot(., aes(x = Assets)) + geom_density(outline.type = &quot;upper&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<pre class="r"><code>Bonds %&gt;%
+    ggplot(., aes(x = Assets)) + geom_density(outline.type = &quot;lower&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-16-2.png" width="672" /></p>
+<pre class="r"><code>Bonds %&gt;%
+    ggplot(., aes(x = Assets)) + geom_density(outline.type = &quot;full&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-16-3.png" width="672" /></p>
 </div>
 <div id="geom_density-adjust" class="section level3">
 <h3><code>geom_density()</code> adjust</h3>
 <p>Adjust applies a numeric correction to the bandwidth. Numbers greater than 1 make the bandwidth bigger [and the graphic smoother] and numbers less than 1 [but greater than zero] make the bandwidth smaller and the graphic more jagged.</p>
-<pre class="r"><code>Bonds %&gt;% ggplot(., aes(x = Assets)) + geom_density(adjust = 2)</code></pre>
-<p><img src="/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
-<pre class="r"><code>Bonds %&gt;% ggplot(., aes(x = Assets)) + geom_density(adjust = 1/2)</code></pre>
-<p><img src="/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-17-2.png" width="672" /></p>
+<pre class="r"><code>Bonds %&gt;%
+    ggplot(., aes(x = Assets)) + geom_density(adjust = 2)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<pre class="r"><code>Bonds %&gt;%
+    ggplot(., aes(x = Assets)) + geom_density(adjust = 1/2)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-17-2.png" width="672" /></p>
 </div>
 </div>
 <div id="geom_boxplot" class="section level2">
 <h2><code>geom_boxplot</code></h2>
 <p>A boxplot shows a box of the first and third quartiles and a notch at the median. The dots above or below denote points outside the hinges. The hinges [default to 1.5*IQR] show a range of expected data while the individual dots show possible outliers outside the hinges. To adjust the hinges, the argument <code>coef=1.5</code> can be adjusted.</p>
-<pre class="r"><code>Bonds %&gt;% ggplot(., aes(x = Assets)) + geom_boxplot()</code></pre>
-<p><img src="/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<pre class="r"><code>Bonds %&gt;%
+    ggplot(., aes(x = Assets)) + geom_boxplot()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
 </div>
 <div id="geom_qq" class="section level2">
 <h2><code>geom_qq()</code></h2>
 <p>To compare empirical and theoretical quantiles. Comparing a distribution to the normal or others is common and this provides the tool for doing so. The default is a normal.</p>
 <p>The empirical cumulative distribution function arises when we sort a quantitative variable and show the percentiles below said value.</p>
-<pre class="r"><code>Bonds %&gt;% ggplot(aes(sample = Assets)) + geom_qq()</code></pre>
-<p><img src="/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<pre class="r"><code>Bonds %&gt;%
+    ggplot(aes(sample = Assets)) + geom_qq()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
 </div>
 <div id="stat_ecdfgeom" class="section level2">
 <h2><code>stat_ecdf(geom = )</code></h2>
 <p>We could do this with most geometries. I will show a few.</p>
 <div id="stat_ecdfgeom-step" class="section level3">
 <h3><code>stat_ecdf(geom = "step")</code></h3>
-<pre class="r"><code>Bonds %&gt;% ggplot(aes(x = Assets)) + stat_ecdf(geom = &quot;point&quot;) + stat_ecdf(geom = &quot;step&quot;, 
+<pre class="r"><code>Bonds %&gt;%
+    ggplot(aes(x = Assets)) + stat_ecdf(geom = &quot;point&quot;) + stat_ecdf(geom = &quot;step&quot;,
     alpha = 0.1) + labs(y = &quot;ECDF: Proportion less than Assets&quot;) + theme_minimal()</code></pre>
-<p><img src="/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-20-1.png" width="672" /></p>
 </div>
 <div id="stat_ecdfgeom-point" class="section level3">
 <h3><code>stat_ecdf(geom = "point")</code></h3>
-<pre class="r"><code>Bonds %&gt;% ggplot(aes(x = Assets)) + stat_ecdf(geom = &quot;point&quot;) + stat_ecdf(geom = &quot;step&quot;, 
+<pre class="r"><code>Bonds %&gt;%
+    ggplot(aes(x = Assets)) + stat_ecdf(geom = &quot;point&quot;) + stat_ecdf(geom = &quot;step&quot;,
     alpha = 0.1) + labs(y = &quot;ECDF: Proportion less than Assets&quot;) + theme_minimal()</code></pre>
-<p><img src="/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-21-1.png" width="672" /></p>
 </div>
 <div id="combining-two" class="section level3">
 <h3>Combining two</h3>
-<pre class="r"><code>Bonds %&gt;% ggplot(aes(x = Assets)) + stat_ecdf(geom = &quot;point&quot;) + stat_ecdf(geom = &quot;step&quot;, 
+<pre class="r"><code>Bonds %&gt;%
+    ggplot(aes(x = Assets)) + stat_ecdf(geom = &quot;point&quot;) + stat_ecdf(geom = &quot;step&quot;,
     alpha = 0.1) + labs(y = &quot;ECDF: Proportion less than Assets&quot;) + theme_minimal()</code></pre>
-<p><img src="/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-22-1.png" width="672" /></p>
 </div>
 <div id="stat_ecdfgeom-line" class="section level3">
 <h3><code>stat_ecdf(geom = "line")</code></h3>
-<pre class="r"><code>Bonds %&gt;% ggplot(aes(x = Assets)) + stat_ecdf(geom = &quot;line&quot;) + labs(y = &quot;ECDF: Proportion less than Assets&quot;) + 
+<pre class="r"><code>Bonds %&gt;%
+    ggplot(aes(x = Assets)) + stat_ecdf(geom = &quot;line&quot;) + labs(y = &quot;ECDF: Proportion less than Assets&quot;) +
     theme_minimal()</code></pre>
-<p><img src="/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-23-1.png" width="672" /></p>
 </div>
 <div id="stat_ecdfgeom-area" class="section level3">
 <h3><code>stat_ecdf(geom = "area")</code></h3>
-<pre class="r"><code>Bonds %&gt;% ggplot(aes(x = Assets)) + stat_ecdf(geom = &quot;area&quot;, alpha = 0.2) + labs(y = &quot;ECDF: Proportion less than Assets&quot;) + 
+<pre class="r"><code>Bonds %&gt;%
+    ggplot(aes(x = Assets)) + stat_ecdf(geom = &quot;area&quot;, alpha = 0.2) + labs(y = &quot;ECDF: Proportion less than Assets&quot;) +
     theme_minimal()</code></pre>
-<p><img src="/R/2020-09-13-visualizing-one-quantitative-variable/index_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-24-1.png" width="672" /></p>
 </div>
 </div>
 </div>

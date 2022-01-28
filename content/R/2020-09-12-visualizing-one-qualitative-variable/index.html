@@ -19,7 +19,7 @@ image:
 projects: []
 ---
 
-<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
 
 
 <div id="bonds" class="section level1">
@@ -32,7 +32,8 @@ projects: []
 <div id="a-summary" class="section level2">
 <h2>A Summary</h2>
 <pre class="r"><code>library(skimr)
-Bonds %&gt;% skim()</code></pre>
+Bonds %&gt;%
+    skim()</code></pre>
 <table>
 <caption><span id="tab:unnamed-chunk-2">Table 1: </span>Data summary</caption>
 <tbody>
@@ -228,25 +229,33 @@ Bonds %&gt;% skim()</code></pre>
 </div>
 <div id="geom_bar" class="section level2">
 <h2><code>geom_bar()</code></h2>
-<pre class="r"><code>Bonds %&gt;% ggplot() + aes(x = Risk) + geom_bar()</code></pre>
-<p><img src="/R/2020-09-12-visualizing-one-qualitative-variable/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<pre class="r"><code>Bonds %&gt;%
+    ggplot() + aes(x = Risk) + geom_bar()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 <div id="raw-data-bar-plot-color" class="section level3">
 <h3>Raw Data Bar Plot [color]</h3>
-<pre class="r"><code>Bonds %&gt;% ggplot() + aes(x = Risk, color = Risk) + geom_bar()</code></pre>
-<p><img src="/R/2020-09-12-visualizing-one-qualitative-variable/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<pre class="r"><code>Bonds %&gt;%
+    ggplot() + aes(x = Risk, color = Risk) + geom_bar()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 </div>
 <div id="raw-data-bar-plot-color-and-fill" class="section level3">
 <h3>Raw Data Bar Plot [color and fill]</h3>
 <p>We could color it.</p>
-<pre class="r"><code>Bonds %&gt;% ggplot() + aes(x = Risk, color = Risk) + geom_bar(fill = &quot;white&quot;) + guides(color = FALSE)</code></pre>
-<p><img src="/R/2020-09-12-visualizing-one-qualitative-variable/index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<pre class="r"><code>Bonds %&gt;%
+    ggplot() + aes(x = Risk, color = Risk) + geom_bar(fill = &quot;white&quot;) + guides(color = FALSE)</code></pre>
+<pre><code>## Warning: `guides(&lt;scale&gt; = FALSE)` is deprecated. Please use `guides(&lt;scale&gt; =
+## &quot;none&quot;)` instead.</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 </div>
 <div id="raw-data-bar-plot-fill" class="section level3">
 <h3>Raw Data Bar Plot [Fill]</h3>
 <p>We can fill the shapes.</p>
 <pre class="r"><code># guides(fill=FALSE) removes the legend
-Bonds %&gt;% ggplot(., aes(x = Risk, fill = Risk)) + geom_bar() + guides(fill = FALSE)</code></pre>
-<p><img src="/R/2020-09-12-visualizing-one-qualitative-variable/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+Bonds %&gt;%
+    ggplot(., aes(x = Risk, fill = Risk)) + geom_bar() + guides(fill = FALSE)</code></pre>
+<pre><code>## Warning: `guides(&lt;scale&gt; = FALSE)` is deprecated. Please use `guides(&lt;scale&gt; =
+## &quot;none&quot;)` instead.</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 </div>
 </div>
 <div id="geom_bar-meets-fill" class="section level2">
@@ -254,99 +263,123 @@ Bonds %&gt;% ggplot(., aes(x = Risk, fill = Risk)) + geom_bar() + guides(fill = 
 <p>We can also deploy <code>fill</code> but x is no longer the axis; the axis is some constant value with frequencies filled by the fill. <em>This will require some prettying.</em></p>
 <div id="a-cumulative-bar-plot" class="section level3">
 <h3>A Cumulative Bar Plot</h3>
-<pre class="r"><code>Basic.Bar &lt;- Bonds %&gt;% ggplot(., aes(x = &quot;&quot;, fill = Risk)) + geom_bar()
+<pre class="r"><code>Basic.Bar &lt;- Bonds %&gt;%
+    ggplot(., aes(x = &quot;&quot;, fill = Risk)) + geom_bar()
 Basic.Bar</code></pre>
-<p><img src="/R/2020-09-12-visualizing-one-qualitative-variable/index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <p>The prettying will require that I eliminate the x axis [set it to empty], include a theme, and give it proper labels.</p>
 </div>
 <div id="enhanced-cumulative-bar-plot" class="section level3">
 <h3>Enhanced Cumulative Bar Plot</h3>
-<pre class="r"><code>Bonds %&gt;% ggplot(., aes(x = &quot;&quot;, fill = Risk)) + geom_bar() + labs(x = &quot;&quot;, y = &quot;Number of Funds&quot;) + 
+<pre class="r"><code>Bonds %&gt;%
+    ggplot(., aes(x = &quot;&quot;, fill = Risk)) + geom_bar() + labs(x = &quot;&quot;, y = &quot;Number of Funds&quot;) +
     theme_minimal() + theme(axis.text.x = element_blank())</code></pre>
-<p><img src="/R/2020-09-12-visualizing-one-qualitative-variable/index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 </div>
 <div id="proportion-bar-plot" class="section level3">
 <h3>Proportion Bar Plot</h3>
-<pre class="r"><code>Bonds %&gt;% ggplot(., aes(x = &quot;&quot;, fill = Risk)) + geom_bar(position = &quot;fill&quot;) + labs(x = &quot;&quot;, 
+<pre class="r"><code>Bonds %&gt;%
+    ggplot(., aes(x = &quot;&quot;, fill = Risk)) + geom_bar(position = &quot;fill&quot;) + labs(x = &quot;&quot;,
     y = &quot;Proportion of Funds&quot;)</code></pre>
-<p><img src="/R/2020-09-12-visualizing-one-qualitative-variable/index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <p>The prettying will require that I eliminate the x axis [set it to empty], include a theme, and give it proper labels.</p>
 </div>
 <div id="enhanced-proportion-bar-plot" class="section level3">
 <h3>Enhanced Proportion Bar Plot</h3>
-<pre class="r"><code>Bonds %&gt;% ggplot(., aes(x = &quot;&quot;, fill = Risk)) + geom_bar(position = &quot;fill&quot;) + labs(x = &quot;&quot;, 
+<pre class="r"><code>Bonds %&gt;%
+    ggplot(., aes(x = &quot;&quot;, fill = Risk)) + geom_bar(position = &quot;fill&quot;) + labs(x = &quot;&quot;,
     y = &quot;Propotion of Funds&quot;) + theme_minimal()</code></pre>
-<p><img src="/R/2020-09-12-visualizing-one-qualitative-variable/index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 </div>
 </div>
 <div id="geom_col" class="section level2">
 <h2>geom_col()</h2>
-<pre class="r"><code>Risk.Table &lt;- table(Bonds$Risk) %&gt;% data.frame()
-Risk.Table %&gt;% ggplot(., aes(x = Var1, y = Freq)) + geom_col()</code></pre>
-<p><img src="/R/2020-09-12-visualizing-one-qualitative-variable/index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<pre class="r"><code>Risk.Table &lt;- table(Bonds$Risk) %&gt;%
+    data.frame()
+Risk.Table %&gt;%
+    ggplot(., aes(x = Var1, y = Freq)) + geom_col()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 <div id="beautifying-geom_col" class="section level3">
 <h3>Beautifying <code>geom_col()</code></h3>
 <p>Now it really needs some beautification.</p>
-<pre class="r"><code>Risk.Table %&gt;% ggplot(., aes(x = Var1, y = Freq, fill = Var1)) + geom_col() + labs(x = &quot;Risk Levels&quot;, 
-    y = &quot;Number of Funds&quot;) + theme_minimal() + theme(axis.text.x = element_blank()) + 
+<pre class="r"><code>Risk.Table %&gt;%
+    ggplot(., aes(x = Var1, y = Freq, fill = Var1)) + geom_col() + labs(x = &quot;Risk Levels&quot;,
+    y = &quot;Number of Funds&quot;) + theme_minimal() + theme(axis.text.x = element_blank()) +
     scale_fill_viridis_d() + guides(fill = FALSE)</code></pre>
-<p><img src="/R/2020-09-12-visualizing-one-qualitative-variable/index_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<pre><code>## Warning: `guides(&lt;scale&gt; = FALSE)` is deprecated. Please use `guides(&lt;scale&gt; =
+## &quot;none&quot;)` instead.</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 </div>
 </div>
 <div id="position-fill" class="section level2">
 <h2><code>position = "fill"</code></h2>
 <p>The two commands are symmetric in the sense that x as axis always splits it into multiple parts. <code>fill</code> will prove very useful with a two dimensional table.</p>
-<pre class="r"><code>Risk.Table %&gt;% ggplot(., aes(x = 1, y = Freq, fill = Var1)) + geom_col(position = &quot;fill&quot;) + 
-    labs(x = &quot;Risk Levels&quot;, y = &quot;Number of Funds&quot;) + theme_minimal() + theme(axis.text.x = element_blank()) + 
+<pre class="r"><code>Risk.Table %&gt;%
+    ggplot(., aes(x = 1, y = Freq, fill = Var1)) + geom_col(position = &quot;fill&quot;) +
+    labs(x = &quot;Risk Levels&quot;, y = &quot;Number of Funds&quot;) + theme_minimal() + theme(axis.text.x = element_blank()) +
     scale_fill_viridis_d() + guides(fill = FALSE)</code></pre>
-<p><img src="/R/2020-09-12-visualizing-one-qualitative-variable/index_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<pre><code>## Warning: `guides(&lt;scale&gt; = FALSE)` is deprecated. Please use `guides(&lt;scale&gt; =
+## &quot;none&quot;)` instead.</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 </div>
 <div id="a-lollipop-chart" class="section level2">
 <h2>A lollipop chart</h2>
 <p>A lollipop chart is a combination of two geometries. It is a basic scatterplot combining one qualitative variable and the quantitative count of the number of observations. The head of the lollipop is a point while there is an accompanying line segment from (x,0) to (x,Freq) where Freq is the default name for a count from a table.</p>
 <div id="basic-lollipop-chart" class="section level3">
 <h3>Basic Lollipop Chart</h3>
-<pre class="r"><code>Risk.Table %&gt;% ggplot(., aes(x = Var1, y = Freq, color = Var1)) + geom_point(size = 6) + 
-    labs(x = &quot;Risk Level&quot;, y = &quot;Number of Funds&quot;, color = &quot;Risk Level&quot;) + geom_segment(aes(xend = Var1, 
+<pre class="r"><code>Risk.Table %&gt;%
+    ggplot(., aes(x = Var1, y = Freq, color = Var1)) + geom_point(size = 6) + labs(x = &quot;Risk Level&quot;,
+    y = &quot;Number of Funds&quot;, color = &quot;Risk Level&quot;) + geom_segment(aes(xend = Var1,
     y = 0, yend = Freq)) + theme_minimal()</code></pre>
-<p><img src="/R/2020-09-12-visualizing-one-qualitative-variable/index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 </div>
 <div id="slicked-lollipop-chart-by-adjusting-segment-size" class="section level3">
 <h3>Slicked Lollipop Chart by Adjusting Segment Size</h3>
-<pre class="r"><code>Risk.Table %&gt;% ggplot(., aes(x = Var1, y = Freq, color = Var1)) + geom_point(size = 6) + 
-    labs(x = &quot;Risk Levels&quot;, y = &quot;Number of Funds&quot;) + geom_segment(aes(xend = Var1, 
-    y = 0, yend = Freq), size = 1.5) + theme_minimal() + guides(color = FALSE)</code></pre>
-<p><img src="/R/2020-09-12-visualizing-one-qualitative-variable/index_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
-<pre class="r"><code>Risk.Table %&gt;% ggplot(., aes(x = Var1, y = Freq, color = Var1)) + geom_point(size = 6) + 
-    labs(x = &quot;Risk Levels&quot;, y = &quot;Number of Funds&quot;) + geom_segment(aes(xend = Var1, 
-    y = 0, yend = Freq)) + theme_minimal() + scale_color_viridis_d() + guides(color = FALSE) + 
-    coord_flip()</code></pre>
-<p><img src="/R/2020-09-12-visualizing-one-qualitative-variable/index_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+<pre class="r"><code>Risk.Table %&gt;%
+    ggplot(., aes(x = Var1, y = Freq, color = Var1)) + geom_point(size = 6) + labs(x = &quot;Risk Levels&quot;,
+    y = &quot;Number of Funds&quot;) + geom_segment(aes(xend = Var1, y = 0, yend = Freq), size = 1.5) +
+    theme_minimal() + guides(color = FALSE)</code></pre>
+<pre><code>## Warning: `guides(&lt;scale&gt; = FALSE)` is deprecated. Please use `guides(&lt;scale&gt; =
+## &quot;none&quot;)` instead.</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+<pre class="r"><code>Risk.Table %&gt;%
+    ggplot(., aes(x = Var1, y = Freq, color = Var1)) + geom_point(size = 6) + labs(x = &quot;Risk Levels&quot;,
+    y = &quot;Number of Funds&quot;) + geom_segment(aes(xend = Var1, y = 0, yend = Freq)) +
+    theme_minimal() + scale_color_viridis_d() + guides(color = FALSE) + coord_flip()</code></pre>
+<pre><code>## Warning: `guides(&lt;scale&gt; = FALSE)` is deprecated. Please use `guides(&lt;scale&gt; =
+## &quot;none&quot;)` instead.</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
 </div>
 <div id="a-lollipop-table-geom_label" class="section level3">
 <h3>A Lollipop Table [geom_label()]</h3>
 <p>Now I will switch up the points to be the actual values as text. For this, I use the <code>geom_text</code> aesthetic that requires a <code>label</code> to be assigned. I also want to put down the lines before the text to avoid overlap.</p>
-<pre class="r"><code>Risk.Table %&gt;% ggplot(., aes(x = Var1, y = Freq, color = Var1, label = Freq)) + labs(x = &quot;Risk Levels&quot;, 
-    y = &quot;Number of Funds&quot;) + geom_segment(aes(xend = Var1, y = 0, yend = Freq)) + 
-    geom_label(size = 6) + theme_minimal() + scale_color_viridis_d() + guides(color = FALSE) + 
+<pre class="r"><code>Risk.Table %&gt;%
+    ggplot(., aes(x = Var1, y = Freq, color = Var1, label = Freq)) + labs(x = &quot;Risk Levels&quot;,
+    y = &quot;Number of Funds&quot;) + geom_segment(aes(xend = Var1, y = 0, yend = Freq)) +
+    geom_label(size = 6) + theme_minimal() + scale_color_viridis_d() + guides(color = FALSE) +
     coord_flip()</code></pre>
-<p><img src="/R/2020-09-12-visualizing-one-qualitative-variable/index_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
+<pre><code>## Warning: `guides(&lt;scale&gt; = FALSE)` is deprecated. Please use `guides(&lt;scale&gt; =
+## &quot;none&quot;)` instead.</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-17-1.png" width="672" /></p>
 </div>
 <div id="a-lollipop-table-geom_text-inverse" class="section level3">
 <h3>A Lollipop Table [geom_text() inverse]</h3>
 <p>The ggplot is built in layers so the segment before the label makes sure that the white shows up. The fill and a discrete color are combined to create this graphical table.</p>
-<pre class="r"><code>Risk.Table %&gt;% ggplot(., aes(x = Var1, y = Freq, color = Var1, fill = Var1, label = Freq)) + 
-    geom_segment(aes(xend = Var1, y = 0, yend = Freq), size = 1.5) + geom_label(size = 6, 
-    color = &quot;white&quot;) + labs(x = &quot;Risk Levels&quot;, y = &quot;Number of Funds&quot;) + theme_minimal() + 
-    scale_color_viridis_d() + scale_fill_viridis_d() + guides(fill = FALSE, color = FALSE) + 
+<pre class="r"><code>Risk.Table %&gt;%
+    ggplot(., aes(x = Var1, y = Freq, color = Var1, fill = Var1, label = Freq)) +
+    geom_segment(aes(xend = Var1, y = 0, yend = Freq), size = 1.5) + geom_label(size = 6,
+    color = &quot;white&quot;) + labs(x = &quot;Risk Levels&quot;, y = &quot;Number of Funds&quot;) + theme_minimal() +
+    scale_color_viridis_d() + scale_fill_viridis_d() + guides(fill = FALSE, color = FALSE) +
     coord_flip()</code></pre>
-<p><img src="/R/2020-09-12-visualizing-one-qualitative-variable/index_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<pre><code>## Warning: `guides(&lt;scale&gt; = FALSE)` is deprecated. Please use `guides(&lt;scale&gt; =
+## &quot;none&quot;)` instead.</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
 </div>
 </div>
 <div id="i-hate-pie-charts" class="section level2">
 <h2>I HATE PIE CHARTS</h2>
 <p>A pie chart is fairly easy to do. Let’s go back and show something that I find pretty amazing. A pie chart is a bar chart [the fill variety] with coordinates that fill a circle rather than a square. We take the most basic bar plot – Basic.Bar – and add three things: new coordinates that are polar, labels, and a blank theme to eliminate axis labels.</p>
 <pre class="r"><code>Basic.Bar + coord_polar(&quot;y&quot;, start = 0) + labs(x = &quot;&quot;, y = &quot;&quot;) + theme_void()</code></pre>
-<p><img src="/R/2020-09-12-visualizing-one-qualitative-variable/index_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
 </div>
 </div>

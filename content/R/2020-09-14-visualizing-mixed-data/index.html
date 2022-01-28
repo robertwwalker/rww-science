@@ -19,7 +19,7 @@ image:
 projects: []
 ---
 
-<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
 
 
 <div id="bonds" class="section level1">
@@ -32,7 +32,8 @@ projects: []
 <div id="a-summary" class="section level2">
 <h2>A Summary</h2>
 <pre class="r"><code>library(skimr)
-Bonds %&gt;% skim()</code></pre>
+Bonds %&gt;%
+    skim()</code></pre>
 <table>
 <caption><span id="tab:unnamed-chunk-2">Table 1: </span>Data summary</caption>
 <tbody>
@@ -225,76 +226,93 @@ Bonds %&gt;% skim()</code></pre>
 <div id="geom_boxplot" class="section level2">
 <h2><code>geom_boxplot()</code></h2>
 <p>This will construct a boxplot of quantitative y for each value of the qualitative variable placed on x. This is very hard to read because of the extrema.</p>
-<pre class="r"><code>Bonds %&gt;% ggplot(., aes(x = Risk, y = Assets)) + geom_boxplot()</code></pre>
-<p><img src="/R/2020-09-14-visualizing-mixed-data/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<pre class="r"><code>Bonds %&gt;%
+    ggplot(., aes(x = Risk, y = Assets)) + geom_boxplot()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 </div>
 <div id="geom_dotplot" class="section level2">
 <h2><code>geom_dotplot()</code></h2>
 <p>The number of bins, the axis they are placed on, and the size of the dots are core to dotplots. It is often simply a matter of trial and error.</p>
-<pre class="r"><code>Bonds %&gt;% ggplot(., aes(x = Risk, y = Assets, color = Risk)) + geom_dotplot(binaxis = &quot;y&quot;, 
+<pre class="r"><code>Bonds %&gt;%
+    ggplot(., aes(x = Risk, y = Assets, color = Risk)) + geom_dotplot(binaxis = &quot;y&quot;,
     bins = 50, dotsize = 0.3)</code></pre>
 <pre><code>## Warning: Ignoring unknown parameters: bins</code></pre>
-<pre><code>## `stat_bindot()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
-<p><img src="/R/2020-09-14-visualizing-mixed-data/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<pre><code>## Bin width defaults to 1/30 of the range of the data. Pick better value with `binwidth`.</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 <div id="improved" class="section level3">
 <h3>Improved</h3>
-<pre class="r"><code>Bonds %&gt;% ggplot(., aes(x = Risk, y = Assets, color = Risk)) + geom_dotplot(binaxis = &quot;y&quot;, 
+<pre class="r"><code>Bonds %&gt;%
+    ggplot(., aes(x = Risk, y = Assets, color = Risk)) + geom_dotplot(binaxis = &quot;y&quot;,
     bins = 50, dotsize = 0.3) + guides(color = FALSE) + theme_minimal()</code></pre>
 <pre><code>## Warning: Ignoring unknown parameters: bins</code></pre>
-<pre><code>## `stat_bindot()` using `bins = 30`. Pick better value with `binwidth`.</code></pre>
-<p><img src="/R/2020-09-14-visualizing-mixed-data/index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<pre><code>## Warning: `guides(&lt;scale&gt; = FALSE)` is deprecated. Please use `guides(&lt;scale&gt; =
+## &quot;none&quot;)` instead.</code></pre>
+<pre><code>## Bin width defaults to 1/30 of the range of the data. Pick better value with `binwidth`.</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 </div>
 </div>
 <div id="geom_violin" class="section level2">
 <h2><code>geom_violin()</code></h2>
 <p>The most basic violin plot shows a two-sided density plot for each value of x. By default, all violins have the same area.</p>
-<pre class="r"><code>Bonds %&gt;% ggplot(., aes(x = Risk, y = Assets)) + geom_violin()</code></pre>
-<p><img src="/R/2020-09-14-visualizing-mixed-data/index_files/figure-html/unnamed-chunk-6-1.png" width="672" />
+<pre class="r"><code>Bonds %&gt;%
+    ggplot(., aes(x = Risk, y = Assets)) + geom_violin()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-6-1.png" width="672" />
 ### Adjusting the area: <code>scale=count</code></p>
 <p>We can adjust the violins to have area proportional to the count of observations by deploying the scale argument set equal to count.</p>
-<pre class="r"><code>Bonds %&gt;% ggplot(., aes(x = Risk, y = Assets)) + geom_violin(scale = &quot;count&quot;)</code></pre>
-<p><img src="/R/2020-09-14-visualizing-mixed-data/index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<pre class="r"><code>Bonds %&gt;%
+    ggplot(., aes(x = Risk, y = Assets)) + geom_violin(scale = &quot;count&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 <div id="adjusting-the-area-scalewidth" class="section level3">
 <h3>Adjusting the area: <code>scale=width</code></h3>
 <p>We can also adjust the violins to have equal width.</p>
-<pre class="r"><code>Bonds %&gt;% ggplot(., aes(x = Risk, y = Assets)) + geom_violin(scale = &quot;width&quot;)</code></pre>
-<p><img src="/R/2020-09-14-visualizing-mixed-data/index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<pre class="r"><code>Bonds %&gt;%
+    ggplot(., aes(x = Risk, y = Assets)) + geom_violin(scale = &quot;width&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 </div>
 <div id="adjusting-the-bandwidth" class="section level3">
 <h3>Adjusting the bandwidth</h3>
 <p>We can also make the violins smoother or more rigid with the <code>adjust=</code> argument. Numbers greater than one make it smoother.</p>
-<pre class="r"><code>Bonds %&gt;% ggplot(., aes(x = Risk, y = Assets)) + geom_violin(scale = &quot;count&quot;, adjust = 2)</code></pre>
-<p><img src="/R/2020-09-14-visualizing-mixed-data/index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<pre class="r"><code>Bonds %&gt;%
+    ggplot(., aes(x = Risk, y = Assets)) + geom_violin(scale = &quot;count&quot;, adjust = 2)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <p>Numbers less than one make it less smooth.</p>
-<pre class="r"><code>Bonds %&gt;% ggplot(., aes(x = Risk, y = Assets)) + geom_violin(scale = &quot;count&quot;, adjust = 1/2)</code></pre>
-<p><img src="/R/2020-09-14-visualizing-mixed-data/index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<pre class="r"><code>Bonds %&gt;%
+    ggplot(., aes(x = Risk, y = Assets)) + geom_violin(scale = &quot;count&quot;, adjust = 1/2)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 </div>
 </div>
 <div id="geom_density-with-colorfill" class="section level2">
 <h2><code>geom_density()</code> with color/fill</h2>
 <p>We can color the lines of a density plot to try and showcase the various distributions.</p>
-<pre class="r"><code>Bonds %&gt;% ggplot(., aes(x = Assets, color = Risk)) + geom_density()</code></pre>
-<p><img src="/R/2020-09-14-visualizing-mixed-data/index_files/figure-html/unnamed-chunk-11-1.png" width="672" />
+<pre class="r"><code>Bonds %&gt;%
+    ggplot(., aes(x = Assets, color = Risk)) + geom_density()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-11-1.png" width="672" />
 We fill the shape of density plot to try and showcase the various distributions.</p>
-<pre class="r"><code>Bonds %&gt;% ggplot(., aes(x = Assets, fill = Risk)) + geom_density()</code></pre>
-<p><img src="/R/2020-09-14-visualizing-mixed-data/index_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
+<pre class="r"><code>Bonds %&gt;%
+    ggplot(., aes(x = Assets, fill = Risk)) + geom_density()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-12-1.png" width="672" /></p>
 <p>This almost always needs lightening.</p>
-<pre class="r"><code>Bonds %&gt;% ggplot(., aes(x = Assets, fill = Risk)) + geom_density(alpha = 0.2)</code></pre>
-<p><img src="/R/2020-09-14-visualizing-mixed-data/index_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
+<pre class="r"><code>Bonds %&gt;%
+    ggplot(., aes(x = Assets, fill = Risk)) + geom_density(alpha = 0.2)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-13-1.png" width="672" /></p>
 <p>In this case, it helps to remove the outline.</p>
-<pre class="r"><code>Bonds %&gt;% ggplot(., aes(x = Assets, fill = Risk)) + geom_density(alpha = 0.2, color = NA)</code></pre>
-<p><img src="/R/2020-09-14-visualizing-mixed-data/index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<pre class="r"><code>Bonds %&gt;%
+    ggplot(., aes(x = Assets, fill = Risk)) + geom_density(alpha = 0.2, color = NA)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
 </div>
 <div id="geom_beeswarm" class="section level2">
 <h2><code>geom_beeswarm()</code></h2>
 <p>Related to the dotplot is the beeswarm. It requires installing a package with the geometry known as ggbeeswarm.</p>
 <pre><code>install.packages(&quot;ggbeeswarm&quot;)</code></pre>
 <pre class="r"><code>library(ggbeeswarm)
-Bonds %&gt;% ggplot() + aes(x = Risk, y = Assets) + geom_beeswarm()</code></pre>
-<p><img src="/R/2020-09-14-visualizing-mixed-data/index_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+Bonds %&gt;%
+    ggplot() + aes(x = Risk, y = Assets) + geom_beeswarm()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
 <pre class="r"><code>library(ggbeeswarm)
-Bonds %&gt;% ggplot() + aes(x = Risk, y = Assets, color = Risk) + geom_beeswarm() + 
-    guides(color = FALSE)</code></pre>
-<p><img src="/R/2020-09-14-visualizing-mixed-data/index_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
+Bonds %&gt;%
+    ggplot() + aes(x = Risk, y = Assets, color = Risk) + geom_beeswarm() + guides(color = FALSE)</code></pre>
+<pre><code>## Warning: `guides(&lt;scale&gt; = FALSE)` is deprecated. Please use `guides(&lt;scale&gt; =
+## &quot;none&quot;)` instead.</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-16-1.png" width="672" /></p>
 </div>
 </div>

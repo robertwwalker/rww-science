@@ -13,6 +13,7 @@ header:
   image: ''
 ---
 
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
 
 
 <div id="some-data" class="section level1">
@@ -119,10 +120,12 @@ SSTimes %&gt;% group_by(Self.Screen) %&gt;% skim()</code></pre>
 </table>
 <p>So I have 25 observations that are not screened and 36 that are screened. What does it look like?</p>
 <pre class="r"><code>ggplot(SSTimes, aes(x=Self.Screen, y=Call.Time, fill=Self.Screen)) + geom_violin(alpha = 0.2) + scale_fill_discrete(guide=FALSE) + labs(title = &quot;Self Screen and Non-Self Screen Call Times&quot;)</code></pre>
-<p><img src="/R/2019-10-25-a-quick-and-dirty-introduction-to-r/index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
+<pre><code>## Warning: It is deprecated to specify `guide = FALSE` to remove a guide. Please
+## use `guide = &quot;none&quot;` instead.</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-3-1.png" width="672" /></p>
 <p>Here is a picture of the distributions of the two means.</p>
 <pre class="r"><code>gplots::plotmeans(Call.Time~Self.Screen, data=SSTimes, n.label=FALSE, ci.label=TRUE, ylim=c(20,27))</code></pre>
-<p><img src="/R/2019-10-25-a-quick-and-dirty-introduction-to-r/index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-4-1.png" width="672" /></p>
 <p>What does the t-test look like?</p>
 <pre class="r"><code>t.test(Support.Times$Not.Screened, Support.Times$Screened)</code></pre>
 <pre><code>## 
@@ -142,7 +145,7 @@ SSTimes %&gt;% group_by(Self.Screen) %&gt;% skim()</code></pre>
 ## 
 ## data:  Call.Time by Self.Screen
 ## t = -2.9793, df = 51.512, p-value = 0.004399
-## alternative hypothesis: true difference in means is not equal to 0
+## alternative hypothesis: true difference in means between group Not.Screened and group Screened is not equal to 0
 ## 95 percent confidence interval:
 ##  -4.0216630 -0.7841148
 ## sample estimates:
@@ -151,5 +154,5 @@ SSTimes %&gt;% group_by(Self.Screen) %&gt;% skim()</code></pre>
 <p>It is worth noting that R stores a bunch of stuff. For example, it stores the standard error of the difference and that is worth looking at in this case; the standard error that describes the difference in the averages is 0.8065242.</p>
 <pre class="r"><code>Resample.Times &lt;- ResampleProps::ResampleDiffMeans(Support.Times$Screened,Support.Times$Not.Screened)
 sd(Resample.Times)</code></pre>
-<pre><code>## [1] 0.7760163</code></pre>
+<pre><code>## [1] 0.8073286</code></pre>
 </div>

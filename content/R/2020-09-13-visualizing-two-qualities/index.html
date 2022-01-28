@@ -19,7 +19,7 @@ image:
 projects: []
 ---
 
-<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+<script src="{{< blogdown/postref >}}index_files/header-attrs/header-attrs.js"></script>
 
 
 <div id="bonds" class="section level1">
@@ -32,7 +32,8 @@ projects: []
 <div id="a-summary" class="section level2">
 <h2>A Summary</h2>
 <pre class="r"><code>library(skimr)
-Bonds %&gt;% skim()</code></pre>
+Bonds %&gt;%
+    skim()</code></pre>
 <table>
 <caption><span id="tab:unnamed-chunk-2">Table 1: </span>Data summary</caption>
 <tbody>
@@ -224,10 +225,14 @@ Bonds %&gt;% skim()</code></pre>
 <p>There are three primary visualizations that we might use for a combination of two qualities. We will have a look at <code>geom_tile()</code>, <code>geom_point()</code>, and <code>geom_bar(aes(fill=))</code> to visualize these. We can also make use of <code>facet</code>. Let me work with Risk and Fees. I will first display the relevant table.</p>
 <div id="building-a-table" class="section level2">
 <h2>Building a Table</h2>
-<pre class="r"><code>BTDF &lt;- Bonds %&gt;% group_by(Risk, Fees) %&gt;% summarise(Count = n()) %&gt;% data.frame()</code></pre>
-<pre><code>## `summarise()` regrouping output by &#39;Risk&#39; (override with `.groups` argument)</code></pre>
-<pre class="r"><code>BTDF %&gt;% pivot_wider(names_from = Fees, values_from = Count)</code></pre>
-<pre><code>## # A tibble: 3 x 3
+<pre class="r"><code>BTDF &lt;- Bonds %&gt;%
+    group_by(Risk, Fees) %&gt;%
+    summarise(Count = n()) %&gt;%
+    data.frame()</code></pre>
+<pre><code>## `summarise()` has grouped output by &#39;Risk&#39;. You can override using the `.groups` argument.</code></pre>
+<pre class="r"><code>BTDF %&gt;%
+    pivot_wider(names_from = Fees, values_from = Count)</code></pre>
+<pre><code>## # A tibble: 3 × 3
 ##   Risk             No   Yes
 ##   &lt;chr&gt;         &lt;int&gt; &lt;int&gt;
 ## 1 Above average    37    22
@@ -245,20 +250,23 @@ Bonds %&gt;% skim()</code></pre>
 </div>
 <div id="geom_tile" class="section level2">
 <h2><code>geom_tile</code></h2>
-<pre class="r"><code>BTDF %&gt;% ggplot(., aes(x = Risk, y = Fees, fill = Count)) + geom_tile() + scale_fill_viridis_c() + 
+<pre class="r"><code>BTDF %&gt;%
+    ggplot(., aes(x = Risk, y = Fees, fill = Count)) + geom_tile() + scale_fill_viridis_c() +
     theme_minimal() + labs(fill = &quot;Number of Funds&quot;)</code></pre>
-<p><img src="/R/2020-09-13-visualizing-two-qualities/index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-5-1.png" width="672" /></p>
 </div>
 <div id="geom_label-a-visual-table" class="section level2">
 <h2><code>geom_label</code> a visual table</h2>
-<pre class="r"><code>BTDF %&gt;% ggplot(., aes(x = Risk, y = Fees, label = Count)) + geom_label() + theme_minimal() + 
+<pre class="r"><code>BTDF %&gt;%
+    ggplot(., aes(x = Risk, y = Fees, label = Count)) + geom_label() + theme_minimal() +
     labs(subtitle = &quot;Counts of Funds Shown&quot;)</code></pre>
-<p><img src="/R/2020-09-13-visualizing-two-qualities/index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
 <div id="a-tile-table" class="section level3">
 <h3>A Tile Table</h3>
-<pre class="r"><code>BTDF %&gt;% ggplot(., aes(x = Risk, y = Fees, label = Count, fill = Count)) + geom_tile(alpha = 0.2) + 
+<pre class="r"><code>BTDF %&gt;%
+    ggplot(., aes(x = Risk, y = Fees, label = Count, fill = Count)) + geom_tile(alpha = 0.2) +
     scale_fill_viridis_c() + geom_text() + theme_minimal() + labs(subtitle = &quot;Counts of Funds Shown&quot;)</code></pre>
-<p><img src="/R/2020-09-13-visualizing-two-qualities/index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
 </div>
 </div>
 </div>
@@ -266,22 +274,26 @@ Bonds %&gt;% skim()</code></pre>
 <h1>Raw Data Plots</h1>
 <div id="geom_count" class="section level2">
 <h2><code>geom_count()</code></h2>
-<pre class="r"><code>Bonds %&gt;% ggplot() + aes(x = Risk, y = Fees) + geom_count() + theme_minimal()</code></pre>
-<p><img src="/R/2020-09-13-visualizing-two-qualities/index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
+<pre class="r"><code>Bonds %&gt;%
+    ggplot() + aes(x = Risk, y = Fees) + geom_count() + theme_minimal()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-8-1.png" width="672" /></p>
 </div>
 </div>
 <div id="geom_barfill" class="section level1">
 <h1><code>geom_bar(fill=)</code></h1>
 <p>Now let us look at the bar plot. First, start with Risk.</p>
-<pre class="r"><code>Bonds %&gt;% ggplot() + aes(x = Risk) + geom_bar()</code></pre>
-<p><img src="/R/2020-09-13-visualizing-two-qualities/index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
+<pre class="r"><code>Bonds %&gt;%
+    ggplot() + aes(x = Risk) + geom_bar()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-9-1.png" width="672" /></p>
 <p>To add Fees to the plot, we can fill the bars.</p>
-<pre class="r"><code>Bonds %&gt;% ggplot() + aes(x = Risk, fill = Fees) + geom_bar()</code></pre>
-<p><img src="/R/2020-09-13-visualizing-two-qualities/index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<pre class="r"><code>Bonds %&gt;%
+    ggplot() + aes(x = Risk, fill = Fees) + geom_bar()</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
 <div id="conditional-probability-positionfill" class="section level2">
 <h2>Conditional Probability: <code>(position="fill")</code></h2>
 <p>We can also plot this normalized by the number in each category of x so that the plots represent conditional probability.</p>
-<pre class="r"><code>Bonds %&gt;% ggplot() + aes(x = Risk, fill = Fees) + geom_bar(position = &quot;fill&quot;)</code></pre>
-<p><img src="/R/2020-09-13-visualizing-two-qualities/index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
+<pre class="r"><code>Bonds %&gt;%
+    ggplot() + aes(x = Risk, fill = Fees) + geom_bar(position = &quot;fill&quot;)</code></pre>
+<p><img src="{{< blogdown/postref >}}index_files/figure-html/unnamed-chunk-11-1.png" width="672" /></p>
 </div>
 </div>
