@@ -1,8 +1,8 @@
 +++ 
-date = 2022-01-10T10:00:00 
+date = 2022-01-13T10:00:00 
 title = "DADM Kickoff: Portland MBAP" 
 time_start = 2022-01-13T18:00:00
-time_end = 2021-08-31T22:00:00 
+time_end = 2022-01-13T22:00:00 
 abstract = "DADM Kicks off"
 abstract_short = "Introducing data...." 
 event = "MBAP PDX" 

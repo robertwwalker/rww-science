@@ -1,5 +1,5 @@
 +++ 
-date = 2022-01-24T10:00:00 
+date = 2022-02-03T18:00:00 
 title = "DADM Week 4: Portland MBAP" 
 time_start = 2022-02-03T18:00:00
 time_end = 2021-02-03T22:00:00 
