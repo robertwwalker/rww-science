@@ -4,7 +4,7 @@
     <title>Inference: One and Two-Samples</title>
     <meta charset="utf-8" />
     <meta name="author" content="Robert W. Walker" />
-    <meta name="date" content="2022-02-17" />
+    <meta name="date" content="2022-02-24" />
     <script src="libs/header-attrs/header-attrs.js"></script>
     <script src="libs/htmlwidgets/htmlwidgets.js"></script>
     <link href="libs/datatables-css/datatables-crosstalk.css" rel="stylesheet" />
@@ -24,7 +24,7 @@ class: center, middle, inverse, title-slide
 # Inference: One and Two-Samples
 ## Discrimination and Concrete
 ### Robert W. Walker
-### 2022-02-17
+### 2022-02-24
 
 ---
 
@@ -327,7 +327,8 @@ UCBTab %$% table(Admit) %&gt;% binom.test(conf.level = 0.9)
 ## 	Exact binomial test
 ## 
 ## data:  .
-## number of successes = 1755, number of trials = 4526, p-value &lt; 2.2e-16
+## number of successes = 1755, number of trials = 4526,
+## p-value &lt; 2.2e-16
 ## alternative hypothesis: true probability of success is not equal to 0.5
 ## 90 percent confidence interval:
 ##  0.3757924 0.3998340
@@ -356,7 +357,8 @@ UCBTab %$% table(Admit) %&gt;% binom.test(conf.level = 0.9)
 ## 	Exact binomial test
 ## 
 ## data:  .
-## number of successes = 1755, number of trials = 4526, p-value &lt; 2.2e-16
+## number of successes = 1755, number of trials = 4526,
+## p-value &lt; 2.2e-16
 ## alternative hypothesis: true probability of success is not equal to 0.5
 ## 90 percent confidence interval:
 ##  0.3757924 0.3998340
@@ -618,8 +620,8 @@ UCBTM %$% table(Admit) %&gt;% binom.test(., conf.level = 0.9)
 ## 	Exact binomial test
 ## 
 ## data:  .
-## number of successes = 1198, number of trials = 2691, p-value =
-## 1.403e-08
+## number of successes = 1198, number of trials = 2691,
+## p-value = 1.403e-08
 ## alternative hypothesis: true probability of success is not equal to 0.5
 ## 90 percent confidence interval:
 ##  0.4292930 0.4611706
@@ -656,7 +658,8 @@ UCBTF %$% table(Admit) %&gt;% binom.test(., conf.level = 0.9)
 ## 	Exact binomial test
 ## 
 ## data:  .
-## number of successes = 557, number of trials = 1835, p-value &lt; 2.2e-16
+## number of successes = 557, number of trials = 1835,
+## p-value &lt; 2.2e-16
 ## alternative hypothesis: true probability of success is not equal to 0.5
 ## 90 percent confidence interval:
 ##  0.2858562 0.3216944
@@ -757,8 +760,8 @@ UCBTab %$% table(Gender, Admit) %&gt;% prop.test(conf.level = 0.9, correct=FALSE
 
 ```
 ## 
-## 	2-sample test for equality of proportions without continuity
-## 	correction
+## 	2-sample test for equality of proportions without
+## 	continuity correction
 ## 
 ## data:  .
 ## X-squared = 92.205, df = 1, p-value &lt; 2.2e-16
@@ -1092,8 +1095,10 @@ Discrimination %&gt;% filter(Ethnicity %in% c("White not Hispanic","Hispanic")) 
 ## 90 percent confidence interval:
 ##  -15784.59 -11479.37
 ## sample estimates:
-##           mean in group Hispanic mean in group White not Hispanic 
-##                         11065.57                         24697.55
+##           mean in group Hispanic 
+##                         11065.57 
+## mean in group White not Hispanic 
+##                         24697.55
 ```
 
 ---
@@ -1113,8 +1118,10 @@ Discrimination %&gt;% filter(Ethnicity %in% c("White not Hispanic","Hispanic")) 
 ## 90 percent confidence interval:
 ##  -15803.25 -11460.71
 ## sample estimates:
-##           mean in group Hispanic mean in group White not Hispanic 
-##                         11065.57                         24697.55
+##           mean in group Hispanic 
+##                         11065.57 
+## mean in group White not Hispanic 
+##                         24697.55
 ```
 
 ---
