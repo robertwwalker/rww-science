@@ -109,6 +109,15 @@ source('https://github.com/robertwwalker/DADMStuff/raw/master/PlotlyReg.R')
 ```
 
 ---
+# Pivots Gather/Spread and tidy data
+
+Radiant can be picky about data structures.  `ggplot` is built around the idea of tidy data from Week 2.  How do we make data tidy?
+
+At the command line, it is `pivot_wider` and `pivot_longer` while radiant uses the [at some point to be obsolete `spread`/`gather`]
+
+Let's take a look with these data.
+
+---
 # A Bit on Covariance and Correlation
 
 Covariance is defined as:
