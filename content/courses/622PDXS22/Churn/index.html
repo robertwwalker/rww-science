@@ -1,0 +1,477 @@
+---
+title: "telco"
+author: "Robert W. Walker"
+date: "2020-02-19"
+output:
+   html_document:
+     self_contained: true
+---
+
+<script src="index_files/header-attrs/header-attrs.js"></script>
+
+
+<div id="telco-churn" class="section level1">
+<h1>telco Churn</h1>
+<p>The loss of customers is known as churn. Here is some data on telephone companies that gives us a number of features of the customer and the billing history relevant to this.</p>
+<pre class="r"><code>library(tidyverse)
+library(readr)
+library(skimr)
+telco &lt;- read_csv(url(&quot;https://github.com/robertwwalker/DADMStuff/raw/master/WA_Fn-UseC_-Telco-Customer-Churn.csv&quot;))
+skim(telco)</code></pre>
+<table>
+<caption><span id="tab:unnamed-chunk-1">Table 1: </span>Data summary</caption>
+<tbody>
+<tr class="odd">
+<td align="left">Name</td>
+<td align="left">telco</td>
+</tr>
+<tr class="even">
+<td align="left">Number of rows</td>
+<td align="left">7043</td>
+</tr>
+<tr class="odd">
+<td align="left">Number of columns</td>
+<td align="left">21</td>
+</tr>
+<tr class="even">
+<td align="left">_______________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Column type frequency:</td>
+<td align="left"></td>
+</tr>
+<tr class="even">
+<td align="left">character</td>
+<td align="left">17</td>
+</tr>
+<tr class="odd">
+<td align="left">numeric</td>
+<td align="left">4</td>
+</tr>
+<tr class="even">
+<td align="left">________________________</td>
+<td align="left"></td>
+</tr>
+<tr class="odd">
+<td align="left">Group variables</td>
+<td align="left">None</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: character</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">min</th>
+<th align="right">max</th>
+<th align="right">empty</th>
+<th align="right">n_unique</th>
+<th align="right">whitespace</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">customerID</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">10</td>
+<td align="right">10</td>
+<td align="right">0</td>
+<td align="right">7043</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">gender</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">4</td>
+<td align="right">6</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">Partner</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">Dependents</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">PhoneService</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">MultipleLines</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">16</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">InternetService</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">11</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">OnlineSecurity</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">19</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">OnlineBackup</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">19</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">DeviceProtection</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">19</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">TechSupport</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">19</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">StreamingTV</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">19</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">StreamingMovies</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">19</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">Contract</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">8</td>
+<td align="right">14</td>
+<td align="right">0</td>
+<td align="right">3</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">PaperlessBilling</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0</td>
+</tr>
+<tr class="even">
+<td align="left">PaymentMethod</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">12</td>
+<td align="right">25</td>
+<td align="right">0</td>
+<td align="right">4</td>
+<td align="right">0</td>
+</tr>
+<tr class="odd">
+<td align="left">Churn</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">2</td>
+<td align="right">3</td>
+<td align="right">0</td>
+<td align="right">2</td>
+<td align="right">0</td>
+</tr>
+</tbody>
+</table>
+<p><strong>Variable type: numeric</strong></p>
+<table>
+<thead>
+<tr class="header">
+<th align="left">skim_variable</th>
+<th align="right">n_missing</th>
+<th align="right">complete_rate</th>
+<th align="right">mean</th>
+<th align="right">sd</th>
+<th align="right">p0</th>
+<th align="right">p25</th>
+<th align="right">p50</th>
+<th align="right">p75</th>
+<th align="right">p100</th>
+<th align="left">hist</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">SeniorCitizen</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">0.16</td>
+<td align="right">0.37</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">0.00</td>
+<td align="right">1.00</td>
+<td align="left">▇▁▁▁▂</td>
+</tr>
+<tr class="even">
+<td align="left">tenure</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">32.37</td>
+<td align="right">24.56</td>
+<td align="right">0.00</td>
+<td align="right">9.00</td>
+<td align="right">29.00</td>
+<td align="right">55.00</td>
+<td align="right">72.00</td>
+<td align="left">▇▃▃▃▆</td>
+</tr>
+<tr class="odd">
+<td align="left">MonthlyCharges</td>
+<td align="right">0</td>
+<td align="right">1</td>
+<td align="right">64.76</td>
+<td align="right">30.09</td>
+<td align="right">18.25</td>
+<td align="right">35.50</td>
+<td align="right">70.35</td>
+<td align="right">89.85</td>
+<td align="right">118.75</td>
+<td align="left">▇▅▆▇▅</td>
+</tr>
+<tr class="even">
+<td align="left">TotalCharges</td>
+<td align="right">11</td>
+<td align="right">1</td>
+<td align="right">2283.30</td>
+<td align="right">2266.77</td>
+<td align="right">18.80</td>
+<td align="right">401.45</td>
+<td align="right">1397.47</td>
+<td align="right">3794.74</td>
+<td align="right">8684.80</td>
+<td align="left">▇▂▂▂▁</td>
+</tr>
+</tbody>
+</table>
+<pre class="r"><code>telco &lt;- telco[complete.cases(telco),] # Keep only rows with complete cases
+telco.analyse &lt;- telco %&gt;% select(-customerID) # Drop customer ID
+telco.F &lt;- mutate_if(telco.analyse, is.character, as.factor)</code></pre>
+<pre><code>install.packages(&quot;DataExplorer&quot;)
+library(DataExplorer)
+# Run separately
+create_report(telco.F)</code></pre>
+<p>Remove the missing data. The outcome of interest is Churn. Let’s look at it and take on a few examples from proportions. Because it is Yes and No, everything will be about the probability of No unless we turn them to factors and order them backwards. I will just describe this as the probability of <em>retention</em>.</p>
+<pre class="r"><code>Paperless &lt;- telco.analyse %&gt;% filter(PaperlessBilling==&quot;Yes&quot;)
+Tab.PaperlessY &lt;- xtabs(~PaperlessBilling+Churn, data=Paperless)
+prop.table(Tab.PaperlessY, 1)</code></pre>
+<pre><code>##                 Churn
+## PaperlessBilling        No       Yes
+##              Yes 0.6641075 0.3358925</code></pre>
+<pre class="r"><code>prop.test(Tab.PaperlessY)</code></pre>
+<pre><code>## 
+##  1-sample proportions test with continuity correction
+## 
+## data:  Tab.PaperlessY, null probability 0.5
+## X-squared = 448.34, df = 1, p-value &lt; 2.2e-16
+## alternative hypothesis: true p is not equal to 0.5
+## 95 percent confidence interval:
+##  0.6495026 0.6784077
+## sample estimates:
+##         p 
+## 0.6641075</code></pre>
+<p>For the paperless customers, the probability of retention is 0.65 to 0.68 with 95% confidence. For the paper customers, we have…</p>
+<pre class="r"><code>PaperBill &lt;- telco.analyse %&gt;% filter(PaperlessBilling==&quot;Yes&quot;)
+Tab.PaperlessN &lt;- xtabs(~PaperlessBilling+Churn, data=PaperBill)
+prop.table(Tab.PaperlessN, 1)</code></pre>
+<pre><code>##                 Churn
+## PaperlessBilling        No       Yes
+##              Yes 0.6641075 0.3358925</code></pre>
+<pre class="r"><code>prop.test(Tab.PaperlessN)</code></pre>
+<pre><code>## 
+##  1-sample proportions test with continuity correction
+## 
+## data:  Tab.PaperlessN, null probability 0.5
+## X-squared = 448.34, df = 1, p-value &lt; 2.2e-16
+## alternative hypothesis: true p is not equal to 0.5
+## 95 percent confidence interval:
+##  0.6495026 0.6784077
+## sample estimates:
+##         p 
+## 0.6641075</code></pre>
+<p>The probability of retention ranges from 0.82 to 0.85 with 95% confidence. Because they do not overlap, there must be a difference and paperless customers churn more.</p>
+<div id="comparisons" class="section level2">
+<h2>Comparisons</h2>
+<pre class="r"><code>( Tab.Paperless &lt;- xtabs(~PaperlessBilling+Churn, data=telco.analyse) )</code></pre>
+<pre><code>##                 Churn
+## PaperlessBilling   No  Yes
+##              No  2395  469
+##              Yes 2768 1400</code></pre>
+<pre class="r"><code>prop.table(Tab.Paperless, 1)</code></pre>
+<pre><code>##                 Churn
+## PaperlessBilling        No       Yes
+##              No  0.8362430 0.1637570
+##              Yes 0.6641075 0.3358925</code></pre>
+<pre class="r"><code>prop.test(Tab.Paperless)</code></pre>
+<pre><code>## 
+##  2-sample test for equality of proportions with continuity correction
+## 
+## data:  Tab.Paperless
+## X-squared = 256.87, df = 1, p-value &lt; 2.2e-16
+## alternative hypothesis: two.sided
+## 95 percent confidence interval:
+##  0.1521111 0.1921600
+## sample estimates:
+##    prop 1    prop 2 
+## 0.8362430 0.6641075</code></pre>
+<p>Paperless clients have a probability of churning that is 0.152 to 0.192 higher than non-paperless clients.</p>
+</div>
+<div id="phone-service" class="section level2">
+<h2>Phone Service?</h2>
+<p>Is there a difference in Churn between those with and without phone service?</p>
+<pre class="r"><code>( Tab.PS &lt;- xtabs(~PhoneService+Churn, data=telco.analyse) )</code></pre>
+<pre><code>##             Churn
+## PhoneService   No  Yes
+##          No   510  170
+##          Yes 4653 1699</code></pre>
+<pre class="r"><code>prop.table(Tab.PS, 1)</code></pre>
+<pre><code>##             Churn
+## PhoneService        No       Yes
+##          No  0.7500000 0.2500000
+##          Yes 0.7325252 0.2674748</code></pre>
+<pre class="r"><code>prop.test(Tab.PS)</code></pre>
+<pre><code>## 
+##  2-sample test for equality of proportions with continuity correction
+## 
+## data:  Tab.PS
+## X-squared = 0.87373, df = 1, p-value = 0.3499
+## alternative hypothesis: two.sided
+## 95 percent confidence interval:
+##  -0.01765710  0.05260672
+## sample estimates:
+##    prop 1    prop 2 
+## 0.7500000 0.7325252</code></pre>
+<p>It seems not. Those without phone service could be 0.017 less likely or 0.053 more likely to be retained; no difference is certainly among the plausible values.</p>
+</div>
+<div id="contracts" class="section level2">
+<h2>Contracts?</h2>
+<pre class="r"><code>(Tab.Contract &lt;- table(telco.analyse$Contract, telco.analyse$Churn))</code></pre>
+<pre><code>##                 
+##                    No  Yes
+##   Month-to-month 2220 1655
+##   One year       1306  166
+##   Two year       1637   48</code></pre>
+<pre class="r"><code>prop.table(Tab.Contract, 1)</code></pre>
+<pre><code>##                 
+##                          No        Yes
+##   Month-to-month 0.57290323 0.42709677
+##   One year       0.88722826 0.11277174
+##   Two year       0.97151335 0.02848665</code></pre>
+<pre class="r"><code>prop.test(Tab.Contract)</code></pre>
+<pre><code>## 
+##  3-sample test for equality of proportions without continuity
+##  correction
+## 
+## data:  Tab.Contract
+## X-squared = 1179.5, df = 2, p-value &lt; 2.2e-16
+## alternative hypothesis: two.sided
+## sample estimates:
+##    prop 1    prop 2    prop 3 
+## 0.5729032 0.8872283 0.9715134</code></pre>
+<p>With more than two proportions, the question is, <code>are the probabilities of churn the same or not</code>.</p>
+<p>Perhaps we should reexamine the row dimension to combine those under contracts of different lengths to one.</p>
+</div>
+</div>
+<div id="contracts-yes-or-no" class="section level1">
+<h1>Contracts: Yes or No</h1>
+<p>First, use mutate to separate those under contract from those that are month-to-month. Second, I will examine the table and the proportions from the table calculated by rows.</p>
+<pre class="r"><code>TAC &lt;- telco.analyse %&gt;% mutate(No.Contract = (Contract==&quot;Month-to-month&quot;))
+table(TAC$No.Contract, TAC$Churn)</code></pre>
+<pre><code>##        
+##           No  Yes
+##   FALSE 2943  214
+##   TRUE  2220 1655</code></pre>
+<pre class="r"><code>prop.table(table(TAC$No.Contract, TAC$Churn), 1)</code></pre>
+<pre><code>##        
+##                 No        Yes
+##   FALSE 0.93221413 0.06778587
+##   TRUE  0.57290323 0.42709677</code></pre>
+<p>Those under contract have a six percent churn rate while those not under contract churn just under forty-three percent of the time. It is likely that contracts are a very useful way to diminish the likelihood of churn. How much? We can use the test of proportions to examine this.</p>
+<pre class="r"><code>prop.test(table(TAC$No.Contract, TAC$Churn))</code></pre>
+<pre><code>## 
+##  2-sample test for equality of proportions with continuity correction
+## 
+## data:  table(TAC$No.Contract, TAC$Churn)
+## X-squared = 1149.1, df = 1, p-value &lt; 2.2e-16
+## alternative hypothesis: two.sided
+## 95 percent confidence interval:
+##  0.3411501 0.3774717
+## sample estimates:
+##    prop 1    prop 2 
+## 0.9322141 0.5729032</code></pre>
+<p>In evaluating the claim of no difference, the probability of no difference is estimated to be basically zero [2.2e-16]. So what are the likely values? With 95% confidence, the probability of churning is between 0.34 and 0.377 more likely for those without a contract.</p>
+</div>

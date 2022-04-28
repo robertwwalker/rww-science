@@ -1,0 +1,599 @@
+---
+title: "1 and 2 Sample Means-Proportions"
+author: "Robert W. Walker"
+date: "2020-02-19"
+autosize: true
+output: 
+  slidy_presentation
+---
+
+<script src="index_files/header-attrs/header-attrs.js"></script>
+
+
+<div id="the-basic-idea" class="section level1">
+<h1>The Basic Idea</h1>
+<p>Two classes of statistics have known distributions.</p>
+<ul>
+<li>Means have a t distribution.</li>
+<li>Proportions have a normal distribution if the expected number of both categories exceeds 5.</li>
+</ul>
+</div>
+<div id="the-mean-t" class="section level1">
+<h1>The Mean: t</h1>
+<p>The t distribution
+- is entirely defined by degrees of freedom.
+- has as metric, the standard error [in this case of the mean]</p>
+<hr />
+<p>The equations:
+<span class="math display">\[
+\Large
+t = \frac{\overline{x} - \mu}{\frac{s}{\sqrt{n}}} 
+\]</span>
+and
+<span class="math display">\[
+\Large
+\mu = \overline{x} + t(\frac{s}{\sqrt{n}})
+\]</span>
+The true mean is symmetric about the sample mean with t defining the number of standard errors of the mean above and below.</p>
+</div>
+<div id="the-t-distribution-df24" class="section level1">
+<h1>The t distribution (df=24)</h1>
+<pre><code>## Loading required package: car</code></pre>
+<pre><code>## Loading required package: carData</code></pre>
+<pre><code>## Loading required package: sandwich</code></pre>
+<p><img src="index_files/figure-html/Pic1-1.png" width="672" /></p>
+<hr />
+<pre class="r"><code># 99 percent, then 95, 90, and 80
+qt(c(0.005,0.995), df=24)</code></pre>
+<pre><code>## [1] -2.79694  2.79694</code></pre>
+<pre class="r"><code>qt(c(0.025,0.975), df=24)</code></pre>
+<pre><code>## [1] -2.063899  2.063899</code></pre>
+<pre class="r"><code>qt(c(0.05,0.95), df=24)</code></pre>
+<pre><code>## [1] -1.710882  1.710882</code></pre>
+<pre class="r"><code>qt(c(0.1,0.9), df=24)</code></pre>
+<pre><code>## [1] -1.317836  1.317836</code></pre>
+</div>
+<div id="led-lifetimes-df24" class="section level1">
+<h1>LED Lifetimes (df=24)</h1>
+<p><img src="index_files/figure-html/Pic2-1.png" width="672" /></p>
+<hr />
+<pre class="r"><code># 99 percent, then 95, 90, and 80
+mean(LEDLifetimes$lifetime)+sd(LEDLifetimes$lifetime)/sqrt(25)*qt(c(0.005,0.995), df=24)</code></pre>
+<pre><code>## [1] 36881.2 39118.8</code></pre>
+<pre><code>## [1] 37174.43 38825.57</code></pre>
+<pre><code>## [1] 37315.64 38684.36</code></pre>
+<pre><code>## [1] 37472.86 38527.14</code></pre>
+</div>
+<div id="the-complete-picture" class="section level1">
+<h1>The Complete Picture</h1>
+<p><img src="index_files/figure-html/Pic3-1.png" width="672" />
+***</p>
+<pre class="r"><code>with(LEDLifetimes, (t.test(lifetime, alternative=&#39;two.sided&#39;, mu=0.0, 
+  conf.level=.95)))</code></pre>
+<pre><code>## 
+##  One Sample t-test
+## 
+## data:  lifetime
+## t = 94.998, df = 24, p-value &lt; 2.2e-16
+## alternative hypothesis: true mean is not equal to 0
+## 95 percent confidence interval:
+##  37174.43 38825.57
+## sample estimates:
+## mean of x 
+##     38000</code></pre>
+</div>
+<div id="hypothesis-tests" class="section level1">
+<h1>Hypothesis Tests</h1>
+<p>Assume a true mean <span class="math inline">\(\mu\)</span>. How likely, if <span class="math inline">\(\mu\)</span> is true, is the sample mean that we obtained? Now, <span class="math inline">\(\mu\)</span>, <span class="math inline">\(\overline{x}\)</span>, <span class="math inline">\(s\)</span>, and <span class="math inline">\(n\)</span> are known. We need only figure out the question and the associated probability. Do we wish to know….
+- whether <span class="math inline">\(\mu\)</span> is equal to some value (two-sided alternative).
+- whether <span class="math inline">\(\mu\)</span> is greater than some value.
+- whether <span class="math inline">\(\mu\)</span> is less than some value.</p>
+<hr />
+<p>We will examine the probability of the complements. We find a sample mean of 36800 given a sample size of 16? -2.4. The probabilities are
+- 0.0149 with inequality [one-tail]
+- 0.0298 with not equal to [two-tails].</p>
+<p><span class="math display">\[
+\Large
+t = \frac{36800 - 38000}{\frac{2000}{\sqrt{16}}} = -2.4
+\]</span></p>
+<p>=============================
+left: 40%
+title: false</p>
+<p><img src="index_files/figure-html/Pic5a-1.png" width="672" />
+***
+N=25 [the data]</p>
+<pre class="r"><code>with(LEDLifetimes, (t.test(lifetime, alternative=&#39;two.sided&#39;, mu=36800, 
+  conf.level=.95)))</code></pre>
+<pre><code>## 
+##  One Sample t-test
+## 
+## data:  lifetime
+## t = 2.9999, df = 24, p-value = 0.006207
+## alternative hypothesis: true mean is not equal to 36800
+## 95 percent confidence interval:
+##  37174.43 38825.57
+## sample estimates:
+## mean of x 
+##     38000</code></pre>
+</div>
+<div id="solving-for-n" class="section level1">
+<h1>Solving for n</h1>
+<p>The equations:
+<span class="math display">\[
+\Large
+t = \frac{\overline{x} - \mu}{\frac{s}{\sqrt{n}}} 
+\]</span>
+and
+<span class="math display">\[
+\Large
+n = [\frac{st}{(\overline{x} - \mu)}]^2
+\]</span>
+We take the size of the necessary confidence interval and divide by the acceptable and assumed margin for error and square the result. It’s not perfect; the realized margin of error depends on the sample as does <span class="math inline">\(s\)</span>. This is hard to solve because t depends on <span class="math inline">\(n\)</span>.</p>
+<p><em>We can approximate with a normal; it will be less wrong as the required sample gets big.</em></p>
+</div>
+<div id="proportions-with-a-caveat" class="section level1">
+<h1>Proportions (with a caveat)</h1>
+<p>There are restrictions on when this works (np and n(1-p) greater than 5).</p>
+<p>It allows us to, given data, ask for a reasonable range of the true probability <span class="math inline">\(\pi\)</span> or <span class="math inline">\(p_0\)</span> in a binomial. It is heavily deployed in survey sampling [especially in the polling silly season].</p>
+</div>
+<div id="equations-for-proportions" class="section level1">
+<h1>Equations for Proportions</h1>
+<p>The equations:
+<span class="math display">\[
+\Large
+z = \frac{\hat{p} - \pi}{\sqrt(\frac{p(1-p)}{n}} 
+\]</span>
+and
+<span class="math display">\[
+\Large
+\pi = \hat{p} + z\sqrt{\frac{\hat{p}(1-\hat{p})}{n}}
+\]</span></p>
+<hr />
+<ul>
+<li><span class="math inline">\(\pi\)</span> – the true probability of a positive response.</li>
+<li><span class="math inline">\(\hat{p}\)</span> – the estimated probability/proportion of positive responses.</li>
+<li><span class="math inline">\(z\)</span> – quantiles from the standard normal distribution.</li>
+<li><span class="math inline">\(n\)</span> – the number of respondents</li>
+</ul>
+</div>
+<div id="food-satisfaction" class="section level1">
+<h1>Food Satisfaction</h1>
+<ul>
+<li>100 respondents</li>
+<li>46 satisfied</li>
+<li>What confidence?
+<ul>
+<li>95 percent lower bound? <span class="math inline">\(z=-1.645\)</span></li>
+<li>95 percent upper bound? <span class="math inline">\(z=1.645\)</span></li>
+<li>95 percent central interval? <span class="math inline">\(z=(-1.96,1.96)\)</span></li>
+</ul></li>
+<li><span class="math inline">\(\pi\)</span> is unknown.</li>
+</ul>
+<hr />
+<p><span class="math display">\[
+\Large
+\pi = 0.46 + z\sqrt{\frac{0.46(1-0.46)}{100}}
+\]</span>
+<span class="math display">\[
+\Large
+\pi = 0.46 + z*0.05
+\]</span>
+- What confidence?
+- 95 percent lower bound? <span class="math inline">\(z=-1.645\)</span> 0.378
+- 95 percent upper bound? <span class="math inline">\(z=1.645\)</span> 0.542
+- 95 percent central interval? <span class="math inline">\(z=(-1.96,1.96)\)</span> 0.362, 0.558</p>
+</div>
+<div id="the-distribution" class="section level1">
+<h1>The Distribution</h1>
+<p>left: 70%
+<img src="index_files/figure-html/Ch1a-1.png" width="672" />
+***
+I reordered the outcomes.</p>
+<p>================================
+title: false</p>
+<pre><code>## 
+##  1-sample proportions test without continuity correction
+## 
+## data:  rbind(.Table), null probability 0.5
+## X-squared = 0.64, df = 1, p-value = 0.4237
+## alternative hypothesis: true p is not equal to 0.5
+## 95 percent confidence interval:
+##  0.3656081 0.5573514
+## sample estimates:
+##    p 
+## 0.46</code></pre>
+<pre class="r"><code>p.hat &lt;- 0.46 
+p.hat+qnorm(c(0.025,0.975))*sqrt(p.hat*(1-p.hat)/100)</code></pre>
+<pre><code>## [1] 0.3623159 0.5576841</code></pre>
+</div>
+<div id="the-probability-of-0.5" class="section level1">
+<h1>The probability of 0.5</h1>
+<pre><code>## 
+##  1-sample proportions test without continuity correction
+## 
+## data:  rbind(.Table), null probability 0.5
+## X-squared = 0.64, df = 1, p-value = 0.2119
+## alternative hypothesis: true p is less than 0.5
+## 95 percent confidence interval:
+##  0.0000000 0.5419527
+## sample estimates:
+##    p 
+## 0.46</code></pre>
+<hr />
+<pre class="r"><code>p &lt;- 0.5; p.hat &lt;- 0.46; (p.hat - p)/sqrt(p*(1-p)/100)</code></pre>
+<pre><code>## [1] -0.8</code></pre>
+<pre class="r"><code>pnorm((p.hat - p)/sqrt(p*(1-p)/100))</code></pre>
+<pre><code>## [1] 0.2118554</code></pre>
+<pre class="r"><code>2*pnorm((p.hat - p)/sqrt(p*(1-p)/100))</code></pre>
+<pre><code>## [1] 0.4237108</code></pre>
+<pre class="r"><code>p.hat+qnorm(0.95)*sqrt(p^2/100)</code></pre>
+<pre><code>## [1] 0.5422427</code></pre>
+</div>
+<div id="the-exact-binomial" class="section level1">
+<h1>The Exact Binomial</h1>
+<p>Solves a problem in this way. <em>What would <span class="math inline">\(p\)</span> have to be to generate this set of binomial outcomes with the given probability?</em> In this instance, it runs through the possible values of p so that
+- 46 or more yes’s are 97.5 percent and then that
+- 46 or fewer yes’s are 2.5 percent.</p>
+<hr />
+<pre class="r"><code>pbinom(45, size=100, prob=0.3598434)</code></pre>
+<pre><code>## [1] 0.9749999</code></pre>
+<pre class="r"><code>pbinom(46, size=100, prob=0.5625884)</code></pre>
+<pre><code>## [1] 0.02500002</code></pre>
+<p>=======================================
+title: false</p>
+<pre><code>## 
+## Frequency counts (test is for first level):
+## Satisfied.
+## Yes  No 
+##  46  54</code></pre>
+<pre><code>## 
+##  Exact binomial test
+## 
+## data:  rbind(.Table)
+## number of successes = 46, number of trials = 100, p-value = 0.4841
+## alternative hypothesis: true probability of success is not equal to 0.5
+## 95 percent confidence interval:
+##  0.3598434 0.5625884
+## sample estimates:
+## probability of success 
+##                   0.46</code></pre>
+</div>
+<div id="the-famous-survey-margin-for-error" class="section level1">
+<h1>The Famous Survey Margin for Error</h1>
+<p>Find one…</p>
+<p><span class="math display">\[
+n = \frac{z^2*SE(p)^2}{MOE^2} \\
+MOE = \sqrt{\frac{z*\sqrt{SE(p)}}{N}}
+\]</span>
+***</p>
+<pre class="r"><code>sqrt(1.96*0.5/517)</code></pre>
+<pre><code>## [1] 0.04353793</code></pre>
+<pre class="r"><code>sqrt(1.96*0.5/701)</code></pre>
+<pre><code>## [1] 0.03738988</code></pre>
+<pre class="r"><code>sqrt(1.96*0.5/657)</code></pre>
+<pre><code>## [1] 0.03862161</code></pre>
+<pre class="r"><code>sqrt(1.96*0.5/902)</code></pre>
+<pre><code>## [1] 0.03296171</code></pre>
+</div>
+<div id="if-we-designed-an-oregon-poll-for-3-percent-error-with-95-confidence." class="section level1">
+<h1>If we designed an Oregon poll for 3 percent error with 95% confidence.</h1>
+<ul>
+<li>The needed z with 95 percent confidence is 1.96</li>
+<li>The MOE is 0.03</li>
+<li>Assume a tie [p=0.5].</li>
+<li>We need 1068. You should round people up….</li>
+</ul>
+<pre class="r"><code>1.96^2*0.5^2/0.03^2</code></pre>
+<pre><code>## [1] 1067.111</code></pre>
+</div>
+<div id="from-one-sample-to-two" class="section level1">
+<h1>From One-Sample to Two</h1>
+<p>The ideas of confidence intervals and hypothesis tests also extend to comparisons among samples. Before developing these ideas, we need to introduce the key idea of covariance.</p>
+<p>Sample covariance is the shared variation in two observed variables defined as (with metric (xy)) - populations would substitute <span class="math inline">\(\mu\)</span> for <span class="math inline">\(\overline{x,y}\)</span>:</p>
+<p><span class="math display">\[
+\Large
+Cov(x,y) = \frac{1}{n-1}\sum_{i=1}^{n} (x_{i} - \overline{x})(y_{i} - \overline{y})
+\]</span></p>
+<p>The idea of correlation is related, we divide by the standard deviation of the two variables to render it metricless [and absolute between -1 and 1].</p>
+<p><span class="math display">\[
+\Large
+Cor(x,y) = \frac{\sum_{i=1}^{n} (x_{i} - \overline{x})(y_{i} - \overline{y})}{s_{x}s_{y}}
+\]</span></p>
+</div>
+<div id="covariance-matters" class="section level1">
+<h1>Covariance Matters</h1>
+<p>We can measure covariance. <strong>But the measured covariance depends on the mean.</strong></p>
+<ul>
+<li><em>If we want to ask if means are different, we must assume something about covariance.</em> Either:
+<ul>
+<li>Independent (Independent sampling)</li>
+<li>Dependent (Paired/Matched Sampling)</li>
+</ul></li>
+</ul>
+<p>Are the units sampled in <strong>independent</strong> or <strong>dependent</strong> fashion?</p>
+</div>
+<div id="the-equations" class="section level1">
+<h1>The Equations</h1>
+<p>Are given in your text on 217–221. The same duality exists here between <span class="math inline">\(\hat{\pi}\)</span> versus hypotheses about <span class="math inline">\(\pi\)</span>. The way this is handled when one claims no difference is different than when one claims a difference [see section 6.2.4, p.222].</p>
+<p><strong>Simulation renders much of this silly.</strong></p>
+</div>
+<div id="statstics-and-simulation" class="section level1">
+<h1>Statstics and Simulation</h1>
+<p>The big idea is that we simulate things because we can. In old school statistics, the limitations were imposed by the difficulty and need for obtaining analytical solutions. We can use the computer and sampling to replace these arcane mathematical troubles.</p>
+</div>
+<div id="resampling-a-proportion" class="section level1">
+<h1>Resampling a Proportion</h1>
+<p>This idea applies to proportions based on binary data [and next week, to means]. Take the example of CreditProducts. Let me first show a table of the data and embed the function.</p>
+<pre><code>## 
+##  No Yes 
+##  56 144</code></pre>
+<p>The command <code>resample.prop</code> requires a vector of data with two outcomes of whatever form. Yes and No, True and False, Up and Down, or 0 and 1, or even 0 and 10000. As long as it is binary, the code will work. It also has a key option, <code>tab.col</code> which embeds whether you want the first <code>1</code> or second <code>2</code> column of the table. Here, I will use 2 because I want the probability of <em>Yes</em> on credit products.</p>
+<pre class="r"><code>Cred.Prod.Res &lt;- resample.prop(CreditProducts$Credit, tab.col=2)
+binom.test(144,200)</code></pre>
+<pre><code>## 
+##  Exact binomial test
+## 
+## data:  144 and 200
+## number of successes = 144, number of trials = 200, p-value = 4.015e-10
+## alternative hypothesis: true probability of success is not equal to 0.5
+## 95 percent confidence interval:
+##  0.6523113 0.7810388
+## sample estimates:
+## probability of success 
+##                   0.72</code></pre>
+<pre class="r"><code>prop.test(144,200)</code></pre>
+<pre><code>## 
+##  1-sample proportions test with continuity correction
+## 
+## data:  144 out of 200, null probability 0.5
+## X-squared = 37.845, df = 1, p-value = 7.659e-10
+## alternative hypothesis: true p is not equal to 0.5
+## 95 percent confidence interval:
+##  0.6514606 0.7799182
+## sample estimates:
+##    p 
+## 0.72</code></pre>
+<pre class="r"><code>quantile(Cred.Prod.Res, c(0.025,0.975))</code></pre>
+<pre><code>##     2.5%    97.5% 
+## 0.655000 0.780125</code></pre>
+<p>The probability distributions are all very similar. They all attempt to capture the same idea.</p>
+</div>
+<div id="two-independent-sample-comparisons" class="section level1">
+<h1>Two Independent Sample Comparisons</h1>
+<p>Embed the same logic. First, I want a random <span class="math inline">\(\pi\)</span> from sample 1. Then I want a random <span class="math inline">\(\pi\)</span> from sample 2. I want to measure the difference between these two random means. Why measure them separately? Because I do not know who matches with whom and, oftentimes, we have different size samples and we do not wish to discard relevant information from which to sample these means.</p>
+</div>
+<div id="two-independent-proportions" class="section level1">
+<h1>Two Independent Proportions</h1>
+<p>We have a proportions test to examine whether the probability of yes [in a binomial] is the same or different in two samples. First, let me illustrate the workflow.</p>
+<p>Now I take two samples of binary data and take a random sample of each, calculate the sample proportions, and subtract one from the other. For this example, let me use data on Defaults. 0 is no default; 1 is a default. I will again need the second column.</p>
+<pre class="r"><code>table(Defaults$Commercial)</code></pre>
+<pre><code>## 
+##   0   1 
+## 169  31</code></pre>
+<pre class="r"><code>table(Defaults$Consumer)</code></pre>
+<pre><code>## 
+##  0  1 
+## 86 19</code></pre>
+<hr />
+<p>The command is <code>resample.ind.prop</code> that requires two binary vectors as inputs.</p>
+<pre><code>## 
+##  2-sample test for equality of proportions with continuity correction
+## 
+## data:  c(31, 19) out of c(200, 105)
+## X-squared = 0.17549, df = 1, p-value = 0.6753
+## alternative hypothesis: two.sided
+## 95 percent confidence interval:
+##  -0.12230938  0.07040462
+## sample estimates:
+##    prop 1    prop 2 
+## 0.1550000 0.1809524</code></pre>
+<pre><code>##        2.5%       97.5% 
+## -0.11859524  0.06119048</code></pre>
+<p>My simulated interval is a bit tighter; the z is an approximation.</p>
+</div>
+<div id="why-it-matters-independence" class="section level1">
+<h1>Why It Matters: Independence</h1>
+<p>We want to know if two groups are the same or different in terms of the underlying probability <span class="math inline">\(\pi\)</span> that describes the binomial. Why? If they are the same, then whatever it is that determines the two groups can be thought independent of <span class="math inline">\(\pi\)</span>. Knowing which group does not matter.</p>
+</div>
+<div id="an-example-berkeley" class="section level1">
+<h1>An Example: Berkeley</h1>
+<pre class="r"><code>data(&quot;UCBAdmissions&quot;)
+mosaicplot(apply(UCBAdmissions, c(1, 2), sum),
+           main = &quot;Student admissions at UC Berkeley&quot;)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-6-1.png" width="672" /></p>
+</div>
+<div id="or" class="section level1">
+<h1>Or</h1>
+<pre class="r"><code>opar &lt;- par(mfrow = c(2, 3), oma = c(0, 0, 2, 0))
+for(i in 1:6)
+  mosaicplot(UCBAdmissions[,,i],
+    xlab = &quot;Admit&quot;, ylab = &quot;Sex&quot;,
+    main = paste(&quot;Department&quot;, LETTERS[i]))
+mtext(expression(bold(&quot;Student admissions at UC Berkeley&quot;)),
+      outer = TRUE, cex = 1.5)</code></pre>
+<p><img src="index_files/figure-html/unnamed-chunk-7-1.png" width="672" /></p>
+<pre class="r"><code>par(opar)</code></pre>
+</div>
+<div id="the-statistics" class="section level1">
+<h1>The Statistics</h1>
+<p>Now to the statistics. But first, <span class="math inline">\(\chi^2\)</span>. It’s a probability distribution. It is entirely defined by degrees of freedom. And it is derived from a squared normal. If I have to calculate two proportions, I consume two degrees of freedom; if only one proportion need be calculated[meaning they are the same] then only one. The difference in degrees of freedom is one. That’s our <span class="math inline">\(\chi^2\)</span> parameter: df.</p>
+</div>
+<div id="lets-analyse-this" class="section level1">
+<h1>Let’s Analyse This</h1>
+<pre class="r"><code>table(UCB.Admit$M.F,UCB.Admit$Admit)</code></pre>
+<pre><code>##         
+##            No  Yes
+##   Female 1278  557
+##   Male   1493 1198</code></pre>
+<pre class="r"><code>prop.table(table(UCB.Admit$M.F,UCB.Admit$Admit), 1)</code></pre>
+<pre><code>##         
+##                 No       Yes
+##   Female 0.6964578 0.3035422
+##   Male   0.5548123 0.4451877</code></pre>
+<pre class="r"><code># Tests work across the rows.
+prop.test(table(UCB.Admit$M.F,UCB.Admit$Admit))</code></pre>
+<pre><code>## 
+##  2-sample test for equality of proportions with continuity correction
+## 
+## data:  table(UCB.Admit$M.F, UCB.Admit$Admit)
+## X-squared = 91.61, df = 1, p-value &lt; 2.2e-16
+## alternative hypothesis: two.sided
+## 95 percent confidence interval:
+##  0.1129887 0.1703022
+## sample estimates:
+##    prop 1    prop 2 
+## 0.6964578 0.5548123</code></pre>
+<p>So Women are seen, with 95% confidence, to be rejected by Berkeley 0.113 to 0.170 more often, expressed in a difference in probability metric. Moreover, the probability of Admission is not independent of Male and Female.</p>
+</div>
+<div id="what-about-by-department" class="section level1">
+<h1>What About by Department?</h1>
+<pre class="r"><code>UCBS.Admit = subset(UCB.Admit, subset=Dept==&quot;A&quot;)
+table(UCBS.Admit$M.F,UCBS.Admit$Admit)</code></pre>
+<pre><code>##         
+##           No Yes
+##   Female  19  89
+##   Male   313 512</code></pre>
+<pre class="r"><code>prop.table(table(UCBS.Admit$M.F,UCBS.Admit$Admit), 1)</code></pre>
+<pre><code>##         
+##                 No       Yes
+##   Female 0.1759259 0.8240741
+##   Male   0.3793939 0.6206061</code></pre>
+<pre class="r"><code># Tests work across the rows.
+prop.test(table(UCBS.Admit$M.F,UCBS.Admit$Admit))</code></pre>
+<pre><code>## 
+##  2-sample test for equality of proportions with continuity correction
+## 
+## data:  table(UCBS.Admit$M.F, UCBS.Admit$Admit)
+## X-squared = 16.372, df = 1, p-value = 5.205e-05
+## alternative hypothesis: two.sided
+## 95 percent confidence interval:
+##  -0.2877797 -0.1191564
+## sample estimates:
+##    prop 1    prop 2 
+## 0.1759259 0.3793939</code></pre>
+<pre class="r"><code>UCBS.Admit = subset(UCB.Admit, subset=Dept==&quot;B&quot;)
+table(UCBS.Admit$M.F,UCBS.Admit$Admit)</code></pre>
+<pre><code>##         
+##           No Yes
+##   Female   8  17
+##   Male   207 353</code></pre>
+<pre class="r"><code>prop.table(table(UCBS.Admit$M.F,UCBS.Admit$Admit), 1)</code></pre>
+<pre><code>##         
+##                 No       Yes
+##   Female 0.3200000 0.6800000
+##   Male   0.3696429 0.6303571</code></pre>
+<pre class="r"><code># Tests work across the rows.
+prop.test(table(UCBS.Admit$M.F,UCBS.Admit$Admit))</code></pre>
+<pre><code>## 
+##  2-sample test for equality of proportions with continuity correction
+## 
+## data:  table(UCBS.Admit$M.F, UCBS.Admit$Admit)
+## X-squared = 0.085098, df = 1, p-value = 0.7705
+## alternative hypothesis: two.sided
+## 95 percent confidence interval:
+##  -0.2577106  0.1584249
+## sample estimates:
+##    prop 1    prop 2 
+## 0.3200000 0.3696429</code></pre>
+<pre class="r"><code>UCBS.Admit = subset(UCB.Admit, subset=Dept==&quot;C&quot;)
+table(UCBS.Admit$M.F,UCBS.Admit$Admit)</code></pre>
+<pre><code>##         
+##           No Yes
+##   Female 391 202
+##   Male   205 120</code></pre>
+<pre class="r"><code>prop.table(table(UCBS.Admit$M.F,UCBS.Admit$Admit), 1)</code></pre>
+<pre><code>##         
+##                 No       Yes
+##   Female 0.6593592 0.3406408
+##   Male   0.6307692 0.3692308</code></pre>
+<pre class="r"><code># Tests work across the rows.
+prop.test(table(UCBS.Admit$M.F,UCBS.Admit$Admit))</code></pre>
+<pre><code>## 
+##  2-sample test for equality of proportions with continuity correction
+## 
+## data:  table(UCBS.Admit$M.F, UCBS.Admit$Admit)
+## X-squared = 0.63322, df = 1, p-value = 0.4262
+## alternative hypothesis: two.sided
+## 95 percent confidence interval:
+##  -0.03865948  0.09583940
+## sample estimates:
+##    prop 1    prop 2 
+## 0.6593592 0.6307692</code></pre>
+<pre class="r"><code>UCBS.Admit = subset(UCB.Admit, subset=Dept==&quot;D&quot;)
+table(UCBS.Admit$M.F,UCBS.Admit$Admit)</code></pre>
+<pre><code>##         
+##           No Yes
+##   Female 244 131
+##   Male   279 138</code></pre>
+<pre class="r"><code>prop.table(table(UCBS.Admit$M.F,UCBS.Admit$Admit), 1)</code></pre>
+<pre><code>##         
+##                 No       Yes
+##   Female 0.6506667 0.3493333
+##   Male   0.6690647 0.3309353</code></pre>
+<pre class="r"><code># Tests work across the rows.
+prop.test(table(UCBS.Admit$M.F,UCBS.Admit$Admit))</code></pre>
+<pre><code>## 
+##  2-sample test for equality of proportions with continuity correction
+## 
+## data:  table(UCBS.Admit$M.F, UCBS.Admit$Admit)
+## X-squared = 0.22159, df = 1, p-value = 0.6378
+## alternative hypothesis: two.sided
+## 95 percent confidence interval:
+##  -0.08702248  0.05022631
+## sample estimates:
+##    prop 1    prop 2 
+## 0.6506667 0.6690647</code></pre>
+<pre class="r"><code>UCBS.Admit = subset(UCB.Admit, subset=Dept==&quot;E&quot;)
+table(UCBS.Admit$M.F,UCBS.Admit$Admit)</code></pre>
+<pre><code>##         
+##           No Yes
+##   Female 299  94
+##   Male   138  53</code></pre>
+<pre class="r"><code>prop.table(table(UCBS.Admit$M.F,UCBS.Admit$Admit), 1)</code></pre>
+<pre><code>##         
+##                 No       Yes
+##   Female 0.7608142 0.2391858
+##   Male   0.7225131 0.2774869</code></pre>
+<pre class="r"><code># Tests work across the rows.
+prop.test(table(UCBS.Admit$M.F,UCBS.Admit$Admit))</code></pre>
+<pre><code>## 
+##  2-sample test for equality of proportions with continuity correction
+## 
+## data:  table(UCBS.Admit$M.F, UCBS.Admit$Admit)
+## X-squared = 0.80805, df = 1, p-value = 0.3687
+## alternative hypothesis: two.sided
+## 95 percent confidence interval:
+##  -0.04181911  0.11842143
+## sample estimates:
+##    prop 1    prop 2 
+## 0.7608142 0.7225131</code></pre>
+<pre class="r"><code>UCBS.Admit = subset(UCB.Admit, subset=Dept==&quot;F&quot;)
+table(UCBS.Admit$M.F,UCBS.Admit$Admit)</code></pre>
+<pre><code>##         
+##           No Yes
+##   Female 317  24
+##   Male   351  22</code></pre>
+<pre class="r"><code>prop.table(table(UCBS.Admit$M.F,UCBS.Admit$Admit), 1)</code></pre>
+<pre><code>##         
+##                  No        Yes
+##   Female 0.92961877 0.07038123
+##   Male   0.94101877 0.05898123</code></pre>
+<pre class="r"><code># Tests work across the rows.
+prop.test(table(UCBS.Admit$M.F,UCBS.Admit$Admit))</code></pre>
+<pre><code>## 
+##  2-sample test for equality of proportions with continuity correction
+## 
+## data:  table(UCBS.Admit$M.F, UCBS.Admit$Admit)
+## X-squared = 0.21824, df = 1, p-value = 0.6404
+## alternative hypothesis: two.sided
+## 95 percent confidence interval:
+##  -0.05038231  0.02758231
+## sample estimates:
+##    prop 1    prop 2 
+## 0.9296188 0.9410188</code></pre>
+</div>
+<div id="one-case-shows-a-difference" class="section level1">
+<h1>One Case Shows a Difference</h1>
+<p><strong>And it goes in the wrong direction</strong></p>
+<p>Women are less likely to be rejected in Dept A. The rest suggest Admission is independent of M.F</p>
+</div>

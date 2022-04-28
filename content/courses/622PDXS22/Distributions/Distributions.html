@@ -1,0 +1,272 @@
+---
+title: "Probability Distributions"
+author: "Robert W. Walker"
+date: "2020-02-12"
+output: 
+  ioslides:
+    code_download: true  
+---
+
+<script src="/rmarkdown-libs/header-attrs/header-attrs.js"></script>
+
+
+<div id="probability-the-logic-of-science" class="section level2">
+<h2>Probability: The Logic of Science</h2>
+<p>Jaynes presents a few core ideas and requirements for his rational system. Probability emerges as the representation of circumstances in which any given realization of a process is either TRUE or FALSE but both are possible and expressable by probabilities</p>
+<ul>
+<li>that sum to one for all events</li>
+<li>are greater than or equal to zero for any given event</li>
+</ul>
+<hr />
+</div>
+<div id="general-representation-of-probability" class="section level2">
+<h2>General Representation of Probability</h2>
+<p>Is of necessity two-dimensional,</p>
+<ul>
+<li>We have <span class="math inline">\(x\)</span> and</li>
+<li>we have <span class="math inline">\(Pr(X=x)\)</span> in one of two forms (Pr or f).</li>
+</ul>
+<hr />
+<p><img src="/courses/GSMPR622/Distributions/Distributions_files/figure-html/P1-1.png" width="672" /></p>
+<hr />
+</div>
+<div id="probability-distributions-of-two-forms" class="section level2">
+<h2>Probability Distributions of Two Forms</h2>
+<p>Our core concept is a probability distribution just as above. These come in two forms for two types [discrete (qualitative)] and continuous (quantitative)]:</p>
+<ul>
+<li>Assumed</li>
+<li>Derived</li>
+</ul>
+<hr />
+</div>
+<div id="the-poster-and-examples" class="section level2">
+<h2><a href="https://github.com/robertwwalker/DADMStuff/raw/master/Distribution-Poster.pdf">The Poster</a> and Examples</h2>
+<p>Distributions are nouns. Sentences are incomplete without verbs – parameters. We need both; it is for this reason that the former slide is true. We do not always have a grounding for either the name or the parameter.</p>
+<hr />
+</div>
+<div id="continuous-vs.-discrete-distributions" class="section level2">
+<h2>Continuous vs. Discrete Distributions</h2>
+<p>The differences are sums versus integrals. Why?</p>
+<ul>
+<li>Histograms or<br />
+</li>
+<li>Density Plots</li>
+</ul>
+<p>The probability of exactly any given value is zero on a true continuum.</p>
+<hr />
+</div>
+<div id="functions" class="section level1">
+<h1>Functions</h1>
+<p>Probability distributions are mathematical formulae expressing likelihood for some set of qualities or quantities. They have names: nouns. They also have verbs: parameters. Like a proper English sentence, both are required.</p>
+<hr />
+<p>Expectation</p>
+<p><span class="math display">\[E(X) = \sum_{x \in X} x \cdot Pr(X=x)\]</span>
+<span class="math display">\[E(X) = \int_{x \in X} x \cdot f(x)dx\]</span></p>
+<p>Variance</p>
+<p><span class="math display">\[E[(X-\mu)^2] = \sum_{x \in X} (x-\mu)^2 \cdot Pr(X=x)\]</span>
+<span class="math display">\[E((X-\mu)^2) = \int_{x \in X} (x-\mu)^2 \cdot f(x)dx\]</span></p>
+</div>
+<div id="the-z-transform" class="section level1">
+<h1>The z-transform</h1>
+<p>The generic z-transformation applied to a variable <span class="math inline">\(x\)</span> centers [mean<span class="math inline">\(\approx\)</span> 0] and scales [std. dev. <span class="math inline">\(\approx\)</span> variance <span class="math inline">\(\approx\)</span> 1] to <span class="math inline">\(z_{x}\)</span> for population parameters. <span class="math inline">\(\approx\)</span> is approximately equal to.</p>
+<p><span class="math display">\[ z = \frac{x - \mu}{\sigma} \]</span></p>
+<hr />
+<p>In samples, the 0 and 1 are exact; these are features of the mean and <em>degrees of freedom</em> from last time.</p>
+<p><span class="math display">\[ z = \frac{x - \overline{x}}{s_{x}} \]</span>.</p>
+<p>where <span class="math inline">\(\overline{x}\)</span> is the sample mean of <span class="math inline">\(x\)</span> and <span class="math inline">\(s_{x}\)</span> is the sample standard deviation of <span class="math inline">\(x\)</span>. Take the example of earnings.</p>
+<hr />
+<p>Suppose earnings in a community have mean 55,000 and standard deviation 10,000. This is in dollars. Suppose I earn 75,000 dollars. First, if we take the top part of the fraction in the <span class="math inline">\(z\)</span> equation, we see that I earn 20,000 dollars more than the average (75000 - 55000). Finishing the calculation of z, I would divide that 20,000 dollars by 10,000 dollars per standard deviation. Let’s show that.</p>
+<p><span class="math display">\[ z = \frac{75000 dollars - 55000 dollars}{\frac{10000 dollars}{SD}} = +2 SD \]</span>.</p>
+<p>I am 2 standard deviations above the average (the +) earnings. All <span class="math inline">\(z\)</span> does is re-scale the original data to standard deviations with zero as the mean.</p>
+<hr />
+<p>Suppose I earn 35,000. That makes me 20,000 below the average and gives me a z score of -2. I am 2 standard deviations below average (the -) earnings.</p>
+<p><span class="math inline">\(z\)</span> is an easy way to assess symmetry. The mean of z is always zero but the distribution of z to the left and right of zero is informative. If they are roughly even, then symmetry is likely. If the signs are uneven, then symmetry is unlikely. In R, <span class="math inline">\(z\)</span> is automated with the <em>scale()</em> command. The last line uses a table and the <em>sign</em> command to show me the positive and negative z.</p>
+<hr />
+<pre class="r"><code># Generate random normal income
+Hypo.Income &lt;- rnorm(1000, 55000, 10000)
+# z-transform income [mean 55000ish, std. dev. 10000ish]
+z.Income &lt;- scale(Hypo.Income)
+# Combine them into a data.frame
+Income &lt;- data.frame(Hypo.Income,z.Income)
+# Show the data.frame
+head(Income)</code></pre>
+<pre><code>##   Hypo.Income   z.Income
+## 1    45019.16 -0.9653965
+## 2    39919.97 -1.4603249
+## 3    50147.87 -0.4676020
+## 4    77351.37  2.1727766
+## 5    44625.71 -1.0035842
+## 6    70096.21  1.4685892</code></pre>
+<pre class="r"><code>table(sign(z.Income))</code></pre>
+<pre><code>## 
+##  -1   1 
+## 496 504</code></pre>
+</div>
+<div id="probability-distributions" class="section level1">
+<h1>Probability Distributions</h1>
+<p>Distributions in R are defined by four core parts:</p>
+<ul>
+<li>r, for random variables</li>
+<li>p, for cumulative probability (given x) [counting from left] <span class="math inline">\(Pr(X\leq x)\)</span></li>
+<li>d, for density/probability that <span class="math inline">\(Pr(X=x)\)</span> or <span class="math inline">\(f(x)\)</span></li>
+<li>q, for quantile (given p): x such that <span class="math inline">\(Pr(X\leq q)=p\)</span></li>
+</ul>
+<div id="a-grape-escape" class="section level2">
+<h2>A Grape Escape?</h2>
+<p>A filling process is supposed to fill jars with 16 ounces of grape jelly, according to the label, and regulations require that each jar contain between 15.95 and 16.05 ounces.</p>
+<ol style="list-style-type: decimal">
+<li><em>Suppose that the uniform random process of filling in known to fill between 15.9 and 16.1 ounces uniformly.</em></li>
+</ol>
+<ul>
+<li>Plot the histogram of 1000 simulated values. NB: <em>unif</em> is the noun with boundaries a (default 0) and b(default 1).</li>
+</ul>
+<pre class="r"><code>Jars &lt;- runif(1000, 15.9, 16.1)
+hist(Jars)</code></pre>
+<p><img src="/courses/GSMPR622/Distributions/Distributions_files/figure-html/unnamed-chunk-1-1.png" width="672" /></p>
+<ul>
+<li>What is the probability that a random jar is outside of requirements?</li>
+</ul>
+<p><strong>Exactly? 50 percent because 25 percent are between 15.9 and 15.95 and 25 percent are between 16.05 and 16.1.</strong></p>
+<pre class="r"><code>table(Jars &lt; 15.95 | Jars &gt; 16.05) # | captures or</code></pre>
+<pre><code>## 
+## FALSE  TRUE 
+##   510   490</code></pre>
+<ul>
+<li>Scale (z) the jars and summarise them.</li>
+</ul>
+<pre class="r"><code>summary(scale(Jars))</code></pre>
+<pre><code>##        V1          
+##  Min.   :-1.75808  
+##  1st Qu.:-0.85515  
+##  Median : 0.05029  
+##  Mean   : 0.00000  
+##  3rd Qu.: 0.85368  
+##  Max.   : 1.71617</code></pre>
+<pre class="r"><code>sd(scale(Jars))</code></pre>
+<pre><code>## [1] 1</code></pre>
+<hr />
+<ol start="2" style="list-style-type: decimal">
+<li><em>The mean of the normal random process of filling is known to be 16.004 ounces with standard deviation 0.028 ounces.</em></li>
+</ol>
+<ul>
+<li>What is the probability that a random jar is outside of requirements? NB: <em>norm</em> is the noun with mean (default 0) and sd (default 1).</li>
+</ul>
+<pre class="r"><code>pnorm(15.95, 16.004, 0.028) + pnorm(16.05, 16.004, 0.028, lower.tail=FALSE)</code></pre>
+<pre><code>## [1] 0.07709829</code></pre>
+<ul>
+<li>What is the probability that a random jar contains more than 16.1 ounces?</li>
+</ul>
+<pre class="r"><code>1-pnorm(16.1, 16.004, 0.028)</code></pre>
+<pre><code>## [1] 0.0003033834</code></pre>
+<ul>
+<li>What is the probability that a random jar contains less than 16.04 ounces?</li>
+</ul>
+<pre class="r"><code>pnorm(16.04, 16.004, 0.028)</code></pre>
+<pre><code>## [1] 0.9007286</code></pre>
+<ul>
+<li>95% of jars, given a normal, will contain between XXX and XXX ounces of jelly.</li>
+</ul>
+<pre class="r"><code>qnorm(c(0.025,0.975), 16.004, 0.028)</code></pre>
+<pre><code>## [1] 15.94912 16.05888</code></pre>
+<ul>
+<li>The bottom 5% of jars contain, at most, XXX ounces of jelly.</li>
+</ul>
+<pre class="r"><code>qnorm(0.05, 16.004, 0.028)</code></pre>
+<pre><code>## [1] 15.95794</code></pre>
+<ul>
+<li>The top 25% of jars contain at least XXX ounces of jelly.</li>
+</ul>
+<pre class="r"><code>qnorm(0.75, 16.004, 0.028)</code></pre>
+<pre><code>## [1] 16.02289</code></pre>
+</div>
+<div id="scottish-pounds" class="section level2">
+<h2>Scottish Pounds</h2>
+<p><em>Informal surveys suggest that 15% of Essex shopkeepers will not accept Scottish pounds. There are approximately 200 shops in the general High Street square.</em></p>
+<ol style="list-style-type: decimal">
+<li>Draw a plot of the distribution and the cumulative distribution of shopkeepers that do not accept Scottish pounds.</li>
+</ol>
+<pre class="r"><code>plot(x=seq(0,200), y=pbinom(seq(0,200), size=200, 0.15), xlab=&quot;Refusers&quot;, ylab=&quot;Prob. of x or Less Refusers&quot;)</code></pre>
+<p><img src="/courses/GSMPR622/Distributions/Distributions_files/figure-html/unnamed-chunk-10-1.png" width="672" /></p>
+<ol start="2" style="list-style-type: decimal">
+<li>What is the probability that 24 or fewer will not accept Scottish pounds?</li>
+</ol>
+<pre class="r"><code>pbinom(24, 200, 0.15)</code></pre>
+<pre><code>## [1] 0.1368173</code></pre>
+<ol start="3" style="list-style-type: decimal">
+<li>What is the probability that 25 or more shopkeepers will not accept Scottish pounds?</li>
+</ol>
+<pre class="r"><code>1-pbinom(24, 200, 0.15)</code></pre>
+<pre><code>## [1] 0.8631827</code></pre>
+<ol start="4" style="list-style-type: decimal">
+<li>With probability 0.9 [90 percent], XXX or fewer shopkeepers will not accept Scottish pounds.</li>
+</ol>
+<pre class="r"><code>qbinom(0.9, 200, 0.15)</code></pre>
+<pre><code>## [1] 37</code></pre>
+<ol start="5" style="list-style-type: decimal">
+<li>[Geometric] Plot 1000 random draws of “How many vendors until one refuses my Scottish pounds?”</li>
+</ol>
+<pre class="r"><code>hist(rgeom(1000, 0.15), breaks=30)</code></pre>
+<p><img src="/courses/GSMPR622/Distributions/Distributions_files/figure-html/unnamed-chunk-14-1.png" width="672" /></p>
+<p>We could also do something like.</p>
+<pre class="r"><code>plot(seq(0,60), pgeom(seq(0,60), 0.15))</code></pre>
+<p><img src="/courses/GSMPR622/Distributions/Distributions_files/figure-html/unnamed-chunk-15-1.png" width="672" /></p>
+</div>
+<div id="the-median-is-a-binomial-with-p0.5" class="section level2">
+<h2>The Median is a Binomial with p=0.5</h2>
+<p>Interestingly, any given observation has a 50-50 chance of being <em>over</em> or <em>under</em> the median. Suppose that I have five datum.<br />
+1. What is the probability that all are under?</p>
+<pre class="r"><code>pbinom(0,size=5, p=0.5)</code></pre>
+<pre><code>## [1] 0.03125</code></pre>
+<ol start="2" style="list-style-type: decimal">
+<li>What is the probability that all are over?</li>
+</ol>
+<pre class="r"><code>dbinom(5,size=5, p=0.5)</code></pre>
+<pre><code>## [1] 0.03125</code></pre>
+<ol start="3" style="list-style-type: decimal">
+<li>What is the probability that the median is somewhere in between our smallest and largest sampled values?</li>
+</ol>
+<p><strong>Everything else</strong>.</p>
+<p>This <em>Rule of Five</em> often credited to Hubbard is handy.</p>
+<div id="air-traffic-controllers" class="section level3">
+<h3>Air Traffic Controllers</h3>
+<p>FAA Decision: Expend or do not expend scarce resources investigating claimed staffing shortages at the Cleveland Air Route Traffic Control Center.</p>
+<p>Essential facts: The Cleveland ARTCC is the US’s busiest in routing cross-country air traffic. In mid-August of 1998, it was reported that the first week of August experienced 3 errors in a one week period; an error occurs when flights come within five miles of one another by horizontal distance or 2000 feet by vertical distance. The Controller’s union claims a staffing shortage though other factors could be responsible. 21 errors per year (21/52 errors per week) has been the norm in Cleveland for over a decade.</p>
+<ol style="list-style-type: decimal">
+<li>Plot a histogram of 1000 random weeks. NB: <em>pois</em> is the noun with no default for <span class="math inline">\(\lambda\)</span> – the arrival rate.</li>
+</ol>
+<pre class="r"><code>hist(rpois(1000, 21/52))</code></pre>
+<p><img src="/courses/GSMPR622/Distributions/Distributions_files/figure-html/unnamed-chunk-18-1.png" width="672" /></p>
+<ul>
+<li>Plot a sequence on the x axis from 0 to 5 and the probability of that or fewer incidents along the y. <em>seq(0,5)</em></li>
+</ul>
+<pre class="r"><code>plot(seq(0,5),ppois(seq(0,5), 21/52), ylim=c(0,1))</code></pre>
+<p><img src="/courses/GSMPR622/Distributions/Distributions_files/figure-html/unnamed-chunk-19-1.png" width="672" /></p>
+<ol start="2" style="list-style-type: decimal">
+<li><p>What would you do and why? <em>Not impossible</em></p></li>
+<li><p>After analyzing the initial data, you discover that the first two weeks of August have experienced 6 errors. What would you now decide? <em>Well, once is 0.0081342.</em> Twice, at random, is that squared. We have a problem.</p></li>
+</ol>
+</div>
+<div id="deaths-by-horse-kick-in-the-prussian-cavalry" class="section level3">
+<h3>Deaths by Horse Kick in the Prussian cavalry?</h3>
+</div>
+<div id="given-time-a-less-basic-monte-carlo-simulation" class="section level3">
+<h3>[Given time] A Less Basic Monte Carlo Simulation:</h3>
+<ol style="list-style-type: decimal">
+<li>Customers arriving at a car dealership at a rate of 6 per hour.</li>
+<li>Each customer has a 15% probability of making a purchase.</li>
+<li>Purchasers yield [this part is harder]:</li>
+</ol>
+<ul>
+<li>Uniform profits over the interval $1000-$3000.</li>
+<li>Normal profits that average $1500 with standard deviation $500.</li>
+</ul>
+<pre class="r"><code>Customers &lt;- rpois(1000, 6) # Customers ~ Poisson(6)
+Purchasers &lt;- rbinom(1000, size=Customers, prob=0.15) # P ~ Binomial(Customers,0.15)
+# Next part needs a coding trick.  For each row [of 1000], I want sum the Profits given Purchasers random draws.
+Profits.U &lt;- sapply(c(1:1000), function(x) { sum(runif(Purchasers[[x]], 1000, 3000))} )
+Profits.N &lt;- sapply(c(1:1000), function(x) { sum(rnorm(Purchasers[[x]], 1500, 500))} )
+plot(density(Profits.N))</code></pre>
+<p><img src="/courses/GSMPR622/Distributions/Distributions_files/figure-html/MC1-1.png" width="672" /></p>
+</div>
+</div>
+</div>
