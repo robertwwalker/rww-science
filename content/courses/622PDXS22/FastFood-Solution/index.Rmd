@@ -1,0 +1,152 @@
+---
+title: 'A Fast Food Solution'
+author: 'Robert W. Walker'
+date: '2020-01-21'
+header:
+  caption: ''
+  image: 'headers/bubbles-wide.jpg'
+  preview: yes
+---
+
+
+
+# Fast Food Data
+
+These data came care of a Tidy Tuesday a while ago.  The data consist of Fast Food menu items for a selection of fast food chains.  The units are menu items.  We have the chain [restaurant], item [the item name], and a series of variables (columns) representing sodium, cholesterol, fat, calories, and other information.  Some is missing.  The data can be imported from the `tidytuesday` website on github as .csv.  It is worth noting that the code in the setup chunk is not echoed.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning=FALSE, message=FALSE)
+library(tidyverse); library(skimr)
+```
+
+```{r LoadData}
+library(plotly); library(widgetframe)
+FFood <- read.csv("https://raw.githubusercontent.com/rfordatascience/tidytuesday/master/data/2018/2018-09-04/fastfood_calories.csv")
+```
+
+## Basic Summary
+
+A basic summary of the data.
+
+```{r pressure, echo=FALSE, message=FALSE}
+skim(FFood)
+```
+
+## A Cautionary Note
+
+The NA....
+
+## For Next Time
+
+1. In Excel, construct a pivot table of the data by fast food en
+terprise that displays five key quantities: the count of the number of menu i
+tems, the mean and sample standard deviation of calories, and the mean and sample standard deviation of sodium.
+2. Which chain has the highest average calories?  **Mcdonalds**
+3. Which chain has the lower average calories?  **Chick Fil-A**
+4. Which chain has the highest average sodium content?  **Arbys**
+
+** The pivot table is the first sheet in the Excel file.**
+
+To answer them in R:
+
+```{r}
+FFood %>% group_by(restaurant) %>% skim(calories,sodium)
+```
+
+
+5. In R, construct the same pivot table equivalent using the tidyverse,the piping operator, and the skim function from the skim library
+
+```{r}
+FFood %>% group_by(restaurant) %>% summarise(Median.Calories = median(calories)) %>% arrange(Median.Calories)
+```
+
+
+6. Which chain has the highest median calories? **Sonic**
+7. Which chain has the lowest median calories? **Chick Fil-A**
+
+```{r}
+FFood %>% group_by(restaurant) %>% summarise(Median.Sodium = median(sodium))
+```
+
+8. Which chain has the highest median sodium? **Arbys**
+
+```{r}
+FFood %>% group_by(restaurant) %>% summarise(Q3.Calories = quantile(calories, 0.75))
+```
+
+
+9. Which chain has the lowest 3rd quartile of calories? **Chick Fil-A**
+
+```{r}
+FFood %>% group_by(restaurant) %>% summarise(Q3.Protein = quantile(protein, 0.75, na.rm = TRUE))
+```
+
+
+10. Which chain has the highest 3rd quartile of protein? **Taco Bell**
+11. In R, provide two graphics -- a boxplot and something resembling a density plot or histogram -- that shows the distributions of sodium and cholesterol.
+
+```{r}
+boxplot(FFood$sodium)
+```
+
+```{r}
+hist(FFood$sodium)
+```
+
+```{r}
+boxplot(FFood$cholesterol)
+```
+
+```{r}
+hist(FFood$cholesterol)
+```
+
+
+
+12. In R, provide two graphics -- a boxplot and something resembling a density plot -- that compares the distributions of total fat and cholesterol by chain. ** I will use an R package called `patchwork` to create multipane graphics with add (+).
+
+```
+install.packages("patchwork")
+```
+
+The structure of each graphic is identical with only the `y` changing or the `geom` changing amogst violin and boxplot.
+
+```
+ggplot(FFood) + aes(x=restaurant, y=total_fat, fill=restaurant) + geom_boxplot() + coord_flip() + guides(fill=FALSE)
+```
+
+```{r}
+library(patchwork)
+ggplot(FFood) + aes(x=restaurant, y=total_fat, fill=restaurant) + geom_boxplot() + coord_flip() + guides(fill=FALSE) + 
+ggplot(FFood) + aes(x=restaurant, y=total_fat, fill=restaurant) + geom_violin() + coord_flip() + guides(fill=FALSE) + 
+ggplot(FFood) + aes(x=restaurant, y=cholesterol, fill=restaurant) + geom_boxplot() + coord_flip() + guides(fill=FALSE) + 
+ggplot(FFood) + aes(x=restaurant, y=cholesterol, fill=restaurant) + geom_violin() + coord_flip() + guides(fill=FALSE)
+```
+
+13. In R, let’s construct some summary visualizations.  We will use the piping operator, group_by() and summarise, to plot by chain: (a) average calories and (b) average sodium.
+
+```{r}
+library(tidyverse)
+( My.Plot <- FFood %>% group_by(restaurant) %>% summarise(calories = mean(calories, na.rm=TRUE)) %>% ggplot(.) + aes(x=reorder(x=restaurant, calories), y=calories) + geom_bar(stat="identity", fill="magenta") + labs(title="Average Calories for Fast Food Chains", x="Chain", y="Average Calories") + theme_light() + coord_flip() )
+```
+
+Ok.  Now, something quite fancy.
+
+```{r}
+MP <- ggplotly(My.Plot)
+frameWidget(MP)
+```
+
+# A Great Feature, filter grepl
+
+```{r}
+# Let's Fix the Chicken Variable
+FFood <- FFood %>% mutate(Chicken = grepl('Chicken|Chick-n',item))
+FFood$Chicken[FFood$restaurant=="Chick Fil-A"] <- TRUE
+```
+
+# Graphing Just Chicken
+
+```{r}
+FFood %>% filter(Chicken==TRUE) %>% ggplot(.) + aes(x=restaurant, y=calories, fill=restaurant, color=restaurant) + geom_violin(alpha=0.3) + scale_fill_viridis_d() + scale_color_viridis_d() + geom_jitter(alpha=0.2) + coord_flip() + guides(fill=FALSE, color=FALSE) + labs(x="Chain", y="Calories", main="Calories of Chicken Items by Chain")
+```

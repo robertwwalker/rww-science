@@ -1,0 +1,2039 @@
+---
+title: "1 and 2 Sample Means-Proportions"
+author: "Robert W. Walker"
+date: "2020-02-19"
+autosize: true
+output: 
+  slidy_presentation
+---
+
+
+The Basic Idea
+========================================================
+
+Two classes of statistics have known distributions. 
+
+- Means have a t distribution.
+- Proportions have a normal distribution if the expected number of both categories exceeds 5.
+
+
+The Mean: t
+========================================================
+
+The t distribution
+- is entirely defined by degrees of freedom.
+- has as metric, the standard error [in this case of the mean]
+
+***
+The equations:
+$$
+\Large
+t = \frac{\overline{x} - \mu}{\frac{s}{\sqrt{n}}} 
+$$
+and
+$$
+\Large
+\mu = \overline{x} + t(\frac{s}{\sqrt{n}})
+$$
+The true mean is symmetric about the sample mean with t defining the number of standard errors of the mean above and below.
+
+The t distribution (df=24)
+========================================================
+
+
+```{r Pic1, echo=FALSE}
+LEDLifetimes <- structure(list(lifetime = c(37160, 37032, 37975.3, 36694, 39394.7, 
+40761.4, 38426, 40746.1, 38439.3, 36634.6, 38006.7, 39460.7, 
+37282, 42966.8, 38000, 37031.3, 40910.7, 39562.7, 36563.3, 37349.3, 
+34993.9, 36712, 38246.7, 35429.9, 34220.6)), .Names = "lifetime", class = "data.frame", row.names = c(NA, 
+-25L))
+library(RcmdrMisc)
+local({
+  .x <- seq(-3.745, 3.745, length.out=1000)  
+  plotDistr(.x, pt(.x, df=24), cdf=TRUE, xlab="x", ylab="Density", 
+  main=paste("t Distribution:  df=24"))
+})
+```
+
+***
+```{r Q1}
+# 99 percent, then 95, 90, and 80
+qt(c(0.005,0.995), df=24)
+qt(c(0.025,0.975), df=24)
+qt(c(0.05,0.95), df=24)
+qt(c(0.1,0.9), df=24)
+```
+
+LED Lifetimes (df=24)
+========================================================
+
+```{r Pic2, echo=FALSE}
+local({
+  .x <- seq(-3.745, 3.745, length.out=1000)  
+  plotDistr(mean(LEDLifetimes$lifetime)+sd(LEDLifetimes$lifetime)/sqrt(25)*.x, pt(.x, df=24), cdf=TRUE, xlab="Hours [average]", ylab="Density", 
+  main=paste("Mean LED Lifetimes"))
+})
+abline(h=c(0.005,0.995), col="red")
+abline(h=c(0.05,0.95), col="blue")
+```
+
+***
+```{r Q2, echo=TRUE}
+# 99 percent, then 95, 90, and 80
+mean(LEDLifetimes$lifetime)+sd(LEDLifetimes$lifetime)/sqrt(25)*qt(c(0.005,0.995), df=24)
+```
+```{r Q2a, echo=FALSE}
+mean(LEDLifetimes$lifetime)+sd(LEDLifetimes$lifetime)/sqrt(25)*qt(c(0.025,0.975), df=24)
+mean(LEDLifetimes$lifetime)+sd(LEDLifetimes$lifetime)/sqrt(25)*qt(c(0.05,0.95), df=24)
+mean(LEDLifetimes$lifetime)+sd(LEDLifetimes$lifetime)/sqrt(25)*qt(c(0.1,0.9), df=24)
+```
+
+The Complete Picture
+==============================
+
+```{r Pic3, echo=FALSE}
+par(mfrow=c(2,2))
+local({
+  .x <- seq(-3.745, 3.745, length.out=1000)  
+  plotDistr(.x, pt(.x, df=24), cdf=TRUE, xlab="x", ylab="Density", 
+  main=paste("t Distribution:  df=24"))
+})
+local({
+  .x <- seq(-3.745, 3.745, length.out=1000)  
+  plotDistr(sd(LEDLifetimes$lifetime)/sqrt(25)*.x, pt(.x, df=24), cdf=TRUE, xlab="x", ylab="Density", 
+  main=paste("Scaled t Distribution:  df=24"))
+})
+local({
+  .x <- seq(-3.745, 3.745, length.out=1000)  
+  plotDistr(mean(LEDLifetimes$lifetime)+.x, pt(.x, df=24), cdf=TRUE, xlab="x", ylab="Density", 
+  main=paste("Shifted t Distribution:  df=24"))
+})
+local({
+  .x <- seq(-3.745, 3.745, length.out=1000)  
+  plotDistr(mean(LEDLifetimes$lifetime)+sd(LEDLifetimes$lifetime)/sqrt(25)*.x, pt(.x, df=24), cdf=TRUE, xlab="Hours [average]", ylab="Density", 
+  main=paste("Mean LED Lifetimes"))
+})
+abline(h=c(0.005,0.995), col="red")
+abline(h=c(0.05,0.95), col="blue")
+```
+***
+
+```{r Ans1A}
+with(LEDLifetimes, (t.test(lifetime, alternative='two.sided', mu=0.0, 
+  conf.level=.95)))
+```
+
+Hypothesis Tests
+=====================================================
+
+Assume a true mean $\mu$.  How likely, if $\mu$ is true, is the sample mean that we obtained?  Now, $\mu$, $\overline{x}$, $s$, and $n$ are known.  We need only figure out the question and the associated probability.  Do we wish to know....
+- whether $\mu$ is equal to some value (two-sided alternative).
+- whether $\mu$ is greater than some value.
+- whether $\mu$ is less than some value.
+
+***
+We will examine the probability of the complements.  We find a sample mean of 36800 given a sample size of 16?  `r (36800-38000)/500`.  The probabilities are 
+- `r round(pt(c((36800-38000)/500), df=15), digits=4)` with inequality [one-tail] 
+- `r round(2*pt(c((36800-38000)/500), df=15), digits=4)` with not equal to [two-tails].
+
+$$
+\Large
+t = \frac{36800 - 38000}{\frac{2000}{\sqrt{16}}} = -2.4
+$$
+
+=============================
+left: 40%
+title: false
+
+```{r Pic5a, echo=FALSE}
+par(mfrow=c(1,2))
+local({
+  .x <- seq(-4.073, 4.073, length.out=1000)  
+  plotDistr(.x, dt(.x, df=15), cdf=FALSE, xlab="x", ylab="Density", 
+  main=paste("t Distribution:  Degrees of freedom=15"), regions=list(c(-4, 
+  -2.4)), col=c('#BEBEBE', '#BEBEBE'), legend.pos='topright')
+})
+local({
+  .x <- seq(-3.745, 3.745, length.out=1000)  
+  plotDistr(mean(LEDLifetimes$lifetime)+sd(LEDLifetimes$lifetime)/sqrt(16)*.x, pt(.x, df=15), cdf=TRUE, xlab="Hours [average]", ylab="Density", 
+  main=paste("Mean LED Lifetimes"))
+})
+abline(v=36800)
+```
+***
+N=25 [the data]
+```{r}
+with(LEDLifetimes, (t.test(lifetime, alternative='two.sided', mu=36800, 
+  conf.level=.95)))
+```
+
+Solving for n
+====================================
+The equations:
+$$
+\Large
+t = \frac{\overline{x} - \mu}{\frac{s}{\sqrt{n}}} 
+$$
+and
+$$
+\Large
+n = [\frac{st}{(\overline{x} - \mu)}]^2
+$$
+We take the size of the necessary confidence interval and divide by the acceptable and assumed margin for error and square the result.  It's not perfect; the realized margin of error depends on the sample as does $s$.  This is hard to solve because t depends on $n$.  
+
+*We can approximate with a normal; it will be less wrong as the required sample gets big.*
+
+Proportions (with a caveat)
+=====================================================
+There are restrictions on when this works (np and n(1-p) greater than 5).
+
+It allows us to, given data, ask for a reasonable range of the true probability $\pi$ or $p_0$ in a binomial.  It is heavily deployed in survey sampling [especially in the polling silly season].
+
+Equations for Proportions
+=======================================================
+The equations:
+$$
+\Large
+z = \frac{\hat{p} - \pi}{\sqrt(\frac{p(1-p)}{n}} 
+$$
+and
+$$
+\Large
+\pi = \hat{p} + z\sqrt{\frac{\hat{p}(1-\hat{p})}{n}}
+$$
+
+***
+
+- $\pi$ -- the true probability of a positive response.
+- $\hat{p}$ -- the estimated probability/proportion of positive responses.
+- $z$ -- quantiles from the standard normal distribution.
+- $n$ -- the number of respondents
+
+Food Satisfaction
+====================================
+
+- 100 respondents
+- 46 satisfied
+- What confidence?
+  - 95 percent lower bound? $z=-1.645$
+  - 95 percent upper bound? $z=1.645$
+  - 95 percent central interval? $z=(-1.96,1.96)$
+- $\pi$ is unknown.
+
+***
+$$
+\Large
+\pi = 0.46 + z\sqrt{\frac{0.46(1-0.46)}{100}}
+$$
+$$
+\Large
+\pi = 0.46 + z*0.05
+$$
+- What confidence?
+  - 95 percent lower bound? $z=-1.645$ `r round(0.46 + qnorm(0.05)*sqrt(0.46*(0.54)/100), digits=3)`
+  - 95 percent upper bound? $z=1.645$ `r round(0.46 + qnorm(0.95)*sqrt(0.46*(0.54)/100), digits=3)`
+  - 95 percent central interval? $z=(-1.96,1.96)$ `r round(0.46 + qnorm(c(0.025,0.975))*sqrt(0.46*(0.54)/100), digits=3)`
+
+The Distribution
+================================================
+left: 70%
+```{r Ch1a, echo=FALSE}
+par(mfrow=c(1,2))
+local({
+  .x <- seq(0.292, 0.624, length.out=1000)  
+  plotDistr(.x, dnorm(.x, mean=0.46, sd=0.05), cdf=FALSE, xlab="x", 
+  ylab="Density", 
+  main=paste("Normal:  p-hat=0.46, Std. err.=0.05"))
+})
+local({
+  .x <- seq(0.292, 0.624, length.out=1000)  
+  plotDistr(.x, pnorm(.x, mean=0.46, sd=0.05), cdf=TRUE, xlab="x", 
+  ylab="Density", 
+  main=paste("Normal:  p-hat=0.46, Std. err.=0.05"))
+})
+abline(h=c(0.025,0.975), col="red")
+```
+***
+I reordered the outcomes.
+
+
+================================
+title: false
+
+```{r Res2, echo=FALSE}
+FoodSat <- structure(list(Satisfied. = structure(c(1L, 1L, 1L, 1L, 1L, 1L, 
+1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 
+1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 
+1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 
+2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 
+2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 
+2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L), .Label = c("Yes", 
+"No"), class = "factor")), row.names = c(NA, -100L), .Names = "Satisfied.", class = "data.frame")
+local({
+  .Table <- xtabs(~ Satisfied. , data= FoodSat )
+#  cat("\nFrequency counts (test is for first level):\n")
+#  print(.Table)
+  prop.test(rbind(.Table), alternative='two.sided', p=.5, conf.level=.95, 
+  correct=FALSE)
+})
+```
+```{r BH2}
+p.hat <- 0.46 
+p.hat+qnorm(c(0.025,0.975))*sqrt(p.hat*(1-p.hat)/100)
+```
+
+The probability of 0.5
+=========================================
+```{r BH3, echo=FALSE}
+local({
+  .Table <- xtabs(~ Satisfied. , data= FoodSat )
+#  cat("\nFrequency counts (test is for first level):\n")
+#  print(.Table)
+  prop.test(rbind(.Table), alternative='less', p=.5, conf.level=.95, 
+  correct=FALSE)
+})
+```
+***
+
+```{r BH4}
+p <- 0.5; p.hat <- 0.46; (p.hat - p)/sqrt(p*(1-p)/100)
+pnorm((p.hat - p)/sqrt(p*(1-p)/100))
+2*pnorm((p.hat - p)/sqrt(p*(1-p)/100))
+p.hat+qnorm(0.95)*sqrt(p^2/100)
+```
+
+
+The Exact Binomial
+==========================================
+
+Solves a problem in this way.  *What would $p$ have to be to generate this set of binomial outcomes with the given probability?*  In this instance, it runs through the possible values of p so that 
+- 46 or more yes's are 97.5 percent and then that 
+- 46 or fewer yes's are 2.5 percent.
+
+***
+
+```{r ExBin2, echo=TRUE}
+pbinom(45, size=100, prob=0.3598434)
+pbinom(46, size=100, prob=0.5625884)
+```
+
+
+=======================================
+title: false
+
+```{r ExBin, echo=FALSE,width=1200}
+local({
+  .Table <- xtabs(~ Satisfied. , data= FoodSat )
+  cat("\nFrequency counts (test is for first level):\n")
+  print(.Table)
+  binom.test(rbind(.Table), alternative='two.sided', p=.5, conf.level=.95)
+})
+```
+
+The Famous Survey Margin for Error
+=============================================
+Find one...
+
+$$
+n = \frac{z^2*SE(p)^2}{MOE^2} \\
+MOE = \sqrt{\frac{z*\sqrt{SE(p)}}{N}}
+$$
+***
+```{r Exs1, width=800}
+sqrt(1.96*0.5/517)
+sqrt(1.96*0.5/701)
+sqrt(1.96*0.5/657)
+sqrt(1.96*0.5/902)
+```
+
+If we designed an Oregon poll for 3 percent error with 95% confidence.
+===================================================
+- The needed z with 95 percent confidence is 1.96
+- The MOE is 0.03
+- Assume a tie [p=0.5].
+- We need 1068.  You should round people up....
+```{r ORPoll}
+1.96^2*0.5^2/0.03^2
+```
+
+From One-Sample to Two
+====================================================
+The ideas of confidence intervals and hypothesis tests also extend to comparisons among samples.  Before developing these ideas, we need to introduce the key idea of covariance.
+
+Sample covariance is the shared variation in two observed variables defined as (with metric (xy)) - populations would substitute $\mu$ for $\overline{x,y}$:
+
+$$
+\Large
+Cov(x,y) = \frac{1}{n-1}\sum_{i=1}^{n} (x_{i} - \overline{x})(y_{i} - \overline{y})
+$$
+
+The idea of correlation is related, we divide by the standard deviation of the two variables to render it metricless [and absolute between -1 and 1].
+
+$$
+\Large
+Cor(x,y) = \frac{\sum_{i=1}^{n} (x_{i} - \overline{x})(y_{i} - \overline{y})}{s_{x}s_{y}}
+$$
+
+Covariance Matters
+======================================================
+We can measure covariance.  **But the measured covariance depends on the mean.**
+
+- *If we want to ask if means are different, we must assume something about covariance.*  Either:
+  - Independent (Independent sampling)
+  - Dependent (Paired/Matched Sampling)
+
+Are the units sampled in **independent** or **dependent** fashion?
+
+The Equations
+=========================================================
+
+Are given in your text on 217--221.  The same duality exists here between $\hat{\pi}$ versus hypotheses about $\pi$.  The way this is handled when one claims no difference is different than when one claims a difference [see section 6.2.4, p.222].  
+
+**Simulation renders much of this silly.**
+
+```{r Data2, echo=FALSE}
+Defaults <- structure(list(Commercial = c(1L, 0L, 0L, 0L, 0L, 1L, 0L, 0L, 
+0L, 0L, 1L, 0L, 1L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 1L, 0L, 1L, 
+0L, 0L, 1L, 1L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 1L, 1L, 
+0L, 0L, 0L, 1L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 
+1L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 
+0L, 0L, 1L, 0L, 1L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 
+0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 1L, 0L, 0L, 0L, 0L, 0L, 
+0L, 0L, 0L, 1L, 0L, 0L, 0L, 0L, 0L, 1L, 1L, 0L, 0L, 0L, 0L, 0L, 
+0L, 0L, 0L, 0L, 1L, 0L, 0L, 0L, 0L, 1L, 0L, 0L, 0L, 0L, 0L, 0L, 
+0L, 1L, 0L, 0L, 0L, 1L, 0L, 0L, 1L, 0L, 0L, 0L, 1L, 0L, 1L, 0L, 
+0L, 0L, 1L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 1L, 0L, 
+0L, 0L, 1L, 0L, 0L, 0L, 0L, 0L, 1L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 
+0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 1L, 0L, 1L, 0L
+), Consumer = c(1L, 0L, 0L, 0L, 0L, 1L, 0L, 0L, 0L, 0L, 1L, 0L, 
+1L, 1L, 0L, 1L, 0L, 0L, 0L, 0L, 1L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 
+0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 1L, 1L, 0L, 0L, 0L, 0L, 0L, 0L, 
+1L, 0L, 1L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 
+1L, 0L, 0L, 1L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 
+1L, 0L, 1L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 0L, 
+0L, 1L, 0L, 1L, 0L, 0L, 0L, 0L, 1L, 0L, 1L, 0L, 0L, NA, NA, NA, 
+NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 
+NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 
+NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 
+NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 
+NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, 
+NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA, NA)), class = "data.frame", row.names = c(NA, 
+-200L))
+CreditProducts <- structure(list(Credit = structure(c(2L, 2L, 2L, 2L, 2L, 2L, 2L, 
+2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 
+2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 
+2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 
+2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 
+2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 
+2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 
+2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 
+2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 
+2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 2L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 
+1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 
+1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 
+1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 1L, 
+1L), .Label = c("No", "Yes"), class = "factor")), row.names = c(NA, 
+-200L), class = "data.frame")
+```
+
+
+Statstics and Simulation
+========================================
+
+The big idea is that we simulate things because we can.  In old school statistics, the limitations were imposed by the difficulty and need for obtaining analytical solutions.  We can use the computer and sampling to replace these arcane mathematical troubles.
+
+Resampling a Proportion
+=======================================================
+
+This idea applies to proportions based on binary data [and next week, to means].  Take the example of CreditProducts.  Let me first show a table of the data and embed the function.
+
+```{r, echo=FALSE}
+resample.prop <- function(vec.data, k=1000, tab.col=1) {
+ vec.data <- vec.data[complete.cases(vec.data)]
+ prop.comp <- sapply(1:k, function(x) { prop.table(table(vec.data[sample(1:length(vec.data), size=length(vec.data), replace=TRUE)]))[[tab.col]]}) 
+ prop.comp
+}
+table(CreditProducts$Credit)
+```
+
+The command `resample.prop` requires a vector of data with two outcomes of whatever form.  Yes and No, True and False, Up and Down, or 0 and 1, or even 0 and 10000.  As long as it is binary, the code will work.  It also has a key option, `tab.col` which embeds whether you want the first `1` or second `2` column of the table. Here, I will use 2 because I want the probability of *Yes* on credit products.
+
+```{r}
+Cred.Prod.Res <- resample.prop(CreditProducts$Credit, tab.col=2)
+binom.test(144,200)
+prop.test(144,200)
+quantile(Cred.Prod.Res, c(0.025,0.975))
+```
+
+The probability distributions are all very similar.  They all attempt to capture the same idea.
+
+Two Independent Sample Comparisons 
+===========================================
+
+Embed the same logic.  First, I want a random $\pi$ from sample 1.  Then I want a random $\pi$ from sample 2.  I want to measure the difference between these two random means.  Why measure them separately?  Because I do not know who matches with whom and, oftentimes, we have different size samples and we do not wish to discard relevant information from which to sample these means.  
+
+Two Independent Proportions
+===================================================
+
+We have a proportions test to examine whether the probability of yes [in a binomial] is the same or different in two samples.  First, let me illustrate the workflow.
+
+Now I take two samples of binary data and take a random sample of each, calculate the sample proportions, and subtract one from the other.  For this example, let me use data on Defaults.  0 is no default; 1 is a default.  I will again need the second column.  
+
+```{r}
+table(Defaults$Commercial)
+table(Defaults$Consumer)
+```
+
+*****
+
+The command is `resample.ind.prop` that requires two binary vectors as inputs.
+
+```{r, echo=FALSE}
+resample.ind.prop <- function(vec.1, vec.2, k=1000, tab.col=1) {
+ vec.1 <- vec.1[complete.cases(vec.1)]
+ vec.2 <- vec.2[complete.cases(vec.2)]
+ diff.prop <- sapply(1:k, function(x) { prop.table(table(vec.1[sample(1:length(vec.1), size=length(vec.1), replace=TRUE)]))[[tab.col]]-prop.table(table(vec.2[sample(1:length(vec.2), size=length(vec.2), replace=TRUE)]))[[tab.col]]}) 
+ diff.prop
+ }
+Defaults.Res.Diff <- resample.ind.prop(Defaults$Commercial,Defaults$Consumer, tab.col=2)
+prop.test(x=c(31,19),n=c(200,105))
+quantile(Defaults.Res.Diff, c(0.025,0.975))
+```
+
+My simulated interval is a bit tighter; the z is an approximation.
+
+Why It Matters: Independence
+===========================================================
+
+We want to know if two groups are the same or different in terms of the underlying probability $\pi$ that describes the binomial.  Why?  If they are the same, then whatever it is that determines the two groups can be thought independent of $\pi$.  Knowing which group does not matter.
+
+An Example: Berkeley
+===========================================================
+```{r}
+data("UCBAdmissions")
+mosaicplot(apply(UCBAdmissions, c(1, 2), sum),
+           main = "Student admissions at UC Berkeley")
+```
+
+Or
+=========================================================
+```{r}
+opar <- par(mfrow = c(2, 3), oma = c(0, 0, 2, 0))
+for(i in 1:6)
+  mosaicplot(UCBAdmissions[,,i],
+    xlab = "Admit", ylab = "Sex",
+    main = paste("Department", LETTERS[i]))
+mtext(expression(bold("Student admissions at UC Berkeley")),
+      outer = TRUE, cex = 1.5)
+par(opar)
+```
+
+The Statistics
+======================================================
+
+Now to the statistics.  But first, $\chi^2$.  It's a probability distribution.  It is entirely defined by degrees of freedom.  And it is derived from a squared normal.  If I have to calculate two proportions, I consume two degrees of freedom; if only one proportion need be calculated[meaning they are the same] then only one.  The difference in degrees of freedom is one.  That's our $\chi^2$ parameter: df.
+
+Let's Analyse This
+====================================================
+
+```{r, echo=FALSE}
+UCB.Admit <- data.frame(stringsAsFactors=FALSE,
+         M.F = c("Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Male", "Male", "Male",
+                 "Male", "Male", "Male", "Male", "Male", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female", "Female", "Female", "Female", "Female",
+                 "Female", "Female"),
+       Admit = c("Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes", "Yes",
+                 "Yes", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No", "No",
+                 "No", "No", "No", "No", "No", "No", "No", "No", "No"),
+        Dept = c("A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "A",
+                 "A", "A", "A", "A", "A", "A", "A", "A", "A", "A", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B", "B",
+                 "B", "B", "B", "B", "B", "B", "B", "B", "B", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C", "C",
+                 "C", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D", "D",
+                 "D", "D", "D", "D", "D", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E", "E",
+                 "E", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F", "F",
+                 "F", "F", "F", "F", "F", "F", "F", "F", "F")
+)
+```
+
+```{r}
+table(UCB.Admit$M.F,UCB.Admit$Admit)
+prop.table(table(UCB.Admit$M.F,UCB.Admit$Admit), 1)
+# Tests work across the rows.
+prop.test(table(UCB.Admit$M.F,UCB.Admit$Admit))
+```
+
+So Women are seen, with 95% confidence, to be rejected by Berkeley 0.113 to 0.170 more often, expressed in a difference in probability metric.  Moreover, the probability of Admission is not independent of Male and Female.
+
+What About by Department?
+===============================================
+
+```{r}
+UCBS.Admit = subset(UCB.Admit, subset=Dept=="A")
+table(UCBS.Admit$M.F,UCBS.Admit$Admit)
+prop.table(table(UCBS.Admit$M.F,UCBS.Admit$Admit), 1)
+# Tests work across the rows.
+prop.test(table(UCBS.Admit$M.F,UCBS.Admit$Admit))
+```
+
+```{r}
+UCBS.Admit = subset(UCB.Admit, subset=Dept=="B")
+table(UCBS.Admit$M.F,UCBS.Admit$Admit)
+prop.table(table(UCBS.Admit$M.F,UCBS.Admit$Admit), 1)
+# Tests work across the rows.
+prop.test(table(UCBS.Admit$M.F,UCBS.Admit$Admit))
+```
+
+```{r}
+UCBS.Admit = subset(UCB.Admit, subset=Dept=="C")
+table(UCBS.Admit$M.F,UCBS.Admit$Admit)
+prop.table(table(UCBS.Admit$M.F,UCBS.Admit$Admit), 1)
+# Tests work across the rows.
+prop.test(table(UCBS.Admit$M.F,UCBS.Admit$Admit))
+```
+
+```{r}
+UCBS.Admit = subset(UCB.Admit, subset=Dept=="D")
+table(UCBS.Admit$M.F,UCBS.Admit$Admit)
+prop.table(table(UCBS.Admit$M.F,UCBS.Admit$Admit), 1)
+# Tests work across the rows.
+prop.test(table(UCBS.Admit$M.F,UCBS.Admit$Admit))
+```
+
+```{r}
+UCBS.Admit = subset(UCB.Admit, subset=Dept=="E")
+table(UCBS.Admit$M.F,UCBS.Admit$Admit)
+prop.table(table(UCBS.Admit$M.F,UCBS.Admit$Admit), 1)
+# Tests work across the rows.
+prop.test(table(UCBS.Admit$M.F,UCBS.Admit$Admit))
+```
+
+```{r}
+UCBS.Admit = subset(UCB.Admit, subset=Dept=="F")
+table(UCBS.Admit$M.F,UCBS.Admit$Admit)
+prop.table(table(UCBS.Admit$M.F,UCBS.Admit$Admit), 1)
+# Tests work across the rows.
+prop.test(table(UCBS.Admit$M.F,UCBS.Admit$Admit))
+```
+
+One Case Shows a Difference
+========================================================
+
+**And it goes in the wrong direction**
+
+Women are less likely to be rejected in Dept A.  The rest suggest Admission is independent of M.F
