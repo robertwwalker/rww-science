@@ -109,7 +109,7 @@ It is worth stopping to think about a drawing.  The problem can be approached wi
 
 Lets have a look at a [little simulation](https://ESSSSDA22-3K.netlify.app/posts/spurious-regressions/)
 
-As you see, this applies to non-stationary series.  But not everything with dependency through time is non-stationary.  ARMA process provide the middle ground while the I in ARIMA relates to required differences for stationarity.
+As you see, this applies to non-stationary series.  But not everything with dependency through time is non-stationary.  ARMA process provide the middle ground while the I -- the order of integration -- in ARIMA relates to required differences for stationarity.
 
 ---
 
@@ -225,6 +225,32 @@ The critical values are tabulated.
 
 ---
 
+.pull-left[
+### Stata
+
+```
+use "https://github.com/robertwwalker/Essex-Data/raw/main/br7983.dta"
+tsset
+dfuller govpopl
+```
+
+![](./img/dfuller.png)
+]
+.pull-right[
+### R
+
+```
+
+############################################################### 
+# Augmented Dickey-Fuller Test Unit Root / Cointegration Test # 
+############################################################### 
+
+The value of the test statistic is: -1.574 1.2634 
+```
+]
+
+---
+
 ## KPSS
 
 Is unique in having a null hypothesis of [trend/drift/trend and drift] stationary.  It is also fairly easy to construct.
@@ -246,6 +272,37 @@ Is unique in having a null hypothesis of [trend/drift/trend and drift] stationar
 - If KPSS is large, reject the claim of *** stationary.
 
 **The critical values are tabulated.**
+
+---
+
+.pull-left[
+### Stata
+
+You will have to find `kpss`; trend is default.
+
+```
+kpss govpopl
+```
+![](./img/kpssres.png)
+]
+.pull-right[
+### R
+
+
+```r
+urca::ur.kpss(br7983$govpopl, type="tau", use.lag = 0)
+```
+
+```
+
+####################################### 
+# KPSS Unit Root / Cointegration Test # 
+####################################### 
+
+The value of the test statistic is: 0.8027 
+```
+
+]
 
 ---
 
@@ -275,6 +332,37 @@ H1: `\(y_{t} = a_{0} + a_{2} t + \mu_{2} D_{L} + \epsilon_{t}\)` so that
 Pulse break: `\(D_P = 1 \; if \; t = TB + 1\)` and zero otherwise,
 
 Level break: `\(D_L = 0 \;for \; t = 1, . . . , TB\)` and one otherwise.
+
+---
+.pull-left[
+### Stata
+
+```
+pperron govpopl, lags(1)
+```
+
+![](./img/ppres.png)
+]
+
+
+.pull-right[
+### R
+
+
+```r
+ur.pp(br7983$govpopl, model="constant", use.lag=1)
+```
+
+```
+
+################################################## 
+# Phillips-Perron Unit Root / Cointegration Test # 
+################################################## 
+
+The value of the test statistic is: -5.645 
+```
+
+]
 
 ---
 
@@ -308,10 +396,10 @@ If we can reject a range of pathologies, we can justify inference rationally?  *
 
 ## Panel Unit Root Testing
 
-As of Stata 11, a battery of panel unit-root tests have emerged.  There are many and they operate under differing sets of assumptions.
+Stata has a battery of panel unit-root tests.  There are many and they operate under differing sets of assumptions.  They generally follow on `xtunitroot`.
 
 - Levin-Lin-Chu (`xtunitroot llc`): trend nocons (unit specific) demean (within transform) lags.  Under (crucial) cross-sectional independence, the test is an advancement on the generic Dickey-Fuller theory that allows the lag lengths to vary by cross-sections.  The test relies on specifying a kernel (beyond our purposes) and a lag length (upper bound).  The test statistic has a standard normal basis with asymptotics in `\(\frac{\sqrt{N_{T}}}{T}\)` ($T$ grows faster than `\(N\)`).  The test is of either all series containing unit roots ($H_{0}$) or all stationary; this is a limitation.  It is recommended for moderate to large `\(T\)` and `\(N\)`.
-    + Perform separate ADF regressions: \[ \Delta y_{it} = \rho_{i} \Delta y_{i,t-1} + \sum_{L=1}^{p_i} \theta_{iL} \Delta y_{i,t=L} + \alpha_{mi}d_{mt} + \epsilon_{it} \] with `\(d_{mt}\)` as the vector of deterministic variables (none, drift, drift and trend).  Select a max `\(L\)` and use `\(t\)` on `\(\hat{\theta}_{iL}\)` to attempt to simplify.  Then use `\(\Delta y_{it} = \Delta y_{i,t-L}\)` and `\(d_{mt}\)` for residuals 
+    + Perform separate ADF regressions: `$$\Delta y_{it} = \rho_{i} \Delta y_{i,t-1} + \sum_{L=1}^{p_i} \theta_{iL} \Delta y_{i,t=L} + \alpha_{mi}d_{mt} + \epsilon_{it}$$` with `\(d_{mt}\)` as the vector of deterministic variables (none, drift, drift and trend).  Select a max `\(L\)` and use `\(t\)` on `\(\hat{\theta}_{iL}\)` to attempt to simplify.  Then use `\(\Delta y_{it} = \Delta y_{i,t-L}\)` and `\(d_{mt}\)` for residuals 
 
 ---
 
@@ -320,7 +408,7 @@ As of Stata 11, a battery of panel unit-root tests have emerged.  There are many
 - Breitung (`xtunitroot breitung`):  trend nocons (unit specific) demean (within transform) robust (CSD) lags. \\ Similar to LLC with a common statistic across all `\(i\)`.
 - Im, Pesaran, Shin (` ips`):  trend demean (within transform) lags.  They free `\(\rho\)` to be `\(\rho_{i}\)` and average individual unit root statistics.  The null is that all contain unit roots while the alternative specifies at least some to be stationary.  The test relies on sequential asymptotics (first T, then N).  Better in small samples than LLC, but note the differences in the alternatives.
 
----
+--
 
 - Fisher type tests (`xtunitroot fisher`): dfuller pperron demean lags.
 - Hadri (LM) (`xtunitroot hadri`): trend demean robust 
@@ -355,28 +443,28 @@ library(fpp3); library(tidyverse)
 beer &lt;- aus_production %&gt;%
   select(Quarter, Beer) %&gt;%
   filter(year(Quarter) &gt;= 1992)
-beer %&gt;% autoplot(Beer)
+beer %&gt;% autoplot(Beer) + hrbrthemes::theme_ipsum()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-8-1.svg" width="100%" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-11-1.svg" width="100%" /&gt;
 
 ---
 
 
 ```r
-beer %&gt;% gg_season(Beer, labels="right")
+beer %&gt;% gg_season(Beer, labels="right") + hrbrthemes::theme_ipsum()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-9-1.svg" width="100%" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-12-1.svg" width="100%" /&gt;
 
 ---
 
 
 ```r
-beer %&gt;% gg_subseries(Beer)
+beer %&gt;% gg_subseries(Beer) + hrbrthemes::theme_ipsum()
 ```
 
-&lt;img src="index_files/figure-html/unnamed-chunk-10-1.svg" width="100%" /&gt;
+&lt;img src="index_files/figure-html/unnamed-chunk-13-1.svg" width="100%" /&gt;
     </textarea>
 <style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
 <script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
