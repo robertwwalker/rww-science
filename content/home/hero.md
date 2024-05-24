@@ -5,7 +5,7 @@ headless = true  # This file represents a page section.
 active = true  # Activate this widget? true/false
 weight = 10  # Order that this section will appear.
 
-title = "rww.science"
+title = "robertwwalker.work"
 
 # Hero image (optional). Enter filename of an image in the `static/img/` folder.
 # hero_media = "headers/wuagsm.jpg"
