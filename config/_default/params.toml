@@ -96,7 +96,7 @@ address = {street = "900 State Street", city = "Salem", region = "OR", postcode 
 coordinates = {latitude = "44.935", longitude = "-123.027"}
 
 # Directions for visitors to locate you.
-directions = "Enter Mudd Building and take the 2nd floor Northwest stairs to Office 401 on Floor 4"
+directions = "northeast end of 2nd floor, Kaneko Hall 208"
 
 # Office hours
 # A list of your office hours. To remove, set to an empty list `[]`.
