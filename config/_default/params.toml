@@ -93,7 +93,7 @@ address = {street = "900 State Street", city = "Salem", region = "OR", postcode 
 
 # Geographic coordinates
 # To get your coordinates, right-click on Google Maps and choose "What's here?". The coords will show up at the bottom.
-coordinates = {latitude = "44.9362", longitude = "-123.0339"}
+coordinates = {latitude = "44.935", longitude = "-123.027"}
 
 # Directions for visitors to locate you.
 directions = "Enter Mudd Building and take the 2nd floor Northwest stairs to Office 401 on Floor 4"
