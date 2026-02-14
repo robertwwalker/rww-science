@@ -85,7 +85,7 @@ privacy_pack = true
 
 # Enter contact details (optional). To hide a field, clear it to "".
 email = "rwalker@willamette.edu"
-phone = "503.370.6456"
+phone = "503.370.5475"
 
 # Address
 # For country_code, use the 2-letter ISO code (see https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2 )
@@ -93,7 +93,7 @@ address = {street = "900 State Street", city = "Salem", region = "OR", postcode 
 
 # Geographic coordinates
 # To get your coordinates, right-click on Google Maps and choose "What's here?". The coords will show up at the bottom.
-coordinates = {latitude = "44.935", longitude = "-123.027"}
+coordinates = {latitude = "44.933324", longitude = "-123.02653"}
 
 # Directions for visitors to locate you.
 directions = "northeast end of 2nd floor, Kaneko Hall 208"
